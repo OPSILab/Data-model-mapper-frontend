@@ -50,7 +50,7 @@ The tool configuration consists of the following parts:
 
 #### Application configuration
 
-The global setup is defined in the ``config.js`` file, rename the ``config.template.js`` file to ``config.js``.
+The global setup is defined in the ``config.js`` file, fill and rename the ``config.template.js`` file to ``config.js``.
 
 The config file will have the following options:
 

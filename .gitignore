@@ -16,3 +16,5 @@ bld/
 node_modules/
 reports/
 logs/
+config.js
+result.json
