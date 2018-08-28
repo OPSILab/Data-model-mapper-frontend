@@ -17,8 +17,9 @@
  ******************************************************************************/
 
 const nconf = require('nconf');
-const config = require('../../config')
+const config = require('../../config');
 const log = require('./logger').app;
+const path = require('path');
 const pathPattern = /^.+(\/|\\)[^\/|\\]+$/g;
 nconf.use('memory');
 
@@ -122,7 +123,7 @@ const checkConf = () => {
         log.error('Incorrect target Data Model name');
         return false;
     } else
-        nconf.set('targetDataModel', config.modelSchemaFolder + dataModel + '.json');
+        nconf.set('targetDataModel', path.join(config.modelSchemaFolder, dataModel + '.json'));
 
 
 

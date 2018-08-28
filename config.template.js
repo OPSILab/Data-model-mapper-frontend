@@ -15,13 +15,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
+const path = require('path');
 
 var config = {
 
     env: 'debug',
     mode: 'commandLine',
     logLevel: 'debug',
-    modelSchemaFolder: __dirname + "\\dataModels\\",
+    modelSchemaFolder: path.join(__dirname, "dataModels"),
 
     // Following related to Mapping MANDATORY inputs (source, map, data model).
 	// Windows paths MUST use \\ path delimiters

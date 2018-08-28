@@ -114,7 +114,7 @@ winston.loggers.add('log', {
 if (process.env.NODE_ENV !== 'production') {
     winston.loggers.get('log').add(new winston.transports.Console({
         format: logFormat,
-        level: process.env.LOG || 'info',
+        level: process.env.LOG || 'info'
     }));
 }
 
