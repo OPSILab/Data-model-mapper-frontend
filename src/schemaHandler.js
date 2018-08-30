@@ -117,8 +117,11 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
 
     if (valid) {
         if (!isSingleField)
-            log.debug('Validation successful for entity with id:' + data.id);
-
+            log.log({
+                level: 'silly',
+                message: 'Validation successful for entity with id:' + data.id
+            });
+       
         return true;
     } else {
         log.info('Source Row/Object number ' + rowNumber + ' invalid: ' + ajv.errorsText(validate.errors));

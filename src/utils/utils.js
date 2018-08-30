@@ -137,7 +137,7 @@ function createSynchId(type, site, service, group, entityName, isIdPrefix, rowNu
         else
             entityName = entityName.replace(/\s/g, "");
     } else {
-        entityName = utils.extractFilenameFromPath(config.sourceDataPath.replace(/\s/g, "") + "-" + rowNumber);
+        entityName = extractFilenameFromPath(config.sourceDataPath.replace(/\s/g, "") + "-" + rowNumber);
     }
 
     // Group field is optional

@@ -166,7 +166,8 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
                 }
                 else if (norm.startsWith("static:"))
                     parsedNorm = new Function("input", "return '" + norm.match(staticPattern)[1] + "'");
-
+                else
+                    parsedNorm = norm;
             } else
                 parsedNorm = norm;
 

@@ -37,7 +37,7 @@ function writeObjectPromise(objNumber, obj, modelSchema, updatePromises) {
         log.debug('Sending to Orion object number: ' + objNumber + ' , id: ' + obj.id);
 
         var orionedObj = toOrionObject(obj, modelSchema);
-        //sleep(2);
+        //sleep(10);
 
         var options = {
             method: 'POST',
@@ -301,7 +301,7 @@ function writeObject(objNumber, obj, modelSchema, retryNum = 0) {
 
 function toOrionObject(obj, schema) {
 
-    log.debug("Transforming Mapped object to an Orion Entity (explicit types in attributes)");
+   // log.debug("Transforming Mapped object to an Orion Entity (explicit types in attributes)");
 
     for (key in obj) {
         if (key != 'id' && key != 'type') {
