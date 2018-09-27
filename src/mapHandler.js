@@ -53,7 +53,7 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
 
         // If the destKey is entityIdField and has only "static:" fields, the pair value indicates only an ID prefix
         // The resulting string will be concatenated with rowNumber
-        var isIdPrefix = false;
+        var isIdPrefix;
 
         //// If the map key has a . , it means that the source key is an object
         ////var dotPattern = /(.*)\.(.*)/g;
@@ -92,18 +92,22 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
 
                 var oneOf = modelSchemaDestKey.oneOf;
 
-                // If map is an object with coordinates it's a location type field
-                if (destKey === 'location' && norm.type && norm.coordinates && norm.type.startsWith('static:')) {
+                // If map is an object with coordinates it's a location type field or if is "geometry"
+                if (destKey === 'location') {
+                    if (norm.type && norm.coordinates && norm.type.startsWith('static:')) {
 
-                    var parsedStaticType = norm.type.match(staticPattern)[1];
-                    if (Array.isArray(oneOf) && oneOf.find(k => k.properties.type.enum.find(e => e == parsedStaticType))) {
+                        var parsedStaticType = norm.type.match(staticPattern)[1];
+                        if (Array.isArray(oneOf) && oneOf.find(k => k.properties.type.enum.find(e => e == parsedStaticType))) {
 
-                        parsedNorm['type'] = new Function("input", "return '" + parsedStaticType + "'");
-                        parsedNorm['coordinates'] = new Function("input", "return " + "[Number(input['" + norm.coordinates[0] + "']),Number(input['" + norm.coordinates[1] + "'])]");
+                            parsedNorm['type'] = new Function("input", "return '" + parsedStaticType + "'");
+                            parsedNorm['coordinates'] = new Function("input", "return " + "[Number(input['" + norm.coordinates[0] + "']),Number(input['" + norm.coordinates[1] + "'])]");
 
-                    }
-                } else continue;
-
+                        }
+                    } else if (norm === 'geometry') {
+                        parsedNorm = new Function("input", "return input['" + norm + "'];");
+                    } else
+                        continue;
+                }
             } else if (modelSchemaDestKey && modelSchemaDestKey.type === 'object') {
 
                 for (key in norm) {
@@ -195,7 +199,7 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
         }
 
 
-    };
+    }
 
 
     // Append type field, according to the model Schema
@@ -257,7 +261,7 @@ function handleSourceFieldsArray(sourceFieldArray) {
             else if (filterMatch.length === 1)
                 finalArray[index] = ' ';
             else if (filterMatch.length === 5)
-                finalArray[index] = "'" + filterMatch[1] + (filterMatch[3] ? filterMatch[3]: "")   + filterMatch[4] + "'";
+                finalArray[index] = "'" + filterMatch[1] + (filterMatch[3] ? filterMatch[3] : "") + filterMatch[4] + "'";
             else
                 finalArray[index] = "'" + filterMatch[1] + filterMatch[4] + "'";
         } else {
