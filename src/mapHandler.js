@@ -141,7 +141,7 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
 
             } else if (modelSchemaDestKey && modelSchemaDestKey.type === 'array' && Array.isArray(norm)) {
 
-                parsedNorm = new Function("input", "return " + JSON.stringify(handleSourceFieldsToDestArray(norm)));
+                parsedNorm = new Function("input", "return " + handleSourceFieldsToDestArray(norm));
 
             } else if (modelSchemaDestKey && (modelSchemaDestKey.type === 'number' || modelSchemaDestKey.type === 'integer')) {
 
@@ -292,7 +292,7 @@ function handleSourceFieldsArray(sourceFieldArray) {
 function handleSourceFieldsToDestArray(sourceFieldArray) {
 
     var finalArray = [];
-
+    var resultString = undefined;
     // If value of string array startwith "static:" it is a static string to be concatenated,
     // not the name of the source field.
     sourceFieldArray.forEach(function (value, index, array) {
@@ -318,7 +318,19 @@ function handleSourceFieldsToDestArray(sourceFieldArray) {
         }
     });
 
-    return finalArray;
+    // print Array String as output
+    resultString = '[';
+    finalArray.forEach(function (value, index) {
+        if (value.startsWith("input")) {
+            resultString += value + ',';
+
+        } else { //static
+            resultString += '"' + value + '",';
+        }
+    });
+    
+    resultString = resultString.slice(0, resultString.length - 1) + ']';
+    return resultString;
 
 }
 
