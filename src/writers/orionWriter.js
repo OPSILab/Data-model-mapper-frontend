@@ -54,100 +54,100 @@ function writeObjectPromise(objNumber, obj, modelSchema, updatePromises) {
         return rp(options).then(function (response) {
 
 
-                // Entity is new
-                if (response && response.statusCode == 201) {
+            // Entity is new
+            if (response && response.statusCode == 201) {
 
-                    report.info('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly CREATED in the Context Broker');
-                    log.debug('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly CREATED in the Context Broker');
-                    process.env.orionWrittenCount++;
-                    //checkAndPrintFinalReport();
-
-                } else if (response && response.statusCode == 422 && response.body && response.body.description == 'Already Exists') {
-
-                    // UPDATE EXISTING ENTITIES
-                    if (!config.skipExisting) {
-
-                        // If entity already exists, try to update it
-                        var existingId = orionedObj.id;
-                        delete orionedObj.id;
-                        delete orionedObj.type;
-                        
-                        var updateOptions = {
-                            method: 'POST',
-                            headers: { 'content-type': 'application/json' },
-                            uri: config.orionUrl + '/v2/entities/' + existingId + '/attrs',
-                            body: orionedObj,
-                            json: true,
-                            simple: false,
-                            resolveWithFullResponse: true,
-                            retry: config.maxRetry,
-                            proxy: config.proxy
-                        };
-
-                        updatePromises.push(rp(updateOptions)
-                            .then(function (response) {
-                               
-                                if (response && response.statusCode == 204) {
-
-                                    report.info('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
-                                    log.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
-                                    process.env.orionWrittenCount++;
-                                    //checkAndPrintFinalReport();
-                                } else {
-                                    throw new Error('Update Error');
-                                }
-
-                            }).catch((error) => {
-
-                                report.info('----------------------------------------------------------\n' +
-                                    'Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
-                                log.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
-
-                                report.info('error: ' + error); // Print the error if one occurred
-                                log.debug('error: ' + error);
-
-                                if (error)
-                                    report.info('statusCode: ' + error.statusCode); // Print the response status code if a response was received
-                                report.info('body: ' + JSON.stringify(error));
-                                report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-                                log.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-                                process.env.orionUnWrittenCount++;
-                                //checkAndPrintFinalReport();
-
-                            }));
-
-                    } else {
-
-                        // SKIP EXISTING ENTITIES
-                        report.info('Entity Number: ' + objNumber + ' with Id: ' + orionedObj.id + ' SKIPPED');
-                        log.debug('Entity Number: ' + objNumber + ' with Id: ' + orionedObj.id + ' SKIPPED');
-                        process.env.orionSkippedCount++;
-                        //checkAndPrintFinalReport();
-
-                    }
-
-                } else {
-                    throw new Error('Undefined state: ' + JSON.stringify(response) + '\n');
-                }
-
-            }).catch((error) => {
-
-                report.info('----------------------------------------------------------\n' +
-                    'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT CREATED in the Context Broker');
-                log.debug('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT CREATED in the Context Broker');
-
-                report.info('error: ' + error); // Print the error if one occurred
-                log.debug('error: ' + error);
-
-                if (error)
-                    report.info('statusCode: ' + error.statusCode);
-                report.info('body: ' + JSON.stringify(error));
-                report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-                log.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-                process.env.orionUnWrittenCount++;
+                report.info('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly CREATED in the Context Broker');
+                log.debug('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly CREATED in the Context Broker');
+                process.env.orionWrittenCount++;
                 //checkAndPrintFinalReport();
 
-            });
+            } else if (response && response.statusCode == 422 && response.body && response.body.description == 'Already Exists') {
+
+                // UPDATE EXISTING ENTITIES
+                if (!config.skipExisting) {
+
+                    // If entity already exists, try to update it
+                    var existingId = orionedObj.id;
+                    delete orionedObj.id;
+                    delete orionedObj.type;
+
+                    var updateOptions = {
+                        method: 'POST',
+                        headers: { 'content-type': 'application/json' },
+                        uri: config.orionUrl + '/v2/entities/' + existingId + '/attrs',
+                        body: orionedObj,
+                        json: true,
+                        simple: false,
+                        resolveWithFullResponse: true,
+                        retry: config.maxRetry,
+                        proxy: config.proxy
+                    };
+
+                    updatePromises.push(rp(updateOptions)
+                        .then(function (response) {
+
+                            if (response && response.statusCode == 204) {
+
+                                report.info('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
+                                log.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
+                                process.env.orionWrittenCount++;
+                                //checkAndPrintFinalReport();
+                            } else {
+                                throw new Error('Update Error');
+                            }
+
+                        }).catch((error) => {
+
+                            report.info('----------------------------------------------------------\n' +
+                                'Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
+                            log.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
+
+                            report.info('error: ' + error); // Print the error if one occurred
+                            log.debug('error: ' + error);
+
+                            if (error)
+                                report.info('statusCode: ' + error.statusCode); // Print the response status code if a response was received
+                            report.info('body: ' + JSON.stringify(error));
+                            report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
+                            log.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
+                            process.env.orionUnWrittenCount++;
+                            //checkAndPrintFinalReport();
+
+                        }));
+
+                } else {
+
+                    // SKIP EXISTING ENTITIES
+                    report.info('Entity Number: ' + objNumber + ' with Id: ' + orionedObj.id + ' SKIPPED');
+                    log.debug('Entity Number: ' + objNumber + ' with Id: ' + orionedObj.id + ' SKIPPED');
+                    process.env.orionSkippedCount++;
+                    //checkAndPrintFinalReport();
+
+                }
+
+            } else {
+                throw new Error('Undefined state: ' + JSON.stringify(response) + '\n');
+            }
+
+        }).catch((error) => {
+
+            report.info('----------------------------------------------------------\n' +
+                'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT CREATED in the Context Broker');
+            log.debug('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT CREATED in the Context Broker');
+
+            report.info('error: ' + error); // Print the error if one occurred
+            log.debug('error: ' + error);
+
+            if (error)
+                report.info('statusCode: ' + error.statusCode);
+            report.info('body: ' + JSON.stringify(error));
+            report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
+            log.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
+            process.env.orionUnWrittenCount++;
+            //checkAndPrintFinalReport();
+
+        });
 
 
 
@@ -301,7 +301,7 @@ function writeObject(objNumber, obj, modelSchema, retryNum = 0) {
 
 function toOrionObject(obj, schema) {
 
-   // log.debug("Transforming Mapped object to an Orion Entity (explicit types in attributes)");
+    // log.debug("Transforming Mapped object to an Orion Entity (explicit types in attributes)");
 
     for (key in obj) {
         if (key != 'id' && key != 'type') {
@@ -353,12 +353,19 @@ function toOrionObject(obj, schema) {
 
             } else {
 
-                if (modelFieldFormat)
-                    obj[key] = {
-                        type: modelFieldType,
-                        value: objField,
-                        format: modelFieldFormat
-                    }
+                if (modelFieldFormat) {
+                    if (modelFieldFormat === 'date-time')
+                        obj[key] = {
+                            type: 'DateTime',
+                            value: objField
+                        };
+                    else
+                        obj[key] = {
+                            type: modelFieldType,
+                            value: objField,
+                            format: modelFieldFormat
+                        };
+                }
                 else
                     obj[key] = {
                         type: modelFieldType,

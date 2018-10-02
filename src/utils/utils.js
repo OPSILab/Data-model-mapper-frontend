@@ -68,7 +68,7 @@ function cleanPair(key, value) {
         arrayResult.value = arrayValues;
         return arrayResult;
 
-    } else if (typeof value === 'object') {
+    } else if (value !== null && typeof value === 'object') {
         var result = {};
         var objResult = {};
         Object.keys(value).forEach(function (objKey) {
@@ -85,9 +85,11 @@ function cleanPair(key, value) {
         result.key = cleanString(key);
         if (typeof value === 'string')
             result.value = cleanString(value);
-        else {
+        else if (value !== null) {
             result.value = cleanNumber(value);
         }
+        else
+            result.value = '';
             
         return result;
     }
@@ -98,7 +100,8 @@ function cleanRow(row) {
     var result = {};
 
     Object.keys(row).forEach(function (key) {
-        var newPair = cleanPair(key, row[key]);
+        var value = row[key];
+        var newPair = cleanPair(key, value);
         result[newPair.key] = newPair.value;
     });
 

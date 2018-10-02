@@ -152,9 +152,13 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
                     parsedNorm = norm;
 
             }
-            else if (modelSchemaDestKey && modelSchemaDestKey.type === 'string' && modelSchemaDestKey.format === 'date-time')
-                parsedNorm = new Function("input", "return new Date(input['" + norm + "']).toISOString();");
-
+            else if (modelSchemaDestKey && modelSchemaDestKey.type === 'string' && modelSchemaDestKey.format === 'date-time') {
+                var a = handleDottedField(norm);
+                var date = eval('source' + handleDottedField(norm));
+                if (date === null || date === '')
+                    continue;
+                parsedNorm = new Function("input", "return new Date(input" + handleDottedField(norm) + ").toISOString();");
+            }
             else if (modelSchemaDestKey && modelSchemaDestKey.type === 'string' && Array.isArray(norm))
                 parsedNorm = new Function("input", "return " + handleSourceFieldsArray(norm).result);
 
@@ -287,7 +291,7 @@ function handleSourceFieldsArray(sourceFieldArray) {
         isOnlyStatic: isOnlyStatic
     };
 
-}
+};
 
 function handleSourceFieldsToDestArray(sourceFieldArray) {
 
@@ -334,10 +338,32 @@ function handleSourceFieldsToDestArray(sourceFieldArray) {
 
 }
 
+// Returns array notation from dotten notation (without input)
+function handleDottedField(fieldName) {
 
+    var staticMatch = fieldName.match(staticPattern);
+    if (staticMatch && staticMatch.length > 0) {
 
+        finalArray[index] = staticMatch[1];
+
+    } else {
+
+        var splittedDot = fieldName.match(dotPattern);
+
+        if (splittedDot) {
+
+            splittedDot.shift();
+            if (splittedDot.length > 0)
+                return "['" + splittedDot.join("']['") + "']";
+
+        } else {
+            return "['" + fieldName + "']";
+        }
+    }
+    
+}
 
 module.exports = {
     loadMapFile: loadMapFile,
     mapObjectToDataModel: mapObjectToDataModel
-}
+};
