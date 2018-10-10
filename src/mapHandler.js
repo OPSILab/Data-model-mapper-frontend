@@ -27,16 +27,26 @@ const dotPattern = /(.*)\.(.*)/;
 const log = require('./utils/logger').app;
 const report = require('./utils/logger').report;
 
-function loadMapFile(filename) {
+function loadMap(mapData) {
 
-    log.info('Loading Map File');
-    try {
-        var map = fs.readFileSync(filename, 'utf8');
-        return JSON.parse(map);
-    } catch (err) {
-        log.error("Error while parsing Map File!: " + err);
-        return undefined;
-    }
+    if (typeof mapData == 'object') {
+        log.info('Loading Map File');
+        return new Promise(function (resolve, reject) {
+            var map = fs.readFileSync(filename, 'utf8');
+            resolve (JSON.parse(map));
+
+        });
+          
+        //} catch (err) {
+        //    log.error("Error while parsing Map File!: " + err);
+        //    return undefined;
+        //}
+    } else 
+        return new Promise(function (resolve, reject) {
+            resolve(mapData);
+        });
+
+
 }
 
 // This function takes in input the source object, uses map object to map to a destination data Model
@@ -44,16 +54,16 @@ function loadMapFile(filename) {
 function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service, group, entityIdField) {
 
     var result = {};
-    //var entityId = undefined;
+    // If the destKey is entityIdField and has only "static:" fields, the pair value indicates only an ID prefix
+    // The resulting string will be concatenated with rowNumber
+    var isIdPrefix = false;
 
     for (var destKey in map) {
 
         var mapSourceField = map[destKey];    // sourceField map object or key-value pair
         var singleResult = undefined;
 
-        // If the destKey is entityIdField and has only "static:" fields, the pair value indicates only an ID prefix
-        // The resulting string will be concatenated with rowNumber
-        var isIdPrefix;
+        
 
         //// If the map key has a . , it means that the source key is an object
         ////var dotPattern = /(.*)\.(.*)/g;
@@ -64,7 +74,7 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
         //    if (extrFields.length > 1) {
         //  Check if destKey is present in modelSchema
         var modelSchemaDestKey = modelSchema.allOf[0].properties[destKey];
-        if (modelSchemaDestKey || (destKey == entityIdField)) {
+        if (modelSchemaDestKey || destKey == entityIdField) {
 
             // If the value of key-value maping pair is a function definition, eval it.
             //if ( (typeof mapSourceField == "string") && mapSourceField.startsWith("function")) {
@@ -167,7 +177,7 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
 
             else if (destKey == entityIdField) {
 
-                if (Array.isArray(norm)) {
+                if (Array.isArray(norm) && norm.length!==0) {
                     var resIdFields = handleSourceFieldsArray(norm);
                     parsedNorm = new Function("input", "return " + resIdFields.result);
                     isIdPrefix = resIdFields.isOnlyStatic;

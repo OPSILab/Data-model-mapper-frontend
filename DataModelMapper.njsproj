@@ -6,6 +6,7 @@
     <RootNamespace>NodejsConsoleApp1</RootNamespace>
     <ScriptArguments>
     </ScriptArguments>
+    <SaveNodeJsSettingsInProjectFile>True</SaveNodeJsSettingsInProjectFile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -31,6 +32,9 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="src\server\setup.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\writers\fileWriter.js" />
     <Compile Include="src\writers\orionWriter.js" />
     <Compile Include="src\utils\process.js" />

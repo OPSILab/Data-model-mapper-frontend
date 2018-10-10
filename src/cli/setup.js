@@ -18,7 +18,11 @@
 
 const commandLine = require('../utils/confUtils');
 const process = require('../utils/process');
+const config = require('../../config');
+
 const log = require('../utils/logger').app;
+
+
 //const fs = require('fs');
 
 
@@ -30,26 +34,33 @@ const log = require('../utils/logger').app;
 //	}
 //};
 
-module.exports = () => {
+module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
     log.info("Initializing Mapper in Command Line Mode");
 
     if (commandLine.init()) {
 
-        var sourcePath = commandLine.getParam('sourceDataPath');
-        var mapPath = commandLine.getParam('mapPath');
-        var dataModelPath = commandLine.getParam('targetDataModel');
+        // file path or directly string/binary content 
+        var sourceData = sourceDataIn || commandLine.getParam('sourceDataPath');
+        var mapPath = mapPathIn || commandLine.getParam('mapPath');
+        var dataModelPath = undefined;
 
-        //const oauthTok = commandLine.getParam('oauthTok');
-        //const wauthTok = commandLine.getParam('wauthTok');
-        //if (oauthTok) {
-        //    process.env.OAUTH_TOK = oauthTok;
-        //}
-        //if (wauthTok) {
-        //    process.env.WAUTH_TOK = wauthTok;
-        //}
+        if ((dataModelPath = getDataModelPath(dataModelIn)) !== undefined)
+            ;
+        else {
+            dataModelPath = commandLine.getParam('targetDataModel');
+        }
 
-       process.processSource(sourcePath, mapPath, dataModelPath);
-      
+        const oauthToken = commandLine.getParam('oauthToken');
+        const wauthTok = commandLine.getParam('pauthToken');
+        if (oauthToken) {
+            process.env.OAUTH_TOKEN = oauthToken;
+        }
+        if (pauthToken) {
+            process.env.PAUTH_TOKEN = pauthToken;
+        }
+
+        process.processSource(sourceData, mapPath, dataModelPath);
+
     }
 };
-    
+

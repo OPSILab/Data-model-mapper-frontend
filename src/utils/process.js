@@ -40,67 +40,69 @@ process.env.rowNumber = 0;
 process.env.rowStart = config.rowStart;
 process.env.rowEnd = config.rowEnd;
 
-var promises = undefined;
-var updatePromises = undefined;
 
-function processSource(sourceDataPath, mapPath, dataModelSchemaPath) {
+
+function async processSource(sourceData, sourceDataType, mapPath, dataModelSchemaPath) {
 
     if (dataModelSchemaPath && mapPath) {
 
-        var extension = sourceDataPath.match(utils.extensionPattern);
+        if (sourceData) {
 
-        if (extension && extension.length === 1) {
-
-            // Load Data Model Schema from url or local file
-            schemaHandler.parseDataModelSchema(dataModelSchemaPath, function (schema) {
-                //fs.writeFileSync("schema.out", JSON.stringify(schema, function replacer(key, value) { return value }));
-
-                if (schema) {
-                    log.info('Data Model Schema loaded and dereferenced');
-                    var map = mapHandler.loadMapFile(mapPath);
-
-                    if (map) {
-                        log.info('Map loaded');
-                        log.info('Starting to Map Source Object');
-                        //promises = [];
-                        //updatePromises = [];
-
-                        switch (extension[0]) {
-
-                            case '.csv':
-                                csvParser.sourceDataPathToRowStream(sourceDataPath, map, schema, processRow, processMappedObject);
-                                break;
-                            case '.json':
-                                jsonParser.sourceDataPathToRowStream(sourceDataPath, map, schema, processRow, processMappedObject);
-                                break;
-                            case '.geojson':
-                                geoParser.sourceDataPathToRowStream(sourceDataPath, map, schema, processRow, processMappedObject);
-                                break;
-                            default:
-                                break;
-                        }
-
-
-
-
-
-
-
-
-
-
-
-                    } else {
-                        log.error('There was an error while loading Map File');
-                    }
-                } else {
-                    log.error('There was an error while loading Data Model Schema');
+            if (typeof sourceData === 'string') {
+                var extension = sourceData.match(utils.extensionPattern);
+                if (!extension || extension.length !== 1) {
+                    // No file path provided nor dataType
+                    log.error('The provided url/file path does not have file extension');
+                    return;
                 }
 
+            } else if (!sourceDataType) {
+                // No file path provided nor dataType
+                log.error('No file path provided nor dataType');
+                return;
+            }
+
+            // Load Data Model Schema from url or local file
+            schemaHandler.parseDataModelSchema(dataModelSchemaPath).then((schema) => {
+
+                log.info('Data Model Schema loaded and dereferenced');
+
+                var map = await mapHandler.loadMapFile(mapPath).catch();
+                
+
+                if (map) {
+                    log.info('Map loaded');
+                    log.info('Starting to Map Source Object');
+
+                    switch (extension[0] || dataType) {
+
+                        case '.csv':
+                            csvParser.sourceDataPathToRowStream(sourceData, map, schema, processRow, processMappedObject);
+                            break;
+                        case '.json':
+                            jsonParser.sourceDataPathToRowStream(sourceData, map, schema, processRow, processMappedObject);
+                            break;
+                        case '.geojson':
+                            geoParser.sourceDataPathToRowStream(sourceData, map, schema, processRow, processMappedObject);
+                            break;
+                        default:
+                            break;
+                    }
+
+
+                } else {
+                    log.error('There was an error while loading Map File');
+                }
+
+            }).catch((error) => {
+
+                log.error("There was an error while processing Data Model schema");
+                throw new Error(error);
             });
 
+
         } else {
-            log.error("The file in the input path/url has no valid extension");
+            log.error("The source Data is not a valid file nor a valid path/url");
         }
 
     } else if (!dataModelSchemaPath) {
@@ -125,7 +127,7 @@ function processRow(rowNumber, row, map, schema, mappedHandler) {
 }
 
 async function processMappedObject(objNumber, obj, modelSchema) {
-    //obj ? log.info(JSON.stringify(obj)) : log.info(obj);
+
     var promise = undefined;
     var updatePromise = undefined;
 
@@ -151,18 +153,18 @@ async function processMappedObject(objNumber, obj, modelSchema) {
     orionWriter.checkAndPrintFinalReport();
 
 
-    }
+}
 
 function finalizeProcess() {
-            console.log('SONO IN FINALIZE');
-            //// Finalize file in case of using fileWriter
-            if (process.env.hasFileWriter == 'true')
-                fileWriter.finalize();
+    console.log('SONO IN FINALIZE');
+    //// Finalize file in case of using fileWriter
+    if (process.env.hasFileWriter == 'true')
+        fileWriter.finalize();
 
-        }
+}
 
 
 module.exports = {
-            processSource: processSource,
-            finalizeProcess: finalizeProcess
-        }
+    processSource: processSource,
+    finalizeProcess: finalizeProcess
+};

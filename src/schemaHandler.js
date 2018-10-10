@@ -63,29 +63,36 @@ const report = require('./utils/logger').report;
 
 
 
-function parseDataModelSchema(schemaPath, callback) {
-    
-    RefParser.dereference(schemaPath, function (err, schema) {
-        if (err) {
-           log.error('There was an error while loading Data Model Schema: ' + err);
-        }
-        else {
-            // `schema` is just a normal JavaScript object that contains your entire JSON Schema,
-            // including referenced files, combined into a single object
-            //console.log(schema);
-            var rootProperties = schema.allOf.pop().properties;
+function parseDataModelSchema(schemaPath) {
 
-            for (var i = 0; i < schema.allOf.length; i++) {
-                var head = schema.allOf[i].properties;
-                for (var key in head) {
+    return RefParser.dereference(schemaPath).then((schema) => {
+
+        var rootProperties = schema.allOf.pop().properties;
+
+        for (var allOf of schema.allOf) {
+            
+            if (allOf.allOf) {
+                // nested allOf 
+                for (var nestedAllOf of allOf.allOf) {
+                    let head = nestedAllOf.properties;
+                    for (let key in head) {
+                        rootProperties[key] = head[key];
+                    }
+                }
+            } else if (allOf.properties) {
+                let head = allOf.properties;
+                for (let key in head) {
                     rootProperties[key] = head[key];
                 }
             }
-            schema.allOf = new Array({ properties: rootProperties });
-            return callback(schema);
         }
-    });
+        schema.allOf = new Array({ properties: rootProperties });
 
+        return new Promise((resolve, reject) => {
+            resolve(schema);
+        });
+    });
+    
 }
 
 
@@ -121,7 +128,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
                 level: 'silly',
                 message: 'Validation successful for entity with id:' + data.id
             });
-       
+
         return true;
     } else {
         log.info('Source Row/Object number ' + rowNumber + ' invalid: ' + ajv.errorsText(validate.errors));
@@ -135,4 +142,4 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
 module.exports = {
     validateSourceValue: validateSourceValue,
     parseDataModelSchema: parseDataModelSchema
-}
+};

@@ -21,6 +21,7 @@ const config = require('../../config');
 const log = require('./logger').app;
 const path = require('path');
 const pathPattern = /^.+(\/|\\)[^\/|\\]+$/g;
+const utils = require('./utils');
 nconf.use('memory');
 
 process.argv.forEach(function (val, index, array) {
@@ -35,7 +36,8 @@ process.argv.forEach(function (val, index, array) {
             alias: 's',
             describe: 'File path of source data, following file types are supported:\n' +
                 'CSV: The first row defines columns, each next one represents one data row\n' +
-                'GeoJson: It must be a Feature Collection, where each Feature represents a data row',
+                'GeoJson: It must be a Feature Collection, where each Feature represents a data row' +
+                'Json: a generic regular json array',
             type: 'string',
             demand: false
         },
@@ -63,27 +65,26 @@ process.argv.forEach(function (val, index, array) {
             type: 'string',
             demand: false
         },
-        'mo': {
+        'oo': {
             alias: 'orionOutput',
             describe: 'Output file to printout Orion writing results. If not specified, it will be printed over the standard output',
             type: 'string',
             demand: false
         },
-
-        //   'oauthTok' : {
-        // alias: 'scipv:oauthTok',
-        // describe: 'OAuth token. It adds an authorizatin headers with the format "Authorization : Bearer <TOKEN>"',
-        // type: 'string'		   
-        //}, 
-        //   'wauthTok' : {
-        // alias: 'scipv:oauthTok',
-        // describe: 'Wilma token. It adds an authorizatin headers with the format "x-auth-token : <TOKEN>"',
-        // type: 'string'		   
-        //}, 
+        'oauthToken': {
+            alias: 'oauthToken',
+            describe: 'OAuth token. It adds an authorizatin headers with the format "Authorization : Bearer <TOKEN>"',
+            type: 'string'
+        },
+        'pauthToken': {
+            alias: 'pauthToken',
+            describe: 'PEP-Proxy Wilma token. It adds an authorizatin headers with the format "x-auth-token : <TOKEN>"',
+            type: 'string'
+        },
         'h': {
             alias: 'help',
             describe: 'Print the help message',
-            demand: false,
+            demand: false
         }
     }).add('file', { type: 'literal', store: config });
 });
@@ -119,7 +120,7 @@ const checkConf = () => {
     }
 
     var dataModel = nconf.get('targetDataModel');
-    if (!checkInputDataModel(config.modelSchemaFolder, dataModel)) {
+    if (!utils.checkInputDataModel(config.modelSchemaFolder, dataModel)) {
         log.error('Incorrect target Data Model name');
         return false;
     } else
@@ -147,15 +148,7 @@ const getParam = (par) => {
     return nconf.get(par);
 };
 
-function checkInputDataModel(folderPath, dataModel) {
 
-    var schemaFiles = require('fs').readdirSync(folderPath);
-    if (schemaFiles)
-        return schemaFiles.indexOf(dataModel + '.json') > -1;
-    else
-        return false;
-
-}
 
 module.exports = {
     help: help,

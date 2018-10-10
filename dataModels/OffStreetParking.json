@@ -22,20 +22,8 @@
 			"category": {
 				"type": "array",
 				"items": {
-					"type": "string",
-					"enum": [
-						"public", "private", "publicPrivate",
-						"urbanDeterrentParking", "parkingGarage", "parkingLot",
-						"shortTerm", "mediumTerm", "longTerm",
-						"free", "feeCharged",
-						"staffed", "guarded",
-						"barrierAccess", "gateAccess", "freeAccess",
-						"onlyResidents", "onlyWithPermit",
-						"forEmployees", "forVisitors", "forCustomers",
-						"forStudents", "forMembers", "forDisabled",
-						"forResidents", "forElectricalCharging",
-						"underground", "ground"
-					]
+					"type": "string"
+					
 				},
 				"minItems": 1,
 				"uniqueItems": true
@@ -70,20 +58,7 @@
 			"chargeType": {
 				"type": "array",
 				"items": {
-					"type": "string",
-					"enum": [
-						"flat",
-						"minimum",
-						"maximum",
-						"additionalIntervalPrice",
-						"seasonTicket",
-						"temporaryPrice",
-						"firstIntervalPrice",
-						"annualPayment",
-						"monthlyPayment",
-						"free",
-						"other"
-					]
+					"type": "string"
 				},
 				"minItems": 1,
 				"uniqueItems": true
@@ -91,17 +66,7 @@
 			"requiredPermit": {
 				"type": "array",
 				"items": {
-					"type": "string",
-					"enum": [
-						"employeePermit",
-						"studentPermit",
-						"fairPermit",
-						"governmentPermit",
-						"residentPermit",
-						"specificIdentifiedVehiclePermit",
-						"visitorPermit",
-						"noPermitNeeded"
-					]
+					"type": "string"
 				},
 				"minItems": 0,
 				"uniqueItems": true

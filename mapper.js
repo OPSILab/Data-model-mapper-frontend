@@ -26,7 +26,19 @@ process.env.SUPPRESS_NO_CONFIG_WARNING = 'y';
 if (config.mode === 'commandLine') {
     const cli = require('./src/cli/setup');
     return cli();
-//} else if (config.mode === 'server') {
-//    const s = require('./src/server/setup');
-//    return s();
+} else if (config.mode === 'server') {
+    const s = require('./src/server/setup');
+    return s();
 }
+
+
+module.exports = function (sourceDataIn, mapPathIn, dataModelIn) {
+    var module = {};
+    if (config.mode === 'commandLine') {
+        const cli = require('./src/cli/setup');
+        return cli(sourceDataIn, mapPathIn, dataModelIn);
+    } else if (config.mode === 'server') {
+        const s = require('./src/server/setup');
+        return s();
+    }
+};

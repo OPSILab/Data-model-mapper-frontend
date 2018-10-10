@@ -22,9 +22,7 @@ const rp = require('promise-request-retry');
 const config = require('../../config').orionWriter;
 const report = require('../utils/logger').orionReport;
 const log = require('../utils/logger').app;
-
-//var queue = new Queue(config., maxQueue);
-
+const proxyConf = config.enableProxy ? config.proxy : undefined;
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -48,7 +46,7 @@ function writeObjectPromise(objNumber, obj, modelSchema, updatePromises) {
             simple: false,
             resolveWithFullResponse: true,
             retry: config.maxRetry,
-            proxy: config.proxy
+            proxy: proxyConf
         };
 
         return rp(options).then(function (response) {
@@ -81,7 +79,7 @@ function writeObjectPromise(objNumber, obj, modelSchema, updatePromises) {
                         simple: false,
                         resolveWithFullResponse: true,
                         retry: config.maxRetry,
-                        proxy: config.proxy
+                        proxy: proxyConf
                     };
 
                     updatePromises.push(rp(updateOptions)

@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 const config = require('../../config');
-
+const path = require('path');
 const extensionPattern = /\.[0-9a-z]+$/i;
 const httpPattern = /http:\/\//g;
 const filenameFromPathPattern = /^(.:)?\\(.+\\)*(.+)\.(.+)$/;
@@ -61,7 +61,7 @@ function cleanPair(key, value) {
         var arrayValues = [];
         for (var i = 0; i < value.length; i++) {
             var elem = value[i];
-           
+
             arrayValues[i] = cleanPair(key, elem).value;
         }
         arrayResult.key = cleanString(key);
@@ -90,7 +90,7 @@ function cleanPair(key, value) {
         }
         else
             result.value = '';
-            
+
         return result;
     }
 }
@@ -136,9 +136,9 @@ function createSynchId(type, site, service, group, entityName, isIdPrefix, rowNu
 
     if (entityName) {
         if (isIdPrefix)
-            entityName = entityName.replace(/\s/g, "") + "-" + rowNumber;
+            entityName = ('' + entityName).replace(/\s/g, "") + "-" + rowNumber;
         else
-            entityName = entityName.replace(/\s/g, "");
+            entityName = ('' + entityName).replace(/\s/g, "");
     } else {
         entityName = extractFilenameFromPath(config.sourceDataPath.replace(/\s/g, "") + "-" + rowNumber);
     }
@@ -183,7 +183,7 @@ function printFinalReport(logger) {
     //        sleep(1000);
     //    }
     //}
-   
+
     logger.info('\n--------  MAPPING REPORT ----------\n' +
         '\t Processed objects: ' + process.env.rowNumber + '\n' +
         '\t Mapped and Validated Objects: ' + process.env.validCount + '/' + process.env.rowNumber + '\n' +
@@ -192,6 +192,31 @@ function printFinalReport(logger) {
 
 }
 
+function addAuthenticationHeader(headers) {
+    if (process.env.OAUTH_TOKEN) {
+        headers.Authorization = ('Bearer ' + process.env.OAUTH_TOKEN);
+    }
+    if (process.env.PAUTH_TOKEN) {
+        headers['x-auth-token'] = process.env.PAUTH_TOKEN;
+    }
+}
+
+function getDataModelPath(dataModelName) {
+    if (dataModelName && checkInputDataModel(config.modelSchemaFolder, dataModelName))
+        return path.join(config.modelSchemaFolder, dataModelName + '.json');
+    else
+        return undefined;
+}
+
+function checkInputDataModel(folderPath, dataModel) {
+
+    var schemaFiles = require('fs').readdirSync(folderPath);
+    if (schemaFiles)
+        return schemaFiles.indexOf(dataModel + '.json') > -1;
+    else
+        return false;
+
+}
 
 module.exports = {
     sleep: sleep,
@@ -204,5 +229,8 @@ module.exports = {
     httpPattern: httpPattern,
     parseFunction: parseFunction,
     printFinalReport: printFinalReport,
-    extractFilenameFromPath: extractFilenameFromPath
-}
+    extractFilenameFromPath: extractFilenameFromPath,
+    addAuthenticationHeader: addAuthenticationHeader,
+    getDataModelPath: getDataModelPath,
+    checkInputDataModel: checkInputDataModel
+};
