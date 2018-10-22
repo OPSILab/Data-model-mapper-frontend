@@ -21,7 +21,7 @@ const process = require('../utils/process');
 const config = require('../../config');
 
 const log = require('../utils/logger').app;
-
+const utils = require('../utils/utils');
 
 //const fs = require('fs');
 
@@ -44,14 +44,14 @@ module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
         var mapPath = mapPathIn || commandLine.getParam('mapPath');
         var dataModelPath = undefined;
 
-        if ((dataModelPath = getDataModelPath(dataModelIn)) !== undefined)
+        if ((dataModelPath = utils.getDataModelPath(dataModelIn)) !== undefined)
             ;
         else {
             dataModelPath = commandLine.getParam('targetDataModel');
         }
 
         const oauthToken = commandLine.getParam('oauthToken');
-        const wauthTok = commandLine.getParam('pauthToken');
+        const pauthToken = commandLine.getParam('pauthToken');
         if (oauthToken) {
             process.env.OAUTH_TOKEN = oauthToken;
         }
@@ -59,7 +59,7 @@ module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
             process.env.PAUTH_TOKEN = pauthToken;
         }
 
-        process.processSource(sourceData, mapPath, dataModelPath);
+        process.processSource(sourceData, "", mapPath, dataModelPath);
 
     }
 };

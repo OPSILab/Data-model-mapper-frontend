@@ -29,7 +29,7 @@ const report = require('./utils/logger').report;
 
 function loadMap(mapData) {
 
-    if (typeof mapData == 'object') {
+    if (typeof mapData !== 'object') {
         log.info('Loading Map File');
         return new Promise(function (resolve, reject) {
             var map = fs.readFileSync(filename, 'utf8');
@@ -374,6 +374,6 @@ function handleDottedField(fieldName) {
 }
 
 module.exports = {
-    loadMapFile: loadMapFile,
+    loadMap: loadMap,
     mapObjectToDataModel: mapObjectToDataModel
 };

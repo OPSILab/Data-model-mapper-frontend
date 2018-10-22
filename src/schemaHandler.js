@@ -63,7 +63,7 @@ const report = require('./utils/logger').report;
 
 
 
-function parseDataModelSchema(schemaPath) {
+async function parseDataModelSchema(schemaPath) {
 
     return RefParser.dereference(schemaPath).then((schema) => {
 

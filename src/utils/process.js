@@ -42,9 +42,9 @@ process.env.rowEnd = config.rowEnd;
 
 
 
-function async processSource(sourceData, sourceDataType, mapPath, dataModelSchemaPath) {
+async function processSource(sourceData, sourceDataType, mapData, dataModelSchemaPath) {
 
-    if (dataModelSchemaPath && mapPath) {
+    if (dataModelSchemaPath && mapData) {
 
         if (sourceData) {
 
@@ -63,11 +63,14 @@ function async processSource(sourceData, sourceDataType, mapPath, dataModelSchem
             }
 
             // Load Data Model Schema from url or local file
-            schemaHandler.parseDataModelSchema(dataModelSchemaPath).then((schema) => {
+            schemaHandler.parseDataModelSchema(dataModelSchemaPath).then(async (schema) => {
 
                 log.info('Data Model Schema loaded and dereferenced');
 
-                var map = await mapHandler.loadMapFile(mapPath).catch();
+                var map = await mapHandler.loadMap(mapData).catch((err) => {
+                    log.error('There was an error while loading Map');
+                    throw new Error(err);
+                });
                 
 
                 if (map) {
@@ -110,9 +113,6 @@ function async processSource(sourceData, sourceDataType, mapPath, dataModelSchem
     } else {
         log.error('Map path not specified');
     }
-
-
-
 
 }
 
