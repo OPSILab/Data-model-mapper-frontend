@@ -73,7 +73,7 @@ function parseDataModelSchema(schemaPath, callback) {
             // `schema` is just a normal JavaScript object that contains your entire JSON Schema,
             // including referenced files, combined into a single object
             //console.log(schema);
-            var rootProperties = schema.allOf.pop().properties;
+          var rootProperties = schema.allOf.pop().properties;
 
             for (var i = 0; i < schema.allOf.length; i++) {
                 var head = schema.allOf[i].properties;
