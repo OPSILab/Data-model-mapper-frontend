@@ -154,8 +154,8 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
                 parsedNorm = new Function("input", "return " + handleSourceFieldsToDestArray(norm));
 
             } else if (modelSchemaDestKey && (modelSchemaDestKey.type === 'number' || modelSchemaDestKey.type === 'integer')) {
-
-                var num = source[norm];
+                
+                var num = eval('source' + handleDottedField(norm));
                 if (typeof num === 'string')
                     parsedNorm = new Function("input", "return Number(input['" + norm + "']);");
                 else
@@ -163,7 +163,7 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
 
             }
             else if (modelSchemaDestKey && modelSchemaDestKey.type === 'string' && modelSchemaDestKey.format === 'date-time') {
-                var a = handleDottedField(norm);
+
                 var date = eval('source' + handleDottedField(norm));
                 if (date === null || date === '')
                     continue;
