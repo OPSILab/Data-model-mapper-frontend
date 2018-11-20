@@ -42,13 +42,14 @@ function writeObjectPromise(objNumber, obj, modelSchema, updatePromises) {
         var options = {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
-            uri: config.orionUrl + '/v2/entities',
+            uri: process.env.orionUrl + '/v2/entities',
             body: orionedObj,
             json: true,
             simple: false,
             resolveWithFullResponse: true,
             retry: config.maxRetry,
-            proxy: config.proxy
+            proxy: config.proxy,
+            rejectUnauthorized: false
         };
 
         return rp(options).then(function (response) {
@@ -75,13 +76,14 @@ function writeObjectPromise(objNumber, obj, modelSchema, updatePromises) {
                     var updateOptions = {
                         method: 'POST',
                         headers: { 'content-type': 'application/json' },
-                        uri: config.orionUrl + '/v2/entities/' + existingId + '/attrs',
+                        uri: env.process.orionUrl + '/v2/entities/' + existingId + '/attrs',
                         body: orionedObj,
                         json: true,
                         simple: false,
                         resolveWithFullResponse: true,
                         retry: config.maxRetry,
-                        proxy: config.proxy
+                        proxy: config.proxy,
+                        rejectUnauthorized: false
                     };
 
                     updatePromises.push(rp(updateOptions)
@@ -185,7 +187,7 @@ function writeObject(objNumber, obj, modelSchema, retryNum = 0) {
 
         request.post({
             headers: { 'content-type': 'application/json' },
-            url: config.orionUrl + '/v2/entities',
+            url: process.env.orionUrl + '/v2/entities',
             body: orionedObj,
             json: true
         }, function (error, response, body) {
@@ -207,7 +209,7 @@ function writeObject(objNumber, obj, modelSchema, retryNum = 0) {
                     delete orionedObj.type;
                     request.post({
                         headers: { 'content-type': 'application/json' },
-                        url: config.orionUrl + '/v2/entities/' + existingId + '/attrs',
+                        url: process.env.orionUrl + '/v2/entities/' + existingId + '/attrs',
                         body: orionedObj,
                         json: true
                     }, function (error, response, body) {

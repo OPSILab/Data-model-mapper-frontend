@@ -1,14 +1,21 @@
 # SynchroniCity Data Model Mapper
+# Table of Contents
+1. [Introduction](#introduction)
+2. [Installation](#installation)
+3. [Configuration](#configuration)
+4. [Mapping Guide](#mapping)
 
-## 1. Introduction
+--------------------
+--------------------
+# 1. Introduction
 
-This tool enables to convert several file types (e.g. CSV, Json, GeoJson) to the different Data Models defined in the [SynchroniCity Project](https://synchronicity-iot.eu/). Source files will contain rows, JSON objects or GeoJson Features, each of them representing an object to be mapped to an NGSI entity, according to a selected SynchroniCity Data Model.
+This tool enables to convert several file types (e.g. CSV, Json, GeoJson) to the different [Data Models](https://gitlab.com/synchronicity-iot/synchronicity-data-models) defined in the [SynchroniCity Project](https://synchronicity-iot.eu/). Source files will contain rows, JSON objects or GeoJson Features, each of them representing an object to be mapped to an NGSI entity, according to a selected SynchroniCity Data Model.
 
 In particular, it performs following steps:
 
-- Parse input file, by converting it into a row/object stream
-- Each data chunk coming from stream is converted to an intermediate object
-- By using the input JSON Map, convert the intermediate object to an entity, according to a specific target Data Model
+- Parse input file, by converting it into a row/object stream.
+- Each row/object coming from the stream is converted to an intermediate object.
+- By using the input JSON Map, convert the intermediate object to an entity, according to a specific target Data Model.
 - Validate resulting object against the JSON schema corresponding to a target Data Model. It leverages [AJV JSON Schema Validator](https://github.com/epoberezkin/ajv).
 - Produce a report file with validated and unvalidated objects.
 - Validated objects are sent to the configured [Orion Context Broker](https://fiware-orion.readthedocs.io/en/master/)
@@ -16,64 +23,70 @@ In particular, it performs following steps:
 The tool is developed in [Node.js](https://nodejs.org) and can be started as a command line tool. Soon it will be possible to start it as a REST server
 
 ---------------------
-
+--------------------
 ## 2. Installation
 
 ##### Prerequisites
 
-The tool requires NodeJS version >= 8.11 to be installed.
+The tool requires [NodeJS](https://nodejs.org/it/) version >= 8.11 to be installed.
 
 ##### Tool Installation
 
-Go to the root folder of the tool and type following command:
+Go to the root folder and type following command:
 
 ```
 npm install
 ```
 
-Start with:
+After configuring the tool correctly (conf file or cli arguments), start with:
 
 ```
 node mapper
 ```
 
---------------------
+If you selected the command line argument mode, append to the previous command the appropriate arguments, as described in the Configuration section. 
 
+--------------------
+--------------------
 ## 3. Configuration
 
-The tool configuration consists of the following parts:
+The tool configuration consists of the following steps:
+- **Application** (optional, left intact to use defaults)
+- **Input** (mandatory)
+- **ID Pattern** (mandatory)
+- **Row Range** (optional)
+- **Orion Writer** (mandatory)
+ 
+The tool takes its default configuration from the `config.js` file.  **Input**, **ID Pattern**, **Row Range** and **Orion Writer** configurations are overriden if the corresponding parameters are provided as Command Line arguments after the `node mapper` command.
 
-- Application
-- Input
-- ID Pattern
-- Orion Writer
-
-#### Application configuration
+--------------------
+#### 3.1 Application configuration
 
 The global setup is defined in the ``config.js`` file, fill and rename the ``config.template.js`` file to ``config.js``.
 
 The config file will have the following options:
 
-- ``env``: the execution environment. If set to production it creates logs in the corresponding files (**``/logs``** folder). Otherwise the logging messages are displayed in the console output.
-- ``logLevel``: logging level for [WINSTON](https://www.npmjs.com/package/winston). It sets the verbosity of the logging. Valid values are the followings:
-- ``error, warn, info, verbose, debug, silly``
-- ``writers``: An array containing the names of Specific Handlers where mapped NGSI entities will be written. Only **``orionWriter``** currently is accepted. Soon will be available more writers, such as a ``fileWriter`` (under development).
-
-#### Inputs configuration
+- **``env``**: the execution environment. If set to production it creates logs in the corresponding files (**``/logs``** folder). Otherwise the logging messages are displayed in the console output.
+- **``logLevel``**: logging level for [WINSTON](https://www.npmjs.com/package/winston). It sets the verbosity of the logging. Valid values are the followings:
+    - **``error, warn, info, verbose, debug, silly``**
+- **``writers``**: An array containing the names of Specific Handlers where mapped NGSI entities will be written. Only **``orionWriter``** currently is accepted. Soon will be available more writers, such as a ``fileWriter`` (under development).
+--------------------
+#### 3.2 Inputs configuration
 
 - In order to perform the mapping process, the tool takes **three** inputs:
-  1) The path of the source file containing data to be mapped (CSV, JSON or GeoJson).
-  2) The JSON Map, specifying the mapping between source fields and destrination fields.
+  1) The path of the **source file** containing data to be mapped (CSV, JSON or GeoJson).
+  2) The **JSON Map**, specifying the mapping between source fields and destrination fields.
    It consists of a JSON , where the key-value pairs represent the mapping for each row container in the source file.
-  3) The name of the target SynchroniCity Data Model.
+  3) The name of the **target SynchroniCity Data Model**.
 
-These three inputs, can be specified either in the already described **config.js** file or as command line arguments.
+These three inputs, can be specified either in the **`config.js`** file or as command line arguments.
 
 ###### Inputs configuration in config file
+In order to set inputs configuration as config file parameters, modify the following fields of the `config.js` file:
 
-- ``sourceDataPath`` : The path of source file. If it is a Windows path, it **MUST** be with double backslashes (e.g. **C:\\Users\\....**).
-- ``mapPath``: The path of JSON Map. See following section for creation instruction.
-- ``targetDataModel``: The name of target Data Model. In detail, the Data Model Schema inside **/dataModels** folder.
+- **``sourceDataPath``** : The path of source file. If it is a Windows path, it **MUST** be with double backslashes (e.g. **C:\\Users\\....**).
+- **``mapPath``**: The path of JSON Map, **MUST** be with .json extension. See following section for creation instructions.
+- **``targetDataModel``**: The name of target Data Model. In detail, the Data Model Schema inside **/dataModels** folder.
 
 ###### Inputs configuration as command line arguments
 
@@ -83,10 +96,22 @@ In order to use inputs configuration as command line arguments, when launching t
 - ``-m, --mapPath``
 - ``-d, --targetDataModel``
 
-#### Id Pattern configuration
+**Example:**
+```
+node mapper -s "path/to/sourcefile.csv" -m "path/to/mapFile.json -d "WeatherObserved"
+```
+**Note**. Previous Command Line arguments, if provided, will **override** the default ones specified in `config.js` file.
+
+--------------------
+
+#### 3.3 Id Pattern configuration
 
 Following configurations are relative to fields used to generate IDs of mapped entities, according to the SynchroniCity’s Entity ID Recommendation.
-For the moment, they can be specified only in the ``config.js`` file:
+They can be specified either in the **`config.js`** file or as command line arguments.
+
+###### Id Pattern  configuration in config file
+
+In order to set Id Pattern configuration as config file parameters, modify the following fields of the `config.js` file:
 
 - ``site``: can represent a RZ, City or area that includes several different IoT deployments, services or apps (e.g., Porto, Milano, Santander, Aarhus, Andorra …).
 - ``service``: represents a smart city service/application domain for example parking, garbage, environmental etc.
@@ -94,18 +119,42 @@ For the moment, they can be specified only in the ``config.js`` file:
 
 The Entity Name (last part of ID pattern), is generated either automatically or by specifying it in a dedicated field of the JSON Map, as described in the following sections.
 
-#### Row Range configurations
+###### Inputs configuration as command line arguments
 
-Following configuration are relative to the rows range (start, end) of the input file that will be mapped. It is useful when you want to map only a part of the input file, or, in case of huge files, when is **recommended** (in order to easily inspect the mapping and writing reports), to use a "paginated mapping", where consecutive and relatively small (2000/5000 rows) rows ranges are used.
+In order to use inputs configuration as command line arguments, when launching the tool with ``node mapper``, append following arguments:
+
+- ``--si, --site``
+- ``--se, --service``
+- ``--gr, --group``
+
+**Note**. Previous Command Line arguments, if provided, will **override** the default ones specified in `config.js` file.
+
+#### 3.4 Row Range configuration
+
+Following configuration are relative to the rows range (start, end) of the input file that will be mapped. It is useful when you want to map only a part of the input file, or, in case of huge files, when is **recommended** (in order to easily inspect the mapping and writing reports), to use a "paginated mapping", where consecutive and relatively small (2000/5000) rows ranges are used.
+They can be specified either in the **`config.js`** file or as command line arguments.
+
+###### Row Range  configuration in config file
+
+In order to set Row Range configuration as config file parameters, modify the following fields of the `config.js` file:
 
 - ``rowStart``: Row of the input file from which the mapper will start to map objects (Allowed values are integers >= 0).
-- ``rowEnd`` : Last Row of the input file that will be mapped (Allowed values are integers >0 or Infinity (it indicates until the end of file).
+- ``rowEnd`` : Last Row of the input file that will be mapped (Allowed values are integers > 0 or `Infinity` value, indicating "until the end of file").
 
-#### Orion Writer configuration
+###### Inputs configuration as command line arguments
 
-The Orion Writer will try to create an new entity, by sending a **POST** to ``/v2/entities`` endpoint of the provided Context Broker Url. In case of already existing entity, it tries to update it, by sending a POST to ``/v2/entities/{existingId}/attrs`` endpoint.
+In order to use Row Range configuration as command line arguments, when launching the tool with ``node mapper``, append following arguments:
 
-Orion configurations can be specified either in the config.js file or as command line arguments.
+- ``--rs, --rowStart``
+- ``--re, --rowEnd``
+
+
+**Note**. Previous Command Line arguments, if provided, will **override** the default ones specified in `config.js` file.
+#### 3.5 Orion Writer configuration
+
+The Orion Writer will try to create a new entity, by sending a **POST** to ``/v2/entities`` endpoint of the provided Context Broker Url. In case of already existing entity,  unless the `skipExisting` configuration parameter is set to `true`, it tries to update the entity, by sending a POST to ``/v2/entities/{existingId}/attrs`` endpoint.
+
+Orion configurations can be specified either in the config.js file or as command line arguments (currently only Url).
 
 ###### Orion configuration in configuration file
 
@@ -123,6 +172,8 @@ Followings enable to send entities to a secured Context Broker :
 In order to use Orion Writer configuration as command line arguments, when launching the tool with ``node mapper`` command, append following argument:
 
 - ``-u, --orionUrl``: The Base Url (without /v2…), of Orion Context Broker.
+
+**Note**. Previous Command Line arguments, if provided, will **override** the default ones specified in `config.js` file.
 
 --------------------
 
@@ -158,13 +209,13 @@ The source file must be CSV, Json or GeoJson and **MUST BE** in **UTF8** encodin
 
 ### 4.2 Mapping
 
-The tool needs the Mapping JSON, in order to know how to map each source field of the parsed row/object in the destination fields. The map MUST be a **well formed JSON**.
+The tool needs the Mapping JSON, in order to know how to map each source field of the parsed row/object in the destination fields. The map MUST be a **well formed JSON** and have `.json` extension.
 It will consist of a collection of **key-value pairs**, where:
 
 - **KEY** is the **DESTINATION** field, belonging to a target Data Model (e.g. address or totalSlotNumber for BikeHireDockingStation).
-  - If the **KEY** has the reserved name ***"entitySourceId"**, its corresponding
+  - If the **KEY** has the reserved name **`entitySourceId`**, its corresponding
   **VALUE** will represent the source field from which the **EntityName** part of ID
-  will be taken, according to SynchroniCity Entity ID Recommendation (See [Id Pattern Configuration](id-pattern-configuration) section).
+  will be taken, according to SynchroniCity Entity ID Recommendation (See [Id Pattern Configuration](#id-pattern-configuration) section).
 
 - **VALUE** is the **SOURCE** field, belonging to the source data (that is the parsed row/ object).
 
@@ -259,7 +310,7 @@ The resulting object will be:
 }
  ```
 
-Finally, as previously described, if we want to specify DIRECTLY a static custom value for a resulting mapped object, the string Value of a mapping pair will have the **"static:" prefix**.
+Finally, as previously described, if we want to specify DIRECTLY a static custom value for a resulting mapped object, the string Value of a mapping pair will have the **`static:` prefix**.
 The map will be:
 
 ```
@@ -280,7 +331,7 @@ The map will be:
 ```
 
 In this case we are concatenating, for target "**name**" field, two values:
-1) "Rastrelliere - " literally
+1) **"Rastrelliere - "** literally
 2) The value contained in the source field **"LOCALITÀ DI INTERVENTO"**
 
 ---------------------
@@ -288,7 +339,7 @@ In this case we are concatenating, for target "**name**" field, two values:
 ##### GeoJson Example
 
 We have an input **GeoJson** file, containing a Feature Collection and representing Bike Sharing stations.
-We want to map each Feature as an entity of the target Data Model **BikeHireDockingStation**
+We want to map each Feature as an entity of the target Data Model **BikeHireDockingStation**.
 
 For instance, for the feature:
 
@@ -351,10 +402,10 @@ The final resulting object will be:
 
 The ID will be composed by:
 
-- **urn:ngsi-ld**, statically added.
-- **entity-type**, target Data Model, as specified in **Inputs Configuration** step .
-- **site**, **service**, **group**, whose values was defined in **ID Pattern Configuration** step.
-- **entityName**: as specified either in the **entitySourceId** field of JSON Map or automatically generated.
+- **`urn:ngsi-ld`**, statically added.
+- **`entity-type`**, target Data Model, as specified in **Inputs Configuration** step .
+- **`site`**, **`service`**, **`group`**, whose values was defined in **ID Pattern Configuration** step.
+- **`entityName`**: as specified either in the **`entitySourceId`** field of JSON Map or automatically generated.
 
 ---------------
 

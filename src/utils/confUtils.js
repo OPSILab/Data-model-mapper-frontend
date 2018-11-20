@@ -45,12 +45,46 @@ process.argv.forEach(function (val, index, array) {
             type: 'string',
             demand: false
         },
+        'site': {
+            alias: 'si',
+            describe: 'Site part of SynchroniCity Entity Id pattern. It can represent a RZ, City or area that includes several different IoT deployments, services or apps (e.g., Porto, Milano, Santander, Aarhus, Andorra, etc)',
+            type: 'string',
+            demand: false
+        },
+        'service': {
+            alias: 'se',
+            describe: 'Service part of SynchroniCity Entity Id pattern. It can represent a represents a smart city service/application domain for example parking, garbage, environmental etc',
+            type: 'string',
+            demand: false
+        },
+        'group': {
+            alias: 'gr',
+            describe: 'Group part of SynchroniCity Entity Id pattern. IT can be used for grouping assets under the same service and/or provider (so it can be used to identify different IoT providers). It is responsibility of OS sites to maintain proper group keys',
+            type: 'string',
+            demand: false
+        },
+        'rowStart': {
+            alias: 'rs',
+            describe: 'Row of the input file from which the mapper will start to map objects (Allowed values are integers >= 0)',
+            type: 'string',
+            demand: false
+        },
+        'rowEnd': {
+            alias: 're',
+            describe: ' Last Row of the input file that will be mapped (Allowed values are integers >0 or Infinity (it indicates until the end of file)',
+            type: 'string',
+            demand: false
+        },
         'orionUrl': {
             alias: 'u',
             describe: 'URL of the context broker where mapped entities will be written',
             type: 'string',
             demand: false
         },
+        
+
+
+
         'f': {
             alias: 'outputFile',
             describe: 'Output file to printout mapped entities. If not specified, it will be printed over the standard output',
@@ -83,7 +117,7 @@ process.argv.forEach(function (val, index, array) {
         'h': {
             alias: 'help',
             describe: 'Print the help message',
-            demand: false,
+            demand: false
         }
     }).add('file', { type: 'literal', store: config });
 });
@@ -133,6 +167,8 @@ const checkConf = () => {
     } else {
         nconf.set('orionUrl', nconf.get('orionUrl') || config.orionWriter.orionUrl);
     }
+
+   
 
     return true;
 };

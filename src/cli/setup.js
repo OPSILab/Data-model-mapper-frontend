@@ -38,7 +38,9 @@ module.exports = () => {
         var sourcePath = commandLine.getParam('sourceDataPath');
         var mapPath = commandLine.getParam('mapPath');
         var dataModelPath = commandLine.getParam('targetDataModel');
-
+        global.process.env.orionUrl = commandLine.getParam('orionUrl');
+        global.process.env.rowStart = commandLine.getParam('rowStart');
+        global.process.env.rowEnd = commandLine.getParam('rowEnd');
         //const oauthTok = commandLine.getParam('oauthTok');
         //const wauthTok = commandLine.getParam('wauthTok');
         //if (oauthTok) {
