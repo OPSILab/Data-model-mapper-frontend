@@ -42,22 +42,20 @@ module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
         // file path or directly string/binary content 
         var sourceData = sourceDataIn || commandLine.getParam('sourceDataPath');
         var mapPath = mapPathIn || commandLine.getParam('mapPath');
-        var dataModelPath = undefined;
+        var dataModelPath = utils.getDataModelPath(dataModelIn) || commandLine.getParam('targetDataModel');
 
-        if ((dataModelPath = utils.getDataModelPath(dataModelIn)) !== undefined)
-            ;
-        else {
-            dataModelPath = commandLine.getParam('targetDataModel');
-        }
+        global.process.env.orionUrl = commandLine.getParam('orionUrl');
+        global.process.env.rowStart = commandLine.getParam('rowStart');
+        global.process.env.rowEnd = commandLine.getParam('rowEnd');
 
-        const oauthToken = commandLine.getParam('oauthToken');
-        const pauthToken = commandLine.getParam('pauthToken');
-        if (oauthToken) {
-            process.env.OAUTH_TOKEN = oauthToken;
-        }
-        if (pauthToken) {
-            process.env.PAUTH_TOKEN = pauthToken;
-        }
+        //const oauthToken = commandLine.getParam('oauthToken');
+        //const pauthToken = commandLine.getParam('pauthToken');
+        //if (oauthToken) {
+        //    process.env.OAUTH_TOKEN = oauthToken;
+        //}
+        //if (pauthToken) {
+        //    process.env.PAUTH_TOKEN = pauthToken;
+        //}
 
         process.processSource(sourceData, "", mapPath, dataModelPath);
 

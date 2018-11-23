@@ -19,53 +19,76 @@ const path = require('path');
 
 var config = {
 
-    env: 'debug',
-    mode: 'commandLine',
-    logLevel: 'debug',
-    modelSchemaFolder: path.join(__dirname, "dataModels"),
+    /********************** GLOBAL APPLICATION CONFIGURATION *****************
+    * Followings are related to global configurations of the application
+    **/
+    env: 'debug', // debug or production
+    mode: 'commandLine', // commandLine or server 
+    logLevel: 'debug', // error, warn, info, verbose, debug or silly
+    httpPort: 8081, // PORT where the application will listen if ran in server mode
+    modelSchemaFolder: path.join(__dirname, "dataModels"), // DO NOT TOUCH - Data Model schemas folder
 
-    // Following related to Mapping MANDATORY inputs (source, map, data model).
-	// Windows paths MUST use \\ path delimiters
+    /********************** 3 INPUTS CONFIGURATION ************************
+    * Followings are related to Mapping MANDATORY inputs (source, map, data model).
+    **/
 
-    sourceDataPath: "C:\\path\\to\\inputFile.csv",
-    mapPath: "C:\\path\\to\\mapFile.json",
-    targetDataModel: "PointOfInterest",
+    sourceDataPath: "C:\\path\\to\\inputFile.csv (Windows) or /path/to/inputFile.csv (Mac/Linux)",
+    mapPath: "C:\\path\\to\\map.json (Windows) or /path/to/map.json (Mac/Linux)",
+    targetDataModel: "Data Model name, according to the related Schema contained in the DataModels folder",
 
-    // Following is related to writers which will handle mapped objects. Possible values: fileWriter (soon), orionWriter
+    /************************** Rows/Objects proccesing range *************
+    * Following indicates the start and end row/object of the input file to be proccessed
+    * To indicate "until end", use Infinity in rowEnd
+    **/
+    rowStart: 0,
+    rowEnd: Infinity,
+
+    /********************** OUTPUT/WRITERS CONFIGURATION ****************** 
+    * Following is related to writers which will handle mapped objects. Possible values: fileWriter (soon), orionWriter
+    **/
     writers: ["orionWriter"],
 
-    // Following used for ID creation, following proposed Id pattern for Synchronicity NGSI Entities
+    /********************* OUTPUT ID PATTERN CONFIGURATION ****************
+    * Following used for id pattern creation
+    **/
+
     site: "SomeRZ",
     service: "SomeService",
     group: "CSV", // could be any value, CSV used to group all entities, for these site and service, coming from a CSV.
-	
+
+    /*********** DO NOT TOUCH ********************************************/ 
     // Following represents the reserved field name in the MAP file, whose value (string or string array ),
 	// will represent one or more fields from which the entityName part of the resulting ID will be taken
 	// It is recommended to not modify it :), just use in the map the default field "entitySourceId" as reserved for this purpose
 	
     entityNameField: "entitySourceId",
+																											 
+    // (SOON) If the entityNameField is not specified in the map, the following indicates the prefix of generated ID 
+    // it will be concatenated with the row / object number. If empty, that prefix will be the source filename
 	
-    // (SOON) If the entityNameField is not specified in the map, the following indicates the default prefix of generated ID 
-	// This will be concatenated with the row / object number. If empty, that prefix will be the source filename
-    entityDefaultPrefix: "ds", 
+    entityDefaultPrefix: "ds" // SOON
+	
+    /*********************************************************************/
 
-    // Misc configurations for row ranges
-    rowStart : 1000,
-    rowEnd : 5000
+				 
+  
+
 };
 
+/*************** ORION Context Broker CONFIGURATION **********************/
 config.orionWriter = {
 
-    orionUrl: "https://orionUrl",
+    orionUrl: "https://orionUrl", // The Context Broker endpoint (baseUrl) where mapped entities will be stored (/v2/entities POST)
     orionAuthHeaderName: "Authorization", // SOON
     orionAuthToken: "", // SOON
-    proxy: '', // SOON
-    skipExisting: true, // If false, try to updated existing entities
-    maxRetry: 3, // Max sends retry per entity
-    parallelRequests: 30 // Do not touch
+    enableProxy: false,
+    proxy: '', // insert in the form http://user:pwd@proxyHost:proxyPort
+    skipExisting: true, // Skip mapped entities (same ID) already existing in the CB, otherwise update them
+    maxRetry: 5, // Max retry number per entity POST, until the entity is skipped and marked as NOT WRITTEN
+    parallelRequests: 30 // DO NOT TOUCH - Internal configuration for concurrent request parallelization
 };
 
-// SOON
+// SOON						 
 config.fileWriter = {
     filePath: "./result.json"
 };

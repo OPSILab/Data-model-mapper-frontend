@@ -32,7 +32,7 @@ function loadMap(mapData) {
     if (typeof mapData !== 'object') {
         log.info('Loading Map File');
         return new Promise(function (resolve, reject) {
-            var map = fs.readFileSync(filename, 'utf8');
+            var map = fs.readFileSync(mapData, 'utf8');
             resolve (JSON.parse(map));
 
         });
@@ -206,7 +206,7 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
                 result[destKey] = singleResult[destKey];
 
             } else {
-                log.debug('Skipping source field: ' + JSON.stringify(mapSourceSubField) + ' because is not a valid value for mapped key: ' + destKey);
+                log.debug('Skipping source field: ' + JSON.stringify(mapSourceField) + ' because is not a valid value for mapped key: ' + destKey);
             }
         } else {
             log.info('The mapped key: ' + destKey + ' is not present in the selected Data Model Schema');

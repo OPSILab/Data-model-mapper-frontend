@@ -37,9 +37,8 @@ process.env.orionWrittenCount = 0;
 process.env.orionUnWrittenCount = 0;
 process.env.orionSkippedCount = 0;
 process.env.rowNumber = 0;
-process.env.rowStart = config.rowStart;
-process.env.rowEnd = config.rowEnd;
-
+process.env.rowStart = process.env.rowStart | config.rowStart;
+process.env.rowEnd = process.env.rowStart | config.rowEnd;
 
 
 async function processSource(sourceData, sourceDataType, mapData, dataModelSchemaPath) {
