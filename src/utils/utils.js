@@ -18,6 +18,8 @@
 
 const config = require('../../config');
 const path = require('path');
+const pathParse = require('parse-filepath');
+const isValidPath = require("is-valid-path");
 const extensionPattern = /\.[0-9a-z]+$/i;
 const httpPattern = /http:\/\//g;
 const filenameFromPathPattern = /^(.:)?\\(.+\\)*(.+)\.(.+)$/;
@@ -175,6 +177,11 @@ function extractFilenameFromPath(string) {
 
 }
 
+function parseFilePath(pathString) {
+
+    return pathParse(pathString);
+
+}
 // Utility function that prints the final report by using the input logger
 function printFinalReport(logger) {
 
@@ -232,5 +239,7 @@ module.exports = {
     extractFilenameFromPath: extractFilenameFromPath,
     addAuthenticationHeader: addAuthenticationHeader,
     getDataModelPath: getDataModelPath,
-    checkInputDataModel: checkInputDataModel
+    checkInputDataModel: checkInputDataModel,
+    parseFilePath: parseFilePath,
+    isValidPath: isValidPath
 };

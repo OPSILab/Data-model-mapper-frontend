@@ -37,11 +37,8 @@ var options = {
 
 function sourceDataPathToRowStream(sourceData, map, schema, rowHandler, mappedHandler) {
 
-
-    var extension = sourceData.match(utils.extensionPattern);
-
-    // The source Data is the source file path
-    if (sourceData && !extension || extension.length === 1) {
+    // The source Data is the file content itself
+    if (sourceData && !sourceData.ext) {
 
         try {
             fileToRowStream(Buffer.from(sourceData), map, schema, rowHandler, mappedHandler);
@@ -51,10 +48,10 @@ function sourceDataPathToRowStream(sourceData, map, schema, rowHandler, mappedHa
         }
 
     }
-    else if (utils.httpPattern.test(sourceData))
+    else if (utils.httpPattern.test(sourceData.path))
         urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler);
     else
-        fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler);
+        fileToRowStream(sourceData.absolute, map, schema, rowHandler, mappedHandler);
 }
 
 function urlToRowStream(data, map, schema, rowHandler, mappedHandler) {

@@ -27,7 +27,6 @@ const orionWriter = require("../writers/orionWriter");
 const fileWriter = require("../writers/fileWriter");
 const log = require('../utils/logger').app;
 const utils = require('../utils/utils.js');
-
 var config = require("../../config.js");
 process.env.hasFileWriter = false;
 
@@ -48,8 +47,10 @@ async function processSource(sourceData, sourceDataType, mapData, dataModelSchem
         if (sourceData) {
 
             if (typeof sourceData === 'string') {
-                var extension = sourceData.match(utils.extensionPattern);
-                if (!extension || extension.length !== 1) {
+
+                sourceData = utils.parseFilePath(sourceData);
+                var extension = sourceData.ext;
+                if (!extension) {
                     // No file path provided nor dataType
                     log.error('The provided url/file path does not have file extension');
                     return;
@@ -61,6 +62,9 @@ async function processSource(sourceData, sourceDataType, mapData, dataModelSchem
                 return;
             }
 
+            if (typeof mapData === 'string') {
+                mapData = utils.parseFilePath(mapData);
+            }
             // Load Data Model Schema from url or local file
             schemaHandler.parseDataModelSchema(dataModelSchemaPath).then(async (schema) => {
 
@@ -70,13 +74,13 @@ async function processSource(sourceData, sourceDataType, mapData, dataModelSchem
                     log.error('There was an error while loading Map');
                     throw new Error(err);
                 });
-                
+
 
                 if (map) {
                     log.info('Map loaded');
                     log.info('Starting to Map Source Object');
 
-                    switch (extension[0] || dataType) {
+                    switch (extension || sourceDataType) {
 
                         case '.csv':
                             csvParser.sourceDataPathToRowStream(sourceData, map, schema, processRow, processMappedObject);

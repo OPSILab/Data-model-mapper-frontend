@@ -3,9 +3,8 @@ const process = require('../utils/process');
 const log = require('../utils/logger').app;
 const config = require('../../config');
 const utils = require('../utils/utils');
+
 module.exports = () => {
-
-
 
     const http = require('http');
 

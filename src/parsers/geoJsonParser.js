@@ -24,12 +24,25 @@ const log = require('../utils/logger').app;
 const report = require('../utils/logger').report;
 
 
-function sourceDataPathToRowStream(path, map, schema, rowHandler, mappedHandler) {
+function sourceDataPathToRowStream(sourceData, map, schema, rowHandler, mappedHandler) {
 
-    if (utils.httpPattern.test(path))
-        urlToRowStream(path, map, schema, rowHandler, mappedHandler);
+    // The source Data is the file content itself
+    if (sourceData && !sourceData.ext) {
+
+        try {
+            fileToRowStream(Buffer.from(sourceData), map, schema, rowHandler, mappedHandler);
+        }
+        catch (err) {
+            log.error('There was an error while getting buffer from source data: ' + err);
+        }
+
+    }
+    else if (utils.httpPattern.test(sourceData))
+        urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler);
     else
-        fileToRowStream(path, map, schema, rowHandler, mappedHandler);
+        fileToRowStream(sourceData.absolute, map, schema, rowHandler, mappedHandler);
+
+
 }
 
 function urlToRowStream(url, map, schema, rowHandler, mappedHandler) {

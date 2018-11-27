@@ -29,19 +29,25 @@ const report = require('./utils/logger').report;
 
 function loadMap(mapData) {
 
-    if (typeof mapData !== 'object') {
-        log.info('Loading Map File');
-        return new Promise(function (resolve, reject) {
-            var map = fs.readFileSync(mapData, 'utf8');
-            resolve (JSON.parse(map));
+    if (typeof mapData === 'object') {
+        if (mapData.absolute) {
+            log.info('Loading Map File');
+            return new Promise(function (resolve, reject) {
+                var map = fs.readFileSync(mapData.absolute, 'utf8');
+                resolve(JSON.parse(map));
 
-        });
-          
+            });
+
+        } else {
+            return new Promise(function (resolve, reject) {
+                reject();
+            });
+        }
         //} catch (err) {
         //    log.error("Error while parsing Map File!: " + err);
         //    return undefined;
         //}
-    } else 
+    } else
         return new Promise(function (resolve, reject) {
             resolve(mapData);
         });
@@ -63,7 +69,7 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
         var mapSourceField = map[destKey];    // sourceField map object or key-value pair
         var singleResult = undefined;
 
-        
+
 
         //// If the map key has a . , it means that the source key is an object
         ////var dotPattern = /(.*)\.(.*)/g;
@@ -154,7 +160,7 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
                 parsedNorm = new Function("input", "return " + handleSourceFieldsToDestArray(norm));
 
             } else if (modelSchemaDestKey && (modelSchemaDestKey.type === 'number' || modelSchemaDestKey.type === 'integer')) {
-                
+
                 var num = eval('source' + handleDottedField(norm));
                 if (typeof num === 'string')
                     parsedNorm = new Function("input", "return Number(input['" + norm + "']);");
@@ -177,7 +183,7 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
 
             else if (destKey == entityIdField) {
 
-                if (Array.isArray(norm) && norm.length!==0) {
+                if (Array.isArray(norm) && norm.length !== 0) {
                     var resIdFields = handleSourceFieldsArray(norm);
                     parsedNorm = new Function("input", "return " + resIdFields.result);
                     isIdPrefix = resIdFields.isOnlyStatic;
@@ -342,7 +348,7 @@ function handleSourceFieldsToDestArray(sourceFieldArray) {
             resultString += '"' + value + '",';
         }
     });
-    
+
     resultString = resultString.slice(0, resultString.length - 1) + ']';
     return resultString;
 
@@ -370,7 +376,7 @@ function handleDottedField(fieldName) {
             return "['" + fieldName + "']";
         }
     }
-    
+
 }
 
 module.exports = {

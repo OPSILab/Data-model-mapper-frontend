@@ -144,7 +144,17 @@ const checkConf = () => {
         log.error('You need to specify the source file path');
         return false;
     }
-    if (sourcePath && !sourcePath.match(pathPattern)) {
+    //if (sourcePath && !sourcePath.match(pathPattern)) {
+    if (sourcePath && utils.isValidPath(sourcePath)) {
+        try {
+            sourcePath = path.normalize(sourcePath);
+        } catch (error) {
+            log.error("There was an error while normalizing Source Path: " + error);
+            return false;
+        }
+
+    } else {
+
         log.error('Incorrect source file path');
         return false;
     }
