@@ -22,12 +22,12 @@ const mapHandler = require('../mapHandler.js');
 const csvParser = require("../parsers/csvParser.js");
 const geoParser = require("../parsers/geoJsonParser.js");
 const jsonParser = require("../parsers/jsonParser.js");
-
 const orionWriter = require("../writers/orionWriter");
 const fileWriter = require("../writers/fileWriter");
 const log = require('../utils/logger').app;
 const utils = require('../utils/utils.js');
-var config = require("../../config.js");
+const config = require("../../config.js");
+
 process.env.hasFileWriter = false;
 
 process.env.validCount = 0;
@@ -35,10 +35,13 @@ process.env.unvalidCount = 0;
 process.env.orionWrittenCount = 0;
 process.env.orionUnWrittenCount = 0;
 process.env.orionSkippedCount = 0;
+process.env.fileWrittenCount = 0;
+process.env.fileUnWrittenCount = 0;
 process.env.rowNumber = 0;
 process.env.rowStart = process.env.rowStart | config.rowStart;
 process.env.rowEnd = process.env.rowStart | config.rowEnd;
 
+var promises = [];
 
 async function processSource(sourceData, sourceDataType, mapData, dataModelSchemaPath) {
 
@@ -83,13 +86,13 @@ async function processSource(sourceData, sourceDataType, mapData, dataModelSchem
                     switch (extension || sourceDataType) {
 
                         case '.csv':
-                            csvParser.sourceDataPathToRowStream(sourceData, map, schema, processRow, processMappedObject);
+                            csvParser.sourceDataPathToRowStream(sourceData, map, schema, processRow, processMappedObject, finalizeProcess);
                             break;
                         case '.json':
-                            jsonParser.sourceDataPathToRowStream(sourceData, map, schema, processRow, processMappedObject);
+                            jsonParser.sourceDataPathToRowStream(sourceData, map, schema, processRow, processMappedObject, finalizeProcess);
                             break;
                         case '.geojson':
-                            geoParser.sourceDataPathToRowStream(sourceData, map, schema, processRow, processMappedObject);
+                            geoParser.sourceDataPathToRowStream(sourceData, map, schema, processRow, processMappedObject, finalizeProcess);
                             break;
                         default:
                             break;
@@ -129,45 +132,40 @@ function processRow(rowNumber, row, map, schema, mappedHandler) {
 
 }
 
-async function processMappedObject(objNumber, obj, modelSchema) {
+const processMappedObject = async (objNumber, obj, modelSchema) => {
 
-    var promise = undefined;
-    var updatePromise = undefined;
-
-    config.writers.forEach((writers) => {
-        switch (writers) {
+    config.writers.forEach((writer) => {
+        switch (writer) {
 
             case 'orionWriter':
-                promise = orionWriter.writeObjectPromise(objNumber, obj, modelSchema, updatePromise);
+                promises.push(orionWriter.writeObjectPromise(objNumber, obj, modelSchema));
                 break;
-            //case 'fileWriter':
-            //    fileWriter.writeObject(objNumber, obj, modelSchema);
-            //    process.env.hasFileWriter = true;
-            //    break;
+            case 'fileWriter':
+                promises.push(fileWriter.writeObject(objNumber, obj, config.fileWriter.addBlankLine));
+                break;
             default:
-                promise = utils.sleep(0);
+                promises.push(utils.sleep(0));
                 break;
         }
     });
+};
 
-    // Wait until all promises (defined and pushed in processMappedObject handler)
-    await promise;
-    await updatePromise;
-    orionWriter.checkAndPrintFinalReport();
+const finalizeProcess = async () => {
+    await Promise.all(promises);
 
+    // Wait until all promises resolve (defined and pushed in processMappedObject handler)
+    if (utils.isFileWriterActive()) {
+        await fileWriter.finalize(); // Finalize file in case of using fileWriter
+        fileWriter.checkAndPrintFinalReport();
+    }
 
-}
-
-function finalizeProcess() {
-    console.log('SONO IN FINALIZE');
-    //// Finalize file in case of using fileWriter
-    if (process.env.hasFileWriter == 'true')
-        fileWriter.finalize();
-
-}
+    if (utils.isOrionWriterActive()) {
+        orionWriter.checkAndPrintFinalReport();
+    }
+    return Promise.resolve();
+};
 
 
 module.exports = {
-    processSource: processSource,
-    finalizeProcess: finalizeProcess
+    processSource: processSource
 };

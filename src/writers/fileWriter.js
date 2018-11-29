@@ -18,119 +18,96 @@
 
 var fs = require('fs');
 const log = require('../utils/logger').app;
-const config = require('../../config');
+const utils = require('../utils/utils');
+const config = require('../../config').fileWriter;
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function writeObject(objNumber, obj, modelSchema) {
-
-    if (obj && config.fileWriter.filePath) {
-        log.debug('Writing to file, object number: ' + objNumber + ' , id: ' + obj.id);
+var outFileStream = undefined;
+var isFirstObject = true;
 
 
-        // var orionedObj = toOrionObject(obj, modelSchema);
 
-        if (fs.existsSync(config.fileWriter.filePath)) {
+const writeObject = async (objNumber, obj, addBRLine) => {
 
+    /** Initialize File Stream and its first content ***/
+    if (utils.isFileWriterActive && !outFileStream) {
+
+        outFileStream = fs.createWriteStream(process.env.outFilePath || utils.parseFilePath(config.filePath).absolute);
+        outFileStream.write("[");
+
+    }
+
+    if (obj && process.env.outFilePath && outFileStream) {
+
+        return new Promise((resolve, reject) => {
+
+            log.debug('Writing to file, object number: ' + objNumber + ' , id: ' + obj.id);
             try {
-                fs.appendFileSync(config.fileWriter.filePath, ',\n' + JSON.stringify(obj));
-                log.debug('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly written to file');
+
+                outFileStream.on('error', (error) => reject("There was an error while writing object to File Stream: " + error));
+                //outFileStream.on('data', () => resolve("'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly written to file"));
+
+                // Write the object
+                if (!isFirstObject)
+                    outFileStream.write(",");
+
+                outFileStream.write(JSON.stringify(obj));
+                isFirstObject = false;
+                process.env.fileWrittenCount++;
+
+                // Add a blank return line if enabled
+                if (addBRLine)
+                    outFileStream.write("\n");
+
+                log.debug("'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly written to file");
+                return resolve();
             } catch (err) {
+                process.env.fileUnWrittenCount++;
                 log.debug('Error while writing mapped object to file');
                 log.debug('----------------------------------------------------------\n' +
                     'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT written to file');
+                return reject(err);
             }
-
-        } else {
-            fs.writeFileSync(config.fileWriter.filePath, "[" + JSON.stringify(obj));
-        }
-
+        });
     } else {
-        log.debug("Mapped Object is undefined!, nothing to write to file");
+
+        return new Promise((resolve, reject) => {
+            console.log('');
+            log.debug("Mapped Object is undefined or the FileWriter was not correctly configured")
+            return resolve();
+        });
+    }
+};
+
+const finalizeFile = async () => {
+
+    return new Promise((resolve, reject) => {
+
+        outFileStream.write("]");
+        outFileStream.on('end', () => resolve("File stream correctly closed"));
+        outFileStream.on('error', () => reject("File stream failed to close"));
+        outFileStream.end();
+        return resolve()
+    }).then(value => log.debug(value)).catch(value => log.error(value));
+};
+
+const printFileFinalReport = (logger) => {
+
+    logger.info('\t\n--------FILE WRITER REPORT----------\n' +
+        '\t Object written to File: ' + process.env.fileWrittenCount + '/' + process.env.validCount + '\n' +
+        '\t Object NOT written to File: ' + process.env.fileUnWrittenCount + '/' + process.env.validCount + '\n' +
+        '\t-----------------------------------------');
+
+};
+
+/// Use Events?
+function checkAndPrintFinalReport() {
+    if (parseInt(process.env.fileWrittenCount) + parseInt(process.env.fileUnWrittenCount) == parseInt(process.env.validCount)) {
+        printFileFinalReport(log);
     }
 }
-
-function finalizeFile() {
-    if (fs.existsSync(config.fileWriter.filePath))
-        fs.appendFileSync(config.fileWriter.filePath, "]");
-}
-
-function toOrionObject(obj, schema) {
-
-    log.debug("Transforming Mapped object to an Orion Entity (explicit types in attributes)");
-
-    for (key in obj) {
-        if (key != 'id' && key != 'type') {
-
-            var modelField = schema.allOf[0].properties[key];
-            var modelFieldType = modelField.type;
-            var modelFieldFormat = modelField.format;
-            var objField = obj[key];
-
-            if (key == 'location') {
-
-                var newValue = {};
-                newValue = {
-                    type: "geo:json",
-                    value: objField
-                };
-                obj['location'] = newValue;
-
-            } else if (modelFieldType === 'object') {
-
-                //var nestedValue = {};
-                //for (fieldKey in objField) {
-
-                //    var modelSubField = modelField.properties[fieldKey];
-                //    var modelSubFieldType = modelSubField.type;
-                //    var modelSubFieldFormat = modelSubField.format;
-
-                //    if (modelSubFieldFormat)
-                //        nestedValue[fieldKey] = {
-                //            value: objField[fieldkey],
-                //            type: modelSubFieldType,
-                //            format: modelSubFieldFormat
-                //        }
-                //    else
-                //        nestedValue[fieldKey] = {
-                //            value: objField[fieldKey],
-                //            type: modelSubFieldType
-                //        }
-
-                //    delete objField[fieldKey];
-                //}
-
-                var nestedObject = objField;
-                delete objField;
-                obj[key] = {
-                    type: modelFieldType,
-                    value: nestedObject
-                }
-
-            } else {
-
-                if (modelFieldFormat)
-                    obj[key] = {
-                        type: modelFieldType,
-                        value: objField,
-                        format: modelFieldFormat
-                    }
-                else
-                    obj[key] = {
-                        type: modelFieldType,
-                        value: objField
-                    }
-            }
-        }
-    }
-
-    return obj;
-}
-
 
 module.exports = {
     writeObject: writeObject,
-    finalize: finalizeFile
+    finalize: finalizeFile,
+    checkAndPrintFinalReport: checkAndPrintFinalReport
 }

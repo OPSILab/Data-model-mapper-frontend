@@ -83,9 +83,9 @@ process.argv.forEach(function (val, index, array) {
             type: 'string',
             demand: false
         },
-        'f': {
-            alias: 'outputFile',
-            describe: 'Output file to printout mapped entities. If not specified, it will be printed over the standard output',
+        'outFilePath': {
+            alias: 'f',
+            describe: 'Output file path to printout mapped entities',
             type: 'string',
             demand: false
         },
@@ -173,6 +173,13 @@ const checkConf = () => {
         return false;
     } else {
         nconf.set('orionUrl', nconf.get('orionUrl') || config.orionWriter.orionUrl);
+    }
+
+    if (!nconf.get('outFilePath') && !config.fileWriter.filePath) {
+        log.error('You need to specify the remote URL of Orion Context Broker');
+        return false;
+    } else {
+        nconf.set('outFilePath', nconf.get('outFilePath') || config.fileWriter.filePath);
     }
 
     return true;

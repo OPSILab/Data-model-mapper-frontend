@@ -29,13 +29,12 @@ function sleep(ms) {
 }
 
 
-function writeObjectPromise(objNumber, obj, modelSchema, updatePromises) {
+const writeObjectPromise = async (objNumber, obj, modelSchema) => {
 
     if (obj) {
         log.debug('Sending to Orion object number: ' + objNumber + ' , id: ' + obj.id);
 
         var orionedObj = toOrionObject(obj, modelSchema);
-        //sleep(10);
 
         var options = {
             method: 'POST',
@@ -50,20 +49,20 @@ function writeObjectPromise(objNumber, obj, modelSchema, updatePromises) {
             rejectUnauthorized: false
         };
 
-        return rp(options).then(function (response) {
-
+        try {
+            // Wait for Create Response
+            var createResponse = await rp(options);
 
             // Entity is new
-            if (response && response.statusCode == 201) {
+            if (createResponse.statusCode == 201) {
 
                 report.info('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly CREATED in the Context Broker');
                 log.debug('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly CREATED in the Context Broker');
-                process.env.orionWrittenCount++;
-                //checkAndPrintFinalReport();
+                return Promise.resolve(process.env.orionWrittenCount++);
 
-            } else if (response && response.statusCode == 422 && response.body && response.body.description == 'Already Exists') {
+            } else if (createResponse.statusCode == 422 && createResponse.body && createResponse.body.description == 'Already Exists') {
 
-                // UPDATE EXISTING ENTITIES
+                // Update existing entity
                 if (!config.skipExisting) {
 
                     // If entity already exists, try to update it
@@ -71,58 +70,47 @@ function writeObjectPromise(objNumber, obj, modelSchema, updatePromises) {
                     delete orionedObj.id;
                     delete orionedObj.type;
 
-                    var updateOptions = {
-                        method: 'POST',
-                        headers: { 'content-type': 'application/json' },
-                        uri: env.process.orionUrl + '/v2/entities/' + existingId + '/attrs',
-                        body: orionedObj,
-                        json: true,
-                        simple: false,
-                        resolveWithFullResponse: true,
-                        retry: config.maxRetry,
-                        proxy: proxyConf,
-                        rejectUnauthorized: false
-                    };
+                    // Replace request URI with the one for updating entities attribute
+                    options.uri = env.process.orionUrl + '/v2/entities/' + existingId + '/attrs';
 
-                    updatePromises.push(rp(updateOptions)
-                        .then(function (response) {
+                    try {
+                        // Wait for update response
+                        var updateResponse = await rp(updateOptions);
 
-                            if (response && response.statusCode == 204) {
+                        if (updateResponse.statusCode == 204) {
 
-                                report.info('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
-                                log.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
-                                process.env.orionWrittenCount++;
-                                //checkAndPrintFinalReport();
-                            } else {
-                                throw new Error('Update Error');
-                            }
+                            report.info('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
+                            log.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
+                            return Promise.resolve(process.env.orionWrittenCount++);
+                           
+                        } else {
+                            throw new Error('Update Error');
+                        }
 
-                        }).catch((error) => {
+                    } catch (error) {
 
-                            report.info('----------------------------------------------------------\n' +
-                                'Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
-                            log.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
+                        report.info('----------------------------------------------------------\n' +
+                            'Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
+                        log.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
 
-                            report.info('error: ' + error); // Print the error if one occurred
-                            log.debug('error: ' + error);
+                        report.info('error: ' + error); // Print the error if one occurred
+                        log.debug('error: ' + error);
 
-                            if (error)
-                                report.info('statusCode: ' + error.statusCode); // Print the response status code if a response was received
-                            report.info('body: ' + JSON.stringify(error));
-                            report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-                            log.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-                            process.env.orionUnWrittenCount++;
-                            //checkAndPrintFinalReport();
+                        if (error)
+                            report.info('statusCode: ' + error.statusCode); // Print the response status code if a response was received
+                        report.info('body: ' + JSON.stringify(error));
+                        report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
+                        log.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
+                        Promise.reject(error);
 
-                        }));
+                    }
 
                 } else {
 
-                    // SKIP EXISTING ENTITIES
+                    // Skip existing entity
                     report.info('Entity Number: ' + objNumber + ' with Id: ' + orionedObj.id + ' SKIPPED');
                     log.debug('Entity Number: ' + objNumber + ' with Id: ' + orionedObj.id + ' SKIPPED');
-                    process.env.orionSkippedCount++;
-                    //checkAndPrintFinalReport();
+                    Promise.resolve(process.env.orionSkippedCount++);
 
                 }
 
@@ -130,7 +118,7 @@ function writeObjectPromise(objNumber, obj, modelSchema, updatePromises) {
                 throw new Error('Undefined state: ' + JSON.stringify(response) + '\n');
             }
 
-        }).catch((error) => {
+        } catch (error) {
 
             report.info('----------------------------------------------------------\n' +
                 'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT CREATED in the Context Broker');
@@ -145,20 +133,15 @@ function writeObjectPromise(objNumber, obj, modelSchema, updatePromises) {
             report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
             log.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
             process.env.orionUnWrittenCount++;
-            //checkAndPrintFinalReport();
+            return Promise.reject(error);
 
-        });
-
-
+        }
 
     } else
         return new Promise((resolve, reject) => {
-            console.log('');
             log.debug("Mapped Object is undefined!, nothing to send to Orion Context Broker")
             resolve();
         });
-
-
 
 }
 
@@ -389,6 +372,7 @@ function printOrionFinalReport(logger) {
 
 }
 
+/// Use Events?
 function checkAndPrintFinalReport() {
     if ((parseInt(process.env.orionWrittenCount) + parseInt(process.env.orionSkippedCount) + parseInt(process.env.orionUnWrittenCount)) == parseInt(process.env.validCount)) {
         printOrionFinalReport(log);

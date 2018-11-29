@@ -23,7 +23,6 @@ const utils = require('../utils/utils.js');
 const log = require('../utils/logger').app;
 const report = require('../utils/logger').report;
 
-
 // All of these arguments are optional.
 var options = {
     delimiter: ';', // default is ,
@@ -35,13 +34,13 @@ var options = {
 };
 
 
-function sourceDataPathToRowStream(sourceData, map, schema, rowHandler, mappedHandler) {
+function sourceDataPathToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
     // The source Data is the file content itself
     if (sourceData && !sourceData.ext) {
 
         try {
-            fileToRowStream(Buffer.from(sourceData), map, schema, rowHandler, mappedHandler);
+            fileToRowStream(Buffer.from(sourceData), map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
             log.error('There was an error while getting buffer from source data: ' + err);
@@ -49,12 +48,12 @@ function sourceDataPathToRowStream(sourceData, map, schema, rowHandler, mappedHa
 
     }
     else if (utils.httpPattern.test(sourceData.path))
-        urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler);
+        urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
     else
-        fileToRowStream(sourceData.absolute, map, schema, rowHandler, mappedHandler);
+        fileToRowStream(sourceData.absolute, map, schema, rowHandler, mappedHandler, finalizeProcess);
 }
 
-function urlToRowStream(data, map, schema, rowHandler, mappedHandler) {
+function urlToRowStream(data, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
     var csvStream = csv.createStream(options);
     var rowNumber = Number(process.env.rowNumber);
@@ -85,16 +84,15 @@ function urlToRowStream(data, map, schema, rowHandler, mappedHandler) {
         })
         .on('end', function () {
 
+            finalizeProcess();
             utils.printFinalReport(log);
             utils.printFinalReport(report);
-            //if (process.env.hasFileWriter == 'true')
-            //    fileWriter.finalize();
-
+            
         });
 }
 
 
-function fileToRowStream(filename, map, schema, rowHandler, mappedHandler) {
+function fileToRowStream(filename, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
     var csvStream = csv.createStream(options);
     var rowNumber = Number(process.env.rowNumber);
@@ -125,10 +123,9 @@ function fileToRowStream(filename, map, schema, rowHandler, mappedHandler) {
         })
         .on('end', function () {
 
+            finalizeProcess();
             utils.printFinalReport(log);
             utils.printFinalReport(report);
-            //if (process.env.hasFileWriter == 'true')
-            //    fileWriter.finalize();
 
         });
 

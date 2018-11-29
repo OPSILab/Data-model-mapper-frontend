@@ -84,21 +84,6 @@ const orionReportTransportErr = new (winston.transports.DailyRotateFile)({
     zippedArchive: true
 });
 
-//logger = winston.createLogger({  
-//  level: process.env.LOG,
-//  format: combine(
-//    label({ label: __filename.replace(/^.*[\\\/]/, '') }),
-//    timestamp(),
-//    myFormat
-//  ),
-//  transports: [
-//    transportErr,
-//    transport    
-//  ],
-//});
-
-
-
 //
 // Configure the logger for log
 //

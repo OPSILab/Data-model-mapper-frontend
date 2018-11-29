@@ -29,16 +29,16 @@ function sleep(ms) {
 }
 
 
-function cleanString(string) {
+const cleanString = (string) => {
     var result = '';
     if (typeof string === 'string')
         result = string.replace(/\n|'|<|>|"|'|=|;|\(|\)/g, ' ');
 
     return result;
 
-}
+};
 
-function cleanIdString(string) {
+const cleanIdString = (string) => {
     var result = '';
     if (typeof string === 'string')
         result = string.replace(/\n|'|<|>|"|'|=|;|\(|\)/g, ' ')
@@ -48,14 +48,14 @@ function cleanIdString(string) {
             .replace(/ò/g, 'o');
 
     return result;
-}
+};
 
 
-function cleanNumber(number) {
+const cleanNumber = (number) => {
     return number;
-}
+};
 
-function cleanPair(key, value) {
+const cleanPair = (key, value) => {
 
 
     if (value instanceof Array) {
@@ -95,9 +95,9 @@ function cleanPair(key, value) {
 
         return result;
     }
-}
+};
 
-function cleanRow(row) {
+const cleanRow = (row) => {
 
     var result = {};
 
@@ -108,9 +108,9 @@ function cleanRow(row) {
     });
 
     return result;
-}
+};
 
-function uuid() {
+const uuid = () => {
     var uuid = "", i, random;
     for (i = 0; i < 32; i++) {
         random = Math.random() * 16 | 0;
@@ -121,7 +121,7 @@ function uuid() {
         uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
     }
     return uuid;
-}
+};
 
 
 /** Create Final SynchroniCity id, according to defined Id Pattern
@@ -134,7 +134,7 @@ function uuid() {
  * 
  * 
  **/
-function createSynchId(type, site, service, group, entityName, isIdPrefix, rowNumber) {
+const createSynchId = (type, site, service, group, entityName, isIdPrefix, rowNumber) => {
 
     if (entityName) {
         if (isIdPrefix)
@@ -147,10 +147,10 @@ function createSynchId(type, site, service, group, entityName, isIdPrefix, rowNu
 
     // Group field is optional
     return "urn:ngsi-ld:" + type + ":" + site + ":" + service + (group ? (":" + group) : "") + ":" + cleanIdString(entityName);
-}
+};
 
 
-function parseFunction(str) {
+const parseFunction = (str) => {
     var fn_body_idx = str.indexOf('{'),
         fn_body = str.substring(fn_body_idx + 1, str.lastIndexOf('}')),
         fn_declare = str.substring(0, fn_body_idx),
@@ -165,9 +165,9 @@ function parseFunction(str) {
     Fn.prototype = Function.prototype;
 
     return new Fn();
-}
+};
 
-function extractFilenameFromPath(string) {
+const extractFilenameFromPath = (string) => {
 
     var match = string.match(filenameFromPathPattern);
     if (match && match.length > 2)
@@ -175,47 +175,40 @@ function extractFilenameFromPath(string) {
     else
         return string;
 
-}
+};
 
-function parseFilePath(pathString) {
+const parseFilePath = (pathString) => {
 
     return pathParse(pathString);
 
-}
+};
 // Utility function that prints the final report by using the input logger
-function printFinalReport(logger) {
-
-    //if (config.writers.includes('orionWriter')){
-    //    while ((process.env.orionWrittenCount + process.env.orionSkippedCount) < process.env.validCount) {
-    //        sleep(1000);
-    //    }
-    //}
+const printFinalReport = (logger) => {
 
     logger.info('\n--------  MAPPING REPORT ----------\n' +
         '\t Processed objects: ' + process.env.rowNumber + '\n' +
         '\t Mapped and Validated Objects: ' + process.env.validCount + '/' + process.env.rowNumber + '\n' +
         '\t Mapped and NOT Validated Objects: ' + process.env.unvalidCount + '/' + process.env.rowNumber + '\n' +
         '-----------------------------------------');
+};
 
-}
-
-function addAuthenticationHeader(headers) {
+const addAuthenticationHeader = (headers) => {
     if (process.env.OAUTH_TOKEN) {
         headers.Authorization = ('Bearer ' + process.env.OAUTH_TOKEN);
     }
     if (process.env.PAUTH_TOKEN) {
         headers['x-auth-token'] = process.env.PAUTH_TOKEN;
     }
-}
+};
 
-function getDataModelPath(dataModelName) {
+const getDataModelPath = (dataModelName) => {
     if (dataModelName && checkInputDataModel(config.modelSchemaFolder, dataModelName))
         return path.join(config.modelSchemaFolder, dataModelName + '.json');
     else
         return undefined;
-}
+};
 
-function checkInputDataModel(folderPath, dataModel) {
+const checkInputDataModel = (folderPath, dataModel) => {
 
     var schemaFiles = require('fs').readdirSync(folderPath);
     if (schemaFiles)
@@ -223,7 +216,29 @@ function checkInputDataModel(folderPath, dataModel) {
     else
         return false;
 
-}
+};
+
+const getActiveWriters = () => {
+
+    return config.writers;
+};
+
+const isFileWriterActive = () => {
+
+    return config.writers.includes('fileWriter');
+};
+
+const isOrionWriterActive = () => {
+
+    return config.writers.includes('orionWriter');
+};
+
+const isWriterActive = (writerName) => {
+
+    return config.writers.includes(writerName);
+};
+
+
 
 module.exports = {
     sleep: sleep,
@@ -241,5 +256,9 @@ module.exports = {
     getDataModelPath: getDataModelPath,
     checkInputDataModel: checkInputDataModel,
     parseFilePath: parseFilePath,
-    isValidPath: isValidPath
+    isValidPath: isValidPath,
+    getActiveWriters: getActiveWriters,
+    isFileWriterActive: isFileWriterActive,
+    isOrionWriterActive: isOrionWriterActive,
+    isWriterActive: isWriterActive
 };

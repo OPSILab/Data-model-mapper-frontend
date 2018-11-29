@@ -45,9 +45,10 @@ module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
         var dataModelPath = utils.getDataModelPath(dataModelIn) || commandLine.getParam('targetDataModel');
 
         global.process.env.orionUrl = commandLine.getParam('orionUrl');
+        global.process.env.outFilePath = commandLine.getParam('outFilePath');
         global.process.env.rowStart = commandLine.getParam('rowStart');
         global.process.env.rowEnd = commandLine.getParam('rowEnd');
-
+    
         //const oauthToken = commandLine.getParam('oauthToken');
         //const pauthToken = commandLine.getParam('pauthToken');
         //if (oauthToken) {
@@ -58,7 +59,7 @@ module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
         //}
 
         process.processSource(sourceData, "", mapPath, dataModelPath);
-
+     
     }
 };
 

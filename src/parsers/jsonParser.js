@@ -19,18 +19,18 @@
 var JSONStream = require('JSONStream');
 const request = require('request');
 const fs = require('fs');
-const utils = require('../utils/utils.js');
+const utils = require('../utils/utils');
 const log = require('../utils/logger').app;
 const report = require('../utils/logger').report;
 
 
-function sourceDataPathToRowStream(sourceData, map, schema, rowHandler, mappedHandler) {
+function sourceDataPathToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
     // The source Data is the file content itself
     if (sourceData && !sourceData.ext) {
 
         try {
-            fileToRowStream(Buffer.from(sourceData), map, schema, rowHandler, mappedHandler);
+            fileToRowStream(Buffer.from(sourceData), map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
             log.error('There was an error while getting buffer from source data: ' + err);
@@ -38,12 +38,12 @@ function sourceDataPathToRowStream(sourceData, map, schema, rowHandler, mappedHa
 
     }
     else if (utils.httpPattern.test(sourceData))
-        urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler);
+        urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
     else
-        fileToRowStream(sourceData.absolute, map, schema, rowHandler, mappedHandler);
+        fileToRowStream(sourceData.absolute, map, schema, rowHandler, mappedHandler, finalizeProcess);
 }
 
-function urlToRowStream(url, map, schema, rowHandler, mappedHandler) {
+function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
     var rowNumber = Number(process.env.rowNumber);
     var rowStart = Number(process.env.rowStart);
@@ -73,16 +73,16 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler) {
         })
         .on('end', function () {
 
+            finalizeProcess();
             utils.printFinalReport(log);
             utils.printFinalReport(report);
-            //if (process.env.hasFileWriter == 'true')
-            //    fileWriter.finalize();
+            
 
         });
 }
 
 
-function fileToRowStream(filename, map, schema, rowHandler, mappedHandler) {
+function fileToRowStream(filename, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
     var rowNumber = Number(process.env.rowNumber);
     var rowStart = Number(process.env.rowStart);
@@ -112,10 +112,9 @@ function fileToRowStream(filename, map, schema, rowHandler, mappedHandler) {
         })
         .on('end', function () {
 
+            finalizeProcess();
             utils.printFinalReport(log);
             utils.printFinalReport(report);
-            //if (process.env.hasFileWriter == 'true')
-            //    fileWriter.finalize();
 
         });
 
