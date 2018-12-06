@@ -30,8 +30,9 @@ var config = {
 
     /********************** 3 INPUTS CONFIGURATION ************************
     * Followings are related to Mapping MANDATORY inputs (source, map, data model).
+	* File Paths can be either absolute or relative
     **/
-
+	
     sourceDataPath: "C:\\path\\to\\inputFile.csv (Windows) or /path/to/inputFile.csv (Mac/Linux)",
     mapPath: "C:\\path\\to\\map.json (Windows) or /path/to/map.json (Mac/Linux)",
     targetDataModel: "Data Model name, according to the related Schema contained in the DataModels folder",
@@ -44,7 +45,7 @@ var config = {
     rowEnd: Infinity,
 
     /********************** OUTPUT/WRITERS CONFIGURATION ****************** 
-    * Following is related to writers which will handle mapped objects. Possible values: fileWriter (soon), orionWriter
+    * Following is related to writers which will handle mapped objects. Possible values: fileWriter, orionWriter
     **/
     writers: ["orionWriter"],
 
@@ -81,14 +82,16 @@ config.orionWriter = {
     orionUrl: "https://orionUrl", // The Context Broker endpoint (baseUrl) where mapped entities will be stored (/v2/entities POST)
     orionAuthHeaderName: "Authorization", // SOON
     orionAuthToken: "", // SOON
-    enableProxy: false,
+    fiwareService: "" // SOON
+	fiwareServicePatj: "/" //SOON
+	enableProxy: false,
     proxy: '', // insert in the form http://user:pwd@proxyHost:proxyPort
     skipExisting: true, // Skip mapped entities (same ID) already existing in the CB, otherwise update them
     maxRetry: 5, // Max retry number per entity POST, until the entity is skipped and marked as NOT WRITTEN
     parallelRequests: 30 // DO NOT TOUCH - Internal configuration for concurrent request parallelization
 };
 
-// SOON						 
+/*************** File Wirter CONFIGURATION *******************************/				 
 config.fileWriter = {
     filePath: "./result.json"
 };

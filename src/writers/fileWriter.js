@@ -60,6 +60,7 @@ const writeObject = async (objNumber, obj, addBRLine) => {
 
                 log.debug("'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly written to file");
                 return resolve();
+
             } catch (err) {
                 process.env.fileUnWrittenCount++;
                 log.debug('Error while writing mapped object to file');
@@ -72,7 +73,7 @@ const writeObject = async (objNumber, obj, addBRLine) => {
 
         return new Promise((resolve, reject) => {
             console.log('');
-            log.debug("Mapped Object is undefined or the FileWriter was not correctly configured")
+            log.debug("Mapped Object is undefined or the FileWriter was not correctly configured");
             return resolve();
         });
     }
@@ -86,7 +87,8 @@ const finalizeFile = async () => {
         outFileStream.on('end', () => resolve("File stream correctly closed"));
         outFileStream.on('error', () => reject("File stream failed to close"));
         outFileStream.end();
-        return resolve()
+        outFileStream = undefined;
+        return resolve();
     }).then(value => log.debug(value)).catch(value => log.error(value));
 };
 

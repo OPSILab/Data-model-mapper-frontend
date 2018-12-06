@@ -48,7 +48,7 @@ module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
         global.process.env.outFilePath = commandLine.getParam('outFilePath');
         global.process.env.rowStart = commandLine.getParam('rowStart');
         global.process.env.rowEnd = commandLine.getParam('rowEnd');
-    
+
         //const oauthToken = commandLine.getParam('oauthToken');
         //const pauthToken = commandLine.getParam('pauthToken');
         //if (oauthToken) {
@@ -57,9 +57,14 @@ module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
         //if (pauthToken) {
         //    process.env.PAUTH_TOKEN = pauthToken;
         //}
+        try {
+            process.processSource(sourceData, "", mapPath, dataModelPath);
+        } catch (error) {
+            return error;
+        }
 
-        process.processSource(sourceData, "", mapPath, dataModelPath);
-     
+    } else {
+        log.error("There was an error while initializing Mapper configuration");
     }
 };
 

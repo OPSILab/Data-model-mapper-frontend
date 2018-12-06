@@ -20,6 +20,7 @@ const config = require('../../config');
 const path = require('path');
 const pathParse = require('parse-filepath');
 const isValidPath = require("is-valid-path");
+const isFileStream = require('is-file-stream');
 const extensionPattern = /\.[0-9a-z]+$/i;
 const httpPattern = /http:\/\//g;
 const filenameFromPathPattern = /^(.:)?\\(.+\\)*(.+)\.(.+)$/;
@@ -124,7 +125,7 @@ const uuid = () => {
 };
 
 
-/** Create Final SynchroniCity id, according to defined Id Pattern
+/* Create Final SynchroniCity id, according to defined Id Pattern
  * 
  *  If the entityName is not empty
  *     if it isIdPrefix, concatenate entityName with rowNumber
@@ -133,7 +134,7 @@ const uuid = () => {
  *     use as entityName the sourcefilename + rowNumber
  * 
  * 
- **/
+ */
 const createSynchId = (type, site, service, group, entityName, isIdPrefix, rowNumber) => {
 
     if (entityName) {
@@ -224,21 +225,41 @@ const getActiveWriters = () => {
 };
 
 const isFileWriterActive = () => {
-
     return config.writers.includes('fileWriter');
 };
 
 const isOrionWriterActive = () => {
-
     return config.writers.includes('orionWriter');
 };
 
 const isWriterActive = (writerName) => {
-
     return config.writers.includes(writerName);
 };
 
+const isReadableFileStream = (obj) => {
+    return isFileStream.readable(obj);
+};
 
+const isReadableStream = (obj) => {
+    return obj.readable;
+};
+
+const promiseTimeout = (ms, promise) => {
+
+    // Create a promise that rejects in <ms> milliseconds
+    let timeout = new Promise((resolve, reject) => {
+        let id = setTimeout(() => {
+            clearTimeout(id);
+            reject('Timed out in ' + ms + 'ms.')
+        }, ms);
+    });
+
+    // Returns a race between our timeout and the passed in promise
+    return Promise.race([
+        promise,
+        timeout
+    ]);
+};
 
 module.exports = {
     sleep: sleep,
@@ -260,5 +281,8 @@ module.exports = {
     getActiveWriters: getActiveWriters,
     isFileWriterActive: isFileWriterActive,
     isOrionWriterActive: isOrionWriterActive,
-    isWriterActive: isWriterActive
+    isWriterActive: isWriterActive,
+    isReadableFileStream: isReadableFileStream,
+    isReadableStream: isReadableStream,
+    promiseTimeout: promiseTimeout
 };

@@ -23,24 +23,29 @@ const utils = require('../utils/utils.js');
 const log = require('../utils/logger').app;
 const report = require('../utils/logger').report;
 
-function sourceDataPathToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
+function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
     // The source Data is the file content itself
     if (sourceData && !sourceData.ext) {
 
         try {
-            fileToRowStream(Buffer.from(sourceData), map, schema, rowHandler, mappedHandle, finalizeProcessr);
+            fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
             log.error('There was an error while getting buffer from source data: ' + err);
         }
 
     }
-    else if (utils.httpPattern.test(sourceData))
-        urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
-    else
-        fileToRowStream(sourceData.absolute, map, schema, rowHandler, mappedHandler, finalizeProcess);
 
+    // The source Data is the file URL
+    else if (utils.httpPattern.test(sourceData.path))
+        urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
+
+    // The Source Data is the file path
+    else if (sourceData.ext)
+        fileToRowStream(fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
+    else
+        log.error("No valid Source Data was provided");
 
 }
 
@@ -83,13 +88,13 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
 }
 
 
-function fileToRowStream(filename, map, schema, rowHandler, mappedHandler, finalizeProcess) {
+function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
     var rowNumber = Number(process.env.rowNumber);
     var rowStart = Number(process.env.rowStart);
     var rowEnd = Number(process.env.rowEnd);
 
-    fs.createReadStream(filename).pipe(geo.parse())
+    inputData.pipe(geo.parse())
         .on('error', function (err) {
             console.error(err);
         })
@@ -98,7 +103,7 @@ function fileToRowStream(filename, map, schema, rowHandler, mappedHandler, final
         })
         .on('data', function (row) {
 
-            rowNumber = Number(process.env.rowNumber) + 1;
+            rowNumber++;
             process.env.rowNumber = rowNumber;
             // outputs an object containing a set of key/value pair representing a line found in the csv file.
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {
@@ -123,5 +128,5 @@ function fileToRowStream(filename, map, schema, rowHandler, mappedHandler, final
 }
 
 module.exports = {
-    sourceDataPathToRowStream: sourceDataPathToRowStream
+    sourceDataToRowStream: sourceDataToRowStream
 };

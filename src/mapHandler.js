@@ -27,33 +27,21 @@ const dotPattern = /(.*)\.(.*)/;
 const log = require('./utils/logger').app;
 const report = require('./utils/logger').report;
 
-function loadMap(mapData) {
+const loadMap = (mapData) => {
 
-    if (typeof mapData === 'object') {
-        if (mapData.absolute) {
-            log.info('Loading Map File');
-            return new Promise(function (resolve, reject) {
-                var map = fs.readFileSync(mapData.absolute, 'utf8');
-                resolve(JSON.parse(map));
+    if (typeof mapData === 'object' && mapData.absolute) {
+        log.info('Loading Map File');
+        return new Promise(function (resolve, reject) {
+            resolve(JSON.parse(fs.readFileSync(mapData.absolute, 'utf8')));
+        });
 
-            });
-
-        } else {
-            return new Promise(function (resolve, reject) {
-                reject();
-            });
-        }
-        //} catch (err) {
-        //    log.error("Error while parsing Map File!: " + err);
-        //    return undefined;
-        //}
-    } else
+    } else {
         return new Promise(function (resolve, reject) {
             resolve(mapData);
         });
+    }
 
-
-}
+};
 
 // This function takes in input the source object, uses map object to map to a destination data Model
 // according to the passed data model Json Schema
@@ -229,7 +217,7 @@ function mapObjectToDataModel(rowNumber, source, map, modelSchema, site, service
     delete result[entityIdField];
     // Once we added only valid mapped single entries, let's do a final validation against the whole final mapped object
     // Despite single validations, the following one is mandatory to be successful
-    if (checkResultWithDestModelSchema(result, destKey, modelSchema)) {
+    if (checkResultWithDestModelSchema(result, destKey, modelSchema, rowNumber)) {
         log.debug('Mapped object, number: ' + rowNumber + ' is compliant with target Data Model');
         report.info('Mapped object, number: ' + rowNumber + ' is compliant with target Data Model');
         process.env.validCount++;
@@ -258,9 +246,9 @@ function checkPairWithDestModelSchema(mappedObject, destKey, modelSchema, rowNum
 }
 
 // This function takes in input the final whole mapped object and validate it against the destination Data Model Schema
-function checkResultWithDestModelSchema(mappedObject, destKey, modelSchema) {
+function checkResultWithDestModelSchema(mappedObject, destKey, modelSchema, rowNumber) {
 
-    return validator.validateSourceValue(mappedObject, modelSchema, false);
+    return validator.validateSourceValue(mappedObject, modelSchema, false, rowNumber);
 
 }
 

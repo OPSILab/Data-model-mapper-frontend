@@ -34,26 +34,31 @@ var options = {
 };
 
 
-function sourceDataPathToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
+function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
-    // The source Data is the file content itself
-    if (sourceData && !sourceData.ext) {
+    // The Source Data is the File Stream
+    if (sourceData && utils.isReadableStream(sourceData)) {
 
         try {
-            fileToRowStream(Buffer.from(sourceData), map, schema, rowHandler, mappedHandler, finalizeProcess);
+            fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
             log.error('There was an error while getting buffer from source data: ' + err);
         }
-
     }
+
+    // The source Data is the file URL
     else if (utils.httpPattern.test(sourceData.path))
         urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
+
+    // The Source Data is the file path
+    else if (sourceData.ext)
+        fileToRowStream(fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
     else
-        fileToRowStream(sourceData.absolute, map, schema, rowHandler, mappedHandler, finalizeProcess);
+        log.error("No valid Source Data was provided");
 }
 
-function urlToRowStream(data, map, schema, rowHandler, mappedHandler, finalizeProcess) {
+function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
     var csvStream = csv.createStream(options);
     var rowNumber = Number(process.env.rowNumber);
@@ -75,7 +80,6 @@ function urlToRowStream(data, map, schema, rowHandler, mappedHandler, finalizePr
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {
 
                 rowHandler(rowNumber, row, map, schema, mappedHandler);
-
             }
         })
         .on('column', function (key, value) {
@@ -87,19 +91,19 @@ function urlToRowStream(data, map, schema, rowHandler, mappedHandler, finalizePr
             finalizeProcess();
             utils.printFinalReport(log);
             utils.printFinalReport(report);
-            
+
         });
 }
 
 
-function fileToRowStream(filename, map, schema, rowHandler, mappedHandler, finalizeProcess) {
+function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
     var csvStream = csv.createStream(options);
     var rowNumber = Number(process.env.rowNumber);
     var rowStart = Number(process.env.rowStart);
     var rowEnd = Number(process.env.rowEnd);
 
-    fs.createReadStream(filename).pipe(csvStream)
+    inputData.pipe(csvStream)
         .on('error', function (err) {
             console.error(err);
         })
@@ -108,7 +112,7 @@ function fileToRowStream(filename, map, schema, rowHandler, mappedHandler, final
         })
         .on('data', function (row) {
 
-            rowNumber = Number(process.env.rowNumber) + 1;
+            rowNumber++;
             process.env.rowNumber = rowNumber;
             // outputs an object containing a set of key/value pair representing a line found in the csv file.
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {
@@ -133,5 +137,5 @@ function fileToRowStream(filename, map, schema, rowHandler, mappedHandler, final
 
 
 module.exports = {
-    sourceDataPathToRowStream: sourceDataPathToRowStream
+    sourceDataToRowStream: sourceDataToRowStream
 };

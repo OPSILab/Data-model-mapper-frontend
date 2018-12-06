@@ -43,7 +43,7 @@ process.env.rowEnd = process.env.rowStart | config.rowEnd;
 
 var promises = [];
 
-async function processSource(sourceData, sourceDataType, mapData, dataModelSchemaPath) {
+const processSource = async (sourceData, sourceDataType, mapData, dataModelSchemaPath) => {
 
     if (dataModelSchemaPath && mapData) {
 
@@ -56,81 +56,93 @@ async function processSource(sourceData, sourceDataType, mapData, dataModelSchem
                 if (!extension) {
                     // No file path provided nor dataType
                     log.error('The provided url/file path does not have file extension');
-                    return;
+                    return Promise.reject('The provided url / file path does not have file extension');
                 }
 
             } else if (!sourceDataType) {
                 // No file path provided nor dataType
                 log.error('No file path provided nor dataType');
-                return;
+                return Promise.reject('No file path provided nor dataType');
             }
 
             if (typeof mapData === 'string') {
                 mapData = utils.parseFilePath(mapData);
             }
-            // Load Data Model Schema from url or local file
-            schemaHandler.parseDataModelSchema(dataModelSchemaPath).then(async (schema) => {
+
+            try {
+                // Load Data Model Schema from url or local file
+                var loadedSchema = await schemaHandler.parseDataModelSchema(dataModelSchemaPath);
 
                 log.info('Data Model Schema loaded and dereferenced');
 
-                var map = await mapHandler.loadMap(mapData).catch((err) => {
-                    log.error('There was an error while loading Map');
-                    throw new Error(err);
-                });
+                try {
+                    // Load Map form file/url or directly as object
+                    var map = await mapHandler.loadMap(mapData);
 
+                } catch (error) {
+                    log.error('There was an error while loading Map: ' + error);
+                    return Promise.reject('There was an error while loading Map: ' + error);
+                }
 
                 if (map) {
                     log.info('Map loaded');
                     log.info('Starting to Map Source Object');
 
-                    switch (extension || sourceDataType) {
+                    switch (extension || sourceDataType.toLowerCase()) {
 
                         case '.csv':
-                            csvParser.sourceDataPathToRowStream(sourceData, map, schema, processRow, processMappedObject, finalizeProcess);
+                        case 'csv':
+                            csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
                             break;
                         case '.json':
-                            jsonParser.sourceDataPathToRowStream(sourceData, map, schema, processRow, processMappedObject, finalizeProcess);
+                        case 'json':
+                            jsonParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
                             break;
                         case '.geojson':
-                            geoParser.sourceDataPathToRowStream(sourceData, map, schema, processRow, processMappedObject, finalizeProcess);
+                        case 'geojson':
+                            geoParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
                             break;
                         default:
                             break;
                     }
 
+                    return Promise.resolve("OK");
 
                 } else {
-                    log.error('There was an error while loading Map File');
+                    log.error('There was an error while loading Map File: ' + error.stack);
+                    return Promise.reject('There was an error while loading Map File');
                 }
 
-            }).catch((error) => {
-
-                log.error("There was an error while processing Data Model schema");
-                throw new Error(error);
-            });
-
+            } catch (error) {
+                log.error('There was an error while processing Data Model schema: ' + error.stack);
+                return Promise.reject(error);
+            }
 
         } else {
-            log.error("The source Data is not a valid file nor a valid path/url");
+            log.error('The source Data is not a valid file nor a valid path/url: ' + error.stack);
+            return Promise.reject('The source Data is not a valid file nor a valid path/url');
         }
 
     } else if (!dataModelSchemaPath) {
         log.error('Data Model Schema path not specified');
+        return Promise.reject('Data Model Schema path not specified');
     } else {
         log.error('Map path not specified');
+        return Promise.reject('Map path not specified');
     }
 
-}
+};
 
 
-function processRow(rowNumber, row, map, schema, mappedHandler) {
+const processRow = (rowNumber, row, map, schema, mappedHandler) => {
 
     var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, config.site, config.service, config.group, config.entityNameField);
 
     log.debug("Row: " + rowNumber + " - Object mapped correctly ");
     mappedHandler(rowNumber, result, schema);
 
-}
+};
+
 
 const processMappedObject = async (objNumber, obj, modelSchema) => {
 
