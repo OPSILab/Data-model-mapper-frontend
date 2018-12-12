@@ -83,34 +83,56 @@ process.argv.forEach(function (val, index, array) {
             type: 'string',
             demand: false
         },
+        'updateMode': {
+            alias: 'um',
+            describe: 'Update Mode of existing entities (APPEND or REPLACE)',
+            type: 'string',
+            demand: false
+        },
+        'skipExisting': {
+            alias: 'sk',
+            describe: 'Skip mapped entities (same ID) already existing in the CB, otherwise update them according to updateMode parameter',
+            type: 'string',
+            demand: false
+        },
+        'orionAuthHeaderName': {
+            alias: 'oa',
+            describe: 'Authorization header name to be put in the Orion Request (with form "orionAuthHeaderName : orionAuthToken)"',
+            type: 'string'
+        },
+        'orionAuthToken': {
+            alias: 'ot',
+            describe: 'Authorization Token to be put in the Orion Request (with form "orionAuthHeaderName : orionAuthToken)"',
+            type: 'string'
+        },
+        'fiwareService': {
+            alias: 'fs',
+            describe: 'Fiware-Service header to be put in the Orion request',
+            type: 'string'
+        },
+        'fiwareServicePath': {
+            alias: 'fsp',
+            describe: 'Fiware-ServicePath header to be put in the Orion request"',
+            type: 'string'
+        },
         'outFilePath': {
             alias: 'f',
             describe: 'Output file path to printout mapped entities',
             type: 'string',
             demand: false
         },
-        'mo': {
-            alias: 'mapOutput',
-            describe: 'Output file to printout validation results. If not specified, it will be printed over the standard output',
-            type: 'string',
-            demand: false
-        },
-        'oo': {
-            alias: 'orionOutput',
-            describe: 'Output file to printout Orion writing results. If not specified, it will be printed over the standard output',
-            type: 'string',
-            demand: false
-        },
-        'oauthToken': {
-            alias: 'oauthToken',
-            describe: 'OAuth token. It adds an authorizatin headers with the format "Authorization : Bearer <TOKEN>"',
-            type: 'string'
-        },
-        'pauthToken': {
-            alias: 'pauthToken',
-            describe: 'PEP-Proxy Wilma token. It adds an authorizatin headers with the format "x-auth-token : <TOKEN>"',
-            type: 'string'
-        },
+        //'mo': {
+        //    alias: 'mapOutput',
+        //    describe: 'Output file to printout validation results. If not specified, it will be printed over the standard output',
+        //    type: 'string',
+        //    demand: false
+        //},
+        //'oo': {
+        //    alias: 'orionOutput',
+        //    describe: 'Output file to printout Orion writing results. If not specified, it will be printed over the standard output',
+        //    type: 'string',
+        //    demand: false
+        //},
         'h': {
             alias: 'help',
             describe: 'Print the help message',
@@ -126,9 +148,13 @@ const help = () => {
     }
 };
 
-const checkConf = () => {
 
+/* Check if mandatory configuration parameters are set either via CLI args or config file 
+ * 
+ **/
+const checkAndInitConf = () => {
 
+    /************ MAPPING CONFIGURATION PARAMETERS ************/
     var mapPath = nconf.get('mapPath');
     if (!mapPath) {
         log.error('You need to specify the mapping file path');
@@ -152,9 +178,7 @@ const checkConf = () => {
             log.error("There was an error while normalizing Source Path: " + error);
             return false;
         }
-
     } else {
-
         log.error('Incorrect source file path');
         return false;
     }
@@ -167,28 +191,106 @@ const checkConf = () => {
         nconf.set('targetDataModel', path.join(config.modelSchemaFolder, dataModel + '.json'));
 
 
+    //if (!nconf.get('site')) {
+    //    log.error('You need to specify the site part of ID Pattern');
+    //    return false;
+    //}
 
-    if (!nconf.get('orionUrl') && !config.orionWriter.orionUrl) {
+
+    //if (!nconf.get('service')) {
+    //    log.error('You need to specify the service part of ID Pattern');
+    //    return false;
+    //}
+
+
+    //if (!nconf.get('group')) {
+    //    log.error('You need to specify the group part of ID Pattern');
+    //    return false;
+    //}
+
+    /*********************** ORION WRITER CONFIGURATION PARAMETERS *********/
+    nconf.set('orionUrl', nconf.get('orionUrl') || config.orionWriter.orionUrl);
+    if (!nconf.get('orionUrl')) {
         log.error('You need to specify the remote URL of Orion Context Broker');
         return false;
-    } else {
-        nconf.set('orionUrl', nconf.get('orionUrl') || config.orionWriter.orionUrl);
     }
 
+    nconf.set('skipExisting', nconf.get('skipExisting') || config.orionWriter.skipExisting);
+    if (nconf.get('skipExisting') !== true && nconf.get('skipExisting') !== false) {
+        log.error('You need to specify the Skip Existing parameter of Orion Context Broker, allowed values: true, false');
+        return false;
+    }
+
+    nconf.set('updateMode', nconf.get('updateMode') || config.orionWriter.updateMode);
+    if (!nconf.get('updateMode') || (nconf.get('updateMode') !== 'APPEND' && nconf.get('updateMode') !== 'REPLACE')) {
+        log.error('You need to specify the update Mode of Orion Context Broker, allowed values: APPEND, REPLACE');
+        return false;
+    } else if (nconf.get('skipExisting') === true) {
+        log.error('You need also to set true the Skip Existing parameter');
+        return false;
+    }
+
+    nconf.set('fiwareService', nconf.get('fiwareService') || config.orionWriter.fiwareService);
+    //if (!nconf.get('fiwareService')) {
+    //    log.error('You need to specify the Fiware-Service header of Orion Context Broker');
+    //    return false;
+    //}
+
+    nconf.set('fiwareServicePath', nconf.get('fiwareServicePath') || config.orionWriter.fiwareServicePath);
+    //if (!nconf.get('fiwareServicePath')) {
+    //    log.error('You need to specify the Fiware-ServicePath header of Orion Context Broker');
+    //    return false;
+    //}
+
+    nconf.set('orionAuthHeaderName', nconf.get('orionAuthHeaderName') || config.orionWriter.orionAuthHeaderName);
+    //if (!nconf.get('orionAuthHeaderName')) {
+    //    log.error('You need to specify the Authorization Header Name of Orion Context Broker');
+    //    return false;
+    //}
+
+    nconf.set('orionAuthToken', nconf.get('orionAuthToken') || config.orionWriter.orionAuthToken);
+    if (nconf.get('orionAuthHeaderName') && !nconf.get('orionAuthToken')) {
+        log.error('You need to specify the Authorization Token of Orion Context Broker');
+        return false;
+    }
+    if (!nconf.get('orionAuthHeaderName') && nconf.get('orionAuthToken')) {
+        log.error('You need also to set the Authorization Header Name parameter');
+        return false;
+    }
+
+    /*********************** FILE WRITER CONFIGURATION PARAMETERS *********/
     if (!nconf.get('outFilePath') && !config.fileWriter.filePath) {
-        log.error('You need to specify the remote URL of Orion Context Broker');
+        log.error('You need to specify the output File Path');
         return false;
     } else {
         nconf.set('outFilePath', nconf.get('outFilePath') || config.fileWriter.filePath);
     }
+
+
+    /******* Set initialized confs as Global variables ***************/
+
+    global.process.env.orionUrl = nconf.get('orionUrl');
+    global.process.env.updateMode = nconf.get('updateMode');
+    global.process.env.fiwareService = nconf.get('fiwareService');
+    global.process.env.fiwareServicePath = nconf.get('fiwareServicePath');
+    global.process.env.orionAuthHeaderName = nconf.get('orionAuthHeaderName');
+    global.process.env.orionAuthToken = nconf.get('orionAuthToken');
+    global.process.env.outFilePath = nconf.get('outFilePath');
+    global.process.env.rowStart = nconf.get('rowStart');
+    global.process.env.rowEnd = nconf.get('rowEnd');
+    global.process.env.idSite = nconf.get('site');
+    global.process.env.idService = nconf.get('service');
+    global.process.env.idGroup = nconf.get('group');
+
+
+    /** Global variables for Source Data, Map and Target Data Model are set in the specific setup.js **/
 
     return true;
 };
 
 const init = () => {
     help();
-    return checkConf();
-
+    return checkAndInitConf();
 };
 
 const getParam = (par) => {

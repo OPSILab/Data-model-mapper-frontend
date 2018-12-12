@@ -4,14 +4,21 @@ const process = require('../utils/process');
 const log = require('../utils/logger').app;
 
 /*
- * Override default configuration (loaded in setup) if there was in the request
+ * Override default configurations (loaded in setup) if there were in the request
  */
-const setOptionalConfs = (rowStart, rowEnd, orionUrl, outFilePath) => {
+const setOptionalConfs = (rowStart, rowEnd, site, service, group, orionUrl, updateMode, fiwareService, fiwareServicePath, outFilePath) => {
 
     global.process.env.rowStart = rowStart || global.process.env.rowStart;
     global.process.env.rowEnd = rowEnd || global.process.env.rowEnd;
     global.process.env.orionUrl = orionUrl || global.process.env.orionUrl;
+    global.process.env.updateMode = updateMode || global.process.env.updateMode;
+    global.process.env.fiwareService = fiwareService || global.process.env.fiwareService;
+    global.process.env.fiwareServicePath = fiwareServicePath || global.process.env.fiwareServicePath;
     global.process.env.outFilePath = outFilePath || global.process.env.outFilePath;
+    global.process.env.orionUrl = orionUrl || global.process.env.orionUrl;
+    global.process.env.idSite = site || global.process.env.idSite;
+    global.process.env.idService = service || global.process.idService;
+    global.process.env.idGroup = group || global.process.env.idGroup;
 };
 
 module.exports = async (req, res) => {
@@ -19,9 +26,12 @@ module.exports = async (req, res) => {
     var sourceData = undefined;
     var sourceDataExt = undefined;
     var map = undefined;
-    var targetdataModel = undefined;
+    var targetDataModel = undefined;
     var rowStart = undefined;
     var rowEnd = undefined;
+    var site = undefined;
+    var service = undefined;
+    var group = undefined;
     var orionUrl = undefined;
     var outFilePath = undefined;
 
@@ -47,7 +57,7 @@ module.exports = async (req, res) => {
             sourceData = file;
 
             // Set optional conf present in the request and already processed
-            setOptionalConfs(rowStart, rowEnd, orionUrl, outFilePath);
+            setOptionalConfs(rowStart, rowEnd, site, service, group, orionUrl, outFilePath);
 
             // Extract original file extension
             if (filename)
@@ -103,7 +113,7 @@ module.exports = async (req, res) => {
             // If any Target Data Model was specified, try to extract from dedicate field in the Map
             if (!targetDataModel && map['targetDataModel']) {
 
-                targetdataModel = map['targetDataModel'];
+                targetDataModel = map['targetDataModel'];
 
             } else if (!targetDataModel) {
 
@@ -182,6 +192,15 @@ module.exports = async (req, res) => {
                 break;
             case 'outFilePath':
                 outFilePath = value;
+                break;
+            case 'site':
+                site = value;
+                break;
+            case 'service':
+                service = value;
+                break;
+            case 'group':
+                group = value;
                 break;
             default:
                 break;

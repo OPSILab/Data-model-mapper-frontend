@@ -19,7 +19,8 @@
           "description": "NGSI Entity type"
         },
         "dateObserved": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "airQualityIndex": {
           "type": "integer",
@@ -42,7 +43,56 @@
         },
         "refWeatherObserved": {
           "$ref": "common-schema.json#/definitions/EntityIdentifierType"
+        },
+        "NH3": {
+          "type": "number"
+        },
+         "As": {
+          "type": "number"
+        },
+         "C6H12": {
+          "type": "number"
+        },
+         "C20H12": {
+          "type": "number"
+        },
+         "NO2": {
+          "type": "number"
+        },
+         "SO2": {
+          "type": "number"
+        },
+         "Cd": {
+          "type": "number"
+        },
+         "CO": {
+          "type": "number"
+        },
+         "Ni": {
+          "type": "number"
+        },
+         "NO": {
+          "type": "number"
+        },
+         "NOx": {
+          "type": "number"
+        },
+         "O3": {
+          "type": "number"
+        },
+         "PM25": {
+          "type": "number"
+        },
+         "SPM": {
+          "type": "number"
+        },
+         "PM10": {
+          "type": "number"
+        },
+         "Pb": {
+          "type": "number"
         }
+		
       }
     }
   ]

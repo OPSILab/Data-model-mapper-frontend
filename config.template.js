@@ -80,13 +80,14 @@ var config = {
 config.orionWriter = {
 
     orionUrl: "https://orionUrl", // The Context Broker endpoint (baseUrl) where mapped entities will be stored (/v2/entities POST)
-    orionAuthHeaderName: "Authorization", // SOON
-    orionAuthToken: "", // SOON
-    fiwareService: "" // SOON
-	fiwareServicePatj: "/" //SOON
-	enableProxy: false,
+    orionAuthHeaderName: "", // Authorization Header name (e.g. X-Auth-Token or Authorization) for Orion request // Leave blank if any
+    orionAuthToken: "", // Authorization token name for Orion request (e.g. Bearer XXX) // Leave blank if any
+    fiwareService: "", // Fiware-Service header to be put in the Orion request
+    fiwareServicePath: "/", // Fiware-ServicePath header to be put in the Orion request
+	enableProxy: false, // Enable Orion requests through a Proxy
     proxy: '', // insert in the form http://user:pwd@proxyHost:proxyPort
-    skipExisting: true, // Skip mapped entities (same ID) already existing in the CB, otherwise update them
+    skipExisting: false, // Skip mapped entities (same ID) already existing in the CB, otherwise update them according to updateMode parameter
+	updateMode: "APPEND", // Possible values: APPEND, REPLACE. If to append or replace attributes in the existing entities. Used only if skipExisting = false
     maxRetry: 5, // Max retry number per entity POST, until the entity is skipped and marked as NOT WRITTEN
     parallelRequests: 30 // DO NOT TOUCH - Internal configuration for concurrent request parallelization
 };

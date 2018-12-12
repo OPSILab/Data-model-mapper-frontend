@@ -1,22 +1,8 @@
 ﻿const log = require('../utils/logger').app;
 const config = require('../../config');
-const utils = require('../utils/utils');
 const confUtils = require('../utils/confUtils');
 const _ = require('lodash');
 
-/*
- * Set default configuration from congif.js file, these will be in case overriden by requests params
- */
-const initDefaultConf = () => {
-    if (confUtils.init()) {
-        global.process.env.orionUrl = confUtils.getParam('orionUrl');
-        global.process.env.outFilePath = confUtils.getParam('outFilePath');
-        global.process.env.rowStart = confUtils.getParam('rowStart');
-        global.process.env.rowEnd = confUtils.getParam('rowEnd');
-        return true;
-    } else
-        return false;
-};
 
 const setAuthHeaders = (hdrs) => {
     if (_.has(hdrs, 'authorization')) {
@@ -46,8 +32,10 @@ module.exports = () => {
 
     log.info("Initializing Mapper in Server Mode");
 
-    /* Initialize default configuration */
-    if (initDefaultConf()) {
+    /** Initialize default configuration 
+    *   Set default configuration from config.js file, these will be in case overriden by requests params
+    **/
+    if (confUtils.init()) {
 
         /* Middlewares configuration */
         //app.use(bodyParser.urlencode({ extended: true }));

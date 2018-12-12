@@ -38,8 +38,6 @@ process.env.orionSkippedCount = 0;
 process.env.fileWrittenCount = 0;
 process.env.fileUnWrittenCount = 0;
 process.env.rowNumber = 0;
-process.env.rowStart = process.env.rowStart | config.rowStart;
-process.env.rowEnd = process.env.rowStart | config.rowEnd;
 
 var promises = [];
 
@@ -83,6 +81,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                     log.error('There was an error while loading Map: ' + error);
                     return Promise.reject('There was an error while loading Map: ' + error);
                 }
+
 
                 if (map) {
                     log.info('Map loaded');
@@ -136,7 +135,18 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
 const processRow = (rowNumber, row, map, schema, mappedHandler) => {
 
-    var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, config.site, config.service, config.group, config.entityNameField);
+    /** If any, extract site, service and group for Id Pattern from Map
+     * otherwise use the ones initialized in the Global Vars 
+     **/
+    let site, service, group;
+    site = map['idSite'] || process.env.idSite;
+    service = map['idService' || process.env.idService];
+    group = map['idGroup'] || process.env.idGroup;
+    delete map['idSite'];
+    delete map['idService'];
+    delete map['idGroup'];
+
+    var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, site, service, group, config.entityNameField);
 
     log.debug("Row: " + rowNumber + " - Object mapped correctly ");
     mappedHandler(rowNumber, result, schema);
@@ -150,7 +160,7 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
         switch (writer) {
 
             case 'orionWriter':
-                promises.push(orionWriter.writeObjectPromise(objNumber, obj, modelSchema));
+                promises.push(orionWriter.writeObject(objNumber, obj, modelSchema));
                 break;
             case 'fileWriter':
                 promises.push(fileWriter.writeObject(objNumber, obj, config.fileWriter.addBlankLine));

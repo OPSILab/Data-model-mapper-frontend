@@ -25,7 +25,7 @@ const report = require('../utils/logger').report;
 
 // All of these arguments are optional.
 var options = {
-    delimiter: ';', // default is ,
+    delimiter: ',', // default is ,
     endLine: '\n', // default is \n,
     //columns: ['columnName1', 'columnName2'], // by default read the first line and use values found as columns
     columnOffset: 0, // default is 0

@@ -4,7 +4,6 @@
   "title": "GSMA / FIWARE - Point of Interest schema",
   "description": "A point of interest",
   "type": "object",
-  "required": ["id", "type", "name", "category"],
   "anyOf": [{"required": ["location"]}, {"required": ["address"]}],
   "allOf": [
     { "$ref": "common-schema.json#/definitions/GSMA-Commons" },
@@ -25,6 +24,9 @@
           },
           "minItems": 1
         },
+        "contactPoint": {
+          "type": "object"
+        },
         "refSeeAlso": {
           "type": "array",
           "items": {
@@ -35,5 +37,12 @@
         }  
       }
     }
+  ],
+  "required": [
+    "id",
+    "type",
+    "category",
+    "location",
+    "name"
   ]
 }

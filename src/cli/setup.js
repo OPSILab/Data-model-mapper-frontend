@@ -44,19 +44,6 @@ module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
         var mapPath = mapPathIn || commandLine.getParam('mapPath');
         var dataModelPath = utils.getDataModelPath(dataModelIn) || commandLine.getParam('targetDataModel');
 
-        global.process.env.orionUrl = commandLine.getParam('orionUrl');
-        global.process.env.outFilePath = commandLine.getParam('outFilePath');
-        global.process.env.rowStart = commandLine.getParam('rowStart');
-        global.process.env.rowEnd = commandLine.getParam('rowEnd');
-
-        //const oauthToken = commandLine.getParam('oauthToken');
-        //const pauthToken = commandLine.getParam('pauthToken');
-        //if (oauthToken) {
-        //    process.env.OAUTH_TOKEN = oauthToken;
-        //}
-        //if (pauthToken) {
-        //    process.env.PAUTH_TOKEN = pauthToken;
-        //}
         try {
             process.processSource(sourceData, "", mapPath, dataModelPath);
         } catch (error) {
