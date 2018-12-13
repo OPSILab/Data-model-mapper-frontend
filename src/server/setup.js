@@ -2,7 +2,9 @@
 const config = require('../../config');
 const confUtils = require('../utils/confUtils');
 const _ = require('lodash');
-
+//const bodyParser = require('body-parser');
+const express = require('express');
+const busboy = require('connect-busboy');
 
 const setAuthHeaders = (hdrs) => {
     if (_.has(hdrs, 'authorization')) {
@@ -20,15 +22,14 @@ const logErrors = (err, req, res, next) => {
 
 module.exports = () => {
 
-    /* General Exprss configuration */
-    //const bodyParser = require('body-parser');
-    const express = require('express');
-    const busboy = require('connect-busboy');
+    /**************** General Exprss configuration ***************/
+
     const app = express();
     const port = config.httpPort || 8080;
 
-    /* Load Request Handler middlewares */
-    const mapRequestHandler = require('./mapRequestHandler');
+    /************** Load Request Handler middlewares *************/
+    const startMappingHandler = require('./apiHandlers/startMapping');
+    const getMappingStatusHandler = require('./apiHandlers/getMappingStatus');
 
     log.info("Initializing Mapper in Server Mode");
 
@@ -50,11 +51,15 @@ module.exports = () => {
         });
         app.use(logErrors);
 
-        /* Request handlers */
-        /* Start Map - Request Handler */
-        app.post('/api/map', (req, res) => { mapRequestHandler(req, res); });
+        /********* Request handlers ********************/
 
-        /* Start Server listening */
+        /* Start Mapping - Request Handler */
+        app.post('/api/map', (req, res) => { startMappingHandler(req, res); });
+
+        /* Get Mapping Status - Request Handler */
+        app.get('/api/map', (req, res) => { getMappingStatusHandler(req, res); });
+
+        /********* Start Server listening **************/
         app.listen(port, () => console.log(`Data Model Mapper listening on port ${port}!`));
 
     } else {

@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-const request = require('request');
 const rp = require('promise-request-retry');
 
 const config = require('../../config').orionWriter;
@@ -29,19 +28,24 @@ const sleep = (ms) => {
 };
 
 const buildRequestHeaders = () => {
-    return {
-        'content-type': 'application/json',
+
+    var headerObject = {
         'Fiware-Service': process.env.fiwareService,
-        'Fiware-ServicePath': process.env.fiwareServicePath,
-        [process.env.orionAuthHeaderName]: process.env.orionAuthToken
+        'Fiware-ServicePath': process.env.fiwareServicePath
     };
+
+    if (process.env.orionAuthHeaderName && process.env.orionAuthToken)
+        headerObject[process.env.orionAuthHeaderName] = process.env.orionAuthToken;
+
+    return headerObject;
+
 };
 
 
 const writeObject = async (objNumber, obj, modelSchema) => {
 
     if (obj) {
-        log.debug('Sending to Orion object number: ' + objNumber + ' , id: ' + obj.id);
+        log.debug('Sending to Orion CB object number: ' + objNumber + ' , id: ' + obj.id);
 
         var orionedObj = toOrionObject(obj, modelSchema);
 
@@ -94,7 +98,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                             return Promise.resolve(process.env.orionWrittenCount++);
 
                         } else {
-                            throw new Error('Update Error');
+                            return Promise.reject('Update Error');
                         }
 
                     } catch (error) {
@@ -112,7 +116,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                         report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
                         log.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
                         process.env.orionUnWrittenCount++;
-                        Promise.reject(error);
+                        return Promise.reject(error);
 
                     }
 
@@ -121,12 +125,12 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                     // Skip existing entity
                     report.info('Entity Number: ' + objNumber + ' with Id: ' + orionedObj.id + ' SKIPPED');
                     log.debug('Entity Number: ' + objNumber + ' with Id: ' + orionedObj.id + ' SKIPPED');
-                    Promise.resolve(process.env.orionSkippedCount++);
+                    return Promise.resolve(process.env.orionSkippedCount++);
 
                 }
 
             } else {
-                throw new Error('Undefined state: ' + JSON.stringify(response) + '\n');
+                return Promise.reject('Error return from Context Broker: ' + JSON.stringify(createResponse) + '\n');
             }
 
         } catch (error) {

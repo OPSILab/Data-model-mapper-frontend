@@ -1,12 +1,28 @@
 ﻿const streamToString = require('stream-to-string');
-const utils = require('../utils/utils');
-const process = require('../utils/process');
-const log = require('../utils/logger').app;
+const utils = require('../../utils/utils');
+const process = require('../../utils/process');
+const log = require('../../utils/logger').app;
 
 /*
  * Override default configurations (loaded in setup) if there were in the request
  */
 const setOptionalConfs = (rowStart, rowEnd, site, service, group, orionUrl, updateMode, fiwareService, fiwareServicePath, outFilePath) => {
+
+    /* Save first Default configuration, to be restored after current request */
+    global.process.env.old_rowStart = global.process.env.rowStart;
+    global.process.env.old_rowEnd = global.process.env.rowEnd;
+    global.process.env.old_orionUrl = global.process.env.orionUrl;
+    global.process.env.old_updateMode = global.process.env.updateMode;
+    global.process.env.old_fiwareService = global.process.env.fiwareService;
+    global.process.env.old_fiwareServicePath = global.process.env.fiwareServicePath;
+    global.process.env.old_outFilePath = global.process.env.outFilePath;
+    global.process.env.old_idSite = global.process.env.idSite;
+    global.process.env.old_idService = global.process.idService;
+    global.process.env.old_idGroup = global.process.env.idGroup;
+
+    /* Override (if any) current configuration with the ones coming from the request
+     * otherwise keep the default ones.
+     */
 
     global.process.env.rowStart = rowStart || global.process.env.rowStart;
     global.process.env.rowEnd = rowEnd || global.process.env.rowEnd;
@@ -15,11 +31,13 @@ const setOptionalConfs = (rowStart, rowEnd, site, service, group, orionUrl, upda
     global.process.env.fiwareService = fiwareService || global.process.env.fiwareService;
     global.process.env.fiwareServicePath = fiwareServicePath || global.process.env.fiwareServicePath;
     global.process.env.outFilePath = outFilePath || global.process.env.outFilePath;
-    global.process.env.orionUrl = orionUrl || global.process.env.orionUrl;
     global.process.env.idSite = site || global.process.env.idSite;
-    global.process.env.idService = service || global.process.idService;
+    global.process.env.idService = service || global.process.env.idService;
     global.process.env.idGroup = group || global.process.env.idGroup;
 };
+
+
+
 
 module.exports = async (req, res) => {
 
@@ -33,6 +51,7 @@ module.exports = async (req, res) => {
     var service = undefined;
     var group = undefined;
     var orionUrl = undefined;
+    var updateMode = undefined;
     var outFilePath = undefined;
 
     req.pipe(req.busboy); // Pipe it through busboy
@@ -41,7 +60,12 @@ module.exports = async (req, res) => {
     global.process.env.rowNumber = 0;
     global.process.env.validCount = 0;
     global.process.env.unvalidCount = 0;
-    /***************************************************************/
+
+    /**************************** Extract Headers ***************************/
+    var fiwareService = req.headers['fiware-service'];
+    var fiwareServicePath = req.headers['fiware-servicepath'];
+
+    /*************************************************************************/
 
     req.busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
 
@@ -57,7 +81,7 @@ module.exports = async (req, res) => {
             sourceData = file;
 
             // Set optional conf present in the request and already processed
-            setOptionalConfs(rowStart, rowEnd, site, service, group, orionUrl, outFilePath);
+            setOptionalConfs(rowStart, rowEnd, site, service, group, orionUrl, updateMode, fiwareService, fiwareServicePath, outFilePath);
 
             // Extract original file extension
             if (filename)
@@ -189,6 +213,9 @@ module.exports = async (req, res) => {
                 break;
             case 'orionUrl':
                 orionUrl = value;
+                break;
+            case 'updateMode':
+                updateMode = value;
                 break;
             case 'outFilePath':
                 outFilePath = value;

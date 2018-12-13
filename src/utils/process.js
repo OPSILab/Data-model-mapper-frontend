@@ -140,7 +140,7 @@ const processRow = (rowNumber, row, map, schema, mappedHandler) => {
      **/
     let site, service, group;
     site = map['idSite'] || process.env.idSite;
-    service = map['idService' || process.env.idService];
+    service = map['idService'] || process.env.idService;
     group = map['idGroup'] || process.env.idGroup;
     delete map['idSite'];
     delete map['idService'];
@@ -173,18 +173,28 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
 };
 
 const finalizeProcess = async () => {
-    await Promise.all(promises);
 
-    // Wait until all promises resolve (defined and pushed in processMappedObject handler)
-    if (utils.isFileWriterActive()) {
-        await fileWriter.finalize(); // Finalize file in case of using fileWriter
-        fileWriter.checkAndPrintFinalReport();
-    }
+    try {
+        await Promise.all(promises);
 
-    if (utils.isOrionWriterActive()) {
-        orionWriter.checkAndPrintFinalReport();
+        /* If server mode, restore current per request configuration to the default ones */
+        if (config.mode.toLowerCase() === 'server')
+            utils.restoreDefaultConfs();
+
+        // Wait until all promises resolve (defined and pushed in processMappedObject handler)
+        if (utils.isFileWriterActive()) {
+            await fileWriter.finalize(); // Finalize file in case of using fileWriter
+            fileWriter.checkAndPrintFinalReport();
+        }
+
+        if (utils.isOrionWriterActive()) {
+            orionWriter.checkAndPrintFinalReport();
+        }
+        return Promise.resolve();
+
+    } catch (error) {
+        return Promise.reject(error);
     }
-    return Promise.resolve();
 };
 
 

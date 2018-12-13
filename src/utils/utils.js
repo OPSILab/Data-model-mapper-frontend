@@ -261,6 +261,22 @@ const promiseTimeout = (ms, promise) => {
     ]);
 };
 
+/*
+ * Restore the default configurations, if any was ovverriden by the request ones
+ */
+const restoreDefaultConfs = () => {
+    global.process.env.rowStart = global.process.env.old_rowStart;
+    global.process.env.rowEnd = global.process.env.old_rowEnd;
+    global.process.env.orionUrl = global.process.env.old_orionUrl;
+    global.process.env.updateMode = global.process.env.old_updateMode;
+    global.process.env.fiwareService = global.process.env.old_fiwareService;
+    global.process.env.fiwareServicePath = global.process.env.old_fiwareServicePath;
+    global.process.env.outFilePath = global.process.env.old_outFilePath;
+    global.process.env.idSite = global.process.env.old_idSite;
+    global.process.env.idService = global.process.old_idService;
+    global.process.env.idGroup = global.process.env.old_idGroup;
+};
+
 module.exports = {
     sleep: sleep,
     cleanString: cleanString,
@@ -284,5 +300,6 @@ module.exports = {
     isWriterActive: isWriterActive,
     isReadableFileStream: isReadableFileStream,
     isReadableStream: isReadableStream,
-    promiseTimeout: promiseTimeout
+    promiseTimeout: promiseTimeout,
+    restoreDefaultConfs: restoreDefaultConfs
 };
