@@ -28,7 +28,6 @@ const log = require('../utils/logger').app;
 const utils = require('../utils/utils.js');
 const config = require("../../config.js");
 
-process.env.hasFileWriter = false;
 
 process.env.validCount = 0;
 process.env.unvalidCount = 0;
@@ -135,18 +134,18 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
 const processRow = (rowNumber, row, map, schema, mappedHandler) => {
 
-    /** If any, extract site, service and group for Id Pattern from Map
-     * otherwise use the ones initialized in the Global Vars 
+    /** If any, extract site, service and group for Id Pattern from Map and 
+     * set globally for each row of this mapping, otherwise use the ones initialized in the Global Vars 
      **/
-    let site, service, group;
-    site = map['idSite'] || process.env.idSite;
-    service = map['idService'] || process.env.idService;
-    group = map['idGroup'] || process.env.idGroup;
+    
+    process.env.idSite = map['idSite'] || process.env.idSite;
+    process.env.idService = map['idService'] || process.env.idService;
+    process.env.idGroup = map['idGroup'] || process.env.idGroup;
     delete map['idSite'];
     delete map['idService'];
     delete map['idGroup'];
 
-    var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, site, service, group, config.entityNameField);
+    var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, process.env.idSite, process.env.idService, process.env.idGroup, config.entityNameField);
 
     log.debug("Row: " + rowNumber + " - Object mapped correctly ");
     mappedHandler(rowNumber, result, schema);
@@ -176,7 +175,7 @@ const finalizeProcess = async () => {
 
     try {
         await Promise.all(promises);
-
+        
         /* If server mode, restore current per request configuration to the default ones */
         if (config.mode.toLowerCase() === 'server')
             utils.restoreDefaultConfs();
@@ -190,6 +189,9 @@ const finalizeProcess = async () => {
         if (utils.isOrionWriterActive()) {
             orionWriter.checkAndPrintFinalReport();
         }
+
+        reinitializeProcessStatus();
+
         return Promise.resolve();
 
     } catch (error) {
@@ -197,6 +199,22 @@ const finalizeProcess = async () => {
     }
 };
 
+/**
+ * Reset Process variables for next iteration
+ **/
+const reinitializeProcessStatus = () => {
+
+    process.env.validCount = 0;
+    process.env.unvalidCount = 0;
+    process.env.orionWrittenCount = 0;
+    process.env.orionUnWrittenCount = 0;
+    process.env.orionSkippedCount = 0;
+    process.env.fileWrittenCount = 0;
+    process.env.fileUnWrittenCount = 0;
+    process.env.rowNumber = 0;
+    promises = [];
+
+};
 
 module.exports = {
     processSource: processSource

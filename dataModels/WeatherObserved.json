@@ -59,6 +59,12 @@
         },
         "refDevice": {
            "$ref": "common-schema.json#/definitions/EntityIdentifierType"
+        },
+        "streamGauge": {
+          "type": "number"
+        },
+        "snowHeight": {
+          "type": "number"
         }
       }
     }

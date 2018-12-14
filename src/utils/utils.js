@@ -273,7 +273,7 @@ const restoreDefaultConfs = () => {
     global.process.env.fiwareServicePath = global.process.env.old_fiwareServicePath;
     global.process.env.outFilePath = global.process.env.old_outFilePath;
     global.process.env.idSite = global.process.env.old_idSite;
-    global.process.env.idService = global.process.old_idService;
+    global.process.env.idService = global.process.env.old_idService;
     global.process.env.idGroup = global.process.env.old_idGroup;
 };
 

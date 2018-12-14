@@ -47,7 +47,7 @@ var config = {
     /********************** OUTPUT/WRITERS CONFIGURATION ****************** 
     * Following is related to writers which will handle mapped objects. Possible values: fileWriter, orionWriter
     **/
-    writers: ["orionWriter"],
+    writers: ["orionWriter", "fileWriter"],
 
     /********************* OUTPUT ID PATTERN CONFIGURATION ****************
     * Following used for id pattern creation

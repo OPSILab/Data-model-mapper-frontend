@@ -17,7 +17,7 @@ const setOptionalConfs = (rowStart, rowEnd, site, service, group, orionUrl, upda
     global.process.env.old_fiwareServicePath = global.process.env.fiwareServicePath;
     global.process.env.old_outFilePath = global.process.env.outFilePath;
     global.process.env.old_idSite = global.process.env.idSite;
-    global.process.env.old_idService = global.process.idService;
+    global.process.env.old_idService = global.process.env.idService;
     global.process.env.old_idGroup = global.process.env.idGroup;
 
     /* Override (if any) current configuration with the ones coming from the request
@@ -56,10 +56,10 @@ module.exports = async (req, res) => {
 
     req.pipe(req.busboy); // Pipe it through busboy
 
-    /* Reset rowNumber (to be modified with per Mapping variables) */
-    global.process.env.rowNumber = 0;
-    global.process.env.validCount = 0;
-    global.process.env.unvalidCount = 0;
+    /* Reset rowNumber (to be modified with per Mapping variables) DONE IN PROCESS reinitializeProcessStatus function*/
+    //global.process.env.rowNumber = 0;
+    //global.process.env.validCount = 0;
+    //global.process.env.unvalidCount = 0;
 
     /**************************** Extract Headers ***************************/
     var fiwareService = req.headers['fiware-service'];
