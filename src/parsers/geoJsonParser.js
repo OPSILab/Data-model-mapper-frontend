@@ -20,7 +20,7 @@ const geo = require('geojson-stream');
 const request = require('request');
 const fs = require('fs');
 const utils = require('../utils/utils.js');
-const log = require('../utils/logger').app;
+const log = require('../utils/logger').app(module);
 const report = require('../utils/logger').report;
 
 function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
@@ -78,11 +78,13 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
             // console.log('#' + key + ' = ' + value);
         })
         .on('end', function () {
-
-            finalizeProcess();
-            utils.printFinalReport(log);
-            utils.printFinalReport(report);
-       
+            try {
+                finalizeProcess();
+                utils.printFinalReport(log);
+                utils.printFinalReport(report);
+            } catch (error) {
+                log.error("Error While finalizing the streaming process: " + error);
+            }
 
         });
 }
@@ -111,7 +113,7 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
                 rowHandler(rowNumber, row, map, schema, mappedHandler);
 
             }
-            
+
         })
         .on('column', function (key, value) {
             // outputs the column name associated with the value found

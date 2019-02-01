@@ -1,4 +1,4 @@
-﻿const log = require('../utils/logger').app;
+﻿const log = require('../utils/logger').app(module);
 const config = require('../../config');
 const confUtils = require('../utils/confUtils');
 const _ = require('lodash');
@@ -22,7 +22,7 @@ const logErrors = (err, req, res, next) => {
 
 module.exports = () => {
 
-    /**************** General Exprss configuration ***************/
+    /**************** General Express configuration ***************/
 
     const app = express();
     const port = config.httpPort || 8080;

@@ -1,7 +1,7 @@
 ﻿const streamToString = require('stream-to-string');
 const utils = require('../../utils/utils');
 const process = require('../../utils/process');
-const log = require('../../utils/logger').app;
+const log = require('../../utils/logger').app(module);
 
 /*
  * Override default configurations (loaded in setup) if there were in the request

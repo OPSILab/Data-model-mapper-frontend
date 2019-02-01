@@ -20,7 +20,7 @@ var JSONStream = require('JSONStream');
 const request = require('request');
 const fs = require('fs');
 const utils = require('../utils/utils');
-const log = require('../utils/logger').app;
+const log = require('../utils/logger').app(module);
 const report = require('../utils/logger').report;
 
 
@@ -79,11 +79,13 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
             // console.log('#' + key + ' = ' + value);
         })
         .on('end', function () {
-
-            finalizeProcess();
-            utils.printFinalReport(log);
-            utils.printFinalReport(report);
-            
+            try {
+                finalizeProcess();
+                utils.printFinalReport(log);
+                utils.printFinalReport(report);
+            } catch (error) {
+                log.error("Error While finalizing the streaming process: " + error);
+            }
 
         });
 }
@@ -103,7 +105,7 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
             // console.log(columns);
         })
         .on('data', function (row) {
-
+            console.log(row);
             rowNumber = Number(process.env.rowNumber) + 1;
             process.env.rowNumber = rowNumber;
             // outputs an object containing a set of key/value pair representing a line found in the csv file.

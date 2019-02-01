@@ -24,7 +24,8 @@ const geoParser = require("../parsers/geoJsonParser.js");
 const jsonParser = require("../parsers/jsonParser.js");
 const orionWriter = require("../writers/orionWriter");
 const fileWriter = require("../writers/fileWriter");
-const log = require('../utils/logger').app;
+const log = require('../utils/logger').app(module);
+const report = require('../utils/logger').report;
 const utils = require('../utils/utils.js');
 const config = require("../../config.js");
 
@@ -62,59 +63,71 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 return Promise.reject('No file path provided nor dataType');
             }
 
-            if (typeof mapData === 'string') {
+            if (typeof mapData === 'string' && !mapData.startsWith("{")) {
                 mapData = utils.parseFilePath(mapData);
             }
 
+
             try {
-                // Load Data Model Schema from url or local file
-                var loadedSchema = await schemaHandler.parseDataModelSchema(dataModelSchemaPath);
-
-                log.info('Data Model Schema loaded and dereferenced');
-
-                try {
-                    // Load Map form file/url or directly as object
-                    var map = await mapHandler.loadMap(mapData);
-
-                } catch (error) {
-                    log.error('There was an error while loading Map: ' + error);
-                    return Promise.reject('There was an error while loading Map: ' + error);
-                }
-
-
-                if (map) {
-                    log.info('Map loaded');
-                    log.info('Starting to Map Source Object');
-
-                    switch (extension || sourceDataType.toLowerCase()) {
-
-                        case '.csv':
-                        case 'csv':
-                            csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
-                            break;
-                        case '.json':
-                        case 'json':
-                            jsonParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
-                            break;
-                        case '.geojson':
-                        case 'geojson':
-                            geoParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
-                            break;
-                        default:
-                            break;
-                    }
-
-                    return Promise.resolve("OK");
-
-                } else {
-                    log.error('There was an error while loading Map File: ' + error.stack);
-                    return Promise.reject('There was an error while loading Map File');
-                }
+                // Load Map form file/url or directly as object
+                var map = await mapHandler.loadMap(mapData);
 
             } catch (error) {
-                log.error('There was an error while processing Data Model schema: ' + error.stack);
-                return Promise.reject(error);
+                log.error('There was an error while loading Map: ' + error);
+                return Promise.reject('There was an error while loading Map: ' + error);
             }
+
+
+            if (map) {
+                log.info('Map loaded');
+
+                try {
+
+                    // Load Data Model Schema from either map field "TargetDataModel", url or local file
+                    let targetDataModel;
+                    if ((targetDataModel = map['targetDataModel']) !== undefined) {
+                        /* Check if provided TargetDataModel is valid, otherwise return error */
+                        if ((dataModelSchemaPath = utils.getDataModelPath(targetDataModel)) === undefined) {
+                            log.error("Incorrect target Data Model name");
+                            return Promise.reject("Incorrect target Data Model name");
+                        }
+                    }
+
+                    var loadedSchema = await schemaHandler.parseDataModelSchema(dataModelSchemaPath);
+                    log.info('Data Model Schema loaded and dereferenced');
+
+                } catch (error) {
+                    log.error('There was an error while processing Data Model schema: ' + error.stack);
+                    return Promise.reject(error);
+                }
+
+                log.info('Starting to Map Source Object');
+
+                switch (extension || sourceDataType.toLowerCase()) {
+
+                    case '.csv':
+                    case 'csv':
+                        csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
+                        break;
+                    case '.json':
+                    case 'json':
+                        jsonParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
+                        break;
+                    case '.geojson':
+                    case 'geojson':
+                        geoParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
+                        break;
+                    default:
+                        break;
+                }
+
+                return Promise.resolve("OK");
+
+            } else {
+                log.error('There was an error while loading Map File: ' + error.stack);
+                return Promise.reject('There was an error while loading Map File');
+            }
+
 
         } else {
             log.error('The source Data is not a valid file nor a valid path/url: ' + error.stack);
@@ -137,7 +150,7 @@ const processRow = (rowNumber, row, map, schema, mappedHandler) => {
     /** If any, extract site, service and group for Id Pattern from Map and 
      * set globally for each row of this mapping, otherwise use the ones initialized in the Global Vars 
      **/
-    
+
     process.env.idSite = map['idSite'] || process.env.idSite;
     process.env.idService = map['idService'] || process.env.idService;
     process.env.idGroup = map['idGroup'] || process.env.idGroup;
@@ -156,6 +169,7 @@ const processRow = (rowNumber, row, map, schema, mappedHandler) => {
 const processMappedObject = async (objNumber, obj, modelSchema) => {
 
     config.writers.forEach((writer) => {
+
         switch (writer) {
 
             case 'orionWriter':
@@ -175,7 +189,7 @@ const finalizeProcess = async () => {
 
     try {
         await Promise.all(promises);
-        
+
         /* If server mode, restore current per request configuration to the default ones */
         if (config.mode.toLowerCase() === 'server')
             utils.restoreDefaultConfs();
@@ -190,7 +204,8 @@ const finalizeProcess = async () => {
             orionWriter.checkAndPrintFinalReport();
         }
 
-        reinitializeProcessStatus();
+        utils.printFinalReport(log);
+        utils.printFinalReport(report);
 
         return Promise.resolve();
 
@@ -217,5 +232,6 @@ const reinitializeProcessStatus = () => {
 };
 
 module.exports = {
-    processSource: processSource
+    processSource: processSource,
+    reinitializeProcessStatus: reinitializeProcessStatus
 };

@@ -20,19 +20,8 @@ const commandLine = require('../utils/confUtils');
 const process = require('../utils/process');
 const config = require('../../config');
 
-const log = require('../utils/logger').app;
+const log = require('../utils/logger').app(module);
 const utils = require('../utils/utils');
-
-//const fs = require('fs');
-
-
-//const outFn = (v) => {
-//	if (clOutput) {
-//		fs.writeFile(clOutput, JSON.stringify(v, null, 4), () => {});
-//	} else {
-//		log.info(JSON.stringify(v, null, 4));
-//	}
-//};
 
 module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
     log.info("Initializing Mapper in Command Line Mode");

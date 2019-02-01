@@ -17,40 +17,64 @@
  ******************************************************************************/
 
 const winston = require('winston');
+const path = require('path');
 const DailyRotateFile = require('winston-daily-rotate-file');
 const { createLogger, format, transports } = require('winston');
 const { combine, timestamp, label, printf } = format;
 // { error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }
 
+
 const myFormat = printf(msg => {
     return `[${msg.timestamp} [${msg.label}] ${msg.level}: ${msg.message}`;
 });
 
-const logFormat = combine(
-    label({ label: __filename.replace(/^.*[\\\/]/, '') }),
-    timestamp(),
-    myFormat
-);
+const getLabel = (callingModule) => {
+    var parts = callingModule.filename.split(path.sep);
+    return path.join(parts[parts.length - 2], parts.pop());
+};
 
-const transport = new (winston.transports.DailyRotateFile)({
-    dirname: './logs',
-    level: process.env.LOG || 'info',
-    filename: 'out.log',
-    datePattern: 'YYYY-MM-DD',
-    maxsize: '50mb', //5MB,
-    zippedArchive: true
-});
+const logFormat = (callingModule) => {
+    if (callingModule)
+        return combine(
+            label({
+                label: getLabel(callingModule)
+            }),
+            timestamp(),
+            myFormat
+        );
+    else
+        return combine(
+            label({
+                label: __filename.replace(/^.*[\\\/]/, '')
+            }),
+            timestamp(),
+            myFormat
+        );
+};
 
-const transportErr = new (winston.transports.DailyRotateFile)({
-    dirname: './logs',
-    level: "error",
-    filename: 'error.log',
-    datePattern: 'YYYY-MM-DD',
-    maxsize: '50mb', //5MB,
-    zippedArchive: true
-});
+const transport = () => {
+    return new winston.transports.DailyRotateFile({
+        dirname: './logs',
+        level: process.env.LOG || 'info',
+        filename: 'out.log',
+        datePattern: 'YYYY-MM-DD',
+        maxsize: '50mb', //5MB,
+        zippedArchive: true
+    });
+};
 
-const reportTransport = new (winston.transports.DailyRotateFile)({
+const transportErr = () => {
+    return new winston.transports.DailyRotateFile({
+        dirname: './logs',
+        level: "error",
+        filename: 'error.log',
+        datePattern: 'YYYY-MM-DD',
+        maxsize: '50mb', //5MB,
+        zippedArchive: true
+    });
+};
+
+const reportTransport = new winston.transports.DailyRotateFile({
     dirname: './reports/validation',
     filename: 'out.log',
     datePattern: 'YYYY-MM-DD',
@@ -58,7 +82,7 @@ const reportTransport = new (winston.transports.DailyRotateFile)({
     zippedArchive: true
 });
 
-const reportTransportErr = new (winston.transports.DailyRotateFile)({
+const reportTransportErr = new winston.transports.DailyRotateFile({
     dirname: './reports/validation',
     level: "error",
     filename: 'error.log',
@@ -67,7 +91,7 @@ const reportTransportErr = new (winston.transports.DailyRotateFile)({
     zippedArchive: true
 });
 
-const orionReportTransport = new (winston.transports.DailyRotateFile)({
+const orionReportTransport = new winston.transports.DailyRotateFile({
     dirname: './reports/orion',
     filename: 'out.log',
     datePattern: 'YYYY-MM-DD',
@@ -75,7 +99,7 @@ const orionReportTransport = new (winston.transports.DailyRotateFile)({
     zippedArchive: true
 });
 
-const orionReportTransportErr = new (winston.transports.DailyRotateFile)({
+const orionReportTransportErr = new winston.transports.DailyRotateFile({
     dirname: './reports/orion',
     level: "error",
     filename: 'error.log',
@@ -85,23 +109,32 @@ const orionReportTransportErr = new (winston.transports.DailyRotateFile)({
 });
 
 //
-// Configure the logger for log
+// Return the logger for generic app log, with specific label for passed module name
 //
-winston.loggers.add('log', {
-    transports: [
-        transport,
-        transportErr
-    ],
-    format: logFormat
-});
 
-// Add console transport in case we are not in production
-if (process.env.NODE_ENV !== 'production') {
-    winston.loggers.get('log').add(new winston.transports.Console({
-        format: logFormat,
-        level: process.env.LOG || 'info'
-    }));
-}
+const createAppLogger = (module) => {
+    let logger =
+        winston.createLogger({
+            transports: [
+                transport(),
+                transportErr()
+            ],
+            format: logFormat(module)
+        });
+
+    // Add console transport in case we are not in production
+    if (process.env.NODE_ENV !== 'production') {
+        logger.add(new winston.transports.Console({
+            format: logFormat(module),
+            level: process.env.LOG || 'info'
+        }));
+    }
+    return logger;
+
+};
+
+
+
 
 //
 // Configure the logger for report
@@ -111,7 +144,7 @@ winston.loggers.add('report', {
         reportTransport,
         reportTransportErr
     ],
-    format: logFormat
+    format: logFormat()
 });
 
 //
@@ -122,14 +155,13 @@ winston.loggers.add('orionReport', {
         orionReportTransport,
         orionReportTransportErr
     ],
-    format: logFormat
+    format: logFormat()
 });
 
 
-var logger = {
-    app: winston.loggers.get('log'),
+module.exports = {
+    app: createAppLogger,
     report: winston.loggers.get('report'),
     orionReport: winston.loggers.get('orionReport')
 };
 
-module.exports = logger;

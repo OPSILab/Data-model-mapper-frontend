@@ -20,7 +20,7 @@ const rp = require('promise-request-retry');
 
 const config = require('../../config').orionWriter;
 const report = require('../utils/logger').orionReport;
-const log = require('../utils/logger').app;
+const log = require('../utils/logger').app(module);
 const proxyConf = config.enableProxy ? config.proxy : undefined;
 
 const sleep = (ms) => {
@@ -98,7 +98,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                             return Promise.resolve(process.env.orionWrittenCount++);
 
                         } else {
-                            return Promise.reject('Update Error');
+                            return Promise.reject('Update Error').catch((error) =>  log.error('There was an error while writing Mapped Object: ' + error));
                         }
 
                     } catch (error) {
@@ -116,7 +116,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                         report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
                         log.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
                         process.env.orionUnWrittenCount++;
-                        return Promise.reject(error);
+                        return Promise.reject(error).catch((error) => log.error('There was an error while writing Mapped Object: ' + error));
 
                     }
 
@@ -130,7 +130,8 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                 }
 
             } else {
-                return Promise.reject('Error return from Context Broker: ' + JSON.stringify(createResponse) + '\n');
+                process.env.orionUnWrittenCount++;
+                return Promise.reject('Error returned from Context Broker: ' + JSON.stringify(createResponse) + '\n').catch((error) => log.error('There was an error while writing Mapped Object: ' + error));
             }
 
         } catch (error) {

@@ -18,7 +18,7 @@
 
 const nconf = require('nconf');
 const config = require('../../config');
-const log = require('./logger').app;
+const log = require('./logger').app(module);
 const path = require('path');
 const pathPattern = /^.+(\/|\\)[^\/|\\]+$/g;
 const utils = require('./utils');
@@ -225,7 +225,7 @@ const checkAndInitConf = () => {
     if (!nconf.get('updateMode') || (nconf.get('updateMode') !== 'APPEND' && nconf.get('updateMode') !== 'REPLACE')) {
         log.error('You need to specify the update Mode of Orion Context Broker, allowed values: APPEND, REPLACE');
         return false;
-    } else if (nconf.get('skipExisting') === true) {
+    } else if (nconf.get('skipExisting') !== true) {
         log.error('You need also to set true the Skip Existing parameter');
         return false;
     }

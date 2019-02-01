@@ -20,13 +20,14 @@ const csv = require('csv-stream');
 const request = require('request');
 const fs = require('fs');
 const utils = require('../utils/utils.js');
-const log = require('../utils/logger').app;
-const report = require('../utils/logger').report;
+const log = require('../utils/logger').app(module);
+const config = require('../../config');
+
 
 // All of these arguments are optional.
 var options = {
-    delimiter: ',', // default is ,
-    endLine: '\n', // default is \n,
+    delimiter: config.delimiter || ',', // default is ,
+    endLine: config.endLine || '\n', // default is \n,
     //columns: ['columnName1', 'columnName2'], // by default read the first line and use values found as columns
     columnOffset: 0, // default is 0
     escapeChar: '', // default is an empty string
@@ -86,12 +87,13 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
             // outputs the column name associated with the value found
             // console.log('#' + key + ' = ' + value);
         })
-        .on('end', function () {
-
-            finalizeProcess();
-            utils.printFinalReport(log);
-            utils.printFinalReport(report);
-
+        .on('end', async function () {
+            try {
+                await finalizeProcess();
+                
+            } catch (error) {
+                log.error("Error While finalizing the streaming process: " + error);
+            }
         });
 }
 
@@ -125,12 +127,13 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
             // outputs the column name associated with the value found
             //console.log('#' + key + ' = ' + value);
         })
-        .on('end', function () {
-
-            finalizeProcess();
-            utils.printFinalReport(log);
-            utils.printFinalReport(report);
-
+        .on('end', async function () {
+            try {
+                await finalizeProcess();
+             
+            } catch (error) {
+                log.error("Error While finalizing the streaming process: " + error);
+            }
         });
 
 }

@@ -25,7 +25,7 @@ const unorm = require('unorm');
 const staticPattern = /static:(.*)/;
 const dotPattern = /(.*)\.(.*)/;
 
-const log = require('./utils/logger').app;
+const log = require('./utils/logger').app(module);
 const report = require('./utils/logger').report;
 
 const loadMap = (mapData) => {
@@ -105,7 +105,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                         continue;
                 }
 
-                /********************* Destination Key is an object ****************************************/
+                /********************* Destination Key is an Object ****************************************/
             } else if (schemaDestKey && schemaDestKey.type === 'object' && typeof normSourceKey === 'object' ) {
 
                 for (let key in normSourceKey) {
