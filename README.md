@@ -103,7 +103,7 @@ The global setup is defined in the `config.js` file
 
 - In order to perform the mapping process, the tool takes **three** inputs:
   1) **`Source`**: The path of the **source file** containing data to be mapped (CSV, JSON or GeoJson).
-  2) **`Map`**, specifying the mapping between source fields and destrination fields. It is a **JSON** , where the key-value pairs represent the mapping for each row container in the source file.
+  2) **`Map`**, specifying the mapping between source fields and destrination fields. It is a **JSON** , where the key-value pairs represent the mapping for each row contained in the source file.
   3) **`Target Data Model`**: the name of the **target SynchroniCity Data Model**.
 
 These three inputs, can be specified either in the **`config.js`** file, as CLI arguments or in the HTTP request (depending on running mode). Following sections describe each option.
@@ -146,7 +146,7 @@ Soon available
 
 ### 3.3 Configuration - Id Pattern
 
-Following configurations are relative to fields that will compose the generate IDs of mapped entities, according to the SynchroniCity’s Entity ID Recommendation.
+Following configurations are relative to fields that will compose the generated IDs of mapped entities, according to the SynchroniCity’s Entity ID Recommendation.
 
 > **`Note`** Id Pattern fields can be specified either in the **`config.js`** file, as CLI arguments or in the HTTP request (depending on running mode).
 
