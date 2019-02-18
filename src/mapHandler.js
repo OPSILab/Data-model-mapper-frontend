@@ -1,6 +1,6 @@
 ﻿/*******************************************************************************
  * Data Model Mapper
- *  Copyright (C) 2018 Engineering Ingegneria Informatica S.p.A.
+ *  Copyright (C) 2019 Engineering Ingegneria Informatica S.p.A.
  *  
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -67,7 +67,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
 
         //  Check if destKey is present in modelSchema ?
-        if (schemaDestKey || mapDestKey == entityIdField) {
+        if (schemaDestKey || mapDestKey === entityIdField) {
 
             // If the value of key-value maping pair is a function definition, eval it.
             //if ( (typeof mapSourceField == "string") && mapSourceField.startsWith("function")) {

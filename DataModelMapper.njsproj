@@ -32,6 +32,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="src\server\apiHandlers\getMappingStatus.js" />
+    <Compile Include="src\server\apiHandlers\startMapping.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\server\setup.js">
       <SubType>Code</SubType>
     </Compile>
@@ -69,6 +73,7 @@
     <Folder Include="src\" />
     <Folder Include="src\cli\" />
     <Folder Include="src\parsers\" />
+    <Folder Include="src\server\apiHandlers\" />
     <Folder Include="src\writers\" />
     <Folder Include="src\server\" />
     <Folder Include="src\utils\" />

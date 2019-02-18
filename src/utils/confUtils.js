@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Data Model Mapper
- *  Copyright (C) 2018 Engineering Ingegneria Informatica S.p.A.
+ *  Copyright (C) 2019 Engineering Ingegneria Informatica S.p.A.
  *  
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -225,10 +225,11 @@ const checkAndInitConf = () => {
     if (!nconf.get('updateMode') || (nconf.get('updateMode') !== 'APPEND' && nconf.get('updateMode') !== 'REPLACE')) {
         log.error('You need to specify the update Mode of Orion Context Broker, allowed values: APPEND, REPLACE');
         return false;
-    } else if (nconf.get('skipExisting') !== true) {
-        log.error('You need also to set true the Skip Existing parameter');
-        return false;
     }
+    //} else if (nconf.get('skipExisting') !== true) {
+    //    log.error('You need also to set true the Skip Existing parameter');
+    //    return false;
+    //}
 
     nconf.set('fiwareService', nconf.get('fiwareService') || config.orionWriter.fiwareService);
     //if (!nconf.get('fiwareService')) {

@@ -1,6 +1,6 @@
 ﻿/*******************************************************************************
  * Data Model Mapper
- *  Copyright (C) 2018 Engineering Ingegneria Informatica S.p.A.
+ *  Copyright (C) 2019 Engineering Ingegneria Informatica S.p.A.
  *  
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,18 +27,17 @@ if (config.mode === 'commandLine') {
     const cli = require('./src/cli/setup');
     return cli();
 } else if (config.mode === 'server') {
-    const s = require('./src/server/setup');
-    return s();
+    const server = require('./src/server/setup');
+    return server();
 }
 
 
-module.exports = function (sourceDataIn, mapPathIn, dataModelIn) {
-    var module = {};
+module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
     if (config.mode === 'commandLine') {
         const cli = require('./src/cli/setup');
         return cli(sourceDataIn, mapPathIn, dataModelIn);
     } else if (config.mode === 'server') {
-        const s = require('./src/server/setup');
-        return s();
+        const server = require('./src/server/setup');
+        return server();
     }
 };
