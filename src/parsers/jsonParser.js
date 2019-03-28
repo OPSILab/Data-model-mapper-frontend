@@ -105,7 +105,7 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
             // console.log(columns);
         })
         .on('data', function (row) {
-            console.log(row);
+         //   console.log(row);
             rowNumber = Number(process.env.rowNumber) + 1;
             process.env.rowNumber = rowNumber;
             // outputs an object containing a set of key/value pair representing a line found in the csv file.

@@ -106,6 +106,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
     var required = undefined;
     var anyOf = undefined;
 
+  
     if (isSingleField) {
         required = schema.required;
         anyOf = schema.anyOf;

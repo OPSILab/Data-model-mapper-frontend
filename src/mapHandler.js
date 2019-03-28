@@ -99,14 +99,14 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                             parsedSourceKey['coordinates'] = new Function("input", "return " + "[Number(input['" + normSourceKey.coordinates[0] + "']),Number(input['" + normSourceKey.coordinates[1] + "'])]");
                         }
 
-                    } else if (normSourceKey === 'geometry') {
+                    } else if (normSourceKey === 'geometry' || normSourceKey === 'location') {
                         parsedSourceKey = new Function("input", "return input['" + normSourceKey + "'];");
                     } else
                         continue;
                 }
 
                 /********************* Destination Key is an Object ****************************************/
-            } else if (schemaDestKey && schemaDestKey.type === 'object' && typeof normSourceKey === 'object' ) {
+            } else if (schemaDestKey && schemaDestKey.type === 'object' && typeof normSourceKey === 'object') {
 
                 for (let key in normSourceKey) {
 
@@ -199,7 +199,9 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
             /********************* Check if mapping result is valid ************************************************/
 
-            if (singleResult && (mapDestKey == entityIdField || checkPairWithDestModelSchema(singleResult, mapDestKey, modelSchema, rowNumber))) {
+
+            if (singleResult && Object.entries(singleResult).length !== 0
+                && (mapDestKey == entityIdField || checkPairWithDestModelSchema(singleResult, mapDestKey, modelSchema, rowNumber))) {
 
                 // Additional processing of sourceValue (e.g. filtering or concatenation with other fields)
                 // .....
@@ -318,46 +320,47 @@ const handleSourceFieldsArray = (sourceFieldArray, sourceFieldType) => {
 */
 const handleSourceFieldsToDestArray = (sourceFieldArray) => {
 
-    var finalArray = [];
-    var resultString = undefined;
-    // If value of string array startwith "static:" it is a static string to be concatenated,
-    // not the name of the source field.
-    sourceFieldArray.forEach(function (value, index, array) {
+    if (sourceFieldArray.length > 0) {
+        var finalArray = [];
+        var resultString = undefined;
+        // If value of string array startwith "static:" it is a static string to be concatenated,
+        // not the name of the source field.
+        sourceFieldArray.forEach(function (value, index, array) {
 
-        var staticMatch = value.match(staticPattern);
-        if (staticMatch && staticMatch.length > 0) {
+            var staticMatch = value.match(staticPattern);
+            if (staticMatch && staticMatch.length > 0) {
 
-            finalArray[index] = staticMatch[1];
-
-        } else {
-
-            var splittedDot = value.match(dotPattern);
-            if (splittedDot) {
-
-                splittedDot.shift();
-                if (splittedDot.length > 0)
-                    finalArray[index] = "input['" + splittedDot.join("']['") + "']";
+                finalArray[index] = staticMatch[1];
 
             } else {
-                finalArray[index] = "input['" + value + "']";
+
+                var splittedDot = value.match(dotPattern);
+                if (splittedDot) {
+
+                    splittedDot.shift();
+                    if (splittedDot.length > 0)
+                        finalArray[index] = "input['" + splittedDot.join("']['") + "']";
+
+                } else {
+                    finalArray[index] = "input['" + value + "']";
+                }
             }
-        }
-    });
+        });
 
-    // print Array String as output
-    resultString = '[';
-    finalArray.forEach(function (value, index) {
-        if (value.startsWith("input")) {
-            resultString += value + ',';
+        // print Array String as output
+        resultString = '[';
+        finalArray.forEach(function (value, index) {
+            if (value.startsWith("input")) {
+                resultString += value + ',';
 
-        } else { //static
-            resultString += '"' + value + '",';
-        }
-    });
+            } else { //static
+                resultString += '"' + value + '",';
+            }
+        });
 
-    resultString = resultString.slice(0, resultString.length - 1) + ']';
-    return resultString;
-
+        resultString = resultString.slice(0, resultString.length - 1) + ']';
+        return resultString;
+    } else return '[]';
 };
 
 /* Returns array notation from dotten notation (without input)

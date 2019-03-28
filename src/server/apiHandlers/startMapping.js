@@ -38,7 +38,6 @@ const setOptionalConfs = (rowStart, rowEnd, site, service, group, orionUrl, upda
 
 
 
-
 module.exports = async (req, res) => {
 
     var sourceData = undefined;
@@ -164,7 +163,7 @@ module.exports = async (req, res) => {
 
             }
 
-            delete map['targetDataModel']; // use targetDataModel as reserved field ???
+            //delete map['targetDataModel']; // use targetDataModel as reserved field ???
 
             try {
                 await process.processSource(sourceData, sourceDataExt, map, targetDataModel);

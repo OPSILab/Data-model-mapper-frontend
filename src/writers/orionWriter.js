@@ -361,8 +361,8 @@ function toOrionObject(obj, schema) {
                     else
                         obj[key] = {
                             type: modelFieldType,
-                            value: objField,
-                            format: modelFieldFormat
+                            value: objField
+                           // format: modelFieldFormat
                         };
                 }
                 else

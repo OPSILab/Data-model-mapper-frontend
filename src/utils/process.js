@@ -43,6 +43,8 @@ var promises = [];
 
 const processSource = async (sourceData, sourceDataType, mapData, dataModelSchemaPath) => {
 
+    reinitializeProcessStatus();
+
     if (dataModelSchemaPath && mapData) {
 
         if (sourceData) {
@@ -92,7 +94,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                             return Promise.reject("Incorrect target Data Model name");
                         }
                     }
-
+                    delete map['targetDataModel'];
                     var loadedSchema = await schemaHandler.parseDataModelSchema(dataModelSchemaPath);
                     log.info('Data Model Schema loaded and dereferenced');
 
