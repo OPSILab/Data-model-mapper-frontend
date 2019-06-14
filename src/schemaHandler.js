@@ -132,9 +132,9 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
 
         return true;
     } else {
-        log.info('Source Row/Object number ' + rowNumber + ' invalid: ' + ajv.errorsText(validate.errors));
+        log.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
         if (!isSingleField)
-            report.info('Source Row/Object number ' + rowNumber + ' invalid: ' + ajv.errorsText(validate.errors));
+            report.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
         return false;
     }
 }

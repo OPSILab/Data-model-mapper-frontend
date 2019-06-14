@@ -120,6 +120,8 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                         parsedSourceKey[key] = {};
                         if (schemaFieldType === 'number' || schemaFieldType === 'integer') {
                             parsedSourceKey[key] = new Function("input", "return Number(input['" + mapSourceSubField + "']);");
+                        } else if (schemaFieldType === 'boolean') {
+                            parsedSourceKey[key] = new Function("input", "return input['" + mapSourceSubField + "'].toLowerCase() == 'true' ? true: false");
                         } else if (schemaFieldType === 'string' && schemaFieldFormat === 'date-time') {
                             parsedSourceKey[key] = new Function("input", "return new Date(input['" + mapSourceSubField + "']).toISOString();");
                         } else if (schemaFieldType === 'string' && Array.isArray(mapSourceSubField)) {
@@ -148,12 +150,21 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                     parsedSourceKey = new Function("input", "return " + handleSourceFieldsArray(normSourceKey, 'number').result);
 
                 else {
-                    let num = eval('source' + handleDottedField(normSourceKey));
-                    if (typeof num === 'string')
-                        parsedSourceKey = new Function("input", "return Number(input['" + normSourceKey + "'])");
+                    parsedSourceKey = handleDottedField(normSourceKey);
+                    if (parsedSourceKey.startsWith('[')) {
+                        let num = eval('source' + parsedSourceKey);
+                        if (typeof num === 'string')
+                            parsedSourceKey = new Function("input", "return Number(input['" + normSourceKey + "'])");
+                        else if (typeof num === 'number')
+                            parsedSourceKey = new Function("input", "return input['" + normSourceKey + "']");
+                    }
                 }
 
                 /********************* Destination Field is a String ********************************************/
+            } else if (schemaDestKey && (schemaDestKey.type === 'boolean')) {
+
+                parsedSourceKey = new Function("input", "return input['" + normSourceKey + "'].toLowerCase() == 'true' ? true: false");
+
             } else if (schemaDestKey && schemaDestKey.type === 'string') {
 
                 if (schemaDestKey.format === 'date-time') {
@@ -164,6 +175,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                     parsedSourceKey = new Function("input", "return new Date(input" + handleDottedField(normSourceKey) + ").toISOString()");
 
                 } else if (Array.isArray(normSourceKey)) {
+
                     parsedSourceKey = new Function("input", "return " + handleSourceFieldsArray(normSourceKey).result);
 
                 } else if (typeof normSourceKey === 'string' && normSourceKey.startsWith("static:")) {
@@ -193,7 +205,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             try {
                 singleResult = converter(source);
             } catch (error) {
-                log.error("There was an error: " + error + " while processing " + parsedSourceKey + " field");
+                log.error(`There was an error: ${error} while processing ${parsedSourceKey} field`);
                 continue;
             }
 
@@ -210,11 +222,11 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 result[mapDestKey] = singleResult[mapDestKey];
 
             } else {
-                log.debug('Skipping source field: ' + JSON.stringify(mapSourceKey) + ' because is not a valid value for mapped key: ' + mapDestKey);
+                log.debug(`Skipping source field: ${JSON.stringify(mapSourceKey)} because the value ${JSON.stringify(singleResult)} is not valid for mapped key: ${mapDestKey}`);
             }
 
         } else {
-            log.info('The mapped key: ' + mapDestKey + ' is not present in the selected Data Model Schema');
+            log.info(`The mapped key: ${mapDestKey} is not present in the selected Data Model Schema`);
         }
 
 
@@ -370,7 +382,7 @@ const handleDottedField = (fieldName) => {
     var staticMatch = fieldName.match(staticPattern);
     if (staticMatch && staticMatch.length > 0) {
 
-        finalArray[index] = staticMatch[1];
+        return staticMatch[1];
 
     } else {
 
