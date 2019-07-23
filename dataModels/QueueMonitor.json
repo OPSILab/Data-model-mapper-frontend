@@ -67,6 +67,9 @@
         "serviceStatusNote": {
           "type": "string"
         },
+        "scheduleTime": {
+          "type": "string"
+        },
         "queueLine": {
           "type": "string"
         },
