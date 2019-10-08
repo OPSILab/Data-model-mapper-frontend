@@ -121,7 +121,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                         if (schemaFieldType === 'number' || schemaFieldType === 'integer') {
                             parsedSourceKey[key] = new Function("input", "return Number(input['" + mapSourceSubField + "']);");
                         } else if (schemaFieldType === 'boolean') {
-                            parsedSourceKey[key] = new Function("input", "return input['" + mapSourceSubField + "'].toLowerCase() == 'true' ? true: false");
+                            parsedSourceKey[key] = new Function("input", "return (input['" + mapSourceSubField + "'].toLowerCase() == 'true' || input['" + mapSourceSubField + "'] == 1 || input['" + mapSourceSubField + "'] == '1'  ) ? true: false");
                         } else if (schemaFieldType === 'string' && schemaFieldFormat === 'date-time') {
                             parsedSourceKey[key] = new Function("input", "return new Date(input['" + mapSourceSubField + "']).toISOString();");
                         } else if (schemaFieldType === 'string' && Array.isArray(mapSourceSubField)) {
@@ -163,7 +163,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 /********************* Destination Field is a String ********************************************/
             } else if (schemaDestKey && (schemaDestKey.type === 'boolean')) {
 
-                parsedSourceKey = new Function("input", "return input['" + normSourceKey + "'].toLowerCase() == 'true' ? true: false");
+                parsedSourceKey = new Function("input", "return (input['" + normSourceKey + "'].toLowerCase() == 'true' || input['" + normSourceKey + "'] == 1 || input['" + normSourceKey + "'] == '1'  ) ? true: false");
 
             } else if (schemaDestKey && schemaDestKey.type === 'string') {
 

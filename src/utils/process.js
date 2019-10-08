@@ -107,6 +107,10 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
                 switch (extension || sourceDataType.toLowerCase()) {
 
+                    case '.txt':
+                    case 'txt':
+                        csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
+                        break;
                     case '.csv':
                     case 'csv':
                         csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);

@@ -4,8 +4,24 @@
   "title": "NGSI GTFS Schema - Agency",
   "description": "GTFS Agency",
   "type": "object",
+  "anyOf": [
+		{
+			"required": [
+				"location"
+			]
+		},
+		{
+			"required": [
+				"address"
+			]
+		}
+		
+	],
   "allOf": [
     { "$ref": "common-schema.json#/definitions/GSMA-Commons" },
+    {
+			"$ref": "common-schema.json#/definitions/Location-Commons"
+		},
     {
       "properties": {
         "type": {
