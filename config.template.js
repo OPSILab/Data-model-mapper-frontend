@@ -43,6 +43,12 @@ var config = {
     **/
     rowStart: 0,
     rowEnd: Infinity,
+    
+    /************************* CSV Parser configuration *******************
+     * Configuration parameters in case of CSV input
+     **/
+    delimiter: ",", // Column delimiter
+    endLine: "\n",  // Row delimiter
 
     /********************** OUTPUT/WRITERS CONFIGURATION ****************** 
     * Following is related to writers which will handle mapped objects. Possible values: fileWriter, orionWriter
@@ -94,7 +100,8 @@ config.orionWriter = {
 
 /*************** File Wirter CONFIGURATION *******************************/				 
 config.fileWriter = {
-    filePath: "./result.json"
+    filePath: "./result.json",
+    addBlankLine: true
 };
 
 module.exports = config;
