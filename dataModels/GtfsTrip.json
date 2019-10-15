@@ -39,6 +39,10 @@
         "direction": {
           "type": "number",
           "enum": [0, 1]
+        },
+        "wheelChairAccessible": {
+          "type": "string",
+          "enum": ["0", "1", "2"]
         }
       }
     }
