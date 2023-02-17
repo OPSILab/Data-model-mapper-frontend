@@ -184,9 +184,9 @@ const parseFilePath = (pathString) => {
 
 };
 // Utility function that prints the final report by using the input logger
-const printFinalReport = (logger) => {
+const printFinalReport = async (logger) => {
 
-    logger.info('\n--------  MAPPING REPORT ----------\n' +
+    await logger.info('\n--------  MAPPING REPORT ----------\n' +
         '\t Processed objects: ' + process.env.rowNumber + '\n' +
         '\t Mapped and Validated Objects: ' + process.env.validCount + '/' + process.env.rowNumber + '\n' +
         '\t Mapped and NOT Validated Objects: ' + process.env.unvalidCount + '/' + process.env.rowNumber + '\n' +

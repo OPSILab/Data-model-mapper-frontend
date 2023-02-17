@@ -38,7 +38,7 @@ const writeObject = async (objNumber, obj, addBRLine) => {
 
     if (obj && process.env.outFilePath && outFileStream) {
 
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
 
             log.debug('Writing to file, object number: ' + objNumber + ' , id: ' + obj.id);
             try {
@@ -71,7 +71,7 @@ const writeObject = async (objNumber, obj, addBRLine) => {
         });
     } else {
 
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             console.log('');
             log.debug("Mapped Object is undefined or the FileWriter was not correctly configured");
             return resolve();
@@ -81,20 +81,20 @@ const writeObject = async (objNumber, obj, addBRLine) => {
 
 const finalizeFile = async () => {
 
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
 
-        outFileStream.write("]");
-        outFileStream.on('end', () => resolve("File stream correctly closed"));
-        outFileStream.on('error', () => reject("File stream failed to close"));
-        outFileStream.end();
+        await outFileStream.write("]");
+        await outFileStream.on('end', () => resolve("File stream correctly closed"));
+        await outFileStream.on('error', () => reject("File stream failed to close"));
+        await outFileStream.end();
         outFileStream = undefined;
         return resolve();
     }).then(value => log.debug(value)).catch(value => log.error(value));
 };
 
-const printFileFinalReport = (logger) => {
+const printFileFinalReport = async (logger) => {
 
-    logger.info('\t\n--------FILE WRITER REPORT----------\n' +
+    await logger.info('\t\n--------FILE WRITER REPORT----------\n' +
         '\t Object written to File: ' + process.env.fileWrittenCount + '/' + process.env.validCount + '\n' +
         '\t Object NOT written to File: ' + process.env.fileUnWrittenCount + '/' + process.env.validCount + '\n' +
         '\t-----------------------------------------');
@@ -102,9 +102,9 @@ const printFileFinalReport = (logger) => {
 };
 
 /// Use Events?
-function checkAndPrintFinalReport() {
+async function checkAndPrintFinalReport() {
     if (parseInt(process.env.fileWrittenCount) + parseInt(process.env.fileUnWrittenCount) == parseInt(process.env.validCount)) {
-        printFileFinalReport(log);
+        await printFileFinalReport(log);
     }
 }
 

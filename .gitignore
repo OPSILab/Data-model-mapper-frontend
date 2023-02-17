@@ -18,3 +18,11 @@ reports/
 logs/
 config.js
 result.json
+result_bak.json
+dataModelTemp1.json
+examples/sourceFileTemp.*
+i
+testing/
+
+# History
+.history/

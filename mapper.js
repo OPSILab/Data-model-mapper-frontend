@@ -27,7 +27,7 @@ if (config.mode === 'commandLine') {
     const cli = require('./src/cli/setup');
     return cli();
 } else if (config.mode === 'server') {
-    const server = require('./src/server/setup');
+    const server = require('./src/server/server');
     return server();
 }
 
@@ -37,7 +37,7 @@ module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
         const cli = require('./src/cli/setup');
         return cli(sourceDataIn, mapPathIn, dataModelIn);
     } else if (config.mode === 'server') {
-        const server = require('./src/server/setup');
+        const server = require('./src/server/server');
         return server();
     }
 };

@@ -24,6 +24,7 @@ const RefParser = require('json-schema-ref-parser');
 
 const log = require('./utils/logger').app(module);
 const report = require('./utils/logger').report;
+const config = require ('../config')
 
 
 // Load JSON Schema either from file or url, depending on the scructure of passed path
@@ -116,6 +117,8 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
 
     var validate = ajv.compile(schema);
     var valid = validate(data);
+
+    if (config.mode === 'server' && data.id) process.res.send(data)//G:
 
     // Recover the required field, if removed in case of single field
     if (isSingleField && (required || anyOf)) {

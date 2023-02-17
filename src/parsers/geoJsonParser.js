@@ -22,6 +22,8 @@ const fs = require('fs');
 const utils = require('../utils/utils.js');
 const log = require('../utils/logger').app(module);
 const report = require('../utils/logger').report;
+const apiOutput = require('../server/api/services/service')
+const config = require('./../../config');
 
 function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
@@ -66,6 +68,7 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
 
             rowNumber = Number(process.env.rowNumber) + 1;
             process.env.rowNumber = rowNumber;
+            if (config.mode === 'server') apiOutput.outputFile.push(row);
             // outputs an object containing a set of key/value pair representing a line found in the csv file.
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {
 
@@ -79,7 +82,12 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
         })
         .on('end', function () {
             try {
+                if (config.mode === 'server') {
+                    process.res.send(apiOutput.outputFile);
+                    apiOutput.outputFile = [];
+                }
                 finalizeProcess();
+                log.debug("urlToRowStream: request(url).pipe(geo.parse()).on(end)");
                 utils.printFinalReport(log);
                 utils.printFinalReport(report);
             } catch (error) {
@@ -107,6 +115,7 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
 
             rowNumber++;
             process.env.rowNumber = rowNumber;
+            if (config.mode === 'server') apiOutput.outputFile.push(row);
             // outputs an object containing a set of key/value pair representing a line found in the csv file.
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {
 
@@ -120,8 +129,12 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
             //console.log('#' + key + ' = ' + value);
         })
         .on('end', function () {
-
+            if (config.mode === 'server') {
+                process.res.send(apiOutput.outputFile);
+                apiOutput.outputFile = [];
+            }
             finalizeProcess();
+            log.debug("fileToRowStream: inputData.pipe(geo.parse()).on(end)");
             utils.printFinalReport(log);
             utils.printFinalReport(report);
 

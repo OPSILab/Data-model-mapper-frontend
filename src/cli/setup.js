@@ -18,15 +18,16 @@
 
 const commandLine = require('../utils/confUtils');
 const process = require('../utils/process');
-const config = require('../../config');
 
 const log = require('../utils/logger').app(module);
 const utils = require('../utils/utils');
 
-module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
+module.exports = async (sourceDataIn, mapPathIn, dataModelIn) => {
     log.info("Initializing Mapper in Command Line Mode");
 
-    if (commandLine.init()) {
+    if (commandLine.init(sourceDataIn, mapPathIn, dataModelIn)) {
+
+        log.debug("commandLine.init()");
 
         // file path or directly string/binary content 
         var sourceData = sourceDataIn || commandLine.getParam('sourceDataPath');
@@ -34,10 +35,13 @@ module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
         var dataModelPath = utils.getDataModelPath(dataModelIn) || commandLine.getParam('targetDataModel');
 
         try {
-            process.processSource(sourceData, "", mapPath, dataModelPath);
+            await process.processSource(sourceData, "", mapPath, dataModelPath);
         } catch (error) {
-            return error;
+            log.error(error)
+            return error
         }
+
+        log.debug("process.processSource end")
 
     } else {
         log.error("There was an error while initializing Mapper configuration");

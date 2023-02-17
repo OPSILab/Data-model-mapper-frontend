@@ -37,8 +37,12 @@ var options = {
 
 function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
+    if (process.env.delimiter) options.delimiter = process.env.delimiter;
+
     // The Source Data is the File Stream
     if (sourceData && utils.isReadableStream(sourceData)) {
+        
+        log.debug("The Source Data is the File Stream")
 
         try {
             fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);

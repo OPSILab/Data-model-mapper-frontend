@@ -152,20 +152,20 @@ const help = () => {
 /* Check if mandatory configuration parameters are set either via CLI args or config file 
  * 
  **/
-const checkAndInitConf = () => {
+const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
 
     /************ MAPPING CONFIGURATION PARAMETERS ************/
-    var mapPath = nconf.get('mapPath');
+    var mapPath = mapPathIn || nconf.get('mapPath');
     if (!mapPath) {
         log.error('You need to specify the mapping file path');
         return false;
     }
-    if (mapPath && !mapPath.match(pathPattern)) {
+    if (!mapPath[1] && mapPath && !mapPath.match(pathPattern)) {//TODO verify this
         log.error('Incorrect mapping file path');
         return false;
     }
 
-    var sourcePath = nconf.get('sourceDataPath');
+    var sourcePath = sourceDataIn || nconf.get('sourceDataPath');
     if (!sourcePath) {
         log.error('You need to specify the source file path');
         return false;
@@ -183,7 +183,7 @@ const checkAndInitConf = () => {
         return false;
     }
 
-    var dataModel = nconf.get('targetDataModel');
+    var dataModel = dataModelPath || nconf.get('targetDataModel');
     if (!utils.checkInputDataModel(config.modelSchemaFolder, dataModel)) {
         log.error('Incorrect target Data Model name');
         return false;
@@ -289,9 +289,9 @@ const checkAndInitConf = () => {
     return true;
 };
 
-const init = () => {
+function init (sourceDataIn, mapPathIn, dataModelPath) {
     help();
-    return checkAndInitConf();
+    return checkAndInitConf(sourceDataIn, mapPathIn, dataModelPath);
 };
 
 const getParam = (par) => {

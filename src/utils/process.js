@@ -47,8 +47,12 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
     if (dataModelSchemaPath && mapData) {
 
+        log.debug("dataModelSchemaPath && mapData")
+
         if (sourceData) {
 
+            log.debug("sourceData:\n", sourceData);
+          
             if (typeof sourceData === 'string') {
 
                 sourceData = utils.parseFilePath(sourceData);
@@ -67,13 +71,13 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
             if (typeof mapData === 'string' && !mapData.startsWith("{")) {
                 mapData = utils.parseFilePath(mapData);
+                log.debug("typeof mapData === 'string' && !mapData.startsWith({})");
             }
-
 
             try {
                 // Load Map form file/url or directly as object
-                var map = await mapHandler.loadMap(mapData);
-
+                var map = await mapHandler.loadMap(mapData[1]=="mapData" ? mapData[0] : mapData); // map is the file map loaded
+                log.debug("map is the file map loaded\n", map)
             } catch (error) {
                 log.error('There was an error while loading Map: ' + error);
                 return Promise.reject('There was an error while loading Map: ' + error);
@@ -109,49 +113,48 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
                     case '.txt':
                     case 'txt':
-                        csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
+                        await csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, await processRow, await processMappedObject, await finalizeProcess);
                         break;
                     case '.csv':
                     case 'csv':
-                        csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
+                        await csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, await processRow, await processMappedObject, await finalizeProcess);
                         break;
                     case '.json':
                     case 'json':
-                        jsonParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
+                        await jsonParser.sourceDataToRowStream(sourceData, map, loadedSchema, await processRow, await processMappedObject, await finalizeProcess);
                         break;
                     case '.geojson':
                     case 'geojson':
-                        geoParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
+                        await geoParser.sourceDataToRowStream(sourceData, map, loadedSchema, await processRow, await processMappedObject, await finalizeProcess);
                         break;
                     default:
                         break;
                 }
-
-                return Promise.resolve("OK");
+                return await Promise.resolve("OK");
 
             } else {
                 log.error('There was an error while loading Map File: ' + error.stack);
-                return Promise.reject('There was an error while loading Map File');
+                return await Promise.reject('There was an error while loading Map File');
             }
-
 
         } else {
             log.error('The source Data is not a valid file nor a valid path/url: ' + error.stack);
-            return Promise.reject('The source Data is not a valid file nor a valid path/url');
+            return await Promise.reject('The source Data is not a valid file nor a valid path/url');
         }
 
     } else if (!dataModelSchemaPath) {
         log.error('Data Model Schema path not specified');
-        return Promise.reject('Data Model Schema path not specified');
+        return await Promise.reject('Data Model Schema path not specified');
     } else {
         log.error('Map path not specified');
-        return Promise.reject('Map path not specified');
+        return await Promise.reject('Map path not specified');
     }
+    
 
 };
 
 
-const processRow = (rowNumber, row, map, schema, mappedHandler) => {
+const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
 
     /** If any, extract site, service and group for Id Pattern from Map and 
      * set globally for each row of this mapping, otherwise use the ones initialized in the Global Vars 
@@ -164,28 +167,27 @@ const processRow = (rowNumber, row, map, schema, mappedHandler) => {
     delete map['idService'];
     delete map['idGroup'];
 
-    var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, process.env.idSite, process.env.idService, process.env.idGroup, config.entityNameField);
+    var result = await mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, process.env.idSite, process.env.idService, process.env.idGroup, config.entityNameField);
 
     log.debug("Row: " + rowNumber + " - Object mapped correctly ");
-    mappedHandler(rowNumber, result, schema);
+    await mappedHandler(rowNumber, result, schema);
 
 };
 
-
 const processMappedObject = async (objNumber, obj, modelSchema) => {
 
-    config.writers.forEach((writer) => {
+    await config.writers.forEach(async (writer) => {
 
         switch (writer) {
 
             case 'orionWriter':
-                promises.push(orionWriter.writeObject(objNumber, obj, modelSchema));
+                promises.push(await orionWriter.writeObject(objNumber, obj, modelSchema));
                 break;
             case 'fileWriter':
-                promises.push(fileWriter.writeObject(objNumber, obj, config.fileWriter.addBlankLine));
+                promises.push(await fileWriter.writeObject(objNumber, obj, config.fileWriter.addBlankLine));
                 break;
             default:
-                promises.push(utils.sleep(0));
+                promises.push(await utils.sleep(0));
                 break;
         }
     });
@@ -203,20 +205,20 @@ const finalizeProcess = async () => {
         // Wait until all promises resolve (defined and pushed in processMappedObject handler)
         if (utils.isFileWriterActive()) {
             await fileWriter.finalize(); // Finalize file in case of using fileWriter
-            fileWriter.checkAndPrintFinalReport();
+            await fileWriter.checkAndPrintFinalReport();
         }
 
         if (utils.isOrionWriterActive()) {
-            orionWriter.checkAndPrintFinalReport();
+            await orionWriter.checkAndPrintFinalReport();
         }
 
-        utils.printFinalReport(log);
-        utils.printFinalReport(report);
+        await utils.printFinalReport(log);
+        await utils.printFinalReport(report);
 
-        return Promise.resolve();
+        return await Promise.resolve();
 
     } catch (error) {
-        return Promise.reject(error);
+        return await Promise.reject(error);
     }
 };
 

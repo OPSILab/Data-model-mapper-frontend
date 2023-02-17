@@ -22,15 +22,18 @@ const fs = require('fs');
 const utils = require('../utils/utils');
 const log = require('../utils/logger').app(module);
 const report = require('../utils/logger').report;
+const apiOutput = require('../server/api/services/service')
+const config = require('./../../config');
 
 
-function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
+
+async function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
     // The source Data is the file content itself
     if (sourceData && !sourceData.ext) {
 
         try {
-            fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
+            await fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
             log.error('There was an error while getting buffer from source data: ' + err);
@@ -40,23 +43,23 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
 
     // The source Data is the file URL
     else if (utils.httpPattern.test(sourceData.path))
-        urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
+        await urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
 
     // The Source Data is the file path
     else if (sourceData.ext)
-        fileToRowStream(fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
+        await fileToRowStream(await fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
     else
         log.error("No valid Source Data was provided");
 
 }
 
-function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizeProcess) {
+async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
     var rowNumber = Number(process.env.rowNumber);
     var rowStart = Number(process.env.rowStart);
     var rowEnd = Number(process.env.rowEnd);
 
-    request(url).pipe(JSONStream.parse('.*'))
+    await request(url).pipe(JSONStream.parse('.*'))
         .on('error', function (err) {
             console.error(err);
         })
@@ -67,6 +70,7 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
 
             rowNumber++;
             process.env.rowNumber = rowNumber;
+            if (config.mode === 'server') apiOutput.outputFile.push(row);
             // outputs an object containing a set of key/value pair representing a line found in the csv file.
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {
 
@@ -78,11 +82,16 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
             // outputs the column name associated with the value found
             // console.log('#' + key + ' = ' + value);
         })
-        .on('end', function () {
+        .on('end', async function () {
             try {
-                finalizeProcess();
-                utils.printFinalReport(log);
-                utils.printFinalReport(report);
+                if (config.mode === 'server') {
+                    process.res.send(apiOutput.outputFile);
+                    apiOutput.outputFile = [];
+                }
+                await finalizeProcess();
+                log.debug("urlToRowStream: request(url).pipe(geo.parse()).on(end)");
+                await utils.printFinalReport(log);
+                await utils.printFinalReport(report);
             } catch (error) {
                 log.error("Error While finalizing the streaming process: " + error);
             }
@@ -91,13 +100,13 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
 }
 
 
-function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
+async function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
     var rowNumber = Number(process.env.rowNumber);
     var rowStart = Number(process.env.rowStart);
     var rowEnd = Number(process.env.rowEnd);
 
-    inputData.pipe(JSONStream.parse('.*'))
+    await inputData.pipe(JSONStream.parse('.*'))
         .on('error', function (err) {
             console.error(err);
         })
@@ -105,9 +114,10 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
             // console.log(columns);
         })
         .on('data', function (row) {
-         //   console.log(row);
             rowNumber = Number(process.env.rowNumber) + 1;
             process.env.rowNumber = rowNumber;
+            if (config.mode === 'server') apiOutput.outputFile.push(row);
+
             // outputs an object containing a set of key/value pair representing a line found in the csv file.
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {
 
@@ -119,11 +129,15 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
             // outputs the column name associated with the value found
             //console.log('#' + key + ' = ' + value);
         })
-        .on('end', function () {
-
-            finalizeProcess();
-            utils.printFinalReport(log);
-            utils.printFinalReport(report);
+        .on('end', async function () {
+            if (config.mode === 'server') {
+                process.res.send(apiOutput.outputFile);
+                apiOutput.outputFile = [];
+            }
+            await finalizeProcess();
+            log.debug("fileToRowStream: inputData.pipe(geo.parse()).on(end)");
+            await utils.printFinalReport(log);
+            await utils.printFinalReport(report);
 
         });
 

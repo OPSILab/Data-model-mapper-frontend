@@ -378,9 +378,9 @@ function toOrionObject(obj, schema) {
 }
 
 
-function printOrionFinalReport(logger) {
+async function printOrionFinalReport(logger) {
 
-    logger.info('\t\n--------ORION REPORT----------\n' +
+    await logger.info('\t\n--------ORION REPORT----------\n' +
         '\t Object written to Orion Context Broker: ' + process.env.orionWrittenCount + '/' + process.env.validCount + '\n' +
         '\t Object NOT written to Orion Context Broker: ' + process.env.orionUnWrittenCount + '/' + process.env.validCount + '\n' +
         '\t Object SKIPPED: ' + process.env.orionSkippedCount + '/' + process.env.validCount + '\n' +
@@ -389,10 +389,10 @@ function printOrionFinalReport(logger) {
 }
 
 /// Use Events?
-function checkAndPrintFinalReport() {
+async function checkAndPrintFinalReport() {
     if ((parseInt(process.env.orionWrittenCount) + parseInt(process.env.orionSkippedCount) + parseInt(process.env.orionUnWrittenCount)) == parseInt(process.env.validCount)) {
-        printOrionFinalReport(log);
-        printOrionFinalReport(report);
+        await printOrionFinalReport(log);
+        await printOrionFinalReport(report);
     }
 }
 
