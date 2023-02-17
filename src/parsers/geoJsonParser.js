@@ -130,7 +130,12 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
         })
         .on('end', function () {
             if (config.mode === 'server') {
-                process.res.send(apiOutput.outputFile);
+                try {
+                    process.res.send(apiOutput.outputFile);
+                }
+                catch (error) {
+                    console.log(error);
+                }
                 apiOutput.outputFile = [];
             }
             finalizeProcess();

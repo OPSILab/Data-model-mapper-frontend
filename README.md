@@ -136,9 +136,22 @@ node mapper -s "path/to/sourcefile.csv" -m "path/to/mapFile.json -d "WeatherObse
 
 > **`Note`** Previous CLI arguments, if provided, will **override** the default ones specified in `config.js` file.
 
-#### 3.2.3 Inputs configuration in the HTTP request
+#### 3.2.3 Inputs configuration in the body of HTTP request
 
-Soon available
+- **``sourceDataType``**: the type of the source data to convert.
+- **``sourceDataIn``**: the path of the source data to convert.
+- **``sourceData``**: the source data to convert.
+- **``mapPathIn``**: the path of the mapping file.
+- **``mapPath``**: the mapping file.
+- **``dataModelIn``**: the path of the target data model to compare with the output for validation.
+- **``dataModel``**: the target data model to compare with the output for validation.
+- **``csvDelimiter``**: the csvDelimiter.
+
+Actually with geojson sourceDataType the response will contain the first element of the FeatureCollection. Soon the entire collection will be exported
+in the response.
+With the csv sourceDataType, the array in the object inside the JSON will not be exported in the response and the dimension of the array in the root of 
+the JSON will be limited of the dimension set in the map file. Soon will be added full compatibility with array
+
 
 --------------------
 
@@ -173,14 +186,6 @@ In order to use inputs configuration as CLI arguments, append following argument
 #### 3.3.3 Id pattern configuration in the HTTP request
 
 Soon available
-
-To summarize, the ID of the mapped entity will be composed by:
-
-- **`urn:ngsi-ld`**, statically added.
-- **`entity-type`**, the Target Data Model name, as specified in [**Input**](#conf-input) Configuration step .
-- **`site`**, **`service`**, **`group`**, whose values defined as described previously.
-- **`entityName`**: as specified either in the **`entitySourceId`** field of JSON Map or automatically generated.
-
 
 <a name="conf-rows" />
 
