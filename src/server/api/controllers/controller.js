@@ -1,5 +1,6 @@
 const service = require("../services/service.js")
 const config = require('../../../../config')
+const log = require('../../../utils/logger').app(module);
 
 module.exports = {
 
