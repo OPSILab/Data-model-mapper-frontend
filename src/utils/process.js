@@ -28,6 +28,7 @@ const log = require('../utils/logger').app(module);
 const report = require('../utils/logger').report;
 const utils = require('../utils/utils.js');
 const config = require("../../config.js");
+const service = require ("../server/api/services/service");
 
 
 process.env.validCount = 0;
@@ -212,8 +213,8 @@ const finalizeProcess = async () => {
             await orionWriter.checkAndPrintFinalReport();
         }
 
-        await utils.printFinalReport(log);
-        await utils.printFinalReport(report);
+        await utils.printFinalReportAndSendResponse(log);
+        await utils.printFinalReportAndSendResponse(report);
 
         return await Promise.resolve();
 

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
+const apiOutput = require('../server/api/services/service')
 const config = require('../../config');
 const path = require('path');
 const pathParse = require('parse-filepath');
@@ -184,13 +185,27 @@ const parseFilePath = (pathString) => {
 
 };
 // Utility function that prints the final report by using the input logger
-const printFinalReport = async (logger) => {
+
+const sendOutput = () => {
+    process.res.send(apiOutput.outputFile);
+    apiOutput.outputFile = [];
+};
+
+const printFinalReportAndSendResponse = async (logger) => {
 
     await logger.info('\n--------  MAPPING REPORT ----------\n' +
         '\t Processed objects: ' + process.env.rowNumber + '\n' +
         '\t Mapped and Validated Objects: ' + process.env.validCount + '/' + process.env.rowNumber + '\n' +
         '\t Mapped and NOT Validated Objects: ' + process.env.unvalidCount + '/' + process.env.rowNumber + '\n' +
         '-----------------------------------------');
+
+    if (config.mode == 'server')
+        try {
+            sendOutput();
+        }
+        catch (error) {
+            console.log(error.message)
+        }
 };
 
 const addAuthenticationHeader = (headers) => {
@@ -287,7 +302,7 @@ module.exports = {
     extensionPattern: extensionPattern,
     httpPattern: httpPattern,
     parseFunction: parseFunction,
-    printFinalReport: printFinalReport,
+    printFinalReportAndSendResponse: printFinalReportAndSendResponse,
     extractFilenameFromPath: extractFilenameFromPath,
     addAuthenticationHeader: addAuthenticationHeader,
     getDataModelPath: getDataModelPath,

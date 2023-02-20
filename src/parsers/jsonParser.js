@@ -70,7 +70,6 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
 
             rowNumber++;
             process.env.rowNumber = rowNumber;
-            if (config.mode === 'server') apiOutput.outputFile.push(row);
             // outputs an object containing a set of key/value pair representing a line found in the csv file.
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {
 
@@ -84,14 +83,11 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
         })
         .on('end', async function () {
             try {
-                if (config.mode === 'server') {
-                    process.res.send(apiOutput.outputFile);
-                    apiOutput.outputFile = [];
-                }
+                
                 await finalizeProcess();
                 log.debug("urlToRowStream: request(url).pipe(geo.parse()).on(end)");
-                await utils.printFinalReport(log);
-                await utils.printFinalReport(report);
+                await utils.printFinalReportAndSendResponse(log);
+                await utils.printFinalReportAndSendResponse(report);
             } catch (error) {
                 log.error("Error While finalizing the streaming process: " + error);
             }
@@ -116,7 +112,6 @@ async function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler
         .on('data', function (row) {
             rowNumber = Number(process.env.rowNumber) + 1;
             process.env.rowNumber = rowNumber;
-            if (config.mode === 'server') apiOutput.outputFile.push(row);
 
             // outputs an object containing a set of key/value pair representing a line found in the csv file.
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {
@@ -130,14 +125,11 @@ async function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler
             //console.log('#' + key + ' = ' + value);
         })
         .on('end', async function () {
-            if (config.mode === 'server') {
-                process.res.send(apiOutput.outputFile);
-                apiOutput.outputFile = [];
-            }
+           
             await finalizeProcess();
             log.debug("fileToRowStream: inputData.pipe(geo.parse()).on(end)");
-            await utils.printFinalReport(log);
-            await utils.printFinalReport(report);
+            await utils.printFinalReportAndSendResponse(log);
+            await utils.printFinalReportAndSendResponse(report);
 
         });
 

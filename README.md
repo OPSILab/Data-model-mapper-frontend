@@ -31,7 +31,7 @@ In particular, it performs following steps:
 - **Writing: Orion CB or File**
     - Validated objects are sent to the configured [Orion Context Broker](https://fiware-orion.readthedocs.io/en/master/) and/or to a local file.
 
-The tool is developed in [Node.js](https://nodejs.org) and can be started as a command line tool. Soon it will be possible to start it as a REST server
+The tool is developed in [Node.js](https://nodejs.org) and can be started as a command line tool and as a REST server
 
 --------------------
 <a name="installation"></a>
@@ -139,19 +139,16 @@ node mapper -s "path/to/sourcefile.csv" -m "path/to/mapFile.json -d "WeatherObse
 #### 3.2.3 Inputs configuration in the body of HTTP request
 
 - **``sourceDataType``**: the type of the source data to convert.
-- **``sourceDataIn``**: the path of the source data to convert.
-- **``sourceData``**: the source data to convert.
-- **``mapPathIn``**: the path of the mapping file.
-- **``mapPath``**: the mapping file.
-- **``dataModelIn``**: the path of the target data model to compare with the output for validation.
-- **``dataModel``**: the target data model to compare with the output for validation.
+- **``sourceDataIn``**: the path of the source data to convert, if no sourceData is specified in his field.
+- **``sourceData``**: the source data to convert, if no sourceDataIn is specified in his field.
+- **``mapPathIn``**: the path of the mapping file, if no mapData is specified in his field.
+- **``mapData``**: the mapping file, if no mapPathIn is specified in his field.
+- **``dataModelIn``**: the name of the target data model (inside the Data Model folder) to compare with the output for validation, if no dataModel is specified in his  field.
+- **``dataModel``**: the data model to compare with the output for validation, if no dataModelIn is specified in his field.
 - **``csvDelimiter``**: the csvDelimiter.
 
-Actually with geojson sourceDataType the response will contain the first element of the FeatureCollection. Soon the entire collection will be exported
-in the response.
 With the csv sourceDataType, the array in the object inside the JSON will not be exported in the response and the dimension of the array in the root of 
 the JSON will be limited of the dimension set in the map file. Soon will be added full compatibility with array
-
 
 --------------------
 
@@ -259,7 +256,7 @@ Soon available
 
 #### 3.5.2 Configuration - File Writer
 
-The File Writer will write each mapped NGSI Object inside a JSON Array, stored locally in a file. It is useful when the tool is used in Comman Line mode; in the Server Mode there will be a dedicated API to download the resulting file.
+The File Writer will write each mapped NGSI Object inside a JSON Array, stored locally in a file. It is useful when the tool is used in Comman Line mode; in the Server Mode soon there will be a dedicated API to download the resulting file.
 
 ##### File Writer configuration in configuration file
 

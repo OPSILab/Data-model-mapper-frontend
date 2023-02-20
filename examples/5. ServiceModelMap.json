@@ -115,7 +115,8 @@
     "hasUsageRule"
   ],
   "isPersonalDataHandling": [
-    "isPersonalDataHandling"
+    "isPersonalDataHandling0",
+    "isPersonalDataHandling1"
   ],
   "entitySourceId": [
     "static:serviceModel"
