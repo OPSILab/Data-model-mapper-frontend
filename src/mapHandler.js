@@ -48,9 +48,7 @@ const loadMap = (mapData) => {
 // This function takes in input the source object, uses map object to map to a destination data Model
 // according to the passed data model Json Schema
 const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service, group, entityIdField) => {
-    //G: so source is the source JSON
-
-    //while (true) console.log("\n\n\n", rowNumber, "\n\n\n\n", source, "\n\n\n\n", map, "\n\n\n\n", modelSchema, "\n\n\n\n" , site, "\n\n\n\n" ,service, "\n\n\n\n" ,group, "\n\n\n\n" ,entityIdField)//G:
+    //source is the source JSON
 
     var result = {};
     // If the destKey is entityIdField and has only "static:" fields, the pair value indicates only an ID prefix
