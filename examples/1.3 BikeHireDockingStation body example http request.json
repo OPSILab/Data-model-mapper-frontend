@@ -3399,11 +3399,11 @@
 		"address": {
 			"streetAddress": "properties.INDIRIZZO"
 		},
-		"targetDataModel": "dataModelTemp1"
+		"targetDataModel": "DataModel"
 	},
 	"dataModel": {
 		"$schema": "http://json-schema.org/schema#",
-		"$id": "testing/dataModelTemp1.json",
+		"$id": "dataModels/DataModel.json",
 		"title": "FIWARE - Transportation / Bike Hire Docking Station",
 		"description": "Bike Hire Docking Station",
 		"type": "object",
@@ -3436,7 +3436,7 @@
 					"type": {
 						"type": "string",
 						"enum": [
-							"dataModelTemp1"
+							"DataModel"
 						],
 						"description": "NGSI Entity type"
 					},
