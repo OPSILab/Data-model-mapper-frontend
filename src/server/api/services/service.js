@@ -7,10 +7,13 @@ module.exports = {
     getFilename(id) {
 
         for (let i = 0; i < id.length; i++) {
-            if (id[i] == '/') id = id.substring(i+1, id.length)
-            if (id[i] == '.') {
+            if (id[i] == '/') {
+                id = id.substring(i+1, id.length)
+                return this.getFilename(id);
+            }
+            else if (id[i] == '.') {
                 id = id.substring(0, i)
-                i = id.length
+                return id;
             }
         }
         return id;

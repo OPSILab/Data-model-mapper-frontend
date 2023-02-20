@@ -18,10 +18,8 @@ reports/
 logs/
 config.js
 result.json
-result_bak.json
-dataModelTemp1.json
 examples/sourceFileTemp.*
-i
+dataModels/DataModel.json
 testing/
 
 # History
