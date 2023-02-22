@@ -2,7 +2,9 @@ module.exports = () => {
   const routes = require("./api/routes/router.js")
   const express = require("express");
   const cors = require('cors');
-  const config = require ('../../config')
+  const config = require('../../config')
+  const swaggerUi = require('swagger-ui-express');
+  const swaggerDocument = require('./swagger.json');
 
   const app = express();
 
@@ -11,6 +13,11 @@ module.exports = () => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use("/api", routes);
+  app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocument)
+  );
 
   function init() {
 
