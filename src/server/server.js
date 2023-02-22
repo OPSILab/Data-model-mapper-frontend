@@ -4,10 +4,11 @@ module.exports = () => {
   const cors = require('cors');
   const config = require('../../config')
   const swaggerUi = require('swagger-ui-express');
-  const swaggerDocument = require('./swagger.json');
+  let swaggerDocument = require('./swagger.json');
 
   const app = express();
 
+  swaggerDocument.host=swaggerDocument.host+(config.httpPort || 5000)
 
   app.use(cors());
   app.use(express.json());

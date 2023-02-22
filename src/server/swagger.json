@@ -9,7 +9,7 @@
       "url": "http://fsf.org/"
     }
   },
-  "host": "localhost:5000",
+  "host": "localhost:",
   "basePath": "/api",
   "tags": [
     {
@@ -40,35 +40,6 @@
             "description": "Example request for service model with path references",
             "schema": {
               "$ref": "#/definitions/Example Request 1"
-            }
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "JSON output",
-            "schema": {
-              "$ref": "#/definitions/serviceModel"
-            }
-          }
-        }
-      }
-    },
-    "/map/": {
-      "post": {
-        "tags": [
-          "Map"
-        ],
-        "description": "Map and convert csv/json/geojson to json",
-        "parameters": [
-          {
-            "name": "Example 2",
-            "in": "body",
-            "description": "Example request for service model with all data in body",
-            "schema": {
-              "$ref": "#/definitions/Example Request 2"
             }
           }
         ],
