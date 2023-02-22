@@ -35,11 +35,40 @@
         "description": "Map and convert csv/json/geojson to json",
         "parameters": [
           {
-            "name": "Example request for service model",
+            "name": "Example 1",
             "in": "body",
-            "description": "Example request for service model",
+            "description": "Example request for service model with path references",
             "schema": {
-              "$ref": "#/definitions/ExampleRequest"
+              "$ref": "#/definitions/Example Request 1"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "$ref": "#/definitions/serviceModel"
+            }
+          }
+        }
+      }
+    },
+    "/map/": {
+      "post": {
+        "tags": [
+          "Map"
+        ],
+        "description": "Map and convert csv/json/geojson to json",
+        "parameters": [
+          {
+            "name": "Example 2",
+            "in": "body",
+            "description": "Example request for service model with all data in body",
+            "schema": {
+              "$ref": "#/definitions/Example Request 2"
             }
           }
         ],
@@ -58,7 +87,31 @@
     }
   },
   "definitions": {
-    "ExampleRequest": {
+    "Example Request 1": {
+      "properties": {
+        "sourceDataIn": {
+          "type": "string",
+          "uniqueItems": true,
+          "example": "examples\\5. ServiceModel.csv"
+        },
+        "mapPathIn": {
+          "type": "string",
+          "uniqueItems": true,
+          "example": "examples\\5. ServiceModelMap.json"
+        },
+        "dataModelIn": {
+          "type": "string",
+          "uniqueItems": true,
+          "example": "ServiceModel"
+        },
+        "csvDelimiter": {
+          "type": "string",
+          "uniqueItems": true,
+          "example": ";"
+        }
+      }
+    },
+    "Example Request 2": {
       "properties": {
         "sourceDataType": {
           "type": "string",
@@ -69,16 +122,6 @@
           "type": "string",
           "uniqueItems": true,
           "example": "identifier;title;issued;createdByUserId;versionInfo;serviceIconUrl;status;isPublicService;hasInfoidentifier;hasInfotitle;hasInfostatus;hasInfokeyword;hasInfokeyword0;hasInfokeyword1;hasInfodescriptionlocale;hasInfodescriptiondescription;hasInfohasCost0identifier;hasInfohasCost0code;hasInfohasCost0hasCost0;hasInfohasCost0descriptionlocale;hasInfohasCost0descriptiondescription;hasInfohasCost0ifAccessedThrough;hasInfoprocessingTime;hasInfohasCompetentAuthorityidentifier;hasInfohasCompetentAuthoritytitle;hasInfohasCompetentAuthorityhasAddress;hasInfohasCompetentAuthorityprefLabel;hasInfohasCompetentAuthorityspatial;hasInfospatial;hasInfohasContactPointemail;hasInfohasContactPointfaxNumber;hasInfohasContactPointtelephone;hasInfohasContactPointidentifier;hasInfohasContactPointopeningHours;hasInfohasContactPointhoursAvailable;hasInfohasContactPointurl;hasServiceInstanceserviceProviderbusinessId;hasServiceInstanceserviceProvidername;hasServiceInstanceserviceProviderhasAddress;hasServiceInstanceserviceProviderpostalcode;hasServiceInstanceserviceProvidercity;hasServiceInstanceserviceProviderstate;hasServiceInstanceserviceProvidercountry;hasServiceInstanceserviceProvideremail;hasServiceInstanceserviceProvidertelephone;hasServiceInstanceserviceProviderjurisdiction;hasServiceInstanceendpointConnectorendpointaccessURL;hasServiceInstanceendpointConnectorendpointendpointInformation;hasServiceInstanceendpointConnectorendpointendpointDocumentation;hasServiceInstanceendpointConnectorendpointpath;hasServiceInstanceendpointConnectorconnectorId;hasServiceInstanceserviceUrlslibraryDomain;hasServiceInstanceserviceUrlsloginUri;hasServiceInstanceserviceUrlslinkingRedirectUri;hasServiceInstanceserviceUrlsobjectionUri;hasServiceInstanceserviceUrlsnotificationUri;hasServiceInstancedataControllerpiiController;hasServiceInstancedataControllerorganizationName;hasServiceInstancedataControllerhasContact;hasServiceInstancedataControllerhasAddress;hasServiceInstancedataControlleremail;hasServiceInstancedataControllertelephone;hasServiceInstancedataControlleroperatorName;hasUsageRule;isPersonalDataHandling0;isPersonalDataHandling1\r\nID;Title;;service.manager;;;;;ID;Title;;;;;;;;;;;;;P1Y1W1D\r\nserviceIdentifier;serviceTitle;issued;service.manager;1.0;\"http://www.example.com\";COMPLETED;true;serviceIdentifier;serviceTitle;COMPLETED;key;key0;key1;alb;albania;7;8;9;EUR;processingTime;identifier;processingTime;identifier;title;hasAddress;prefLabel;spatial;spatial;email@email.com;faxNumber;\"+01 123456789\";identifier;\"08:00-20:00\";12;\"http://www.example.com\";businessId;name;hasAddress;postalCode;city;state;country;email@email.com;\"+01 123456789\";jurisdiction;\"http://www.connector.com\";information;documentation;path;connectorID;libraryDomain;\"http://www.login.com\";\"http://www.logged.com\";\"http://www.objectionUri.com\";\"http://www.notificationUri.com\";piiController;organizationName;hasContact;hasAddress;email@email.com;\"+01 123456789\";operator;hasUsageRule;isPersonalDataHandling0;isPersonalDataHandling1"
-        },
-        "sourceDataIn": {
-          "type": "string",
-          "uniqueItems": true,
-          "example": "examples\\5. ServiceModel.csv"
-        },
-        "mapPathIn": {
-          "type": "string",
-          "uniqueItems": true,
-          "example": "examples\\5. ServiceModelMap.json"
         },
         "mapData": {
           "type": "object",
@@ -215,528 +258,9 @@
           "example": "ServiceModel"
         },
         "dataModel": {
-          "type": "object",
+          "type": "string",
           "uniqueItems": true,
-          "example": {
-            "$schema": "http://json-schema.org/schema#",
-            "$id": "dataModels/ServiceModel.json",
-            "title": "Across / Service Model",
-            "description": "Service Model",
-            "type": "object",
-            "required": [],
-            "anyOf": [
-              {
-                "required": []
-              },
-              {
-                "required": []
-              }
-            ],
-            "allOf": [
-              {
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "identifier",
-                      "title",
-                      "issued",
-                      "createdByUserId",
-                      "versionInfo",
-                      "serviceIconUrl",
-                      "status",
-                      "isPublicService",
-                      "hasInfo",
-                      "hasServiceInstance",
-                      "hasUsageRule",
-                      "isPersonalDataHandling"
-                    ],
-                    "description": "Across Entity type"
-                  },
-                  "identifier": {
-                    "type": "string"
-                  },
-                  "title": {
-                    "type": "string"
-                  },
-                  "issued": {
-                    "type": "string"
-                  },
-                  "createdByUserId": {
-                    "type": "string"
-                  },
-                  "versionInfo": {
-                    "type": "string"
-                  },
-                  "serviceIconUrl": {
-                    "type": "string"
-                  },
-                  "status": {
-                    "type": "string"
-                  },
-                  "isPublicService": {
-                    "type": "string"
-                  },
-                  "hasInfo": {
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "identifier",
-                          "title",
-                          "status",
-                          "keyword",
-                          "sector",
-                          "thematicArea",
-                          "type",
-                          "language",
-                          "description",
-                          "isDescribedAt",
-                          "hasCost",
-                          "processingTime",
-                          "isGroupedBy",
-                          "hasCompetentAuthority",
-                          "requires",
-                          "spatial",
-                          "hasInput",
-                          "produces",
-                          "hasContactPoint",
-                          "hasChannel"
-                        ],
-                        "description": "serviceModel.hasInfo"
-                      },
-                      "identifier": {
-                        "type": "string"
-                      },
-                      "title": {
-                        "type": "string"
-                      },
-                      "status": {
-                        "type": "string"
-                      },
-                      "keyword": {
-                        "type": "array",
-                        "items": {
-                          "type": [
-                            "string",
-                            "number"
-                          ]
-                        },
-                        "minItems": 1
-                      },
-                      "sector": {
-                        "type": "array",
-                        "items": {
-                          "type": [
-                            "string",
-                            "number"
-                          ]
-                        },
-                        "minItems": 1
-                      },
-                      "thematicArea": {
-                        "type": "array",
-                        "items": {
-                          "type": [
-                            "string",
-                            "number"
-                          ]
-                        },
-                        "minItems": 1
-                      },
-                      "type": {
-                        "type": "array",
-                        "items": {
-                          "type": [
-                            "string",
-                            "number"
-                          ]
-                        },
-                        "minItems": 1
-                      },
-                      "language": {
-                        "type": "array",
-                        "items": {
-                          "type": [
-                            "string",
-                            "number"
-                          ]
-                        },
-                        "minItems": 1
-                      },
-                      "description": {
-                        "type": "object",
-                        "properties": {
-                          "type": {
-                            "type": "string",
-                            "enum": [
-                              "locale",
-                              "description"
-                            ]
-                          },
-                          "locale": {
-                            "type": "string"
-                          },
-                          "description": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      "isDescribedAt": {
-                        "type": "array",
-                        "items": {
-                          "type": [
-                            "string",
-                            "number"
-                          ]
-                        },
-                        "minItems": 1
-                      },
-                      "hasCost": {
-                        "type": "array",
-                        "items": {
-                          "type": [
-                            "string",
-                            "number"
-                          ]
-                        },
-                        "minItems": 1
-                      },
-                      "processingTime": {
-                        "type": "string"
-                      },
-                      "isGroupedBy": {
-                        "type": "array",
-                        "items": {
-                          "type": [
-                            "string",
-                            "number"
-                          ]
-                        },
-                        "minItems": 1
-                      },
-                      "hasCompetentAuthority": {
-                        "type": "object",
-                        "properties": {
-                          "type": {
-                            "type": "string",
-                            "enum": [
-                              "identifier",
-                              "title",
-                              "hasAddress",
-                              "prefLabel",
-                              "spatial"
-                            ]
-                          },
-                          "identifier": {
-                            "type": "string"
-                          },
-                          "title": {
-                            "type": "string"
-                          },
-                          "hasAddress": {
-                            "type": "string"
-                          },
-                          "prefLabel": {
-                            "type": "string"
-                          },
-                          "spatial": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      "requires": {
-                        "type": "array",
-                        "items": {
-                          "type": [
-                            "string",
-                            "number"
-                          ]
-                        },
-                        "minItems": 1
-                      },
-                      "spatial": {
-                        "type": "string"
-                      },
-                      "hasInput": {
-                        "type": "array",
-                        "items": {
-                          "type": [
-                            "string",
-                            "number"
-                          ]
-                        },
-                        "minItems": 1
-                      },
-                      "produces": {
-                        "type": "array",
-                        "items": {
-                          "type": [
-                            "string",
-                            "number"
-                          ]
-                        },
-                        "minItems": 1
-                      },
-                      "hasContactPoint": {
-                        "type": "object",
-                        "properties": {
-                          "type": {
-                            "type": "string",
-                            "enum": [
-                              "email",
-                              "faxNumber",
-                              "telephone",
-                              "identifier",
-                              "openingHours",
-                              "hoursAvailable",
-                              "url"
-                            ]
-                          },
-                          "email": {
-                            "type": "string"
-                          },
-                          "faxNumber": {
-                            "type": "string"
-                          },
-                          "telephone": {
-                            "type": "string"
-                          },
-                          "identifier": {
-                            "type": "string"
-                          },
-                          "openingHours": {
-                            "type": "string"
-                          },
-                          "hoursAvailable": {
-                            "type": "string"
-                          },
-                          "url": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      "hasChannel": {
-                        "type": "array",
-                        "items": {
-                          "type": [
-                            "string",
-                            "number"
-                          ]
-                        },
-                        "minItems": 1
-                      }
-                    }
-                  },
-                  "hasServiceInstance": {
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "serviceProvider",
-                          "endpointConnector",
-                          "dataset",
-                          "serviceUrls",
-                          "dataController"
-                        ],
-                        "description": "Across Entity type"
-                      },
-                      "serviceProvider": {
-                        "type": "object",
-                        "properties": {
-                          "type": {
-                            "type": "string",
-                            "enum": [
-                              "businessId",
-                              "name",
-                              "hasAddress",
-                              "postalcode",
-                              "city",
-                              "state",
-                              "country",
-                              "email",
-                              "telephone",
-                              "jurisdiction"
-                            ],
-                            "description": "Across Entity type"
-                          },
-                          "businessId": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          },
-                          "hasAddress": {
-                            "type": "string"
-                          },
-                          "postalcode": {
-                            "type": "string"
-                          },
-                          "city": {
-                            "type": "string"
-                          },
-                          "state": {
-                            "type": "string"
-                          },
-                          "country": {
-                            "type": "string"
-                          },
-                          "email": {
-                            "type": "string"
-                          },
-                          "telephone": {
-                            "type": "string"
-                          },
-                          "jurisdiction": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      "endpointConnector": {
-                        "type": "object",
-                        "properties": {
-                          "type": {
-                            "type": "string",
-                            "enum": [
-                              "endpoint",
-                              "connectorId"
-                            ],
-                            "description": "Across Entity type"
-                          },
-                          "endpoint": {
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "type": "string",
-                                "enum": [
-                                  "accessURL",
-                                  "endpointInformation",
-                                  "endpointDocumentation",
-                                  "path"
-                                ],
-                                "description": "Across Entity type"
-                              },
-                              "accessURL": {
-                                "type": "string"
-                              },
-                              "endpointInformation": {
-                                "type": "string"
-                              },
-                              "endpointDocumentation": {
-                                "type": "string"
-                              },
-                              "path": {
-                                "type": "string"
-                              }
-                            }
-                          },
-                          "connectorId": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      "dataset": {
-                        "type": "array",
-                        "items": {
-                          "type": [
-                            "string",
-                            "number"
-                          ]
-                        },
-                        "minItems": 1
-                      },
-                      "serviceUrls": {
-                        "type": "object",
-                        "properties": {
-                          "type": {
-                            "type": "string",
-                            "enum": [
-                              "libraryDomain",
-                              "loginUri",
-                              "linkingRedirectUri",
-                              "objectionUri",
-                              "notificationUri"
-                            ],
-                            "description": "Across Entity type"
-                          },
-                          "libraryDomain": {
-                            "type": "string"
-                          },
-                          "loginUri": {
-                            "type": "string"
-                          },
-                          "linkingRedirectUri": {
-                            "type": "string"
-                          },
-                          "objectionUri": {
-                            "type": "string"
-                          },
-                          "notificationUri": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      "dataController": {
-                        "type": "object",
-                        "properties": {
-                          "type": {
-                            "type": "string",
-                            "enum": [
-                              "piiController",
-                              "organizationName",
-                              "hasContact",
-                              "hasAddress",
-                              "email",
-                              "telephone",
-                              "operatorName"
-                            ],
-                            "description": "Across Entity type"
-                          },
-                          "piiController": {
-                            "type": "string"
-                          },
-                          "organizationName": {
-                            "type": "string"
-                          },
-                          "hasContact": {
-                            "type": "string"
-                          },
-                          "telephone": {
-                            "type": "string"
-                          },
-                          "operatorName": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "hasUsageRule": {
-                    "type": "array",
-                    "items": {
-                      "type": [
-                        "string",
-                        "number"
-                      ]
-                    },
-                    "minItems": 1
-                  },
-                  "isPersonalDataHandling": {
-                    "type": "array",
-                    "items": {
-                      "type": [
-                        "string",
-                        "number"
-                      ]
-                    },
-                    "minItems": 1
-                  }
-                }
-              }
-            ]
-          }
+          "example": "Unfortunately swagger does not allow me to provide an example of a schema because it will show just the field 'properties' and it will cause errors in runtime. If you want to try this field, you can past here a schema like the ones present in the dataModels folder. If you do that, delete the field 'dataModelIn' in this example. However, this field is intended to be used if the data model is not present in the dataModels folder, instead it is recommended to use the field dataModelIn"
         },
         "csvDelimiter": {
           "type": "string",
