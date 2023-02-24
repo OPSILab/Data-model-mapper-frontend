@@ -11,10 +11,7 @@
     "identifier": "hasInfoidentifier",
     "title": "hasInfotitle",
     "status": "hasInfostatus",
-    "keyword": [
-      "hasInfokeyword",
-      "hasInfokeyword0"
-    ],
+    "keyword": "hasInfokeyword",
     "sector": [
       "hasInfosector"
     ],

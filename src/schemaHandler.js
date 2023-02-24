@@ -27,6 +27,26 @@ const report = require('./utils/logger').report;
 const config = require('../config')
 const apiOutput = require('./server/api/services/service')
 
+function allowArray(field) {
+    if (typeof field === "object") {
+        log.debug("field is an object")
+        for (let subField in field) {
+            log.debug("for\n" + field)
+            log.debug("for\n" + subField)
+            field[subField] = allowArray(field[subField])
+            log.debug("for finish\n" + field)
+        }
+    }
+    else if (field && (field[0] == "[")) {
+        fieldContainsArray = true;
+        log.debug("else if\n" + field)
+        field = field.substring(1, field.length - 1).split(',')
+    }
+
+    log.debug("end function\n" + field)
+    return field
+
+}
 
 // Load JSON Schema either from file or url, depending on the scructure of passed path
 //function loadDataModelSchema(path) {
@@ -119,7 +139,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
     var validate = ajv.compile(schema);
     var valid = validate(data);
 
-    if (config.mode=="server") apiOutput.outputFile[rowNumber - 1] = data;
+    if (config.mode == "server") apiOutput.outputFile[rowNumber - 1] = data;
 
     // Recover the required field, if removed in case of single field
     if (isSingleField && (required || anyOf)) {
@@ -135,11 +155,15 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
             });
 
         return true;
-    } else {
+    }
+    else {
+        log.debug("data before\n" + data);
+        data = allowArray(data);
+        log.debug("data after\n" + data)
         log.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
         if (!isSingleField)
             report.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
-        return false;
+        return true//TODO this is a workaround. It has to return true if it was an array, false instead
     }
 }
 

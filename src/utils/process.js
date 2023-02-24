@@ -100,7 +100,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                         }
                     }
                     delete map['targetDataModel'];
-                    var loadedSchema = await schemaHandler.parseDataModelSchema(dataModelSchemaPath);
+                    var loadedSchema = await schemaHandler.parseDataModelSchema(dataModelSchemaPath); // here schema is loaded
                     log.info('Data Model Schema loaded and dereferenced');
 
                 } catch (error) {

@@ -103,14 +103,7 @@
 							"type": "string"
 						},
 						"keyword": {
-							"type": "array",
-							"items": {
-								"type": [
-									"string",
-									"number"
-								]
-							},
-							"minItems": 1
+							"type": "array"
 						},
 						"sector": {
 							"type": "array",

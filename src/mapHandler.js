@@ -35,9 +35,8 @@ const loadMap = (mapData) => {
         return new Promise(function (resolve, reject) {
             resolve(JSON.parse(fs.readFileSync(mapData.absolute, 'utf8')));
         });
-        //kill//G:
     } else {
-        
+
         return new Promise(function (resolve, reject) {
             resolve(mapData);
         });
@@ -213,6 +212,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
             /********************* Check if mapping result is valid ************************************************/
 
+            let objectFixed
 
             if (singleResult && Object.entries(singleResult).length !== 0
                 && (mapDestKey == entityIdField || checkPairWithDestModelSchema(singleResult, mapDestKey, modelSchema, rowNumber))) {
@@ -223,7 +223,11 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
                 result[mapDestKey] = singleResult[mapDestKey];
 
-            } else {
+            }
+            else if (singleResult[mapDestKey] && (singleResult[mapDestKey][0] == "[")) {
+                result[mapDestKey] = singleResult[mapDestKey].substring(1, singleResult[mapDestKey].length - 1).split(',');
+            }
+            else {
                 log.debug(`Skipping source field: ${JSON.stringify(mapSourceKey)} because the value ${JSON.stringify(singleResult)} is not valid for mapped key: ${mapDestKey}`);
             }
 
