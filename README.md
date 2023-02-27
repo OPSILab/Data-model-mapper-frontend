@@ -147,9 +147,6 @@ node mapper -s "path/to/sourcefile.csv" -m "path/to/mapFile.json -d "WeatherObse
 - **``dataModel``**: the data model to compare with the output for validation, if no dataModelIn is specified in his field.
 - **``csvDelimiter``**: the csvDelimiter.
 
-With the csv sourceDataType, the array in the object inside the JSON will not be exported in the response and the dimension of the array in the root of 
-the JSON will be limited of the dimension set in the map file. Soon will be added full compatibility with array
-
 --------------------
 
 <a name="conf-id"/>
@@ -256,7 +253,8 @@ Soon available
 
 #### 3.5.2 Configuration - File Writer
 
-The File Writer will write each mapped NGSI Object inside a JSON Array, stored locally in a file. It is useful when the tool is used in Comman Line mode; in the Server Mode soon there will be a dedicated API to download the resulting file.
+The File Writer will write each mapped NGSI Object inside a JSON Array, stored locally in a file. It is useful when the tool is used in Command Line mode. 
+In the Server Mode the output JSON will be sent in the body of the HTTP response.
 
 ##### File Writer configuration in configuration file
 
@@ -292,6 +290,8 @@ This section describes, with examples, how to compile the JSON Map file, whose p
 Depending on input source type, the tool behaves accordingly:
 - **CSV**
     The tool extracts the columns from the first row, and for each next row creates an intermediate data object (JSON), where each key-value field will have the CSV column as key and the specific CSV row value as value. In this way, every intermediate object coming from a CSV row will be mapped in a NGSI entity.
+
+    **`IMPORTANT`** If the value is an array it should be wrapped with []. If there are objects inside array, the fields and the value inside each object should be wrapped around '^' instead of double quotes '"'.
 
 - **JSON**
         The input file must be already in the "intermediate" form, that is a **JSON Array**, where each object contains key-value fields to be mapped directly to a NGSI entity.
@@ -343,7 +343,7 @@ The Map consists of a JSON, that is a collection of **`KEY`-`VALUE` pairs**, whe
 #### Which value types from the source fields are supported?
 
 The **`VALUE`** of a mapping  **`KEY`-`VALUE` pair** is the **SOURCE** field name. The values, grabbed from these source fields/columns represented by the **`VALUE`** selectors, can have one of the following types:
-- **Single value**: String, Number, Boolean (for **CSV files** is the unique option)
+- **Single value**: String, Number, Array or Boolean (for **CSV files** is the unique option)
 - **Multiple value**: A String, Number or Boolean array
 - **Nested value**: A String, Number or Boolean in a field nested inside an object
 
@@ -514,6 +514,22 @@ The resulting object will be:
 }
 ```
 ---------------------
+
+If a field is an array and we have this first line in the CSV :
+
+Array 1
+
+the second line should be 
+
+[value at index 0, value at index 1, value at index 2 ecc...]
+
+If the values are objects, it can be conflicts with the '"' used to wrap values of each field of the CSV file if we use '"' to 
+wrap the fields and the values of the objects inside the arrays. So '^' must be used instead of double quotes.
+
+For example :
+
+[{^Field 1^ : ^Value 1^, ^Field 2^ : ^Value 2^}, {^Field 1b^ : ^Value 1b^, ^Field 2b^ : ^Value 2b^}, ecc...]
+
 
 #### GeoJson Example
 

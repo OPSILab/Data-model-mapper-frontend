@@ -27,31 +27,35 @@ const report = require('./utils/logger').report;
 const config = require('../config')
 const apiOutput = require('./server/api/services/service')
 
-function allowArray(field) {
+let fieldContainsArray = false;
+
+// this function completes the compatibility with array inside nested objects and objects inside an array
+function nestedFieldsHandler(field) {
+    log.debug("start function nestedFieldsHandler\n" + field)
     if (typeof field === "object") {
         log.debug("field is an object")
         for (let subField in field) {
-            log.debug("for\n" + field)
-            log.debug("for\n" + subField)
-            field[subField] = allowArray(field[subField])
-            log.debug("for finish\n" + field)
+            log.debug("iterating inside field:\n" + field)
+            log.debug("iterating inside field: element found: \n" + subField)
+            field[subField] = nestedFieldsHandler(field[subField])
+            log.debug("iterating inside field: finish. Now field is:\n" + field)
         }
     }
     else if (field && (field[0] == "[")) {
+        fieldContainsArray = true;
         if (field[1] == "{") {
+            log.debug("field is not an object but an array of objects\n" + field)
             field = field.replaceAll("^", '"');
-            field = [JSON.parse(field)]
+            field = JSON.parse(field)
         }
         else {
-            fieldContainsArray = true;
-            log.debug("else if\n" + field)
+            log.debug("field is not an object but an array\n" + field)
             field = field.substring(1, field.length - 1).split(',')
         }
     }
 
-    log.debug("end function\n" + field)
+    log.debug("end function nestedFieldsHandler\n" + field)
     return field
-
 }
 
 // Load JSON Schema either from file or url, depending on the scructure of passed path
@@ -164,12 +168,18 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
     }
     else {
         log.debug("data before\n" + data);
-        data = allowArray(data);
+        data = nestedFieldsHandler(data);
         log.debug("data after\n" + data)
-        log.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
-        if (!isSingleField)
-            report.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
-        return true//TODO this is a workaround. It has to return true if it was an array, false instead
+
+        if (!fieldContainsArray) {
+            log.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
+            if (!isSingleField)
+                report.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
+
+            return false
+        }
+        fieldContainsArray = false;
+        return true
     }
 }
 
