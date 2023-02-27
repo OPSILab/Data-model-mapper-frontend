@@ -62,7 +62,7 @@
 					"type": "string"
 				},
 				"isPublicService": {
-					"type": "string"
+					"type": "boolean"
 				},
 				"hasInfo": {
 					"type": "object",
@@ -106,44 +106,16 @@
 							"type": "array"
 						},
 						"sector": {
-							"type": "array",
-							"items": {
-								"type": [
-									"string",
-									"number"
-								]
-							},
-							"minItems": 1
+							"type": "array"
 						},
 						"thematicArea": {
-							"type": "array",
-							"items": {
-								"type": [
-									"string",
-									"number"
-								]
-							},
-							"minItems": 1
+							"type": "array"
 						},
 						"type": {
-							"type": "array",
-							"items": {
-								"type": [
-									"string",
-									"number"
-								]
-							},
-							"minItems": 1
+							"type": "array"
 						},
 						"language": {
-							"type": "array",
-							"items": {
-								"type": [
-									"string",
-									"number"
-								]
-							},
-							"minItems": 1
+							"type": "array"
 						},
 						"description": {
 							"type": "object",
@@ -164,37 +136,16 @@
 							}
 						},
 						"isDescribedAt": {
-							"type": "array",
-							"items": {
-								"type": [
-									"string",
-									"number"
-								]
-							},
-							"minItems": 1
+							"type": "array"
 						},
 						"hasCost": {
-							"type": "array",
-							"items": {
-								"type": [
-									"string",
-									"number"
-								]
-							},
-							"minItems": 1
+							"type": "array"
 						},
 						"processingTime": {
 							"type": "string"
 						},
 						"isGroupedBy": {
-							"type": "array",
-							"items": {
-								"type": [
-									"string",
-									"number"
-								]
-							},
-							"minItems": 1
+							"type": "array"
 						},
 						"hasCompetentAuthority": {
 							"type": "object",
@@ -227,37 +178,16 @@
 							}
 						},
 						"requires": {
-							"type": "array",
-							"items": {
-								"type": [
-									"string",
-									"number"
-								]
-							},
-							"minItems": 1
+							"type": "array"
 						},
 						"spatial": {
 							"type": "string"
 						},
 						"hasInput": {
-							"type": "array",
-							"items": {
-								"type": [
-									"string",
-									"number"
-								]
-							},
-							"minItems": 1
+							"type": "array"
 						},
 						"produces": {
-							"type": "array",
-							"items": {
-								"type": [
-									"string",
-									"number"
-								]
-							},
-							"minItems": 1
+							"type": "array"
 						},
 						"hasContactPoint": {
 							"type": "object",
@@ -290,7 +220,7 @@
 									"type": "string"
 								},
 								"hoursAvailable": {
-									"type": "string"
+									"type": "integer"
 								},
 								"url": {
 									"type": "string"
@@ -298,14 +228,7 @@
 							}
 						},
 						"hasChannel": {
-							"type": "array",
-							"items": {
-								"type": [
-									"string",
-									"number"
-								]
-							},
-							"minItems": 1
+							"type": "array"
 						}
 					}
 				},
@@ -418,14 +341,7 @@
 							}
 						},
 						"dataset": {
-							"type": "array",
-							"items": {
-								"type": [
-									"string",
-									"number"
-								]
-							},
-							"minItems": 1
+							"type": "array"
 						},
 						"serviceUrls": {
 							"type": "object",
@@ -494,24 +410,10 @@
 					}
 				},
 				"hasUsageRule": {
-					"type": "array",
-					"items": {
-						"type": [
-							"string",
-							"number"
-						]
-					},
-					"minItems": 1
+					"type": "array"
 				},
 				"isPersonalDataHandling": {
-					"type": "array",
-					"items": {
-						"type": [
-							"string",
-							"number"
-						]
-					},
-					"minItems": 1
+					"type": "array"
 				}
 			}
 		}

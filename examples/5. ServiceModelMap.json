@@ -12,32 +12,18 @@
     "title": "hasInfotitle",
     "status": "hasInfostatus",
     "keyword": "hasInfokeyword",
-    "sector": [
-      "hasInfosector"
-    ],
-    "thematicArea": [
-      "hasInfothematicArea"
-    ],
-    "type": [
-      "hasInfotype"
-    ],
-    "language": [
-      "hasInfolanguage"
-    ],
+    "sector": "hasInfosector",
+    "thematicArea": "hasInfothematicArea",
+    "type": "hasInfotype",
+    "language": "hasInfolanguage",
     "description": {
       "locale": "hasInfodescriptionlocale",
       "description": "hasInfodescriptiondescription"
     },
-    "isDescribedAt": [
-      "hasInfoisDescribedAt"
-    ],
-    "hasCost": [
-      "hasInfohasCost"
-    ],
+    "isDescribedAt": "hasInfoisDescribedAt",
+    "hasCost": "hasInfohasCost",
     "processingTime": "hasInfoprocessingTime",
-    "isGroupedBy": [
-      "hasInfoisGroupedBy"
-    ],
+    "isGroupedBy": "hasInfoisGroupedBy",
     "hasCompetentAuthority": {
       "identifier": "hasInfohasCompetentAuthorityidentifier",
       "title": "hasInfohasCompetentAuthoritytitle",
@@ -45,16 +31,10 @@
       "prefLabel": "hasInfohasCompetentAuthorityprefLabel",
       "spatial": "hasInfohasCompetentAuthorityspatial"
     },
-    "requires": [
-      "hasInforequires"
-    ],
+    "requires": "hasInforequires",
     "spatial": "hasInfospatial",
-    "hasInput": [
-      "hasInfohasInput"
-    ],
-    "produces": [
-      "hasInfoproduces"
-    ],
+    "hasInput": "hasInfohasInput",
+    "produces": "hasInfoproduces",
     "hasContactPoint": {
       "email": "hasInfohasContactPointemail",
       "faxNumber": "hasInfohasContactPointfaxNumber",
@@ -64,9 +44,7 @@
       "hoursAvailable": "hasInfohasContactPointhoursAvailable",
       "url": "hasInfohasContactPointurl"
     },
-    "hasChannel": [
-      "hasInfohasChannel"
-    ]
+    "hasChannel": "hasInfohasChannel"
   },
   "hasServiceInstance": {
     "serviceProvider": {
@@ -108,15 +86,8 @@
       "operatorName": "hasServiceInstancedataControlleroperatorName"
     }
   },
-  "hasUsageRule": [
-    "hasUsageRule"
-  ],
-  "isPersonalDataHandling": [
-    "isPersonalDataHandling0",
-    "isPersonalDataHandling1"
-  ],
-  "entitySourceId": [
-    "static:serviceModel"
-  ],
+  "hasUsageRule": "hasUsageRule",
+  "isPersonalDataHandling": "isPersonalDataHandling",
+  "entitySourceId": "static:serviceModel",
   "targetDataModel": "ServiceModel"
 }
