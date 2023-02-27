@@ -135,17 +135,22 @@ node mapper -s "path/to/sourcefile.csv" -m "path/to/mapFile.json -d "WeatherObse
 ```
 
 > **`Note`** Previous CLI arguments, if provided, will **override** the default ones specified in `config.js` file.
+Do not use npm start at the moment.
 
 #### 3.2.3 Inputs configuration in the body of HTTP request
 
+In order to use data model mapper as server mode, you must set the mode in config.js as server and run node mapper. 
+
+You can send a request at <host-url>:<port>/api/map with these parameters in body :
+
 - **``sourceDataType``**: the type of the source data to convert.
-- **``sourceDataIn``**: the path of the source data to convert, if no sourceData is specified in his field.
+- **``sourceDataIn``**: the path of the source data to convert, if no sourceData is specified in his field. Has priority over **``sourceData``**.
 - **``sourceData``**: the source data to convert, if no sourceDataIn is specified in his field.
-- **``mapPathIn``**: the path of the mapping file, if no mapData is specified in his field.
+- **``mapPathIn``**: the path of the mapping file, if no mapData is specified in his field. Has priority over **``mapData``**
 - **``mapData``**: the mapping file, if no mapPathIn is specified in his field.
-- **``dataModelIn``**: the name of the target data model (inside the Data Model folder) to compare with the output for validation, if no dataModel is specified in his  field.
+- **``dataModelIn``**: the name of the target data model (inside the Data Model folder) to compare with the output for validation, if no dataModel is specified in his  field. Has priority over **``dataModel``**
 - **``dataModel``**: the data model to compare with the output for validation, if no dataModelIn is specified in his field.
-- **``csvDelimiter``**: the csvDelimiter.
+- **``csvDelimiter``**: the csvDelimiter. This field has priority over the  **``csvDelimiter``** field in config.js.
 
 --------------------
 
