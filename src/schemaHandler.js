@@ -38,9 +38,15 @@ function allowArray(field) {
         }
     }
     else if (field && (field[0] == "[")) {
-        fieldContainsArray = true;
-        log.debug("else if\n" + field)
-        field = field.substring(1, field.length - 1).split(',')
+        if (field[1] == "{") {
+            field = field.replaceAll("^", '"');
+            field = [JSON.parse(field)]
+        }
+        else {
+            fieldContainsArray = true;
+            log.debug("else if\n" + field)
+            field = field.substring(1, field.length - 1).split(',')
+        }
     }
 
     log.debug("end function\n" + field)
@@ -92,7 +98,7 @@ async function parseDataModelSchema(schemaPath) {
         var rootProperties = schema.allOf.pop().properties;
 
         for (var allOf of schema.allOf) {
-            
+
             if (allOf.allOf) {
                 // nested allOf 
                 for (var nestedAllOf of allOf.allOf) {
@@ -114,7 +120,7 @@ async function parseDataModelSchema(schemaPath) {
             resolve(schema);
         });
     });
-    
+
 }
 
 
@@ -128,7 +134,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
     var required = undefined;
     var anyOf = undefined;
 
-  
+
     if (isSingleField) {
         required = schema.required;
         anyOf = schema.anyOf;
