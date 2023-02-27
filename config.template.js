@@ -49,6 +49,7 @@ var config = {
      **/
     delimiter: ",", // Column delimiter
     endLine: "\n",  // Row delimiter
+    deleteEmptySpaceAtBeginning: true, // If set as true, the empty space at the beginning of the string will be deleted
 
     /********************** OUTPUT/WRITERS CONFIGURATION ****************** 
     * Following is related to writers which will handle mapped objects. Possible values: fileWriter, orionWriter

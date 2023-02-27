@@ -186,7 +186,15 @@ const parseFilePath = (pathString) => {
 };
 // Utility function that prints the final report by using the input logger
 
+function spaceCleaner(object) {
+    for (let sub in object)
+        if (typeof object[sub] === "object" || typeof object[sub] === "array") object[sub] = spaceCleaner(object[sub]);
+        else if (typeof object[sub] === "string" && object[sub][0] == " ") object[sub] = object[sub].substring(1, object[sub].length)
+    return object
+}
+
 const sendOutput = () => {
+    if (config.deleteEmptySpaceAtBeginning) apiOutput.outputFile = spaceCleaner(apiOutput.outputFile)
     process.res.send(apiOutput.outputFile);
     apiOutput.outputFile = [];
 };

@@ -530,6 +530,34 @@ For example :
 
 [{^Field 1^ : ^Value 1^, ^Field 2^ : ^Value 2^}, {^Field 1b^ : ^Value 1b^, ^Field 2b^ : ^Value 2b^}, ecc...]
 
+If you want to insert the "[" symbol at the beginning of a string, you must add a space line " " before, otherwise the value will be converted to an array even if it is a string in the data model. For this purpose, you can set the deleteEmptySpaceAtBeginning = true field in config.js if you do not want to see the empty space at beginning.
+
+For example, the output of : 
+
+String
+ [Value]
+
+ Will be 
+[
+ {
+   String : "[Value]"
+ }
+]
+
+ The output of 
+
+ String
+ [Value]
+
+ Will be
+[
+ {
+   String : [
+      Value
+   ]
+ }
+]
+
 
 #### GeoJson Example
 
