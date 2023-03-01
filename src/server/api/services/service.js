@@ -1,4 +1,5 @@
 const fs = require('fs');
+const config = require ('../../../../config')
 
 module.exports = {
 
@@ -24,7 +25,7 @@ module.exports = {
 
         process.env.delimiter= delimiter
         if (!sourceDataIn) {
-            await fs.writeFile('./examples/sourceFileTemp.' + sourceData[1], sourceData[1]=="csv"? sourceData[0] : JSON.stringify(sourceData[0]), function (err) {
+            await fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + sourceData[1], sourceData[1]=="csv"? sourceData[0] : JSON.stringify(sourceData[0]), function (err) {
                 if (err) throw err;
                 console.log('File sourceData temp is created successfully.');
             })
@@ -36,7 +37,7 @@ module.exports = {
             })
         }
         await cli(
-            !sourceDataIn? 'examples\\sourceFileTemp.' + sourceData[1] : sourceData,
+            !sourceDataIn? config.sourceDataPath + 'sourceFileTemp.' + sourceData[1] : config.sourceDataPath + sourceData,
             mapPath,
             !dataModelIn ? this.getFilename(dataModel[0].$id) : dataModel
         );

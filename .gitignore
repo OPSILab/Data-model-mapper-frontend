@@ -18,10 +18,11 @@ reports/
 logs/
 config.js
 result.json
-examples/sourceFileTemp.*
 dataModels/DataModelTemp.json
 dataModels/ExampleDataModel.json
 testing/
+input/
+output/
 
 # History
 .history/

@@ -9,7 +9,7 @@ module.exports = {
         process.res = res;
         await service.mapData(
             req.body.sourceDataIn ? req.body.sourceDataIn : [req.body.sourceData, req.body.sourceDataType],
-            req.body.mapPathIn ? req.body.mapPathIn : [req.body.mapData, "mapData"],
+            req.body.mapPathIn ? config.sourceDataPath + req.body.mapPathIn : [req.body.mapData, "mapData"],
             req.body.dataModelIn ? req.body.dataModelIn : [req.body.dataModel, req.body.dataModel.$id],
             req.body.sourceDataIn ? true : false,
             req.body.mapPathIn ? true : false,
