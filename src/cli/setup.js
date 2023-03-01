@@ -18,12 +18,13 @@
 
 const commandLine = require('../utils/confUtils');
 const process = require('../utils/process');
+const config = require('../../config')
 
 const log = require('../utils/logger').app(module);
 const utils = require('../utils/utils');
 
 module.exports = async (sourceDataIn, mapPathIn, dataModelIn) => {
-    log.info("Initializing Mapper in Command Line Mode");
+    log.info("Initializing Mapper in " + (config.mode == "commandLine" ? "Command Line " : "Server ") + "Mode");
 
     if (commandLine.init(sourceDataIn, mapPathIn, dataModelIn)) {
 
