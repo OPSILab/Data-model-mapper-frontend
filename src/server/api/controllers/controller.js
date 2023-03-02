@@ -11,7 +11,11 @@ module.exports = {
             req.body.sourceDataIn ? {name: req.body.sourceDataIn} :
             req.body.sourceDataID && req.body.sourceDataType ?{ id: req.body.sourceDataID, type: req.body.sourceDataType} :
             req.body.sourceData && req.body.sourceDataType ? { data: req.body.sourceData, type: req.body.sourceDataType} : false,
-            req.body.mapPathIn ? config.sourceDataPath + req.body.mapPathIn : [req.body.mapData, "mapData"],
+
+            req.body.mapPathIn ? config.sourceDataPath + req.body.mapPathIn : 
+            req.body.mapID ? {id : req.body.mapID} : 
+            req.body.mapData ? [req.body.mapData, "mapData"] : false,
+
             req.body.dataModelIn ? req.body.dataModelIn : [req.body.dataModel, req.body.dataModel.$id],
             req.body.dataModelIn ? true : false,
             req.body.csvDelimiter || config.delimiter || ','

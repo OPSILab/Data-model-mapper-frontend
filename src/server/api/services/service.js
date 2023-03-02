@@ -28,16 +28,25 @@ module.exports = {
         return "no source file"
     },
 
-    async mapData(source, mapPath, dataModel, dataModelIn, delimiter) {
+    async mapData(source, map, dataModel, dataModelIn, delimiter) {
         const cli = require('../../../cli/setup');
-        if (!source) {
+        if (!source || !map) {
             process.res.send(400)
             return "no source file"
         }
 
         process.env.delimiter = delimiter
 
-        if (source.id) source.data = await Source.findOne({ name: source.id }).data
+        if (source.id) {
+            source.data = await Source.findOne({ name: source.id })
+            source.data = source.data.source || source.data.sourceCSV
+        }
+
+        if (map.id) {
+            map = await Map.findOne({ name: map.id })
+            map = [map.map, "mapData"]
+            console.log(map[0])
+        }
 
         if (source.data) {
             await fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
@@ -53,7 +62,7 @@ module.exports = {
         }
         await cli(
             source.name ? config.sourceDataPath + source.name : config.sourceDataPath + 'sourceFileTemp.' + source.type,
-            mapPath,
+            map,
             !dataModelIn ? this.getFilename(dataModel[0].$id) : dataModel
         );
     },
