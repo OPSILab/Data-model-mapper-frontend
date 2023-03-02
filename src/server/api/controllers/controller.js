@@ -8,15 +8,11 @@ module.exports = {
 
         process.res = res;
         await service.mapData(
-            //req.body.sourceDataIn ? req.body.sourceDataIn : [req.body.sourceData, req.body.sourceDataType],
-            req.body.sourceDataIn ? req.body.sourceDataIn : 
-            req.body.sourceDataID ? req.body.sourceDataID : 
-            req.body.sourceData && req.body.sourceDataType ? [req.body.sourceData, req.body.sourceDataType] : false,
+            req.body.sourceDataIn ? {name: req.body.sourceDataIn} :
+            req.body.sourceDataID && req.body.sourceDataType ?{ id: req.body.sourceDataID, type: req.body.sourceDataType} :
+            req.body.sourceData && req.body.sourceDataType ? { data: req.body.sourceData, type: req.body.sourceDataType} : false,
             req.body.mapPathIn ? config.sourceDataPath + req.body.mapPathIn : [req.body.mapData, "mapData"],
             req.body.dataModelIn ? req.body.dataModelIn : [req.body.dataModel, req.body.dataModel.$id],
-            req.body.sourceDataIn ? true : false,
-            req.body.sourceDataID ? true : false,
-            req.body.mapPathIn ? true : false,
             req.body.dataModelIn ? true : false,
             req.body.csvDelimiter || config.delimiter || ','
         )

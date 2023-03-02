@@ -23,17 +23,24 @@ module.exports = {
         return id;
     },
 
-    sendBadRequest(){
+    sendBadRequest() {
         process.res.send(400)
         return "no source file"
     },
 
-    async mapData(sourceData, mapPath, dataModel, sourceDataIn, sourceDataID, mapPathIn, dataModelIn, delimiter) {
+    async mapData(source, mapPath, dataModel, dataModelIn, delimiter) {
         const cli = require('../../../cli/setup');
+        if (!source) {
+            process.res.send(400)
+            return "no source file"
+        }
 
         process.env.delimiter = delimiter
-        if (!sourceDataIn && sourceData) {
-            await fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + sourceData[1], sourceData[1] == "csv" ? sourceData[0] : JSON.stringify(sourceData[0]), function (err) {
+
+        if (source.id) source.data = await Source.findOne({ name: source.id }).data
+
+        if (source.data) {
+            await fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
                 if (err) throw err;
                 console.log('File sourceData temp is created successfully.');
             })
@@ -45,21 +52,19 @@ module.exports = {
             })
         }
         await cli(
-            sourceDataIn ? config.sourceDataPath + sourceData :
-            sourceDataID ? await Source.findOne({name : sourceData}) : 
-            sourceData ? config.sourceDataPath + 'sourceFileTemp.' + sourceData[1] : this.sendBadRequest(), 
+            source.name ? config.sourceDataPath + source.name : config.sourceDataPath + 'sourceFileTemp.' + source.type,
             mapPath,
             !dataModelIn ? this.getFilename(dataModel[0].$id) : dataModel
         );
     },
 
-    async insertSource(name,source) {
-        return await Source.insertMany([typeof source === 'string' ? { name : name, sourceCSV: source } : { name : name, source: source }])
+    async insertSource(name, source) {
+        return await Source.insertMany([typeof source === 'string' ? { name: name, sourceCSV: source } : { name: name, source: source }])
     },
     async insertMap(name, map) {
-        return await Map.insertMany([{name : name, map: map }])
+        return await Map.insertMany([{ name: name, map: map }])
     },
     async insertDataModel(name, dataModel) {
-        return await DataModel.insertMany([{name : name, dataModel : dataModel}])
+        return await DataModel.insertMany([{ name: name, dataModel: dataModel }])
     },
 }
