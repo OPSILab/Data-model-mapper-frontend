@@ -51,17 +51,17 @@ module.exports = {
 
     insertSource: async (req, res) => {
         res.send(await service.insertSource(req.body.name, req.body.id, req.body.source))
-        log.debug("insertSource end");
+        log.debug("Source inserted");
     },
 
     insertMap: async (req, res) => {
         res.send(await service.insertMap(req.body.name, req.body.id, req.body.map))
-        log.debug("insertMap end");
+        log.debug("Map inserted");
     },
 
     insertDataModel: async (req, res) => {
         res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel))
-        log.debug("insertDataModel end");
+        log.debug("Model inserted");
     },
 
     modifySource: async (req, res) => {
