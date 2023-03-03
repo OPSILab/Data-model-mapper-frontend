@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const source = mongoose.Schema({
   name: String,
+  id: String,
   source: {},
   sourceCSV: String
 }, { versionKey: false });

@@ -16,25 +16,27 @@ module.exports = {
             req.body.mapID ? {id : req.body.mapID} : 
             req.body.mapData ? [req.body.mapData, "mapData"] : false,
 
-            req.body.dataModelIn ? req.body.dataModelIn : [req.body.dataModel, req.body.dataModel.$id],
-            req.body.dataModelIn ? true : false,
+            req.body.dataModelIn ? {name :req.body.dataModelIn} : 
+            req.body.dataModelID ? {id:req.body.dataModelID} :
+            req.body.dataModel?  {data: req.body.dataModel, schema_id : req.body.dataModel.$id} : false,
+
             req.body.csvDelimiter || config.delimiter || ','
         )
         log.debug("service.mapData end");
     },
 
     insertSource: async (req, res) => {
-        res.send(await service.insertSource(req.body.name, req.body.source))
+        res.send(await service.insertSource(req.body.name, req.body.id, req.body.source))
         log.debug("insertSource end");
     },
 
     insertMap: async (req, res) => {
-        res.send(await service.insertMap(req.body.name, req.body.map))
+        res.send(await service.insertMap(req.body.name, req.body.id, req.body.map))
         log.debug("insertMap end");
     },
 
     insertDataModel: async (req, res) => {
-        res.send(await service.insertDataModel(req.body.name, req.body.dataModel))
+        res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel))
         log.debug("insertDataModel end");
     },
 };
