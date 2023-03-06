@@ -549,8 +549,8 @@ wrap the fields and the values of the objects inside the arrays. So ^ must be us
 For example :
 
 ```
-Field Name 1; Field Name 2; ecc...
-[{^Field 1^ : ^Value 1^, ^Field 2^ : ^Value 2^}, {^Field 1b^ : ^Value 1b^, ^Field 2b^ : ^Value 2b^}, ecc...];Value 2; ...
+Field Name 1; Field Name 2; ...
+[{^Field 1^ : ^Value 1^, ^Field 2^ : ^Value 2^}, {^Field 1b^ : ^Value 1b^, ^Field 2b^ : ^Value 2b^}, ...];Value 2; ...
 ```
 
 If you want to insert the [ symbol at the beginning of a string, you must add a space line " " before, otherwise the value will be converted to an array even if it is a string in the data model. For this purpose, you can set the deleteEmptySpaceAtBeginning = true field in config.js if you do not want to see the empty space at beginning.
@@ -566,9 +566,9 @@ Field Name
 
  ```
 [
- {
-   "Field Name" : "[Value]"
- }
+   {
+      "Field Name" : "[Value]"
+   }
 ]
 ```
 
