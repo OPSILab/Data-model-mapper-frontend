@@ -89,7 +89,7 @@ const finalizeFile = async () => {
         await outFileStream.end();
         outFileStream = undefined;
         return resolve();
-    }).then(value => log.debug(value)).catch(value => log.error(value));
+    }).then(value => {if (value) log.debug(value)}).catch(value => log.error(value));
 };
 
 const printFileFinalReport = async (logger) => {
