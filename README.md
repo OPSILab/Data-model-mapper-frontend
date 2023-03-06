@@ -533,20 +533,27 @@ The resulting object will be:
 
 If a field is an array and we have this first line in the CSV :
 
-Array 1
+```
+Array 1; ...
+```
 
 the second line should be 
 
-[value at index 0, value at index 1, value at index 2 ecc...]
+```
+[value at index 0, value at index 1, value at index 2, ...]; ...
+```
 
-If the values are objects, it can be conflicts with the '"' used to wrap values of each field of the CSV file if we use '"' to 
-wrap the fields and the values of the objects inside the arrays. So '^' must be used instead of double quotes.
+If the values are objects, it can be conflicts with the " used to wrap values of each field of the CSV file if we use " to 
+wrap the fields and the values of the objects inside the arrays. So ^ must be used instead of double quotes.
 
 For example :
 
-[{^Field 1^ : ^Value 1^, ^Field 2^ : ^Value 2^}, {^Field 1b^ : ^Value 1b^, ^Field 2b^ : ^Value 2b^}, ecc...]
+```
+Field Name 1; Field Name 2; ecc...
+[{^Field 1^ : ^Value 1^, ^Field 2^ : ^Value 2^}, {^Field 1b^ : ^Value 1b^, ^Field 2b^ : ^Value 2b^}, ecc...];Value 2; ...
+```
 
-If you want to insert the "[" symbol at the beginning of a string, you must add a space line " " before, otherwise the value will be converted to an array even if it is a string in the data model. For this purpose, you can set the deleteEmptySpaceAtBeginning = true field in config.js if you do not want to see the empty space at beginning.
+If you want to insert the [ symbol at the beginning of a string, you must add a space line " " before, otherwise the value will be converted to an array even if it is a string in the data model. For this purpose, you can set the deleteEmptySpaceAtBeginning = true field in config.js if you do not want to see the empty space at beginning.
 
 For example, the output of : 
 
