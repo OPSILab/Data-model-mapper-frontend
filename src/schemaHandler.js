@@ -31,30 +31,30 @@ let fieldContainsArray = false;
 
 // this function completes the compatibility with array inside nested objects and objects inside an array
 function nestedFieldsHandler(field) {
-    log.debug("start function nestedFieldsHandler\n" + field)
+    log.silly("start function nestedFieldsHandler\n" + field)
     if (typeof field === "object") {
-        log.debug("field is an object")
+        log.silly("field is an object")
         for (let subField in field) {
-            log.debug("iterating inside field:\n" + field)
-            log.debug("iterating inside field: element found: \n" + subField)
+            log.silly("iterating inside field:\n" + field)
+            log.silly("iterating inside field: element found: \n" + subField)
             field[subField] = nestedFieldsHandler(field[subField])
-            log.debug("iterating inside field: finish. Now field is:\n" + field)
+            log.silly("iterating inside field: finish. Now field is:\n" + field)
         }
     }
     else if (field && (field[0] == "[")) {
         fieldContainsArray = true;
         if (field[1] == "{") {
-            log.debug("field is not an object but an array of objects\n" + field)
+            log.silly("field is not an object but an array of objects\n" + field)
             field = field.replaceAll("^", '"');
             field = JSON.parse(field)
         }
         else {
-            log.debug("field is not an object but an array\n" + field)
+            log.silly("field is not an object but an array\n" + field)
             field = field.substring(1, field.length - 1).split(',')
         }
     }
 
-    log.debug("end function nestedFieldsHandler\n" + field)
+    log.silly("end function nestedFieldsHandler\n" + field)
     return field
 }
 
@@ -148,6 +148,8 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
 
     var validate = ajv.compile(schema);
     var valid = validate(data);
+    if (valid) log.info("Field is valid")
+    if (validate.errors) log.info("Nested fields handler needed")
 
     if (config.mode == "server") apiOutput.outputFile[rowNumber - 1] = data;
 
@@ -167,18 +169,20 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         return true;
     }
     else {
-        log.debug("data before\n" + data);
+        log.silly("data before nested fields handler" + data);
         data = nestedFieldsHandler(data);
-        log.debug("data after\n" + data)
+        log.silly("data after nested fields handler" + data)
 
         if (!fieldContainsArray) {
             log.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
-            if (!isSingleField)
+            if (!isSingleField){
                 report.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
-
+            }
+            log.error("Field is not valid")
             return false
         }
         fieldContainsArray = false;
+        log.info("Field is valid")
         return true
     }
 }

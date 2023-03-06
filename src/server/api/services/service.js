@@ -8,7 +8,7 @@ module.exports = {
 
     outputFile: [],
 
-    error : null,
+    error: null,
 
     getFilename(id) {
 
