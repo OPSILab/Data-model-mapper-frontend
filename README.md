@@ -550,29 +550,39 @@ If you want to insert the "[" symbol at the beginning of a string, you must add 
 
 For example, the output of : 
 
-String
+```
+Field Name
  [Value]
+ ```
 
  Will be 
+
+ ```
 [
  {
-   String : "[Value]"
+   "Field Name" : "[Value]"
  }
 ]
+```
 
  The output of 
 
- String
+```
+ Field Name
  [Value]
+ ```
 
  Will be
+
+```
 [
  {
-   String : [
+   "Field Name" : [
       Value
    ]
  }
 ]
+```
 
 
 #### GeoJson Example

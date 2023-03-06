@@ -27,7 +27,7 @@ module.exports = {
         const cli = require('../../../cli/setup');
         if (!source || !map || !dataModel) {
             process.res.send(400)
-            return "no source file"
+            return "Missing fields"
         }
 
         process.env.delimiter = delimiter
