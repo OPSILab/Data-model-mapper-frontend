@@ -144,15 +144,26 @@ In order to use data model mapper as server mode, you must set the mode in confi
 You can send a request at <host-url>:<port>/api/map with these parameters in body :
 
 - **``sourceDataType``**: the type of the source data to convert.
-- **``sourceDataIn``**: the path of the source data to convert, if no sourceData is specified in his field. Has priority over **``sourceData``**.
-- **``sourceData``**: the source data to convert, if no sourceDataIn is specified in his field.
-- **``mapPathIn``**: the path of the mapping file, if no mapData is specified in his field. Has priority over **``mapData``**
-- **``mapData``**: the mapping file, if no mapPathIn is specified in his field.
-- **``dataModelIn``**: the name of the target data model (inside the Data Model folder) to compare with the output for validation, if no dataModel is specified in his  field. Has priority over **``dataModel``**
-- **``dataModel``**: the data model to compare with the output for validation, if no dataModelIn is specified in his field.
+- **``sourceDataIn``**: the path of the source data to convert. Has priority over **``sourceData``** and **``sourceDataID``**.
+- **``sourceDataID``**: the Mongo document ID of the source data to convert. Has priority over **``sourceData``**.
+- **``sourceData``**: the source data to convert, if no sourceDataIn and sourceDataID are specified in their field.
+- **``mapPathIn``**: the path of the mapping file. Has priority over **``mapData``** and **``mapDataID``**.
+- **``mapDataID``**: the Mongo document ID of the mapping file. Has priority over **``mapData``**.
+- **``mapData``**: the mapping file, if no mapPathIn and mapDataID are specified in their field.
+- **``dataModelIn``**: the name of the target data model (inside the Data Model folder) to compare with the output for validation. Has priority over **``dataModel``**
+- **``dataModelID``**: the Mongo document ID of the target data model to compare with the output for validation. Has priority over **``dataModel``**
+- **``dataModel``**: the data model to compare with the output for validation, if no dataModelIn and dataModelID are specified in their field.
 - **``csvDelimiter``**: the csvDelimiter. This field has priority over the  **``csvDelimiter``** field in config.js.
 
---------------------
+**Example:**
+```
+{
+    "sourceDataIn": "5. ServiceModel.csv", 
+    "mapPathIn": "5. ServiceModelMap.json", 
+    "dataModelIn": "ServiceModel",
+    "csvDelimiter": ";"
+}
+```
 
 <a name="conf-id"/>
 
