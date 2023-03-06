@@ -8,6 +8,8 @@ module.exports = {
 
     outputFile: [],
 
+    error : null,
+
     getFilename(id) {
 
         for (let i = 0; i < id.length; i++) {
@@ -26,7 +28,7 @@ module.exports = {
     async mapData(source, map, dataModel, delimiter) {
         const cli = require('../../../cli/setup');
         if (!source || !map || !dataModel) {
-            process.res.send(400)
+            process.res.status(400).send("Missing fields")
             return "Missing fields"
         }
 
@@ -34,19 +36,19 @@ module.exports = {
 
         if (source.id) {
             try { source.data = await Source.findOne({ id: source.id }) }
-            catch (error) { process.res.send(404) }
+            catch (error) { process.res.sendStatus(404) }
             source.data = source.data.source || source.data.sourceCSV
         }
 
         if (map.id) {
             try { map = await Map.findOne({ id: map.id }) }
-            catch (error) { process.res.send(404) }
+            catch (error) { process.res.sendStatus(404) }
             map = [map.map, "mapData"]
         }
 
         if (dataModel.id) {
             try { dataModel.data = await DataModel.findOne({ id: dataModel.id }) }
-            catch (error) { process.res.send(404) }
+            catch (error) { process.res.sendStatus(404) }
             dataModel.data = dataModel.data.dataModel
             dataModel.schema_id = dataModel.data.$id || config.modelSchemaFolder + '/DataModelTemp.json'
         }

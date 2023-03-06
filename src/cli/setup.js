@@ -23,6 +23,8 @@ const config = require('../../config')
 const log = require('../utils/logger').app(module);
 const utils = require('../utils/utils');
 
+let service = require ("../server/api/services/service")
+
 module.exports = async (sourceDataIn, mapPathIn, dataModelIn) => {
     log.info("Initializing Mapper in " + (config.mode == "commandLine" ? "Command Line " : "Server ") + "Mode");
 
@@ -46,6 +48,7 @@ module.exports = async (sourceDataIn, mapPathIn, dataModelIn) => {
 
     } else {
         log.error("There was an error while initializing Mapper configuration");
+        service.error = "There was an error while initializing Mapper configuration"
     }
 };
 

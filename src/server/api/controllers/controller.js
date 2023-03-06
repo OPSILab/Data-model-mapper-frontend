@@ -22,6 +22,9 @@ module.exports = {
 
             req.body.csvDelimiter || config.delimiter || ','
         )
+
+        if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")
+        service.error = null
         log.debug("service.mapData end");
     },
 
