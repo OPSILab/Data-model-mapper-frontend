@@ -109,6 +109,8 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 /********************* Destination Key is an Object ****************************************/
             } else if (schemaDestKey && schemaDestKey.type === 'object' && typeof normSourceKey === 'object') {
 
+                //the following does not seem to do anything
+                /*
                 for (let key in normSourceKey) {
 
                     let schemaDestSubKey = schemaDestKey.properties[key];
@@ -138,6 +140,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                         //parsedNorm[key]['type'] = new Function("input", "return '" + schemaFieldType + "'");
                     }
                 }
+                */
 
                 /********************* Destination Field is an Array ********************************************/
             } else if (schemaDestKey && schemaDestKey.type === 'array' && Array.isArray(normSourceKey)) {
