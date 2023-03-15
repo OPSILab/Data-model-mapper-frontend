@@ -44,6 +44,48 @@ const loadMap = (mapData) => {
 
 };
 
+const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey) => {
+
+    for (let key in normSourceKey) {
+
+        let schemaDestSubKey = schemaDestKey.properties[key];
+        if (schemaDestSubKey) {
+
+            let schemaFieldType = schemaDestSubKey.type;
+            let schemaFieldFormat = schemaDestSubKey.format;
+            let mapSourceSubField = normSourceKey[key];
+
+            console.log(parsedSourceKey[key])
+
+            parsedSourceKey[key] = {};
+            if (schemaFieldType === 'number' || schemaFieldType === 'integer') {
+                parsedSourceKey[key] = new Function("input", "return Number(input['" + mapSourceSubField + "']);");
+            } else if (schemaFieldType === 'boolean') {
+                parsedSourceKey[key] = new Function("input", "return (input['" + mapSourceSubField + "'].toLowerCase() == 'true' || input['" + mapSourceSubField + "'] == 1 || input['" + mapSourceSubField + "'] == '1'  ) ? true: false");
+            } else if (schemaFieldType === 'string' && schemaFieldFormat === 'date-time') {
+                parsedSourceKey[key] = new Function("input", "return new Date(input['" + mapSourceSubField + "']).toISOString();");
+            } else if (schemaFieldType === 'string' && Array.isArray(mapSourceSubField)) {
+                parsedSourceKey[key] = new Function("input", "return " + handleSourceFieldsArray(mapSourceSubField).result);
+            } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && mapSourceSubField.startsWith("static:")) {
+                parsedSourceKey[key] = new Function("input", "return '" + mapSourceSubField.match(staticPattern)[1] + "'");
+            }else if(schemaFieldType === 'object'){
+                console.log("This is an object") 
+                parsedSourceKey[key] = mapSourceSubField;
+            
+            }else {
+                // normal string no action required
+                parsedSourceKey[key] = mapSourceSubField;
+            }
+
+            console.log(parsedSourceKey[key])
+            
+            // Add type to the nested map field
+            //parsedNorm[key]['type'] = new Function("input", "return '" + schemaFieldType + "'");
+        }
+    }
+    return parsedSourceKey;
+};
+
 // This function takes in input the source object, uses map object to map to a destination data Model
 // according to the passed data model Json Schema
 const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service, group, entityIdField) => {
@@ -109,38 +151,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 /********************* Destination Key is an Object ****************************************/
             } else if (schemaDestKey && schemaDestKey.type === 'object' && typeof normSourceKey === 'object') {
 
-                //the following does not seem to do anything
-                /*
-                for (let key in normSourceKey) {
-
-                    let schemaDestSubKey = schemaDestKey.properties[key];
-                    if (schemaDestSubKey) {
-
-                        let schemaFieldType = schemaDestSubKey.type;
-                        let schemaFieldFormat = schemaDestSubKey.format;
-                        let mapSourceSubField = normSourceKey[key];
-
-                        parsedSourceKey[key] = {};
-                        if (schemaFieldType === 'number' || schemaFieldType === 'integer') {
-                            parsedSourceKey[key] = new Function("input", "return Number(input['" + mapSourceSubField + "']);");
-                        } else if (schemaFieldType === 'boolean') {
-                            parsedSourceKey[key] = new Function("input", "return (input['" + mapSourceSubField + "'].toLowerCase() == 'true' || input['" + mapSourceSubField + "'] == 1 || input['" + mapSourceSubField + "'] == '1'  ) ? true: false");
-                        } else if (schemaFieldType === 'string' && schemaFieldFormat === 'date-time') {
-                            parsedSourceKey[key] = new Function("input", "return new Date(input['" + mapSourceSubField + "']).toISOString();");
-                        } else if (schemaFieldType === 'string' && Array.isArray(mapSourceSubField)) {
-                            parsedSourceKey[key] = new Function("input", "return " + handleSourceFieldsArray(mapSourceSubField).result);
-                        } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && mapSourceSubField.startsWith("static:")) {
-                            parsedSourceKey[key] = new Function("input", "return '" + mapSourceSubField.match(staticPattern)[1] + "'");
-                        } else {
-                            // normal string no action required
-                            parsedSourceKey[key] = mapSourceSubField;
-                        }
-
-                        // Add type to the nested map field
-                        //parsedNorm[key]['type'] = new Function("input", "return '" + schemaFieldType + "'");
-                    }
-                }
-                */
+                parsedSourceKey = objectHandler(parsedSourceKey, normSourceKey, schemaDestKey)
 
                 /********************* Destination Field is an Array ********************************************/
             } else if (schemaDestKey && schemaDestKey.type === 'array' && Array.isArray(normSourceKey)) {
