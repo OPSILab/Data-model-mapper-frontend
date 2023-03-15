@@ -70,7 +70,8 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey) => {
                 parsedSourceKey[key] = new Function("input", "return '" + mapSourceSubField.match(staticPattern)[1] + "'");
             }else if(schemaFieldType === 'object'){
                 console.log("This is an object") 
-                parsedSourceKey[key] = mapSourceSubField;
+                parsedSourceKey[key] = objectHandler(mapSourceSubField, mapSourceSubField, schemaDestSubKey)
+                //parsedSourceKey[key] = mapSourceSubField;
             
             }else {
                 // normal string no action required
