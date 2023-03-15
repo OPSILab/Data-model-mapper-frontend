@@ -207,13 +207,21 @@ const printFinalReportAndSendResponse = async (logger) => {
         '\t Mapped and NOT Validated Objects: ' + process.env.unvalidCount + '/' + process.env.rowNumber + '\n' +
         '-----------------------------------------');
 
-    if (config.mode == 'server')
+    if (config.mode == 'server') {
+        apiOutput.outputFile[apiOutput.outputFile.length] = {
+            MAPPING_REPORT: {
+                Processed_objects: process.env.rowNumber,
+                Mapped_and_Validated_Objects: process.env.validCount + '-' + process.env.rowNumber,
+                Mapped_and_NOT_Validated_Objects: process.env.unvalidCount + '-' + process.env.rowNumber
+            }
+        }
         try {
             sendOutput();
         }
         catch (error) {
             console.log(error.message)
         }
+    }
 };
 
 const addAuthenticationHeader = (headers) => {
