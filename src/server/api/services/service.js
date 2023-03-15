@@ -3,6 +3,7 @@ const config = require('../../../../config')
 const Source = require("../models/source.js")
 const Map = require("../models/map.js")
 const DataModel = require("../models/dataModel.js")
+const log = require('../../../utils/logger').app(module);
 
 module.exports = {
 
@@ -56,13 +57,13 @@ module.exports = {
         if (source.data) {
             await fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
                 if (err) throw err;
-                console.log('File sourceData temp is created successfully.');
+                log.debug('File sourceData temp is created successfully.');
             })
         }
         if (dataModel.data) {
             await fs.writeFile(dataModel.schema_id, JSON.stringify(dataModel.data), function (err) {
                 if (err) throw err;
-                console.log('File dataModel temp is created successfully.');
+                log.debug('File dataModel temp is created successfully.');
             })
         }
         await cli(
@@ -93,9 +94,8 @@ module.exports = {
     },
 
     async getDataModel(id) {
-        console.log(await DataModel.findOne({ name: "Example Model" }))
-        console.log(await DataModel.findOne({ id: "example_1" }))
-        console.log(id)
+        await DataModel.findOne({ name: "Example Model" })
+        await DataModel.findOne({ id: "example_1" })
         return await DataModel.findOne({ id: id })
     },
 

@@ -55,8 +55,6 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey) => {
             let schemaFieldFormat = schemaDestSubKey.format;
             let mapSourceSubField = normSourceKey[key];
 
-            console.log(parsedSourceKey[key])
-
             parsedSourceKey[key] = {};
             if (schemaFieldType === 'number' || schemaFieldType === 'integer') {
                 parsedSourceKey[key] = new Function("input", "return Number(input['" + mapSourceSubField + "']);");
@@ -69,17 +67,14 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey) => {
             } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && mapSourceSubField.startsWith("static:")) {
                 parsedSourceKey[key] = new Function("input", "return '" + mapSourceSubField.match(staticPattern)[1] + "'");
             }else if(schemaFieldType === 'object'){
-                console.log("This is an object") 
+                log.debug("This is an object") 
                 parsedSourceKey[key] = objectHandler(mapSourceSubField, mapSourceSubField, schemaDestSubKey)
                 //parsedSourceKey[key] = mapSourceSubField;
             
             }else {
                 // normal string no action required
                 parsedSourceKey[key] = mapSourceSubField;
-            }
-
-            console.log(parsedSourceKey[key])
-            
+            }            
             // Add type to the nested map field
             //parsedNorm[key]['type'] = new Function("input", "return '" + schemaFieldType + "'");
         }
