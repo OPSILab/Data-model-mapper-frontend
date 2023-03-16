@@ -50,44 +50,11 @@ function nestedFieldsHandler(field, model) {
         }
         else {
             log.silly("field is not an object but an array\n" + field)
-            console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ type", model)
             if (model.type === 'string') {
                 field = field.substring(1, field.length - 1).split(',')
-                console.log(typeof field[0])
-                console.log(typeof field[0])
-                console.log(typeof field[0])
-                console.log(typeof field[0])
-                console.log(typeof field[0])
-                console.log("typeof field[0]")
-                console.log(typeof field[0])
-                console.log(typeof field[0])
-                console.log(typeof field[0])
-                console.log(typeof field[0])
-                console.log(typeof field[0])
-                console.log(typeof field[0])
-
             }
             else {
                 field = JSON.parse(field)
-                console.log(typeof field[0],field[0])
-                console.log(typeof field[0])
-                console.log(typeof field[0])
-                console.log(typeof field[0])
-                console.log(typeof field[0])
-                console.log(typeof field[0])
-
-            }
-          //  console.log("djfdkfjkdkdjfkd", typeof field[0])
-            if (typeof field[0] === 'string'){
-                log.debug("Array has string elements")
-            }
-            else if (typeof field[0] === 'number'){
-                log.debug("Array has integer elements")
-            }
-            else {
-                console.log(typeof field[0],typeof field[0],typeof field[0],typeof field[0])
-                console.log(field[0],field[0],field[0],field[0])
-                log.debug("Array has no string and no integer elements")
             }
         }
     }
@@ -186,36 +153,15 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
 
     var validate = ajv.compile(schema);
     var valid = validate(data);
-    var valid2 = false;
-    // valid3
     if (valid) log.info("Field is valid")
     else {
-        //console.log(schema.allOf[0].properties)
-        //cazzo
-        let dataFixed = nestedFieldsHandler(data, schema.allOf[0].properties)
-        var validate2 = ajv.compile(schema);
-        valid2 = validate2(dataFixed)
-        console.log("dataFixed")
-        console.log(dataFixed)
-        if (valid2) {
+        data = nestedFieldsHandler(data, schema.allOf[0].properties)
+        validate = ajv.compile(schema);
+        valid = validate(data)
+        if (valid) {
             log.info("Field is valid")
-            data = dataFixed
         }
-        /*
-        else {
-            //for (let i in data) data[i] = parseInt(data[i])
-            var validate3 = ajv.compile(schema);
-            data = nestedFieldsHandler(data, true)
-            valid3 = validate3(data)
-            if (valid3) log.info("Field is valid")
-            else if (validate3.errors) console.log(validate3.errors)
-            console.log("data")
-            console.log(data)
-            console.log("typeof data[0]")
-            console.log(typeof data[0])
-        }*/
     }
-    //if (validate.errors) log.info("Nested fields handler needed")
 
     if (config.mode == "server") apiOutput.outputFile[rowNumber - 1] = data;
     //if (config.mode == "server") apiOutput.outputFile.push(data);
@@ -226,7 +172,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         schema.anyOf = anyOf;
     }
 
-    if (valid || valid2) {
+    if (valid) {
         if (!isSingleField)
             log.log({
                 level: 'silly',
@@ -236,21 +182,13 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         return true;
     }
     else {
-        //log.silly("data before nested fields handler" + data);
-        //data = nestedFieldsHandler(data);
-        //log.silly("data after nested fields handler" + data)
 
-        //if (!fieldContainsArray) {
             log.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
             if (!isSingleField) {
                 report.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
             }
             log.error("Field is not valid")
             return false
-        //}
-        fieldContainsArray = false;
-        log.info("Field is valid")
-        return true
     }
 }
 
