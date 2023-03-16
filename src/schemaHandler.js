@@ -60,19 +60,9 @@ function nestedFieldsHandler(field, model) {
             field = field.replaceAll("^", '"');
             field = JSON.parse(field)
         }
-        else {
-            log.silly("field is not an object but an array\n" + field)
-            if (model.type === 'number' || model.type === 'integer') {
-                console.log(model.type);console.log(model.type);console.log(model.type);console.log(model.type);
-                field = JSON.parse(field)
-            }
-            else {
-                console.log(model.type);console.log("model.type");console.log(model.type);console.log(model.type);
-                field = field.substring(1, field.length - 1).split(',')
-            }
-        }
+        else if (model.type === 'number' || model.type === 'integer') field = JSON.parse(field)
+        else field = field.substring(1, field.length - 1).split(',')
     }
-
     log.silly("end function nestedFieldsHandler\n" + field)
     return field
 }
