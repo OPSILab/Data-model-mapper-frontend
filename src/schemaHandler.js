@@ -30,14 +30,14 @@ const apiOutput = require('./server/api/services/service')
 let fieldContainsArray = false;
 
 // this function completes the compatibility with array inside nested objects and objects inside an array
-function nestedFieldsHandler(field) {
+function nestedFieldsHandler(field, model) {
     log.silly("start function nestedFieldsHandler\n" + field)
     if (typeof field === "object") {
         log.silly("field is an object")
         for (let subField in field) {
             log.silly("iterating inside field:\n" + field)
             log.silly("iterating inside field: element found: \n" + subField)
-            field[subField] = nestedFieldsHandler(field[subField])
+            field[subField] = nestedFieldsHandler(field[subField],model[subField].properties?model[subField].properties : model[subField].items? model[subField].items : model[subField].type ? model[subField].type : model[subField])
             log.silly("iterating inside field: finish. Now field is:\n" + field)
         }
     }
@@ -50,7 +50,45 @@ function nestedFieldsHandler(field) {
         }
         else {
             log.silly("field is not an object but an array\n" + field)
-            field = field.substring(1, field.length - 1).split(',')
+            console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ type", model)
+            if (model.type === 'string') {
+                field = field.substring(1, field.length - 1).split(',')
+                console.log(typeof field[0])
+                console.log(typeof field[0])
+                console.log(typeof field[0])
+                console.log(typeof field[0])
+                console.log(typeof field[0])
+                console.log("typeof field[0]")
+                console.log(typeof field[0])
+                console.log(typeof field[0])
+                console.log(typeof field[0])
+                console.log(typeof field[0])
+                console.log(typeof field[0])
+                console.log(typeof field[0])
+
+            }
+            else {
+                field = JSON.parse(field)
+                console.log(typeof field[0],field[0])
+                console.log(typeof field[0])
+                console.log(typeof field[0])
+                console.log(typeof field[0])
+                console.log(typeof field[0])
+                console.log(typeof field[0])
+
+            }
+          //  console.log("djfdkfjkdkdjfkd", typeof field[0])
+            if (typeof field[0] === 'string'){
+                log.debug("Array has string elements")
+            }
+            else if (typeof field[0] === 'number'){
+                log.debug("Array has integer elements")
+            }
+            else {
+                console.log(typeof field[0],typeof field[0],typeof field[0],typeof field[0])
+                console.log(field[0],field[0],field[0],field[0])
+                log.debug("Array has no string and no integer elements")
+            }
         }
     }
 
@@ -148,10 +186,39 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
 
     var validate = ajv.compile(schema);
     var valid = validate(data);
+    var valid2 = false;
+    // valid3
     if (valid) log.info("Field is valid")
-    if (validate.errors) log.info("Nested fields handler needed")
+    else {
+        //console.log(schema.allOf[0].properties)
+        //cazzo
+        let dataFixed = nestedFieldsHandler(data, schema.allOf[0].properties)
+        var validate2 = ajv.compile(schema);
+        valid2 = validate2(dataFixed)
+        console.log("dataFixed")
+        console.log(dataFixed)
+        if (valid2) {
+            log.info("Field is valid")
+            data = dataFixed
+        }
+        /*
+        else {
+            //for (let i in data) data[i] = parseInt(data[i])
+            var validate3 = ajv.compile(schema);
+            data = nestedFieldsHandler(data, true)
+            valid3 = validate3(data)
+            if (valid3) log.info("Field is valid")
+            else if (validate3.errors) console.log(validate3.errors)
+            console.log("data")
+            console.log(data)
+            console.log("typeof data[0]")
+            console.log(typeof data[0])
+        }*/
+    }
+    //if (validate.errors) log.info("Nested fields handler needed")
 
     if (config.mode == "server") apiOutput.outputFile[rowNumber - 1] = data;
+    //if (config.mode == "server") apiOutput.outputFile.push(data);
 
     // Recover the required field, if removed in case of single field
     if (isSingleField && (required || anyOf)) {
@@ -159,7 +226,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         schema.anyOf = anyOf;
     }
 
-    if (valid) {
+    if (valid || valid2) {
         if (!isSingleField)
             log.log({
                 level: 'silly',
@@ -169,18 +236,18 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         return true;
     }
     else {
-        log.silly("data before nested fields handler" + data);
-        data = nestedFieldsHandler(data);
-        log.silly("data after nested fields handler" + data)
+        //log.silly("data before nested fields handler" + data);
+        //data = nestedFieldsHandler(data);
+        //log.silly("data after nested fields handler" + data)
 
-        if (!fieldContainsArray) {
+        //if (!fieldContainsArray) {
             log.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
-            if (!isSingleField){
+            if (!isSingleField) {
                 report.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
             }
             log.error("Field is not valid")
             return false
-        }
+        //}
         fieldContainsArray = false;
         log.info("Field is valid")
         return true
