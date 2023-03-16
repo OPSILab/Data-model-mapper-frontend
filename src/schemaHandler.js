@@ -27,8 +27,6 @@ const report = require('./utils/logger').report;
 const config = require('../config')
 const apiOutput = require('./server/api/services/service')
 
-let fieldContainsArray = false;
-
 // this function completes the compatibility with array inside nested objects and objects inside an array
 function nestedFieldsHandler(field, model) {
     log.silly("start function nestedFieldsHandler\n" + field)
@@ -37,12 +35,26 @@ function nestedFieldsHandler(field, model) {
         for (let subField in field) {
             log.silly("iterating inside field:\n" + field)
             log.silly("iterating inside field: element found: \n" + subField)
-            field[subField] = nestedFieldsHandler(field[subField],model[subField].properties?model[subField].properties : model[subField].items? model[subField].items : model[subField].type ? model[subField].type : model[subField])
+            if (model) field[subField] = nestedFieldsHandler(field[subField],
+                model[subField] ?
+                    model[subField].properties ?
+                        model[subField].properties
+                        :
+                        model[subField].items ?
+                            model[subField].items
+                            :
+                            model[subField].type ?
+                                model[subField].type
+                                :
+                                model[subField]
+                    :
+                    model
+            )
+            else return field
             log.silly("iterating inside field: finish. Now field is:\n" + field)
         }
     }
     else if (field && (field[0] == "[")) {
-        fieldContainsArray = true;
         if (field[1] == "{") {
             log.silly("field is not an object but an array of objects\n" + field)
             field = field.replaceAll("^", '"');
@@ -50,11 +62,13 @@ function nestedFieldsHandler(field, model) {
         }
         else {
             log.silly("field is not an object but an array\n" + field)
-            if (model.type === 'string') {
-                field = field.substring(1, field.length - 1).split(',')
+            if (model.type === 'number' || model.type === 'integer') {
+                console.log(model.type);console.log(model.type);console.log(model.type);console.log(model.type);
+                field = JSON.parse(field)
             }
             else {
-                field = JSON.parse(field)
+                console.log(model.type);console.log("model.type");console.log(model.type);console.log(model.type);
+                field = field.substring(1, field.length - 1).split(',')
             }
         }
     }
@@ -183,12 +197,12 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
     }
     else {
 
-            log.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
-            if (!isSingleField) {
-                report.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
-            }
-            log.error("Field is not valid")
-            return false
+        log.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
+        if (!isSingleField) {
+            report.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
+        }
+        log.error("Field is not valid")
+        return false
     }
 }
 
