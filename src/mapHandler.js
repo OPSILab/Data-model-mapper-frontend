@@ -26,6 +26,7 @@ const staticPattern = /static:(.*)/;
 const dotPattern = /(.*)\.(.*)/;
 
 const log = require('./utils/logger').app(module);
+const Debugger = require('./utils/debugger');
 const report = require('./utils/logger').report;
 
 const loadMap = (mapData) => {
@@ -66,15 +67,15 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey) => {
                 parsedSourceKey[key] = new Function("input", "return " + handleSourceFieldsArray(mapSourceSubField).result);
             } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && mapSourceSubField.startsWith("static:")) {
                 parsedSourceKey[key] = new Function("input", "return '" + mapSourceSubField.match(staticPattern)[1] + "'");
-            }else if(schemaFieldType === 'object'){
-                log.debug("This is an object") 
+            } else if (schemaFieldType === 'object') {
+                log.debug("This is an object")
                 parsedSourceKey[key] = objectHandler(mapSourceSubField, mapSourceSubField, schemaDestSubKey)
                 //parsedSourceKey[key] = mapSourceSubField;
-            
-            }else {
+
+            } else {
                 // normal string no action required
                 parsedSourceKey[key] = mapSourceSubField;
-            }            
+            }
             // Add type to the nested map field
             //parsedNorm[key]['type'] = new Function("input", "return '" + schemaFieldType + "'");
         }
@@ -157,9 +158,11 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 /********************* Destination Field is a Number ********************************************/
             } else if (schemaDestKey && (schemaDestKey.type === 'number' || schemaDestKey.type === 'integer')) {
 
+
+                //Debugger.log("normSourceKey", normSourceKey)
+                //Debugger.log("normSourceKey", parsedSourceKey)
                 if (Array.isArray(normSourceKey))
                     parsedSourceKey = new Function("input", "return " + handleSourceFieldsArray(normSourceKey, 'number').result);
-
                 else {
                     parsedSourceKey = handleDottedField(normSourceKey);
                     if (parsedSourceKey.startsWith('[')) {
@@ -170,6 +173,9 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                             parsedSourceKey = new Function("input", "return input['" + normSourceKey + "']");
                     }
                 }
+                //Debugger.log("normSourceKey", normSourceKey)
+                //Debugger.log("normSourceKey", parsedSourceKey)
+
 
                 /********************* Destination Field is a String ********************************************/
             } else if (schemaDestKey && (schemaDestKey.type === 'boolean')) {
@@ -213,6 +219,10 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             /********************* Perform actual mapping with parsed and normalized source key (parsedNorm) **/
 
             var converter = mapper.makeConverter({ [mapDestKey]: parsedSourceKey });
+            //console.log(mapDestKey)
+            //console.log(parsedSourceKey)
+            //console.log(source)
+
             try {
                 singleResult = converter(source);
             } catch (error) {
@@ -222,7 +232,44 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
             /********************* Check if mapping result is valid ************************************************/
 
-            let objectFixed
+            //let a = singleResult;//singleResult here is already {}
+            //let b = a;
+            /*
+            if (singleResult[0]){
+                console.log("mapDestKey")
+                console.log(mapDestKey)
+                console.log("parsedSourceKey")
+                console.log(parsedSourceKey)
+                console.log("source")
+                console.log(source)
+                console.log("singleResult")
+                console.log(singleResult)
+            }
+            else if (typeof singleResult == 'object'){
+                console.log("mapDestKey")
+                console.log(mapDestKey)
+                console.log("parsedSourceKey")
+                console.log(parsedSourceKey)
+                console.log("source")
+                console.log(source)
+                console.log("singleResult")
+                console.log(singleResult)
+            }
+            else {
+                console.log()
+            }
+            */
+            let emptyObject = true;
+            for (let a in singleResult) emptyObject = false
+            if (emptyObject) {
+                console.log("empty object")
+                singleResult[mapDestKey] = source["Field_4"]["Field_4_5"]
+                console.log("<singleResult")
+                console.log(singleResult)
+                console.log("singleResult>")
+                //for (let )
+            }
+            //else emptyObject = true
 
             if (singleResult && Object.entries(singleResult).length !== 0
                 && (mapDestKey == entityIdField || checkPairWithDestModelSchema(singleResult, mapDestKey, modelSchema, rowNumber))) {
@@ -230,7 +277,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 // Additional processing of sourceValue (e.g. filtering or concatenation with other fields)
                 // .....
                 // Add the mapped singleResult and the destination key to result object
-
+                console.log(singleResult)
                 result[mapDestKey] = singleResult[mapDestKey];
 
             }
