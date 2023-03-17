@@ -57,7 +57,7 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey) => {
             let mapSourceSubField = normSourceKey[key];
 
             parsedSourceKey[key] = {};
-            if (schemaFieldType === 'number' || schemaFieldType === 'integer' && mapSourceSubField.split('.').length == 0) {
+            if (schemaFieldType === 'number' || schemaFieldType === 'integer' && mapSourceSubField.split('.').length == 1) {
                 parsedSourceKey[key] = new Function("input", "return Number(input['" + mapSourceSubField + "']);");
             } else if (schemaFieldType === 'boolean') {
                 parsedSourceKey[key] = new Function("input", "return (input['" + mapSourceSubField + "'].toLowerCase() == 'true' || input['" + mapSourceSubField + "'] == 1 || input['" + mapSourceSubField + "'] == '1'  ) ? true: false");
