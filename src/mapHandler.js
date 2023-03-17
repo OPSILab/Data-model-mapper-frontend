@@ -58,7 +58,8 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey) => {
 
             parsedSourceKey[key] = {};
             if (schemaFieldType === 'number' || schemaFieldType === 'integer') {
-                parsedSourceKey[key] = new Function("input", "return Number(input['" + mapSourceSubField + "']);");
+                parsedSourceKey[key] = mapSourceSubField;
+                //parsedSourceKey[key] = new Function("input", "return Number(input['" + mapSourceSubField + "']);");
             } else if (schemaFieldType === 'boolean') {
                 parsedSourceKey[key] = new Function("input", "return (input['" + mapSourceSubField + "'].toLowerCase() == 'true' || input['" + mapSourceSubField + "'] == 1 || input['" + mapSourceSubField + "'] == '1'  ) ? true: false");
             } else if (schemaFieldType === 'string' && schemaFieldFormat === 'date-time') {
@@ -81,6 +82,30 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey) => {
         }
     }
     return parsedSourceKey;
+};
+
+const emptyObject_3 = (anObject) => {
+    let emptyObject_1 = true;
+    let empty = {}
+    console.log(anObject)
+    console.log(empty)
+    for (let a in anObject) emptyObject_1 = false
+    return emptyObject_1
+};
+
+const extractFromNestedField = (source, field) =>{
+    let layers = field.split('.')
+    let value = source
+    for (let sublayer in layers) {
+        //let value2
+        
+        Debugger.log("source", source)
+        Debugger.log("sublayer", layers[sublayer])
+        value = value[layers[sublayer]]
+        Debugger.log("value", value)
+    }
+    return value
+
 };
 
 // This function takes in input the source object, uses map object to map to a destination data Model
@@ -219,9 +244,9 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             /********************* Perform actual mapping with parsed and normalized source key (parsedNorm) **/
 
             var converter = mapper.makeConverter({ [mapDestKey]: parsedSourceKey });
-            //console.log(mapDestKey)
-            //console.log(parsedSourceKey)
-            //console.log(source)
+            //Debugger.log("mapDestKey",mapDestKey)
+            //Debugger.log("parsedSourceKey",parsedSourceKey)
+            //Debugger.log("source",source)
 
             try {
                 singleResult = converter(source);
@@ -260,11 +285,15 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             }
             */
             let emptyObject = true;
+            //console.log(singleResult["Field 4"]? emptyObject_3(singleResult["Field 4"]["Field 4e"]) ?  "NaN" : "NaN ma non lo riconosce" : "Non è Field 4")
             for (let a in singleResult) emptyObject = false
             if (emptyObject) {
                 console.log("empty object")
-                singleResult[mapDestKey] = source["Field_4"]["Field_4_5"]
-                console.log("<singleResult")
+                //let fn1 = new Function("input", "" ,"return input1+'['+input2+']'");
+                singleResult[mapDestKey] = extractFromNestedField(source, normSourceKey)
+                //console.log(extractFromNestedField(source, normSourceKey))
+                //console.log(parseInt(fn1(source,normSourceKey)))
+                console.log("\n\n\n\n\n\n\n\n\n\n<singleResult")
                 console.log(singleResult)
                 console.log("singleResult>")
                 //for (let )
