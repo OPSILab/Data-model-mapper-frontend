@@ -1,6 +1,6 @@
 //const mapper = require("./mapper")
 const config = require("./config")
-const assets = require ("./assets/assets")
+const assets = require("./assets/assets")
 const chai = require("chai")
 const axios = require("axios")
 describe("test", function () {
@@ -28,6 +28,29 @@ describe("test", function () {
         chai.assert.equal(
           JSON.stringify(res.data[0]),
           JSON.stringify(assets.sample)
+        )
+      }
+      catch (error) {
+        console.log(JSON.parse(error.actual), JSON.parse(error.expected))
+        throw error
+      }
+    }
+  );
+  it(
+    'test 2', async () => {
+      let res = await axios.post(
+        'http://localhost:' + config.httpPort + '/api/mapper',
+        {
+          sourceDataIn: "nonNgsi.csv",
+          mapPathIn: "nonNgsi.json",
+          dataModel: assets.sample_schema_non_ngsi,
+          csvDelimiter: ";"
+        }
+      )
+      try {
+        chai.assert.equal(
+          JSON.stringify(res.data[0]),
+          JSON.stringify(assets.sample_non_ngsi)
         )
       }
       catch (error) {

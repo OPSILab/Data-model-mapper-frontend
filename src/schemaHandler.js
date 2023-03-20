@@ -108,25 +108,30 @@ async function parseDataModelSchema(schemaPath) {
 
     return RefParser.dereference(schemaPath).then((schema) => {
 
-        var rootProperties = schema.allOf.pop().properties;
+        var rootProperties
 
-        for (var allOf of schema.allOf) {
+        if (schema.allOf) {
+            rootProperties = schema.allOf.pop().properties;
 
-            if (allOf.allOf) {
-                // nested allOf 
-                for (var nestedAllOf of allOf.allOf) {
-                    let head = nestedAllOf.properties;
+            for (var allOf of schema.allOf) {
+
+                if (allOf.allOf) {
+                    // nested allOf 
+                    for (var nestedAllOf of allOf.allOf) {
+                        let head = nestedAllOf.properties;
+                        for (let key in head) {
+                            rootProperties[key] = head[key];
+                        }
+                    }
+                } else if (allOf.properties) {
+                    let head = allOf.properties;
                     for (let key in head) {
                         rootProperties[key] = head[key];
                     }
                 }
-            } else if (allOf.properties) {
-                let head = allOf.properties;
-                for (let key in head) {
-                    rootProperties[key] = head[key];
-                }
             }
         }
+        else rootProperties = schema.properties
         schema.allOf = new Array({ properties: rootProperties });
 
         return new Promise((resolve, reject) => {
@@ -155,7 +160,8 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         schema.anyOf = undefined;
     }
 
-    var validate = ajv.compile(schema);
+    try {var validate = ajv.compile(schema);}
+    catch(error) {console.log(error); console.log(schema)}
     var valid = validate(data);
     if (valid) log.info("Field is valid")
     else {

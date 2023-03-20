@@ -43,5 +43,69 @@ module.exports = {
         "Field 7": "7",
         "type": "Example",
         "id": "urn:ngsi-ld:Example:SomeRZ:SomeService:CSV:ExampleDataModel-1"
+    },
+    sample_non_ngsi: {
+        "Field 1": "Value 1",
+        "Field 2": 2,
+        "Field 3": [
+            1,
+            2,
+            3
+        ],
+        "Field 4": {
+            "Field 1": "Value 1",
+            "Field 2": 2,
+            "Field 3": [
+                1,
+                2,
+                3
+            ]
+        }
+    },
+    sample_schema_non_ngsi: {
+        "$schema": "http://json-schema.org/schema#",
+        "type": "object",
+        "properties": {
+            "Field 1": {
+                "type": "string"
+            },
+            "Field 2": {
+                "type": "integer"
+            },
+            "Field 3": {
+                "type": "array",
+                "items": {
+                    "type": "integer"
+                }
+            },
+            "Field 4": {
+                "type": "object",
+                "properties": {
+                    "Field 1": {
+                        "type": "string"
+                    },
+                    "Field 2": {
+                        "type": "integer"
+                    },
+                    "Field 3": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "required": [
+                    "Field 1",
+                    "Field 2",
+                    "Field 3"
+                ]
+            }
+        },
+        "required": [
+            "Field 1",
+            "Field 2",
+            "Field 3",
+            "Field 4"
+        ]
     }
 }

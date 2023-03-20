@@ -258,11 +258,16 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
     }
 
 
-    // Append type field, according to the Data Model Schema
-    result.type = modelSchema.allOf[0].properties.type.enum[0];
-    // Generate unique id for the mapped object (according to Id Pattern)
-    result.id = utils.createSynchId(result.type, site, service, group, result[entityIdField], isIdPrefix, rowNumber);
-    delete result[entityIdField];
+    try {
+        // Append type field, according to the Data Model Schema
+        result.type = modelSchema.allOf[0].properties.type.enum[0];
+        // Generate unique id for the mapped object (according to Id Pattern)
+        result.id = utils.createSynchId(result.type, site, service, group, result[entityIdField], isIdPrefix, rowNumber);
+        delete result[entityIdField];
+    }
+    catch(error){
+        console.log(error)
+    }
 
     /** Once we added only valid mapped single entries, let's do a final validation against the whole final mapped object
     * Despite single validations, the following one is mandatory to be successful

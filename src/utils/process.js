@@ -52,7 +52,8 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
         if (sourceData) {
 
-            log.debug("sourceData:\n", sourceData);
+            log.debug("sourceData:");
+            log.debug(sourceData);
           
             if (typeof sourceData === 'string') {
 
@@ -78,7 +79,8 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
             try {
                 // Load Map form file/url or directly as object
                 var map = await mapHandler.loadMap(mapData[1]=="mapData" ? mapData[0] : mapData); // map is the file map loaded
-                log.debug("map is the file map loaded\n", map)
+                log.debug("map is the file map loaded")
+                //console.debug(map)
             } catch (error) {
                 log.error('There was an error while loading Map: ' + error);
                 return Promise.reject('There was an error while loading Map: ' + error);

@@ -96,61 +96,58 @@
 						"description"
 					]
 				},
-				
-				"isDescribedAt":{
-		     		 "type": "array",
-		     		 "items":{
-		        		"type": "object",
-		       			"properties":{
-					          "identifier": {
-					            "type": "string"
-					            },
-					          "name": {
-					            "type": "string"
-					            },  
-					          "landingPage": {
-					            "type": "string"
-					            }  
-		        		}
-				      }
-				 },
-				 
-				 "hasCost":{
-		     		 "type": "array",
-		     		 "items":{
-		        		"type": "object",
-		       			"properties":{
-					          "identifier": {
-					            "type": "string"
-					            },
-					          "code": {
-					            "type": "string"
-					            }, 
-					          "hasCost": {
-					            "type": "string"
-					            },  
-					          "description": {
-					            "type": "object",
-					            "properties": {
-						           "locale": {
-							         "type": "string"
-						           },
-						           "description": {
-							         "type": "string"
-						           }
-					            },
+				"isDescribedAt": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"identifier": {
+								"type": "string"
+							},
+							"name": {
+								"type": "string"
+							},
+							"landingPage": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				"hasCost": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"identifier": {
+								"type": "string"
+							},
+							"code": {
+								"type": "string"
+							},
+							"hasCost": {
+								"type": "string"
+							},
+							"description": {
+								"type": "object",
+								"properties": {
+									"locale": {
+										"type": "string"
+									},
+									"description": {
+										"type": "string"
+									}
+								},
 								"required": [
 									"locale",
 									"description"
 								]
-								},   
-					          "ifAccessedThrough": {
-					            "type": "string"
-					            }  
-		        		}
-				      }
-				 },				
-				
+							},
+							"ifAccessedThrough": {
+								"type": "string"
+							}
+						}
+					}
+				},
 				"processingTime": {
 					"type": "string"
 				},
@@ -705,17 +702,17 @@
 					"purposeCategory": {
 						"type": "string"
 					},
-					"hasSector":{
+					"hasSector": {
 						"type": "array",
-							"items": {
-								"type": "string"
-							}
+						"items": {
+							"type": "string"
+						}
 					},
-					"hasContext":{
+					"hasContext": {
 						"type": "array",
-							"items": {
-								"type": "string"
-							}
+						"items": {
+							"type": "string"
+						}
 					},
 					"processingCategories": {
 						"type": "array",
@@ -867,7 +864,6 @@
 		}
 	},
 	"required": [
-		"serviceId",
 		"title",
 		"identifier",
 		"issued",

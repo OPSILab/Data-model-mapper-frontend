@@ -61,7 +61,7 @@ module.exports = {
             })
         }
         if (dataModel.data) {
-            await fs.writeFile(dataModel.schema_id, JSON.stringify(dataModel.data), function (err) {
+            await fs.writeFile(dataModel.schema_id ||  "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
                 if (err) throw err;
                 log.debug('File dataModel temp is created successfully.');
             })
@@ -69,7 +69,7 @@ module.exports = {
         await cli(
             source.name ? config.sourceDataPath + source.name : config.sourceDataPath + 'sourceFileTemp.' + source.type,
             map,
-            dataModel.name ? dataModel.name : this.getFilename(dataModel.schema_id)
+            dataModel.name ? dataModel.name : dataModel.schema_id ? this.getFilename(dataModel.schema_id) : "DataModelTemp"
         );
     },
 
