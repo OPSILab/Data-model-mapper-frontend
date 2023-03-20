@@ -65,6 +65,9 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey) => {
                 parsedSourceKey[key] = new Function("input", "return new Date(input['" + mapSourceSubField + "']).toISOString();");
             } else if (schemaFieldType === 'string' && Array.isArray(mapSourceSubField)) {
                 parsedSourceKey[key] = new Function("input", "return " + handleSourceFieldsArray(mapSourceSubField).result);
+            } else if (schemaFieldType === 'array' && Array.isArray(mapSourceSubField)) {
+                parsedSourceKey[key] = new Function("input", "return " + handleSourceFieldsToDestArray(mapSourceSubField));
+                //parsedSourceKey = new Function("input", "return " + handleSourceFieldsToDestArray(normSourceKey));
             } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && mapSourceSubField.startsWith("static:")) {
                 parsedSourceKey[key] = new Function("input", "return '" + mapSourceSubField.match(staticPattern)[1] + "'");
             } else if (schemaFieldType === 'object') {
@@ -81,7 +84,7 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey) => {
     return parsedSourceKey;
 };
 
-const extractFromNestedField = (source, field) =>{
+const extractFromNestedField = (source, field) => {
     let layers = field.split('.')
     let value = source
     for (let sublayer in layers) {
@@ -228,11 +231,11 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             }
 
             /********************* Check if mapping result is valid ************************************************/
-           
+
             let emptyObject = true;
             for (let a in singleResult) emptyObject = false
             if (emptyObject) singleResult[mapDestKey] = extractFromNestedField(source, normSourceKey)
-            
+
             if (singleResult && Object.entries(singleResult).length !== 0
                 && (mapDestKey == entityIdField || checkPairWithDestModelSchema(singleResult, mapDestKey, modelSchema, rowNumber))) {
 
