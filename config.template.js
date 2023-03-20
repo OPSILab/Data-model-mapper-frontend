@@ -80,8 +80,11 @@ var config = {
     * Configuration of MongoDB
     **/
 
-    mongo: "mongodb://IPmongo:PORT/DataModelMapper" // mongo url
+    mongo: "mongodb://IPmongo:PORT/DataModelMapper", // mongo url
 
+    /************************* Debugger enable *************************/
+
+    debugger: false
 
     /*********************************************************************/
 
