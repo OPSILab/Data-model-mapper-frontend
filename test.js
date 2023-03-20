@@ -25,14 +25,7 @@ describe("test", function () {
       )
       try {
         chai.assert.equal(
-          //JSON.parse(
-          JSON.stringify(
-            res.data[0]
-          )
-          //)
-          //.toString()
-          ,
-          //JSON.parse(
+          JSON.stringify(res.data[0]),
           JSON.stringify(
             {
               "Field 1": "[Field 1 value 1,Field 1 value 2]",
@@ -80,8 +73,6 @@ describe("test", function () {
               "id": "urn:ngsi-ld:Example:SomeRZ:SomeService:CSV:ExampleDataModel-1"
             }
           )
-          //)
-          //.toString()
         )
       }
       catch (error) {
