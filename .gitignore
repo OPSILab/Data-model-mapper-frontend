@@ -19,7 +19,6 @@ logs/
 config.js
 result.json
 dataModels/DataModelTemp.json
-dataModels/ExampleDataModel.json
 testing/
 input/
 output/

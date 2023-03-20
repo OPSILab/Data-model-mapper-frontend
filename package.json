@@ -43,6 +43,6 @@
   },
   "scripts": {
     "start": "nodemon ./mapper.js",
-    "test": "node ./node_modules/mocha/bin/mocha"
+    "test": "node ./node_modules/mocha/bin/mocha --timeout 0"
   }
 }

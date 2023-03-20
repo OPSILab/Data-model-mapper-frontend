@@ -107,5 +107,32 @@ module.exports = {
             "Field 3",
             "Field 4"
         ]
+    },
+    map_non_ngsi: {
+        "Field 1": "Field 1",
+        "Field 2": "Field 2",
+        "Field 3": "Field 3",
+        "Field 4": {
+            "Field 1": "Field 4 1",
+            "Field 2": "Field 4 2",
+            "Field 3": "Field 4 3"
+        }
+    },
+    source_non_ngsi: "Field 1;Field 2;Field 3;Field 4 1;Field 4 2;Field 4 3\r\nValue 1;2;[1,2,3];Value 1;2;[1,2,3]",
+    example_1: {
+        "name": "001 Duomo 1",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                9.1890425716699,
+                45.464725436014575
+            ]
+        },
+        "totalSlotNumber": 24,
+        "address": {
+            "streetAddress": "P.za Duomo"
+        },
+        "type": "DataModel",
+        "id": "urn:ngsi-ld:DataModel:SomeRZ:SomeService:CSV:001Duomo1"
     }
 }
