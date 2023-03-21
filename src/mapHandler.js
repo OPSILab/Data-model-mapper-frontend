@@ -266,7 +266,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
         delete result[entityIdField];
     }
     catch(error){
-        console.log(error)
+        log.info("Non NGSI entity")
     }
 
     /** Once we added only valid mapped single entries, let's do a final validation against the whole final mapped object
