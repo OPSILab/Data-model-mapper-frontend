@@ -94,7 +94,8 @@ const extractFromNestedField = (source, field) => {
     return value
 };
 
-const getType = () => {
+const NGSI_entity = () => {
+    //I actually don't understand why mapObjectToDataModel fails while reading service.NGSI_entity, so I wrote this getter function
     return service.NGSI_entity
 }
 
@@ -263,9 +264,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
         }
     }
 
-    Debugger.log("service.NGSI_entity", getType())
-    if (config.NGSI_entity == getType()) {
-        Debugger.log("service.NGSI_entity", service.NGSI_entity)
+    if (config.NGSI_entity == NGSI_entity()) {
         // Append type field, according to the Data Model Schema
         try { result.type = modelSchema.allOf[0].properties.type.enum[0]; }
         catch (error) { result.type = "UnknownEntity" }
