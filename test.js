@@ -1,4 +1,4 @@
-const config = require("./config")
+let config = require("./config")
 const assets = require("./assets/assets")
 const example_1 = require("./assets/example_1")
 const chai = require("chai")
@@ -51,7 +51,8 @@ describe("test", function () {
             "targetDataModel": "ExampleDataModel"
           },
           dataModel: "ExampleDataModel",
-          csvDelimiter: ";"
+          csvDelimiter: ";",
+          NGSI_entity: true
         }
       )
       try {
@@ -61,7 +62,7 @@ describe("test", function () {
         )
       }
       catch (error) {
-        console.log(JSON.parse(error.actual), JSON.parse(error.expected))
+        console.error("ERROR\nactual\n", JSON.parse(error.actual), "\nexpected\n", JSON.parse(error.expected))
         throw error
       }
       config.sourceDataPath = configTmp
@@ -69,6 +70,7 @@ describe("test", function () {
   );
   it(
     'Non Fiware NGSI data model test', async () => {
+      config.NGSI_entity=false;
       let res = await axios.post(
         'http://localhost:' + config.httpPort + '/api/mapper',
         {
@@ -76,7 +78,8 @@ describe("test", function () {
           sourceData: assets.source_non_ngsi,
           mapData: assets.map_non_ngsi,
           dataModel: assets.sample_schema_non_ngsi,
-          csvDelimiter: ";"
+          csvDelimiter: ";",
+          NGSI_entity: "non_NGSI"
         }
       )
       try {
@@ -86,13 +89,14 @@ describe("test", function () {
         )
       }
       catch (error) {
-        console.log("actual\n", JSON.parse(error.actual), "\nexpected\n", JSON.parse(error.expected))
+        console.error("ERROR\nactual\n", JSON.parse(error.actual), "\nexpected\n", JSON.parse(error.expected))
         throw error
       }
     }
   );
   it(
     'Example test - geojson', async () => {
+      config.NGSI_entity=true;
       let res = await axios.post(
         'http://localhost:' + config.httpPort + '/api/mapper',
         example_1.test
@@ -104,7 +108,7 @@ describe("test", function () {
         )
       }
       catch (error) {
-        console.log("actual\n", JSON.parse(error.actual), "\nexpected\n", JSON.parse(error.expected))
+        console.error("ERROR\nactual\n", JSON.parse(error.actual), "\nexpected\n", JSON.parse(error.expected))
         throw error
       }
     }

@@ -27,6 +27,8 @@ var config = {
     logLevel: 'debug', // error, warn, info, verbose, debug or silly
     httpPort: 8081, // PORT where the application will listen if ran in server mode
     modelSchemaFolder: path.join(__dirname, "dataModels"), // DO NOT TOUCH - Data Model schemas folder
+    debugger: false,
+    NGSI_entity: true,
 
     /********************** 3 INPUTS CONFIGURATION ************************
     * Followings are related to Mapping MANDATORY inputs (source, map, data model).

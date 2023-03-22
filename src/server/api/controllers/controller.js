@@ -20,7 +20,8 @@ module.exports = {
                 req.body.dataModelID ? { id: req.body.dataModelID } :
                     req.body.dataModel ? { data: req.body.dataModel, schema_id: req.body.dataModel.$id } : false,
 
-            req.body.csvDelimiter || config.delimiter || ','
+            req.body.csvDelimiter || config.delimiter || ',' ,
+            req.body.NGSI_entity
         )
 
         if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")

@@ -28,6 +28,7 @@ const dotPattern = /(.*)\.(.*)/;
 const log = require('./utils/logger').app(module);
 const Debugger = require('./utils/debugger');
 const report = require('./utils/logger').report;
+const service = require("./server/api/services/service")
 
 const loadMap = (mapData) => {
 
@@ -93,9 +94,14 @@ const extractFromNestedField = (source, field) => {
     return value
 };
 
+const getType = () => {
+    return service.NGSI_entity
+}
+
 // This function takes in input the source object, uses map object to map to a destination data Model
 // according to the passed data model Json Schema
 const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service, group, entityIdField) => {
+
     //source is the source JSON
 
     var result = {};
@@ -257,16 +263,15 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
         }
     }
 
-
-    try {
+    Debugger.log("service.NGSI_entity", getType())
+    if (config.NGSI_entity == getType()) {
+        Debugger.log("service.NGSI_entity", service.NGSI_entity)
         // Append type field, according to the Data Model Schema
-        result.type = modelSchema.allOf[0].properties.type.enum[0];
+        try { result.type = modelSchema.allOf[0].properties.type.enum[0]; }
+        catch (error) { result.type = "UnknownEntity" }
         // Generate unique id for the mapped object (according to Id Pattern)
         result.id = utils.createSynchId(result.type, site, service, group, result[entityIdField], isIdPrefix, rowNumber);
         delete result[entityIdField];
-    }
-    catch(error){
-        log.info("Non NGSI entity")
     }
 
     /** Once we added only valid mapped single entries, let's do a final validation against the whole final mapped object

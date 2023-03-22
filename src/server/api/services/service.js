@@ -11,6 +11,8 @@ module.exports = {
 
     error: null,
 
+    NGSI_entity: config.NGSI_entity,
+
     getFilename(id) {
 
         for (let i = 0; i < id.length; i++) {
@@ -26,7 +28,7 @@ module.exports = {
         return id;
     },
 
-    async mapData(source, map, dataModel, delimiter) {
+    async mapData(source, map, dataModel, delimiter, entity) {
         const cli = require('../../../cli/setup');
         if (!source || !map || !dataModel) {
             process.res.status(400).send("Missing fields")
@@ -34,6 +36,8 @@ module.exports = {
         }
 
         process.env.delimiter = delimiter
+        if ( entity == "non_NGSI" ) this.NGSI_entity = false
+        else this.NGSI_entity = config.NGSI_entity
 
         if (source.id) {
             try { source.data = await Source.findOne({ id: source.id }) }
