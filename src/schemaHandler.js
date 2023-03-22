@@ -68,6 +68,8 @@ function nestedFieldsHandler(field, model) {
             try{field = JSON.parse(field)}
             catch(error){
                 field = field.replaceAll('}","{', '},{');
+                while (field.replaceAll('" ', '"')!=field) field=field.replaceAll('" ', '"')
+                while (field.replaceAll(' "', '"')!=field) field=field.replaceAll(' "', '"')
                 //field = field.replaceAll('\"', '"');
                 field = JSON.parse(field)
             }
