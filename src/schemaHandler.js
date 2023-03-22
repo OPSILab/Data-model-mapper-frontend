@@ -57,8 +57,20 @@ function nestedFieldsHandler(field, model) {
     else if (field && (field[0] == "[")) {
         if (field[1] == "{") {
             log.silly("field is not an object but an array of objects\n" + field)
-            field = field.replaceAll("^", '"');
-            field = JSON.parse(field)
+            while (field.replaceAll("{ ", '{')!=field) field=field.replaceAll("{ ", '{')
+            while (field.replaceAll(" {", '{')!=field) field=field.replaceAll(" {", '{')
+            while (field.replaceAll("} ", '}')!=field) field=field.replaceAll("} ", '}')
+            while (field.replaceAll(" }", '}')!=field) field=field.replaceAll(" }", '}')
+            field = field.replaceAll("{", '{"');
+            field = field.replaceAll("}", '"}');
+            field = field.replaceAll(",", '","');
+            field = field.replaceAll(":", '":"');
+            try{field = JSON.parse(field)}
+            catch(error){
+                field = field.replaceAll('}","{', '},{');
+                //field = field.replaceAll('\"', '"');
+                field = JSON.parse(field)
+            }
         }
         else if (model.type === 'number' || model.type === 'integer') field = JSON.parse(field)
         else field = field.substring(1, field.length - 1).split(',')
@@ -171,6 +183,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         if (valid) {
             log.info("Field is valid")
         }
+        else log.info("\n--------------------------------\n\nField is not valid\n--------------------------------\n\n")
     }
 
     if (config.mode == "server") apiOutput.outputFile[rowNumber - 1] = data;

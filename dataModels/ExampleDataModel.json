@@ -4,7 +4,6 @@
     "title": "Example Data Model",
     "description": "Example Data Model",
     "type": "object",
-    "required": [],
     "anyOf": [
         {
             "required": []
@@ -86,5 +85,8 @@
                 }
             }
         }
+    ],
+    "required" : [
+        "Field 1"
     ]
 }

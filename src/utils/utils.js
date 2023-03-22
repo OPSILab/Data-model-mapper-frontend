@@ -195,7 +195,8 @@ function spaceCleaner(object) {
 
 const sendOutput = () => {
     if (config.deleteEmptySpaceAtBeginning) apiOutput.outputFile = spaceCleaner(apiOutput.outputFile)
-    process.res.send(apiOutput.outputFile);
+    if (parseInt((apiOutput.outputFile[apiOutput.outputFile.length-1].MAPPING_REPORT.Mapped_and_NOT_Validated_Objects)[0].charAt(0))) process.res.status(400).send("Validation errors")
+    else process.res.send(apiOutput.outputFile);
     apiOutput.outputFile = [];
 };
 
