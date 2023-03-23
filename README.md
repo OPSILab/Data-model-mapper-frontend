@@ -465,7 +465,7 @@ Depending on the types of source and destination fields, the **`VALUE`** selecto
         "destinationStreetName" : "Example Avenue"
 ```
 
-     ----------------------
+----------------------
 
 - If you want as value of the **DESTINATION** field a specific **"static"** value instead of the one coming from a **SOURCE** field, the **`VALUE`** selector must be specified as **`static:`** (e.g. **`static: something`**), the following substring (**`something`**), will represent the **ACTUAL VALUE** of the resulting field. This is a way for specifying custom values that are not present as field values in the **SOURCE** object/row.
 
