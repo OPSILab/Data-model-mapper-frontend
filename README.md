@@ -364,7 +364,7 @@ Depending on input source type, the tool behaves accordingly:
           },
           ........
        ]}
-       
+
 ```
 
 ## 4.2 Mapping
@@ -394,7 +394,8 @@ The Map consists of a JSON, that is a collection of ** `KEY` - `VALUE` pairs**, 
 // DESTINATION      |    SOURCE          
 
   ... }
-  ```
+
+```
 
 > **`NOTE`** the **SOURCE** value (whose field is represented in the example by the `VALUE` **"sourceFieldName"**) will be mapped to the **DESTINATION** field (represented by the `KEY` **"totalSlotNumber"**)
 
@@ -415,21 +416,22 @@ Depending on the types of source and destination fields, the **`VALUE`** selecto
 ```
      //NOTE. This is the SOURCE file, not the mapping pair.
      "sourceFieldName": "15"
-     ```
+```
 
      - The relative **KEY-VALUE PAIR**  will be:
          
 
 ```
          "totalSlotNumber" : "sourceFieldName"
-         ```
+```
 
       - The **result** of the mapping will be:
          
 
 ```
          "totalSlotNumber" : 15
-         ```
+
+```
 
      ----------------------
 
@@ -444,14 +446,14 @@ Depending on the types of source and destination fields, the **`VALUE`** selecto
       "sourceAddress":{
                "sourceStreetName" : "Example Avenue"
       }
-      ```
+```
 
       - The relative **`KEY`-`VALUE` pair**  will be:
         
 
 ```
         "destinationStreetName" : "sourceAddress.sourceStreetName"
-        ```
+```
 
        
 
@@ -460,7 +462,7 @@ Depending on the types of source and destination fields, the **`VALUE`** selecto
 
 ```
         "destinationStreetName" : "Example Avenue"
-        ```
+```
 
      ----------------------
 
@@ -474,7 +476,7 @@ Depending on the types of source and destination fields, the **`VALUE`** selecto
    "destinationAddress" : {
        "destinationStreetName" : "sourceStreetName"
     }
-    ```
+```
 
     or if also the **SOURCE** field is a "**nested field**" (as previous case, MUST use dot notation):
 
@@ -484,7 +486,7 @@ Depending on the types of source and destination fields, the **`VALUE`** selecto
    "destinationAddress" : {
        "destinationStreetName" : "sourceAddress.sourceStreetName"
     }
-    ```
+```
 
     - The **result** of the mapping will be:
 
@@ -494,7 +496,7 @@ Depending on the types of source and destination fields, the **`VALUE`** selecto
       "destinationAddress" : {
            "destinationStreetName" : "Example Avenue"
       }
-      ```   
+```   
 > **`Note`** Following examples omit mandatory fields for mapped NGSI entities, such as **"id"** and **"type"**. These are automatically included by the tool.
 
 ------------------------------------
@@ -579,7 +581,7 @@ The resulting object will be:
 
 The resulting object will be:
 
- ```
+```
 
 {
    "address": {
@@ -627,7 +629,7 @@ In this case we are concatenating, for target "**name**" field, two values:
 2) The value contained in the source field **"Location"**
 
 The resulting object will be:
- ```
+```
 
 {
    "address": {
@@ -685,7 +687,7 @@ Field Name
 
  Will be 
 
- ```
+```
 
 [
    {
