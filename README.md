@@ -416,16 +416,17 @@ Depending on the types of source and destination fields, the **`VALUE`** selecto
 ```
      //NOTE. This is the SOURCE file, not the mapping pair.
      "sourceFieldName": "15"
+
 ```
 
-     - The relative **KEY-VALUE PAIR**  will be:
+- The relative **KEY-VALUE PAIR**  will be:
          
 
 ```
          "totalSlotNumber" : "sourceFieldName"
 ```
 
-      - The **result** of the mapping will be:
+- The **result** of the mapping will be:
          
 
 ```
@@ -433,7 +434,7 @@ Depending on the types of source and destination fields, the **`VALUE`** selecto
 
 ```
 
-     ----------------------
+----------------------
 
      
 
@@ -448,7 +449,7 @@ Depending on the types of source and destination fields, the **`VALUE`** selecto
       }
 ```
 
-      - The relative **`KEY`-`VALUE` pair**  will be:
+- The relative **`KEY`-`VALUE` pair**  will be:
         
 
 ```
@@ -457,7 +458,7 @@ Depending on the types of source and destination fields, the **`VALUE`** selecto
 
        
 
-      - The **result** of the mapping will be:
+- The **result** of the mapping will be:
         
 
 ```
@@ -466,7 +467,7 @@ Depending on the types of source and destination fields, the **`VALUE`** selecto
 
      ----------------------
 
-   - If you want as value of the **DESTINATION** field a specific **"static"** value instead of the one coming from a **SOURCE** field, the **`VALUE`** selector must be specified as **`static:`** (e.g. **`static: something`**), the following substring (**`something`**), will represent the **ACTUAL VALUE** of the resulting field. This is a way for specifying custom values that are not present as field values in the **SOURCE** object/row.
+- If you want as value of the **DESTINATION** field a specific **"static"** value instead of the one coming from a **SOURCE** field, the **`VALUE`** selector must be specified as **`static:`** (e.g. **`static: something`**), the following substring (**`something`**), will represent the **ACTUAL VALUE** of the resulting field. This is a way for specifying custom values that are not present as field values in the **SOURCE** object/row.
 
 2) **String Array**: If the **`VALUE`** selector is a string array, each string represents a **SOURCE** field (or the actual value if in the **`static:`** form). Their values will be concatenated (with spaces as separator) and mapped to the corresponding **DESTINATION** field (represented  by the **`KEY`** in the mapping pair).
 3) **Object**:  One or more source fields will be mapped to a structured/nested **DESTINATION** field. In this case, we have a ** `KEY` - `OBJECT` pair**, where each **`SUBKEY`** has its own **`VALUE`**, example:
@@ -478,7 +479,7 @@ Depending on the types of source and destination fields, the **`VALUE`** selecto
     }
 ```
 
-    or if also the **SOURCE** field is a "**nested field**" (as previous case, MUST use dot notation):
+or if also the **SOURCE** field is a "**nested field**" (as previous case, MUST use dot notation):
 
       
 
@@ -488,7 +489,7 @@ Depending on the types of source and destination fields, the **`VALUE`** selecto
     }
 ```
 
-    - The **result** of the mapping will be:
+- The **result** of the mapping will be:
 
       
 
@@ -685,7 +686,7 @@ Field Name
 
 ```
 
- Will be 
+Will be 
 
 ```
 
@@ -699,7 +700,7 @@ Field Name
 
 ```
 
- The output of 
+The output of 
 
 ```
 
@@ -709,7 +710,7 @@ Field Name
 
 ```
 
- Will be
+Will be
 
 ```
 
