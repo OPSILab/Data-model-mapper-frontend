@@ -86,6 +86,8 @@ The configuration of the Data Model Mapper consists of the following steps:
 * **ID Pattern**
 * **Rows Range** 
 * **Writers** 
+* **CSV delimiter** 
+* **NGSI_entity** 
 
 --------------------
 
@@ -187,7 +189,7 @@ You can send a request at <host-url>:<port>/api/map with these parameters in bod
 * **``dataModelID``**: the Mongo document ID of the target data model to compare with the output for validation. Has priority over **``dataModel``**
 * **``dataModel``**: the data model to compare with the output for validation, if no dataModelIn and dataModelID are specified in their field.
 * **``csvDelimiter``**: the csvDelimiter. This field has priority over the  **``csvDelimiter``** field in config.js.
-* **``NGSI_entity``**: the oputput is not an ngsi model. This field has priority over the  **``NGSI_entity``** field in config.js.
+* **``NGSI_entity``**: the output is not an ngsi model. This field has priority over the  **``NGSI_entity``** field in config.js.
 
 **Example:**
 
@@ -362,7 +364,8 @@ Depending on input source type, the tool behaves accordingly:
           },
           ........
        ]}
-    ```
+       
+```
 
 ## 4.2 Mapping
 
