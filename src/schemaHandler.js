@@ -57,19 +57,21 @@ function nestedFieldsHandler(field, model) {
     else if (field && (field[0] == "[")) {
         if (field[1] == "{") {
             log.silly("field is not an object but an array of objects\n" + field)
-            while (field.replaceAll("{ ", '{')!=field) field=field.replaceAll("{ ", '{')
-            while (field.replaceAll(" {", '{')!=field) field=field.replaceAll(" {", '{')
-            while (field.replaceAll("} ", '}')!=field) field=field.replaceAll("} ", '}')
-            while (field.replaceAll(" }", '}')!=field) field=field.replaceAll(" }", '}')
+            while (field.replaceAll("{ ", '{') != field) field = field.replaceAll("{ ", '{')
+            while (field.replaceAll(" {", '{') != field) field = field.replaceAll(" {", '{')
+            while (field.replaceAll("} ", '}') != field) field = field.replaceAll("} ", '}')
+            while (field.replaceAll(" }", '}') != field) field = field.replaceAll(" }", '}')
             field = field.replaceAll("{", '{"');
             field = field.replaceAll("}", '"}');
             field = field.replaceAll(",", '","');
             field = field.replaceAll(":", '":"');
-            try{field = JSON.parse(field)}
-            catch(error){
+            try { field = JSON.parse(field) }
+            catch (error) {
                 field = field.replaceAll('}","{', '},{');
-                while (field.replaceAll('" ', '"')!=field) field=field.replaceAll('" ', '"')
-                while (field.replaceAll(' "', '"')!=field) field=field.replaceAll(' "', '"')
+                while (field.replaceAll('" ', '"') != field) field = field.replaceAll('" ', '"') 
+                while (field.replaceAll(' "', '"') != field) field = field.replaceAll(' "', '"') 
+                while (field.replaceAll('":"{', '":{') != field) field = field.replaceAll('":"{', '":{'); 
+                while (field.replaceAll('}"', '}') != field) field = field.replaceAll('}"', '}'); 
                 //field = field.replaceAll('\"', '"');
                 field = JSON.parse(field)
             }
@@ -174,12 +176,17 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         schema.anyOf = undefined;
     }
 
-    try {var validate = ajv.compile(schema);}
-    catch(error) {console.log(error); console.log(schema)}
+    try { var validate = ajv.compile(schema); }
+    catch (error) { console.log(error); console.log(schema) }
     var valid = validate(data);
     if (valid) log.info("Field is valid")
     else {
-        data = nestedFieldsHandler(data, schema.allOf[0].properties)
+        try{
+            data = nestedFieldsHandler(data, schema.allOf[0].properties)
+        }
+        catch(error){
+            log.error(error)
+        }
         validate = ajv.compile(schema);
         valid = validate(data)
         if (valid) {

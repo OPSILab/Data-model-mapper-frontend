@@ -41,7 +41,7 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
 
     // The Source Data is the File Stream
     if (sourceData && utils.isReadableStream(sourceData)) {
-        
+
         log.debug("The Source Data is the File Stream")
 
         try {
@@ -54,11 +54,22 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
 
     // The source Data is the file URL
     else if (utils.httpPattern.test(sourceData.path))
-        urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
+        try {
+            urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
+        }
+        catch (error) {
+            console.error('There was an error while getting buffer from source data: \n' + error);
+            console.log(error)
+        }
 
     // The Source Data is the file path
     else if (sourceData.ext)
-        fileToRowStream(fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
+        try {
+            fileToRowStream(fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
+        }
+        catch (err) {
+            console.error('There was an error while getting buffer from source data: \n' + err);
+        }
     else
         log.error("No valid Source Data was provided");
 }
@@ -94,7 +105,7 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
         .on('end', async function () {
             try {
                 await finalizeProcess();
-                
+
             } catch (error) {
                 log.error("Error While finalizing the streaming process: " + error);
             }
@@ -134,7 +145,7 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
         .on('end', async function () {
             try {
                 await finalizeProcess();
-             
+
             } catch (error) {
                 log.error("Error While finalizing the streaming process: " + error);
             }
