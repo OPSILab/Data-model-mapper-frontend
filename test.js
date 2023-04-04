@@ -22,7 +22,7 @@ describe("test", function () {
         'http://localhost:' + config.httpPort + '/api/mapper',
         {
           sourceDataType: "csv",
-          sourceData: "Field 1;Field 2;Field 3 index 0;Field 3 index 1;Field 31;Field 32;Field 33;Field 4a;Field 4b;Field 4c index 0;Field 4c index 1;Field 4d;Field 5;Field 6;Field 7\r\n[Field 1 value 1,Field 1 value 2];[Field 2 value 1,Field 2 value 2];Field 3 value 1;Field 3 value 2;[{^Field 31a^ : ^Field 31a^, ^Field 31b^ : ^Field 31b^ }];32;33; [Field 4a value 1,Field 4a value 2];[Field 4b value 1,Field 4b value 2];Field 4c value 1;Field 4c value 1;[{^Field 4da^ : ^Field 4da^, ^Field 4db^ : ^Field 4db^ }, {^Field 4da1^ : ^Field 4da1^, ^Field 4db1^ : ^Field 4db1^ }];5;6;7",
+          sourceData: "Field 1;Field 2;Field 3 index 0;Field 3 index 1;Field 31;Field 32;Field 33;Field 4a;Field 4b;Field 4c index 0;Field 4c index 1;Field 4d;Field 5;Field 6;Field 7\r\n[Field 1 value 1,Field 1 value 2];[Field 2 value 1,Field 2 value 2];Field 3 value 1;Field 3 value 2;[{Field 31a : Field 31a, Field 31b : Field 31b }];32;33; [Field 4a value 1,Field 4a value 2];[Field 4b value 1,Field 4b value 2];Field 4c value 1;Field 4c value 1;[{Field 4da : Field 4da, Field 4db : Field 4db }, {Field 4da1 : Field 4da1, Field 4db1 : Field 4db1 }];5;6;7",
           mapData: {
             "Field 1": "Field 1",
             "Field 2": "Field 2",
@@ -63,6 +63,8 @@ describe("test", function () {
       }
       catch (error) {
         console.error("ERROR\nactual\n", JSON.parse(error.actual), "\nexpected\n", JSON.parse(error.expected))
+        console.log(JSON.parse(error.actual)["Field 4"]["Field 4d"])
+        console.log(JSON.parse(error.expected)["Field 4"]["Field 4d"])
         throw error
       }
       config.sourceDataPath = configTmp
@@ -70,7 +72,7 @@ describe("test", function () {
   );
   it(
     'Non Fiware NGSI data model test', async () => {
-      config.NGSI_entity=false;
+      //config.NGSI_entity=false;
       let res = await axios.post(
         'http://localhost:' + config.httpPort + '/api/mapper',
         {
@@ -79,7 +81,7 @@ describe("test", function () {
           mapData: assets.map_non_ngsi,
           dataModel: assets.sample_schema_non_ngsi,
           csvDelimiter: ";",
-          NGSI_entity: "non_NGSI"
+          NGSI_entity: false
         }
       )
       try {
@@ -96,7 +98,7 @@ describe("test", function () {
   );
   it(
     'Example test - geojson', async () => {
-      config.NGSI_entity=true;
+      //config.NGSI_entity=true;
       let res = await axios.post(
         'http://localhost:' + config.httpPort + '/api/mapper',
         example_1.test

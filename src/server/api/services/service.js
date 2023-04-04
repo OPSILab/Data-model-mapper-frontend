@@ -28,16 +28,21 @@ module.exports = {
         return id;
     },
 
-    async mapData(source, map, dataModel, delimiter, entity) {
+    async mapData(source, map, dataModel, adapterID, delimiter, entity) {
         const cli = require('../../../cli/setup');
-        if (!source || !map || !dataModel) {
-            process.res.status(400).send("Missing fields")
+        if (!source || (!map || !dataModel)&&!adapterID) {
+            let error = {}
+            error.message="Missing fields"
+            error.source= source
+            error.map=map
+            error.dataModel=dataModel
+            error.adapterID=adapterID
+            process.res.status(400).send(error)
             return "Missing fields"
         }
 
         process.env.delimiter = delimiter
-        if ( entity == "non_NGSI" ) this.NGSI_entity = false
-        else this.NGSI_entity = config.NGSI_entity
+        this.NGSI_entity = entity
 
         if (source.id) {
             try { source.data = await Source.findOne({ id: source.id }) }
@@ -58,6 +63,18 @@ module.exports = {
             dataModel.schema_id = dataModel.data.$id || config.modelSchemaFolder + '/DataModelTemp.json'
         }
 
+        if (adapterID) {
+            try {
+                map = await Map.findOne({ id: adapterID })//type change
+            }
+            catch (error) { process.res.sendStatus(404) }
+            dataModel={}
+            dataModel.data = map.dataModel
+            if (dataModel.data.schema && !dataModel.data.$schema) dataModel.data.$schema = dataModel.data.schema
+            dataModel.schema_id = dataModel.data.$id || config.modelSchemaFolder + '/DataModelTemp.json'
+            map = [map.map, "mapData"]//type change
+        }
+
         if (source.data) {
             await fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
                 if (err) throw err;
@@ -65,7 +82,7 @@ module.exports = {
             })
         }
         if (dataModel.data) {
-            await fs.writeFile(dataModel.schema_id ||  "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
+            await fs.writeFile(dataModel.schema_id || "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
                 if (err) throw err;
                 log.debug('File dataModel temp is created successfully.');
             })

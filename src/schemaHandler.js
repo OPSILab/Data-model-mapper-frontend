@@ -61,6 +61,8 @@ function nestedFieldsHandler(field, model) {
             while (field.replaceAll(" {", '{') != field) field = field.replaceAll(" {", '{')
             while (field.replaceAll("} ", '}') != field) field = field.replaceAll("} ", '}')
             while (field.replaceAll(" }", '}') != field) field = field.replaceAll(" }", '}')
+            while (field.replaceAll(" : ", ':') != field) field = field.replaceAll(" : ", ':')
+            while (field.replaceAll(", ", ',') != field) field = field.replaceAll(", ", ',')
             field = field.replaceAll("{", '{"');
             field = field.replaceAll("}", '"}');
             field = field.replaceAll(",", '","');

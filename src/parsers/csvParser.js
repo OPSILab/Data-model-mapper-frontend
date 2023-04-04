@@ -36,6 +36,7 @@ var options = {
 
 
 function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
+    console.debug("sourceDataToRowStream")
 
     if (process.env.delimiter) options.delimiter = process.env.delimiter;
 

@@ -28,7 +28,7 @@ const log = require('../utils/logger').app(module);
 const report = require('../utils/logger').report;
 const utils = require('../utils/utils.js');
 const config = require("../../config.js");
-const service = require ("../server/api/services/service");
+const service = require("../server/api/services/service");
 
 
 process.env.validCount = 0;
@@ -54,10 +54,22 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
             log.debug("sourceData:");
             log.debug(sourceData);
-          
+            log.debug(typeof sourceData)
+
+            if (typeof sourceData === 'object') sourceData = sourceData.toString()
+            log.debug(sourceData);
+
             if (typeof sourceData === 'string') {
 
                 sourceData = utils.parseFilePath(sourceData);
+                for (let i in sourceData) {
+                    console.log("\nbefore\n",sourceData[i])
+                    if (sourceData[i][sourceData[i].length - 1] == ",") {
+                        
+                        sourceData[i] = sourceData[i].slice(0, sourceData[i].length - 1)
+                        console.log("\nafter\n",sourceData[i])
+                    }
+                }
                 var extension = sourceData.ext;
                 if (!extension) {
                     // No file path provided nor dataType
@@ -71,6 +83,8 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 return Promise.reject('No file path provided nor dataType');
             }
 
+            console.debug(sourceData)
+
             if (typeof mapData === 'string' && !mapData.startsWith("{")) {
                 mapData = utils.parseFilePath(mapData);
                 log.debug("typeof mapData === 'string' && !mapData.startsWith({})");
@@ -78,7 +92,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
             try {
                 // Load Map form file/url or directly as object
-                var map = await mapHandler.loadMap(mapData[1]=="mapData" ? mapData[0] : mapData); // map is the file map loaded
+                var map = await mapHandler.loadMap(mapData[1] == "mapData" ? mapData[0] : mapData); // map is the file map loaded
                 log.debug("map is the file map loaded")
                 //console.debug(map)
             } catch (error) {
@@ -112,6 +126,8 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
                 log.info('Starting to Map Source Object');
 
+                console.debug(extension || sourceDataType.toLowerCase())
+                
                 switch (extension || sourceDataType.toLowerCase()) {
 
                     case '.txt':
@@ -152,7 +168,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
         log.error('Map path not specified');
         return await Promise.reject('Map path not specified');
     }
-    
+
 
 };
 
