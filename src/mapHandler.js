@@ -264,8 +264,16 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
         }
     }
 
-    console.log(global.process.env.NGSI_entity, global.process.env.NGSI_entity, global.process.env.NGSI_entity, global.process.env.NGSI_entity, global.process.env.NGSI_entity)
-    if ((config.NGSI_entity && (NGSI_entity() == undefined) || NGSI_entity()) || (config.mode == "commandLine" && global.process.env.ngsi) || global.process.env.ngsi == undefined && config.NGSI_entity) {
+    //console.log(global.process.env.NGSI_entity, global.process.env.NGSI_entity, global.process.env.NGSI_entity, global.process.env.NGSI_entity, global.process.env.NGSI_entity)
+    let ngsi = (NGSI_entity() == undefined) && global.process.env.NGSI_entity || NGSI_entity()
+    console.log("condition: ", ngsi)
+    if (ngsi.toString() === 'true') {
+        //console.log(typeof ngsi)
+        //console.log(NGSI_entity() == undefined)
+        //console.log((NGSI_entity() == undefined) && global.process.env.NGSI_entity)
+        //console.log(((NGSI_entity() == undefined) && global.process.env.NGSI_entity || NGSI_entity()))
+        //console.log(NGSI_entity())
+        //console.log(global.process.env.NGSI_entity)
         // Append type field, according to the Data Model Schema
         try { result.type = modelSchema.allOf[0].properties.type.enum[0]; }
         catch (error) { result.type = "UnknownEntity" }

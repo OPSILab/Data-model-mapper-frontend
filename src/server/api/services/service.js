@@ -11,7 +11,7 @@ module.exports = {
 
     error: null,
 
-    NGSI_entity: config.NGSI_entity,
+    NGSI_entity: undefined,
 
     getFilename(id) {
 

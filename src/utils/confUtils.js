@@ -80,7 +80,7 @@ process.argv.forEach(function (val, index, array) {
         'NGSI_entity': {
             alias: 'NGSI_entity',
             describe: 'Enable or disable NGSI entity export type',
-            type: 'string',
+            type: 'boolean',
             demand: false
         },
         'orionUrl': {
