@@ -178,8 +178,12 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         schema.anyOf = undefined;
     }
 
-    try { var validate = ajv.compile(schema); }
-    catch (error) { console.log(error); console.log(schema) }
+    try { 
+        var validate = ajv.compile(schema); 
+    } catch (error) { 
+        console.log(error); 
+        console.log(schema) 
+    }
     var valid = validate(data);
     if (valid) log.info("Field is valid")
     else {

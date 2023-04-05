@@ -178,8 +178,6 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
     }
     //if (sourcePath && !sourcePath.match(pathPattern)) {
     if (Array.isArray(sourcePath)) sourcePath = JSON.stringify(sourcePath[0])
-    console.debug("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",sourcePath)
-    console.debug("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",utils.isValidPath(sourcePath))
     
     if (sourcePath && utils.isValidPath(sourcePath)) {
         try {
@@ -295,8 +293,6 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
     global.process.env.idService = nconf.get('service');
     global.process.env.idGroup = nconf.get('group');
     global.process.env.NGSI_entity = nconf.get('NGSI_entity');
-    console.log(nconf.get('NGSI_entity'),"-----------------------------------------------------")
-
 
     /** Global variables for Source Data, Map and Target Data Model are set in the specific setup.js **/
 

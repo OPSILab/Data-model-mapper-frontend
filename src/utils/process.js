@@ -62,14 +62,11 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
             if (typeof sourceData === 'string') {
 
                 sourceData = utils.parseFilePath(sourceData);
-                for (let i in sourceData) {
-                    console.log("\nbefore\n",sourceData[i])
-                    if (sourceData[i][sourceData[i].length - 1] == ",") {
-                        
+
+                for (let i in sourceData)
+                    if (sourceData[i][sourceData[i].length - 1] == ",")
                         sourceData[i] = sourceData[i].slice(0, sourceData[i].length - 1)
-                        console.log("\nafter\n",sourceData[i])
-                    }
-                }
+
                 var extension = sourceData.ext;
                 if (!extension) {
                     // No file path provided nor dataType
@@ -83,8 +80,6 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 return Promise.reject('No file path provided nor dataType');
             }
 
-            console.debug(sourceData)
-
             if (typeof mapData === 'string' && !mapData.startsWith("{")) {
                 mapData = utils.parseFilePath(mapData);
                 log.debug("typeof mapData === 'string' && !mapData.startsWith({})");
@@ -94,7 +89,6 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 // Load Map form file/url or directly as object
                 var map = await mapHandler.loadMap(mapData[1] == "mapData" ? mapData[0] : mapData); // map is the file map loaded
                 log.debug("map is the file map loaded")
-                //console.debug(map)
             } catch (error) {
                 log.error('There was an error while loading Map: ' + error);
                 return Promise.reject('There was an error while loading Map: ' + error);
@@ -126,8 +120,6 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
                 log.info('Starting to Map Source Object');
 
-                console.debug(extension || sourceDataType.toLowerCase())
-                
                 switch (extension || sourceDataType.toLowerCase()) {
 
                     case '.txt':
