@@ -264,9 +264,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
         }
     }
 
-    let ngsi = (NGSI_entity() == undefined) && global.process.env.NGSI_entity || NGSI_entity()
-
-    if (ngsi.toString() === 'true') {
+    if (((NGSI_entity() == undefined) && global.process.env.NGSI_entity || NGSI_entity()).toString() === 'true') {
 
         // Append type field, according to the Data Model Schema
         try {
@@ -276,7 +274,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             delete result[entityIdField];
         } catch (error) {
             //result.type = "UnknownEntity"
-            console.log("UnknownEntity")
+            log.error("UnknownEntity")
         }
         //result.id = utils.createSynchId(result.type, site, service, group, result[entityIdField], isIdPrefix, rowNumber);
         //delete result[entityIdField];
