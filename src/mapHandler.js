@@ -69,7 +69,8 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey) => {
             } else if (schemaFieldType === 'array' && Array.isArray(mapSourceSubField)) {
                 parsedSourceKey[key] = new Function("input", "return " + handleSourceFieldsToDestArray(mapSourceSubField));
                 //parsedSourceKey = new Function("input", "return " + handleSourceFieldsToDestArray(normSourceKey));
-            } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && mapSourceSubField.startsWith("static:")) {
+            } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && (mapSourceSubField.startsWith("static:")||mapSourceSubField=="")) {
+                if(mapSourceSubField=="") mapSourceSubField = "static:"
                 parsedSourceKey[key] = new Function("input", "return '" + mapSourceSubField.match(staticPattern)[1] + "'");
             } else if (schemaFieldType === 'object') {
                 log.debug("This is an object")
