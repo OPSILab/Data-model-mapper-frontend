@@ -1,7 +1,7 @@
 FROM node:16-alpine
 WORKDIR /app
 COPY ./dataModels ./
-COPY ./docs ./
+COPY ./docs ./docs
 COPY ./src ./src
 COPY ./config.template.js ./
 COPY ./mapper.js ./
