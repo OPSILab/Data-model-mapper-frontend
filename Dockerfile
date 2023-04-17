@@ -3,7 +3,7 @@ WORKDIR /app
 COPY ./dataModels ./
 COPY ./docs ./docs
 COPY ./src ./src
-COPY ./config.template.js ./
+COPY ./config*.js ./
 COPY ./mapper.js ./
 COPY ./LICENSE ./
 COPY ./package*.json ./
