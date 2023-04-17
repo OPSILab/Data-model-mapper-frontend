@@ -125,7 +125,10 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
 
         //  Check if destKey is present in modelSchema ?
-        if (schemaDestKey || mapDestKey === entityIdField) {
+        if (schemaDestKey || mapDestKey === entityIdField || config.ignoreValidation) {
+
+            if (config.ignoreValidation && source[map[mapDestKey]])
+                modelSchema.allOf[0].properties[mapDestKey] = {"type" : typeof source[map[mapDestKey]]}
 
             // If the value of key-value maping pair is a function definition, eval it.
             //if ( (typeof mapSourceField == "string") && mapSourceField.startsWith("function")) {
@@ -256,6 +259,8 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             else if (singleResult[mapDestKey] && (singleResult[mapDestKey][0] == "[")) {
                 result[mapDestKey] = singleResult[mapDestKey].substring(1, singleResult[mapDestKey].length - 1).split(',');
             }
+            else if (config.ignoreValidation) 
+                result[mapDestKey] = singleResult[mapDestKey];
             else {
                 log.debug(`Skipping source field: ${JSON.stringify(mapSourceKey)} because the value ${JSON.stringify(singleResult)} is not valid for mapped key: ${mapDestKey}`);
             }

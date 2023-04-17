@@ -181,8 +181,10 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
     try { 
         var validate = ajv.compile(schema); 
     } catch (error) { 
+        if (schema.anyOf && schema.anyOf[0]==undefined && !isSingleField) schema.anyOf = undefined;
         console.log(error); 
         console.log(schema) 
+        var validate = ajv.compile(schema); 
     }
     var valid = validate(data);
     if (valid) log.info("Field is valid")
@@ -198,7 +200,10 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         if (valid) {
             log.info("Field is valid")
         }
-        else log.info("\n--------------------------------\n\nField is not valid\n--------------------------------\n\n")
+        else {
+            log.info("\n--------------------------------\n\nField is not valid\n--------------------------------\n\n")
+            console.log(data)
+        }
     }
 
     if (config.mode == "server") apiOutput.outputFile[rowNumber - 1] = data;

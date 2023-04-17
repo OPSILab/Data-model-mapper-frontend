@@ -209,6 +209,8 @@ const printFinalReportAndSendResponse = async (logger) => {
         '-----------------------------------------');
 
     if (config.mode == 'server') {
+        //Mapping report in output file
+        
         apiOutput.outputFile[apiOutput.outputFile.length] = {
             MAPPING_REPORT: {
                 Processed_objects: process.env.rowNumber,
@@ -216,11 +218,13 @@ const printFinalReportAndSendResponse = async (logger) => {
                 Mapped_and_NOT_Validated_Objects: process.env.unvalidCount + '-' + process.env.rowNumber
             }
         }
+
         try {
             sendOutput();
         }
         catch (error) {
             console.log(error.message)
+            apiOutput.outputFile = [];
         }
     }
 };

@@ -117,6 +117,9 @@ The global setup is defined in the `config.js` file
   + **``NGSI_entity``**: enable or disable ngsi entity source.
     - **``true,false``**
 
+  + **``ignoreValidation``**: ignore or not validation errors.
+    - **``true,false``**
+
   + **``sourceDataPath``**: source data path.
 
   + **``mapPath``**: map data path.
