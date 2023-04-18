@@ -1,0 +1,19 @@
+version: '3'
+services:
+  data_model_mapper:
+   image: data_model_mapper:2.4
+   container_name: data_model_mapper
+   depends_on:
+    - db     
+   ports:
+     - 5500:5500
+   restart: always
+  db:
+       image: mongo
+       ports:
+         - 27017:27017
+       volumes:
+         - db_data:/data/db
+       restart: unless-stopped
+volumes:
+  db_data:
