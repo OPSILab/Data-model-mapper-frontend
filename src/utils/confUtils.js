@@ -77,6 +77,12 @@ process.argv.forEach(function (val, index, array) {
             type: 'string',
             demand: false
         },
+        'NGSI_entity': {
+            alias: 'NGSI_entity',
+            describe: 'Enable or disable NGSI entity export type',
+            type: 'boolean',
+            demand: false
+        },
         'orionUrl': {
             alias: 'u',
             describe: 'URL of the context broker where mapped entities will be written',
@@ -171,6 +177,8 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
         return false;
     }
     //if (sourcePath && !sourcePath.match(pathPattern)) {
+    if (Array.isArray(sourcePath)) sourcePath = JSON.stringify(sourcePath[0])
+    
     if (sourcePath && utils.isValidPath(sourcePath)) {
         try {
             sourcePath = path.normalize(sourcePath);
@@ -180,6 +188,7 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
         }
     } else {
         log.error('Incorrect source file path');
+        log.info(sourcePath)
         return false;
     }
 
@@ -266,6 +275,7 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
     } else {
         nconf.set('outFilePath', nconf.get('outFilePath') || config.fileWriter.filePath);
     }
+    nconf.set('NGSI_entity', nconf.get('NGSI_entity'));
 
 
     /******* Set initialized confs as Global variables ***************/
@@ -282,14 +292,14 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
     global.process.env.idSite = nconf.get('site');
     global.process.env.idService = nconf.get('service');
     global.process.env.idGroup = nconf.get('group');
-
+    global.process.env.NGSI_entity = nconf.get('NGSI_entity');
 
     /** Global variables for Source Data, Map and Target Data Model are set in the specific setup.js **/
 
     return true;
 };
 
-function init (sourceDataIn, mapPathIn, dataModelPath) {
+function init(sourceDataIn, mapPathIn, dataModelPath) {
     help();
     return checkAndInitConf(sourceDataIn, mapPathIn, dataModelPath);
 };

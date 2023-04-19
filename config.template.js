@@ -28,6 +28,7 @@ var config = {
     httpPort: 8081, // PORT where the application will listen if ran in server mode
     modelSchemaFolder: path.join(__dirname, "dataModels"), // DO NOT TOUCH - Data Model schemas folder
     NGSI_entity: true, // enable or disable ngsi entity source 
+    ignoreValidation: false, // ignore validation errors
 
     /********************** 3 INPUTS CONFIGURATION ************************
     * Followings are related to Mapping MANDATORY inputs (source, map, data model).

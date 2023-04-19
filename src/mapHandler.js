@@ -69,7 +69,8 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey) => {
             } else if (schemaFieldType === 'array' && Array.isArray(mapSourceSubField)) {
                 parsedSourceKey[key] = new Function("input", "return " + handleSourceFieldsToDestArray(mapSourceSubField));
                 //parsedSourceKey = new Function("input", "return " + handleSourceFieldsToDestArray(normSourceKey));
-            } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && mapSourceSubField.startsWith("static:")) {
+            } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && (mapSourceSubField.startsWith("static:")||mapSourceSubField=="")) {
+                if(mapSourceSubField=="") mapSourceSubField = "static:"
                 parsedSourceKey[key] = new Function("input", "return '" + mapSourceSubField.match(staticPattern)[1] + "'");
             } else if (schemaFieldType === 'object') {
                 log.debug("This is an object")
@@ -124,7 +125,10 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
 
         //  Check if destKey is present in modelSchema ?
-        if (schemaDestKey || mapDestKey === entityIdField) {
+        if (schemaDestKey || mapDestKey === entityIdField || config.ignoreValidation) {
+
+            if (config.ignoreValidation && source[map[mapDestKey]])
+                modelSchema.allOf[0].properties[mapDestKey] = {"type" : typeof source[map[mapDestKey]]}
 
             // If the value of key-value maping pair is a function definition, eval it.
             //if ( (typeof mapSourceField == "string") && mapSourceField.startsWith("function")) {
@@ -255,6 +259,8 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             else if (singleResult[mapDestKey] && (singleResult[mapDestKey][0] == "[")) {
                 result[mapDestKey] = singleResult[mapDestKey].substring(1, singleResult[mapDestKey].length - 1).split(',');
             }
+            else if (config.ignoreValidation) 
+                result[mapDestKey] = singleResult[mapDestKey];
             else {
                 log.debug(`Skipping source field: ${JSON.stringify(mapSourceKey)} because the value ${JSON.stringify(singleResult)} is not valid for mapped key: ${mapDestKey}`);
             }
@@ -264,13 +270,20 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
         }
     }
 
-    if (config.NGSI_entity == NGSI_entity()) {
+    if (((NGSI_entity() == undefined) && global.process.env.NGSI_entity || NGSI_entity()).toString() === 'true') {
+
         // Append type field, according to the Data Model Schema
-        try { result.type = modelSchema.allOf[0].properties.type.enum[0]; }
-        catch (error) { result.type = "UnknownEntity" }
-        // Generate unique id for the mapped object (according to Id Pattern)
-        result.id = utils.createSynchId(result.type, site, service, group, result[entityIdField], isIdPrefix, rowNumber);
-        delete result[entityIdField];
+        try {
+            result.type = modelSchema.allOf[0].properties.type.enum[0];
+            // Generate unique id for the mapped object (according to Id Pattern)
+            result.id = utils.createSynchId(result.type, site, service, group, result[entityIdField], isIdPrefix, rowNumber);
+            delete result[entityIdField];
+        } catch (error) {
+            //result.type = "UnknownEntity"
+            log.error("UnknownEntity")
+        }
+        //result.id = utils.createSynchId(result.type, site, service, group, result[entityIdField], isIdPrefix, rowNumber);
+        //delete result[entityIdField];
     }
 
     /** Once we added only valid mapped single entries, let's do a final validation against the whole final mapped object

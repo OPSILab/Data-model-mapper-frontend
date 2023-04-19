@@ -28,6 +28,8 @@ let service = require ("../server/api/services/service")
 module.exports = async (sourceDataIn, mapPathIn, dataModelIn) => {
     log.info("Initializing Mapper in " + (config.mode == "commandLine" ? "Command Line " : "Server ") + "Mode");
 
+    if (Array.isArray(sourceDataIn)) sourceDataIn = sourceDataIn[0]
+
     if (commandLine.init(sourceDataIn, mapPathIn, dataModelIn)) {
 
         log.debug("commandLine.init()");
