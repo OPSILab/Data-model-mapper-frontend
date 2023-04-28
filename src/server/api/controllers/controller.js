@@ -14,7 +14,8 @@ module.exports = {
             await service.mapData(
                 req.body.sourceDataIn ? { name: req.body.sourceDataIn } :
                     req.body.sourceDataID && req.body.sourceDataType ? { id: req.body.sourceDataID, type: req.body.sourceDataType } :
-                        req.body.sourceData && req.body.sourceDataType ? { data: req.body.sourceData, type: req.body.sourceDataType } : false,
+                        req.body.sourceDataURL && req.body.sourceDataType ? { url: req.body.sourceDataURL, type: req.body.sourceDataType } :
+                            req.body.sourceData && req.body.sourceDataType ? { data: req.body.sourceData, type: req.body.sourceDataType } : false,
 
                 req.body.mapPathIn ? config.sourceDataPath + req.body.mapPathIn :
                     req.body.mapID ? { id: req.body.mapID } :

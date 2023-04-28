@@ -4,6 +4,7 @@ const Source = require("../models/source.js")
 const Map = require("../models/map.js")
 const DataModel = require("../models/dataModel.js")
 const log = require('../../../utils/logger').app(module);
+const axios = require('axios')
 
 module.exports = {
 
@@ -30,13 +31,13 @@ module.exports = {
 
     async mapData(source, map, dataModel, adapterID, delimiter, entity) {
         const cli = require('../../../cli/setup');
-        if (!source || (!map || !dataModel)&&!adapterID) {
+        if (!source || (!map || !dataModel) && !adapterID) {
             let error = {}
-            error.message="Missing fields"
-            error.source= source
-            error.map=map
-            error.dataModel=dataModel
-            error.adapterID=adapterID
+            error.message = "Missing fields"
+            error.source = source
+            error.map = map
+            error.dataModel = dataModel
+            error.adapterID = adapterID
             process.res.status(400).send(error)
             return "Missing fields"
         }
@@ -68,11 +69,16 @@ module.exports = {
                 map = await Map.findOne({ id: adapterID })//type change
             }
             catch (error) { process.res.sendStatus(404) }
-            dataModel={}
+            dataModel = {}
             dataModel.data = map.dataModel
             if (dataModel.data.schema && !dataModel.data.$schema) dataModel.data.$schema = dataModel.data.schema
             dataModel.schema_id = dataModel.data.$id || config.modelSchemaFolder + '/DataModelTemp.json'
             map = [map.map, "mapData"]//type change
+        }
+
+        if (source.url) {
+            source.download = await axios.get(source.url)
+            source.data = source.download.data
         }
 
         if (source.data) {
