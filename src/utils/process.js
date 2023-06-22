@@ -105,7 +105,8 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                     if ((targetDataModel = map['targetDataModel']) !== undefined) {
                         /* Check if provided TargetDataModel is valid, otherwise return error */
                         if ((dataModelSchemaPath = utils.getDataModelPath(targetDataModel)) === undefined) {
-                            log.error("Incorrect target Data Model name");
+                            log.error("Incorrect target Data Model name: "+ targetDataModel);
+                            process.res?.status(400).json({"error": "Incorrect target Data Model name: "+ targetDataModel})
                             return Promise.reject("Incorrect target Data Model name");
                         }
                     }

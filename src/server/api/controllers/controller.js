@@ -37,65 +37,80 @@ module.exports = {
     },
 
     getSources: async (req, res) => {
+        process.res = res;
         res.send(await service.getSources())
     },
 
     getMaps: async (req, res) => {
+        process.res = res;
         res.send(await service.getMaps())
     },
 
     getDataModels: async (req, res) => {
+        process.res = res;
         res.send(await service.getDataModels())
     },
 
     getSource: async (req, res) => {
+        process.res = res;
         res.send(await service.getSource(req.query.id))
     },
 
     getMap: async (req, res) => {
+        process.res = res;
         res.send(await service.getMap(req.query.id))
     },
 
     getDataModel: async (req, res) => {
+        process.res = res;
         res.send(await service.getDataModel(req.query.id))
     },
 
     insertSource: async (req, res) => {
+        process.res = res;
         res.send(await service.insertSource(req.body.name, req.body.id, req.body.source))
         log.debug("Source inserted");
     },
 
     insertMap: async (req, res) => {
-        res.send(await service.insertMap(req.body.name, req.body.id, req.body.map))
+        process.res = res;
+        res.send(await service.insertMap(req.body.name, req.body.id, req.body.map, req.body.dataModel))
         log.debug("Map inserted");
     },
 
     insertDataModel: async (req, res) => {
+        process.res = res;
         res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel))
         log.debug("Model inserted");
     },
 
     modifySource: async (req, res) => {
+        process.res = res;
         res.send(await service.modifySource(req.body.name, req.body.id, req.body.source))
     },
 
     modifyMap: async (req, res) => {
-        res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map))
+        process.res = res;
+        res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map, req.body.dataModel))
     },
 
     modifyDataModel: async (req, res) => {
+        process.res = res;
         res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel))
     },
 
     deleteSource: async (req, res) => {
+        process.res = res;
         res.send(await service.deleteSource(req.query.id))
     },
 
     deleteMap: async (req, res) => {
+        process.res = res;
         res.send(await service.deleteMap(req.query.id))
     },
 
     deleteDataModel: async (req, res) => {
+        process.res = res;
         res.send(await service.deleteDataModel(req.query.id))
     }
 };

@@ -18,6 +18,7 @@
 
 const apiOutput = require('../server/api/services/service')
 const config = require('../../config');
+const base64 = require('./encoders/base64');
 const path = require('path');
 const pathParse = require('parse-filepath');
 const isValidPath = require("is-valid-path");
@@ -313,6 +314,15 @@ const restoreDefaultConfs = () => {
     global.process.env.idGroup = global.process.env.old_idGroup;
 };
 
+const encode = (encoding, value) => {
+    console.debug(encoding)
+    console.debug(value)
+    if (encoding == "base64"){
+        console.debug("base64")
+        return base64.encode(value)
+    }
+};
+
 module.exports = {
     sleep: sleep,
     cleanString: cleanString,
@@ -337,5 +347,6 @@ module.exports = {
     isReadableFileStream: isReadableFileStream,
     isReadableStream: isReadableStream,
     promiseTimeout: promiseTimeout,
-    restoreDefaultConfs: restoreDefaultConfs
+    restoreDefaultConfs: restoreDefaultConfs,
+    encode:encode
 };

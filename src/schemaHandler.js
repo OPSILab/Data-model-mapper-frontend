@@ -179,6 +179,8 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
     }
 
     try { 
+        if (schema.schema == "http://json-schema.org/draft-04/schema#") schema.schema = "http://json-schema.org/schema#"
+        if (schema.$schema == "http://json-schema.org/draft-04/schema#") schema.$schema = "http://json-schema.org/schema#"
         var validate = ajv.compile(schema); 
     } catch (error) { 
         if (schema.anyOf && schema.anyOf[0]==undefined && !isSingleField) schema.anyOf = undefined;

@@ -61,7 +61,9 @@ module.exports = {
             try { dataModel.data = await DataModel.findOne({ id: dataModel.id }) }
             catch (error) { process.res.sendStatus(404) }
             dataModel.data = dataModel.data.dataModel
-            dataModel.schema_id = dataModel.data.$id || config.modelSchemaFolder + '/DataModelTemp.json'
+            dataModel.schema_id =
+                //dataModel.data.$id || 
+                config.modelSchemaFolder + '/DataModelTemp.json'
         }
 
         if (adapterID) {
@@ -72,7 +74,9 @@ module.exports = {
             dataModel = {}
             dataModel.data = map.dataModel
             if (dataModel.data.schema && !dataModel.data.$schema) dataModel.data.$schema = dataModel.data.schema
-            dataModel.schema_id = dataModel.data.$id || config.modelSchemaFolder + '/DataModelTemp.json'
+            dataModel.schema_id =
+                //dataModel.data.$id || 
+                config.modelSchemaFolder + '/DataModelTemp.json'
             map = [map.map, "mapData"]//type change
         }
 
@@ -88,10 +92,12 @@ module.exports = {
             })
         }
         if (dataModel.data) {
-            await fs.writeFile(dataModel.schema_id || "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
-                if (err) throw err;
-                log.debug('File dataModel temp is created successfully.');
-            })
+            await fs.writeFile(
+                //dataModel.schema_id || 
+                "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
+                    if (err) throw err;
+                    log.debug('File dataModel temp is created successfully.');
+                })
         }
         await cli(
             source.name ? config.sourceDataPath + source.name : config.sourceDataPath + 'sourceFileTemp.' + source.type,
@@ -121,29 +127,30 @@ module.exports = {
     },
 
     async getDataModel(id) {
-        await DataModel.findOne({ name: "Example Model" })
-        await DataModel.findOne({ id: "example_1" })
         return await DataModel.findOne({ id: id })
     },
 
     async insertSource(name, id, source) {
-        return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source }])
+        if (!await Source.findOne({ id: id })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source }])
+        else process.res.status(400).send({ error: "id already exists" })
     },//TODO replace with insertOne
 
-    async insertMap(name, id, map) {
-        return await Map.insertMany([{ name: name, id: id, map: map }])
+    async insertMap(name, id, map, dataModel) {
+        if (!await Map.findOne({ id: id })) return await Map.insertMany([{ name: name, id: id, map: map, dataModel: dataModel }])
+        else process.res.status(400).send({ error: "id already exists" })
     },//TODO replace with insertOne
 
     async insertDataModel(name, id, dataModel) {
-        return await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel }])
+        if (!await DataModel.findOne({ id: id })) return await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel }])
+        else process.res.status(400).send({ error: "id already exists" })
     },//TODO replace with insertOne
 
     async modifySource(name, id, source) {
         return await Source.findOneAndReplace({ id: id }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source })
     },
 
-    async modifyMap(name, id, map) {
-        return await Map.findOneAndReplace({ id: id }, { name: name, id: id, map: map })
+    async modifyMap(name, id, map, dataModel) {
+        return await Map.findOneAndReplace({ id: id }, { name: name, id: id, map: map, dataModel:dataModel })
     },
 
     async modifyDataModel(name, id, dataModel) {

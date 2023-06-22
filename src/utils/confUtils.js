@@ -194,7 +194,7 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
 
     var dataModel = dataModelPath || nconf.get('targetDataModel');
     if (!utils.checkInputDataModel(config.modelSchemaFolder, dataModel)) {
-        log.error('Incorrect target Data Model name');
+        log.error('Incorrect target Data Model name: '+ dataModel);
         return false;
     } else
         nconf.set('targetDataModel', path.join(config.modelSchemaFolder, dataModel + '.json'));
