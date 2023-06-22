@@ -315,10 +315,13 @@ const restoreDefaultConfs = () => {
 };
 
 const encode = (encoding, value) => {
+    //return value
+    console.debug("ENCODING\n\n\n\n\\n\n")
     console.debug(encoding)
+    console.debug("value")
     console.debug(value)
     if (encoding == "base64"){
-        console.debug("base64")
+        console.debug("base64 calling")
         return base64.encode(value)
     }
 };

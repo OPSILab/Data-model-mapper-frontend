@@ -3,7 +3,7 @@ var Base64 = {
     _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
     encode : function (input) {
-        console.debug("encode")
+        console.debug("base64.input: encode the input value : ")
         console.debug(input)
         var output = "";
         var chr1, chr2, chr3, enc1, enc2, enc3, enc4;

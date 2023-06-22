@@ -46,6 +46,36 @@ const loadMap = (mapData) => {
 
 };
 
+
+/**
+ *
+ *
+ * @param {"Analyzed Map"} parsedSourceKey This is the analyzed map that informs the external library converter on what to do (if is a new Function(...) it won't check the
+ * input source but it will set the output field to the return of the function)
+ * @param {"Map"} normSourceKey The map object
+ * @param {"Data model"} schemaDestKey This is the schema
+ * @param {"Subfield of Map"} key The selected sub field of the map
+ * @return {"Analyzed Map"} parsedSourceKey This is the analyzed map that informs the external library converter on what to do (if is a new Function(...) it won't check the
+ * input source but it will set the output field to the return of the function)
+ */
+
+
+const encodingHandler = (parsedSourceKey, normSourceKey, schemaDestKey, key) => {
+    
+    return parsedSourceKey[key]
+};
+
+/**
+ *
+ *
+ * @param {"Analyzed Map"} parsedSourceKey This is the analyzed map that informs the external library converter on what to do (if is a new Function(...) it won't check the
+ * input source but it will set the output field to the return of the function)
+ * @param {"Map"} normSourceKey The map object
+ * @param {"Data model"} schemaDestKey This is the schema
+ * @return {"Analyzed Map"} parsedSourceKey This is the analyzed map that informs the external library converter on what to do (if is a new Function(...) it won't check the
+ * input source but it will set the output field to the return of the function)
+ */
+
 const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey) => {
 
     for (let key in normSourceKey) {
@@ -69,9 +99,19 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey) => {
             } else if (schemaFieldType === 'array' && Array.isArray(mapSourceSubField)) {
                 parsedSourceKey[key] = new Function("input", "return " + handleSourceFieldsToDestArray(mapSourceSubField));
                 //parsedSourceKey = new Function("input", "return " + handleSourceFieldsToDestArray(normSourceKey));
-            } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && (mapSourceSubField.startsWith("static:")||mapSourceSubField=="")) {
-                if(mapSourceSubField=="") mapSourceSubField = "static:"
+            } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && (mapSourceSubField.startsWith("static:") || mapSourceSubField == "")) {
+                if (mapSourceSubField == "") mapSourceSubField = "static:"
                 parsedSourceKey[key] = new Function("input", "return '" + mapSourceSubField.match(staticPattern)[1] + "'");
+            } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && (mapSourceSubField.startsWith("encode:"))) {
+                let multipleOperators = mapSourceSubField.split("encode:")[1].split(":")
+                let encoding = multipleOperators[0]
+                if (multipleOperatorsList) multipleOperatorsList.push({ encode: encoding })
+                else multipleOperatorsList = [{ encode: encoding }]
+                let encodingValue = ""
+                for (let i = 1; i < multipleOperators.length; i++)
+                    if (multipleOperators[i]) encodingValue += multipleOperators[i].concat(i + 1 == multipleOperators.length ? "" : ":")
+                parsedSourceKey[key] = encodingValue;
+                parsedSourceKey[key] = new Function("input", "return " + encodingHandler(parsedSourceKey, normSourceKey, schemaDestKey, key) + "");
             } else if (schemaFieldType === 'object') {
                 log.debug("This is an object")
                 parsedSourceKey[key] = objectHandler(mapSourceSubField, mapSourceSubField, schemaDestSubKey)
@@ -128,7 +168,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
         if (schemaDestKey || mapDestKey === entityIdField || config.ignoreValidation) {
 
             if (config.ignoreValidation && source[map[mapDestKey]])
-                modelSchema.allOf[0].properties[mapDestKey] = {"type" : typeof source[map[mapDestKey]]}
+                modelSchema.allOf[0].properties[mapDestKey] = { "type": typeof source[map[mapDestKey]] }
 
             // If the value of key-value maping pair is a function definition, eval it.
             //if ( (typeof mapSourceField == "string") && mapSourceField.startsWith("function")) {
@@ -212,6 +252,8 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 } else if (typeof normSourceKey === 'string' && normSourceKey.startsWith("static:")) {
                     parsedSourceKey = new Function("input", "return '" + normSourceKey.match(staticPattern)[1] + "'");
 
+                } else if (typeof normSourceKey === 'string' && normSourceKey.startsWith("encode:")) {
+                    parsedSourceKey = new Function("input", "return '" + utils.encode(normSourceKey) + "'");
                 }
 
                 /********************* Destination Key is a entityId field (according to definition in config.js) **/
@@ -224,6 +266,8 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 }
                 else if (normSourceKey.startsWith("static:"))
                     parsedSourceKey = new Function("input", "return '" + normSourceKey.match(staticPattern)[1] + "'");
+                else if (normSourceKey.startsWith("encode:"))
+                    parsedSourceKey = new Function("input", "return '" + utils.encode(normSourceKey) + "'");
 
             }
 
@@ -259,7 +303,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             else if (singleResult[mapDestKey] && (singleResult[mapDestKey][0] == "[")) {
                 result[mapDestKey] = singleResult[mapDestKey].substring(1, singleResult[mapDestKey].length - 1).split(',');
             }
-            else if (config.ignoreValidation) 
+            else if (config.ignoreValidation)
                 result[mapDestKey] = singleResult[mapDestKey];
             else {
                 log.debug(`Skipping source field: ${JSON.stringify(mapSourceKey)} because the value ${JSON.stringify(singleResult)} is not valid for mapped key: ${mapDestKey}`);
