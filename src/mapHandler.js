@@ -60,22 +60,22 @@ const cleanValue = (value) => {
 
     let parsed = false
     //let index = 0
-    let value_1 
+    let value_1
     for (let index = 0; (index < value.length) && !parsed; index++) {
         console.debug("+value[index]{\n")
         console.debug(value[index])
         console.debug("\n}\n")
         if (value[index] == '"') {
-            value_1 = value.substring(index+1)
+            value_1 = value.substring(index + 1)
             parsed = true
         }
         else if (value[index] == " ")
-            value_1 = value.substring(index+1)
+            value_1 = value.substring(index + 1)
         else parsed = true
     }
     parsed = false
     let value_2 = value_1
-    for (let index = value_1.length-1; (index > 0) && !parsed; index--) {
+    for (let index = value_1.length - 1; (index > 0) && !parsed; index--) {
         console.debug("-value[index]{\n")
         console.debug(value_1[index])
         console.debug("\n}\n")
@@ -107,14 +107,14 @@ const cleanValue = (value) => {
  */
 
 
-const encodingHandler = (parsedSourceKey, normSourceKey, schemaDestKey, key, mapSourceSubField, schemaFieldType, source) => {
+const encodingHandler = (mapSourceSubField, source) => {
 
-    console.debug(normSourceKey, key)
+    //console.debug(normSourceKey, key)
     console.debug(mapSourceSubField.split("encode:")[1], mapSourceSubField.split("encode:")[1])
 
     let encoding = mapSourceSubField.split(":")[1]
 
-    console.debug("ENCODING TYPE : {", encoding,"}")
+    console.debug("ENCODING TYPE : {", encoding, "}")
     let outputValue = ""
     mapSourceSubField = mapSourceSubField.split("encode:" + encoding + ":")[1]
     if (mapSourceSubField[0] == "[" && mapSourceSubField[mapSourceSubField.length - 1] == "]") {
@@ -122,7 +122,7 @@ const encodingHandler = (parsedSourceKey, normSourceKey, schemaDestKey, key, map
         mapSourceSubField = mapSourceSubField.split(",")
         for (let value of mapSourceSubField) {
             value = cleanValue(value);
-            console.debug("typeof value {",typeof value, "}")
+            console.debug("typeof value {", typeof value, "}")
             console.log("SOURCE\n{", source, "}\nFIELD NAME{\n", value, "}")
             console.debug("value starts with static ?")
             //console.debug("CAZZOOOOOOOOOOOOOOOOOOOO", value.substring(2, value.length - 1))
@@ -183,35 +183,26 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey, source) =>
             let mapSourceSubField = normSourceKey[key];
 
             parsedSourceKey[key] = {};
-            if (schemaFieldType === 'number' || schemaFieldType === 'integer' && mapSourceSubField.split('.').length == 1) {
+            if (schemaFieldType === 'number' || schemaFieldType === 'integer' && mapSourceSubField.split('.').length == 1)
                 parsedSourceKey[key] = new Function("input", "return Number(input['" + mapSourceSubField + "']);");
-            } else if (schemaFieldType === 'boolean') {
+            else if (schemaFieldType === 'boolean')
                 parsedSourceKey[key] = new Function("input", "return (input['" + mapSourceSubField + "'].toLowerCase() == 'true' || input['" + mapSourceSubField + "'] == 1 || input['" + mapSourceSubField + "'] == '1'  ) ? true: false");
-            } else if (schemaFieldType === 'string' && schemaFieldFormat === 'date-time') {
+            else if (schemaFieldType === 'string' && schemaFieldFormat === 'date-time')
                 parsedSourceKey[key] = new Function("input", "return new Date(input['" + mapSourceSubField + "']).toISOString();");
-            } else if (schemaFieldType === 'string' && Array.isArray(mapSourceSubField)) {
+            else if (schemaFieldType === 'string' && Array.isArray(mapSourceSubField))
                 parsedSourceKey[key] = new Function("input", "return " + handleSourceFieldsArray(mapSourceSubField).result);
-            } else if (schemaFieldType === 'array' && Array.isArray(mapSourceSubField)) {
+            else if (schemaFieldType === 'array' && Array.isArray(mapSourceSubField))
                 parsedSourceKey[key] = new Function("input", "return " + handleSourceFieldsToDestArray(mapSourceSubField));
-                //parsedSourceKey = new Function("input", "return " + handleSourceFieldsToDestArray(normSourceKey));
-            } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && (mapSourceSubField.startsWith("static:") || mapSourceSubField == "")) {
+            else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && (mapSourceSubField.startsWith("static:") || mapSourceSubField == "")) {
                 if (mapSourceSubField == "") mapSourceSubField = "static:"
                 parsedSourceKey[key] = new Function("input", "return '" + mapSourceSubField.match(staticPattern)[1] + "'");
-            } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && (mapSourceSubField.startsWith("encode:"))) {
-                //let multipleOperators = mapSourceSubField.split("encode:")[1].split(":")
-                //let encoding = multipleOperators[0]
-                //let encodingValue = ""
-                //for (let i = 1; i < multipleOperators.length; i++)
-                //if (multipleOperators[i]) encodingValue += multipleOperators[i].concat(i + 1 == multipleOperators.length ? "" : ":")
-                //parsedSourceKey[key] = encodingValue;
-                parsedSourceKey[key] = new Function("input", "return '" + encodingHandler(parsedSourceKey, normSourceKey, schemaDestKey, key, mapSourceSubField, schemaFieldType, source) + "'");
-            } else if (schemaFieldType === 'object') {
-                log.debug("This is an object")
+            } else if (schemaFieldType === 'string' && typeof mapSourceSubField === 'string' && (mapSourceSubField.startsWith("encode:")))
+                parsedSourceKey[key] = new Function("input", "return '" + encodingHandler(mapSourceSubField, source) + "'");
+            else if (schemaFieldType === 'object')
                 parsedSourceKey[key] = objectHandler(mapSourceSubField, mapSourceSubField, schemaDestSubKey)
-            } else {
-                // normal string no action required
+            else  // normal string no action required
                 parsedSourceKey[key] = mapSourceSubField;
-            }
+
             // Add type to the nested map field
             //parsedNorm[key]['type'] = new Function("input", "return '" + schemaFieldType + "'");
         }
@@ -337,17 +328,12 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                     if (date === undefined || date === '')
                         continue;
                     parsedSourceKey = new Function("input", "return new Date(input" + handleDottedField(normSourceKey) + ").toISOString()");
-
-                } else if (Array.isArray(normSourceKey)) {
-
+                } else if (Array.isArray(normSourceKey))
                     parsedSourceKey = new Function("input", "return " + handleSourceFieldsArray(normSourceKey).result);
-
-                } else if (typeof normSourceKey === 'string' && normSourceKey.startsWith("static:")) {
+                else if (typeof normSourceKey === 'string' && normSourceKey.startsWith("static:"))
                     parsedSourceKey = new Function("input", "return '" + normSourceKey.match(staticPattern)[1] + "'");
-
-                } else if (typeof normSourceKey === 'string' && normSourceKey.startsWith("encode:")) {
-                    parsedSourceKey = new Function("input", "return '" + utils.encode(normSourceKey) + "'");
-                }
+                else if (typeof normSourceKey === 'string' && normSourceKey.startsWith("encode:"))
+                    parsedSourceKey = new Function("input", "return '" + encodingHandler(normSourceKey, source) + "'");
 
                 /********************* Destination Key is a entityId field (according to definition in config.js) **/
             } else if (mapDestKey == entityIdField) {
@@ -360,7 +346,8 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 else if (normSourceKey.startsWith("static:"))
                     parsedSourceKey = new Function("input", "return '" + normSourceKey.match(staticPattern)[1] + "'");
                 else if (normSourceKey.startsWith("encode:"))
-                    parsedSourceKey = new Function("input", "return '" + utils.encode(normSourceKey) + "'");
+                    parsedSourceKey = new Function("input", "return '" + encodingHandler(normSourceKey, source) + "'");
+
 
             }
 
