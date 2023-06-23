@@ -315,7 +315,7 @@ const restoreDefaultConfs = () => {
 };
 
 const encode = (encoding, value) => {
-    //return value
+    return value
     console.debug("ENCODING\n\n\n\n\\n\n")
     console.debug(encoding)
     console.debug("value")
