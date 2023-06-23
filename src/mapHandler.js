@@ -46,6 +46,53 @@ const loadMap = (mapData) => {
 
 };
 
+const cleanValue = (value) => {
+
+    /*
+    while (value.replace("\"", '') != value) value = value.replace("\"", '')
+    while (value.replace(" ", '') != value) value = value.replace(" ", '')
+    while (value.replace("\"", '') != value) value = value.replace("\"", '')
+    while (value.replace(" ", '') != value) value = value.replace(" ", '')
+    */
+    console.debug("VALUE before{\n")
+    console.debug(value)
+    console.debug("\n}\n")
+
+    let parsed = false
+    //let index = 0
+    let value_1 
+    for (let index = 0; (index < value.length) && !parsed; index++) {
+        console.debug("+value[index]{\n")
+        console.debug(value[index])
+        console.debug("\n}\n")
+        if (value[index] == '"') {
+            value_1 = value.substring(index+1)
+            parsed = true
+        }
+        else if (value[index] == " ")
+            value_1 = value.substring(index+1)
+        else parsed = true
+    }
+    parsed = false
+    let value_2 = value_1
+    for (let index = value_1.length-1; (index > 0) && !parsed; index--) {
+        console.debug("-value[index]{\n")
+        console.debug(value_1[index])
+        console.debug("\n}\n")
+        if (value_1[index] == '"') {
+            value_2 = value_1.substring(0, index)
+            parsed = true
+        }
+        else if (value_1[index] == " ")
+            value_2 = value_1.substring(0, index)
+        else parsed = true
+    }
+    console.debug("VALUE after {\n")
+    console.debug(value)
+    console.debug("\n}\n")
+    return value_2;
+};
+
 
 /**
  *
@@ -60,50 +107,44 @@ const loadMap = (mapData) => {
  */
 
 
-const encodingHandler = (parsedSourceKey, normSourceKey, schemaDestKey, key, mapSourceSubField, schemaFieldType, source ) => {
+const encodingHandler = (parsedSourceKey, normSourceKey, schemaDestKey, key, mapSourceSubField, schemaFieldType, source) => {
 
-        console.debug(normSourceKey,key)
-        console.debug(mapSourceSubField.split("encode:")[1],mapSourceSubField.split("encode:")[1])
+    console.debug(normSourceKey, key)
+    console.debug(mapSourceSubField.split("encode:")[1], mapSourceSubField.split("encode:")[1])
 
     let encoding = mapSourceSubField.split(":")[1]
 
-        console.debug("ENCODING TYPE : ", encoding)
-    let outputValue=""
-    mapSourceSubField = mapSourceSubField.split("encode:"+encoding+":")[1]
-    if (mapSourceSubField[0]=="[") {
-        mapSourceSubField=mapSourceSubField.substring(1, mapSourceSubField.length-1)
+    console.debug("ENCODING TYPE : {", encoding,"}")
+    let outputValue = ""
+    mapSourceSubField = mapSourceSubField.split("encode:" + encoding + ":")[1]
+    if (mapSourceSubField[0] == "[" && mapSourceSubField[mapSourceSubField.length - 1] == "]") {
+        mapSourceSubField = mapSourceSubField.substring(1, mapSourceSubField.length - 1)
         mapSourceSubField = mapSourceSubField.split(",")
-        for (let value of mapSourceSubField){
-            while (value.replace("\"", '') != value) value = value.replace("\"", '')
-            while (value.replace(" ", '') != value) value = value.replace(" ", '')
-            while (value.replace("\"", '') != value) value = value.replace("\"", '')
-            while (value.replace(" ", '') != value) value = value.replace(" ", '')
-            console.debug(typeof value)
-            console.log("SOURCE\n",source,"FIELD NAME\n",value)
+        for (let value of mapSourceSubField) {
+            value = cleanValue(value);
+            console.debug("typeof value {",typeof value, "}")
+            console.log("SOURCE\n{", source, "}\nFIELD NAME{\n", value, "}")
             console.debug("value starts with static ?")
-            console.debug("CAZZOOOOOOOOOOOOOOOOOOOO",value.substring(2,value.length-1))
+            //console.debug("CAZZOOOOOOOOOOOOOOOOOOOO", value.substring(2, value.length - 1))
             //value = value.substring(2,value.length-1)
             console.log(value.startsWith("static"))
-            let a = "static:-"
-            console.log(a.startsWith("static"))
             console.debug(value)
-            console.debug(a)
-            if (value.startsWith("static")){
+            if (value.startsWith("static")) {
                 console.debug("THERE IS STATIC VALUE CAZZO\n\n\n\n\n\n")
                 console.debug(value)
                 console.debug(value.split(":"))
                 console.debug(value.indexOf(":"))
                 console.debug(value.substring(value.indexOf(":")))
-                outputValue=outputValue.concat(value.split(":")[1])
+                outputValue = outputValue.concat(value.split(":")[1])
             }
             else {
-                console.debug(source,value)
-                console.debug(source[value])
-                outputValue=outputValue.concat(source[value])
+                //console.debug(source, value)
+                //console.debug(source[value])
+                outputValue = outputValue.concat(source[value])
             }
         }
     }
-    
+
     /*
     let operators = []
     while (mapSourceSubField.indexOf(":")!=-1){
@@ -112,7 +153,7 @@ const encodingHandler = (parsedSourceKey, normSourceKey, schemaDestKey, key, map
     }
     */
 
-        console.debug("encodingHandler\n",outputValue)
+    console.debug("encodingHandler\n", outputValue)
 
     return utils.encode(encoding, outputValue)
     //parsedSourceKey[key] = mapSourceSubField
@@ -161,9 +202,9 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey, source) =>
                 //let encoding = multipleOperators[0]
                 //let encodingValue = ""
                 //for (let i = 1; i < multipleOperators.length; i++)
-                    //if (multipleOperators[i]) encodingValue += multipleOperators[i].concat(i + 1 == multipleOperators.length ? "" : ":")
+                //if (multipleOperators[i]) encodingValue += multipleOperators[i].concat(i + 1 == multipleOperators.length ? "" : ":")
                 //parsedSourceKey[key] = encodingValue;
-                parsedSourceKey[key] = new Function("input", "return '" + encodingHandler(parsedSourceKey, normSourceKey, schemaDestKey, key, mapSourceSubField, schemaFieldType, source ) + "'");
+                parsedSourceKey[key] = new Function("input", "return '" + encodingHandler(parsedSourceKey, normSourceKey, schemaDestKey, key, mapSourceSubField, schemaFieldType, source) + "'");
             } else if (schemaFieldType === 'object') {
                 log.debug("This is an object")
                 parsedSourceKey[key] = objectHandler(mapSourceSubField, mapSourceSubField, schemaDestSubKey)
