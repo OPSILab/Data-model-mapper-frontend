@@ -47,74 +47,31 @@ const loadMap = (mapData) => {
 };
 
 const cleanValue = (value) => {
-
-    /*
-    while (value.replace("\"", '') != value) value = value.replace("\"", '')
-    while (value.replace(" ", '') != value) value = value.replace(" ", '')
-    while (value.replace("\"", '') != value) value = value.replace("\"", '')
-    while (value.replace(" ", '') != value) value = value.replace(" ", '')
-    */
-    console.debug("VALUE before{\n")
-    console.debug(value)
-    console.debug("\n}\n")
-
     let parsed = false
-    //let index = 0
-    let value_1
-    for (let index = 0; (index < value.length) && !parsed; index++) {
-        console.debug("+value[index]{\n")
-        console.debug(value[index])
-        console.debug("\n}\n")
+    let valueWithHeadCleaned
+    for (let index = 0; (index < value.length) && !parsed; index++)
         if (value[index] == '"') {
-            value_1 = value.substring(index + 1)
+            valueWithHeadCleaned = value.substring(index + 1)
             parsed = true
         }
         else if (value[index] == " ")
-            value_1 = value.substring(index + 1)
+            valueWithHeadCleaned = value.substring(index + 1)
         else parsed = true
-    }
     parsed = false
-    let value_2 = value_1
-    for (let index = value_1.length - 1; (index > 0) && !parsed; index--) {
-        console.debug("-value[index]{\n")
-        console.debug(value_1[index])
-        console.debug("\n}\n")
-        if (value_1[index] == '"') {
-            value_2 = value_1.substring(0, index)
+    let valueWithTailCleaned = valueWithHeadCleaned
+    for (let index = valueWithHeadCleaned.length - 1; (index > 0) && !parsed; index--)
+        if (valueWithHeadCleaned[index] == '"') {
+            valueWithTailCleaned = valueWithHeadCleaned.substring(0, index)
             parsed = true
         }
-        else if (value_1[index] == " ")
-            value_2 = value_1.substring(0, index)
+        else if (valueWithHeadCleaned[index] == " ")
+            valueWithTailCleaned = valueWithHeadCleaned.substring(0, index)
         else parsed = true
-    }
-    console.debug("VALUE after {\n")
-    console.debug(value)
-    console.debug("\n}\n")
-    return value_2;
+    return valueWithTailCleaned;
 };
 
-
-/**
- *
- *
- * @param {"Analyzed Map"} parsedSourceKey This is the analyzed map that informs the external library converter on what to do (if is a new Function(...) it won't check the
- * input source but it will set the output field to the return of the function)
- * @param {"Map"} normSourceKey The map object
- * @param {"Data model"} schemaDestKey This is the schema
- * @param {"Subfield of Map"} key The selected sub field of the map
- * @return {"Analyzed Map"} parsedSourceKey This is the analyzed map that informs the external library converter on what to do (if is a new Function(...) it won't check the
- * input source but it will set the output field to the return of the function)
- */
-
-
 const encodingHandler = (mapSourceSubField, source) => {
-
-    //console.debug(normSourceKey, key)
-    console.debug(mapSourceSubField.split("encode:")[1], mapSourceSubField.split("encode:")[1])
-
     let encoding = mapSourceSubField.split(":")[1]
-
-    console.debug("ENCODING TYPE : {", encoding, "}")
     let outputValue = ""
     mapSourceSubField = mapSourceSubField.split("encode:" + encoding + ":")[1]
     if (mapSourceSubField[0] == "[" && mapSourceSubField[mapSourceSubField.length - 1] == "]") {
@@ -122,42 +79,13 @@ const encodingHandler = (mapSourceSubField, source) => {
         mapSourceSubField = mapSourceSubField.split(",")
         for (let value of mapSourceSubField) {
             value = cleanValue(value);
-            console.debug("typeof value {", typeof value, "}")
-            console.log("SOURCE\n{", source, "}\nFIELD NAME{\n", value, "}")
-            console.debug("value starts with static ?")
-            //console.debug("CAZZOOOOOOOOOOOOOOOOOOOO", value.substring(2, value.length - 1))
-            //value = value.substring(2,value.length-1)
-            console.log(value.startsWith("static"))
-            console.debug(value)
-            if (value.startsWith("static")) {
-                console.debug("THERE IS STATIC VALUE CAZZO\n\n\n\n\n\n")
-                console.debug(value)
-                console.debug(value.split(":"))
-                console.debug(value.indexOf(":"))
-                console.debug(value.substring(value.indexOf(":")))
+            if (value.startsWith("static"))
                 outputValue = outputValue.concat(value.split(":")[1])
-            }
-            else {
-                //console.debug(source, value)
-                //console.debug(source[value])
+            else
                 outputValue = outputValue.concat(source[value])
-            }
         }
     }
-
-    /*
-    let operators = []
-    while (mapSourceSubField.indexOf(":")!=-1){
-        operators.push(mapSourceSubField.split(":")[0])
-        mapSourceSubField = mapSourceSubField.substring(mapSourceSubField.indexOf(":")+1)
-    }
-    */
-
-    console.debug("encodingHandler\n", outputValue)
-
     return utils.encode(encoding, outputValue)
-    //parsedSourceKey[key] = mapSourceSubField
-    //return parsedSourceKey[key]
 };
 
 /**
@@ -167,6 +95,7 @@ const encodingHandler = (mapSourceSubField, source) => {
  * input source but it will set the output field to the return of the function)
  * @param {"Map"} normSourceKey The map object
  * @param {"Data model"} schemaDestKey This is the schema
+ * @param {"Source file"} source The input source file
  * @return {"Analyzed Map"} parsedSourceKey This is the analyzed map that informs the external library converter on what to do (if is a new Function(...) it won't check the
  * input source but it will set the output field to the return of the function)
  */
@@ -224,11 +153,15 @@ const NGSI_entity = () => {
     return service.NGSI_entity
 }
 
-// This function takes in input the source object, uses map object to map to a destination data Model
-// according to the passed data model Json Schema
+/**
+ *
+ * This function takes in input the source object, uses map object to map to a destination data Model
+ * @param {"Input row index"} rowNumber The input source row index. The parser iterates in the input file and calls this mapping function for each row
+ * @param {"Source file"} source The input source file
+ * @param {"Map file"} map The input map file
+ * @param {"Destination schema"} modelSchema The destination schema/data model 
+ */
 const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service, group, entityIdField) => {
-
-    //source is the source JSON
 
     var result = {};
     // If the destKey is entityIdField and has only "static:" fields, the pair value indicates only an ID prefix
@@ -291,36 +224,47 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 }
 
                 /********************* Destination Key is an Object ****************************************/
-            } else if (schemaDestKey && schemaDestKey.type === 'object' && typeof normSourceKey === 'object') {
+
+            } else if (schemaDestKey && schemaDestKey.type === 'object' && typeof normSourceKey === 'object') 
 
                 parsedSourceKey = objectHandler(parsedSourceKey, normSourceKey, schemaDestKey, source)
 
                 /********************* Destination Field is an Array ********************************************/
-            } else if (schemaDestKey && schemaDestKey.type === 'array' && Array.isArray(normSourceKey)) {
+
+             else if (schemaDestKey && schemaDestKey.type === 'array' && Array.isArray(normSourceKey)) 
 
                 parsedSourceKey = new Function("input", "return " + handleSourceFieldsToDestArray(normSourceKey));
 
                 /********************* Destination Field is a Number ********************************************/
-            } else if (schemaDestKey && (schemaDestKey.type === 'number' || schemaDestKey.type === 'integer')) {
+                
+             else if (schemaDestKey && (schemaDestKey.type === 'number' || schemaDestKey.type === 'integer')) 
+
                 if (Array.isArray(normSourceKey))
                     parsedSourceKey = new Function("input", "return " + handleSourceFieldsArray(normSourceKey, 'number').result);
+
                 else {
+
                     parsedSourceKey = handleDottedField(normSourceKey);
+
                     if (parsedSourceKey.startsWith('[')) {
+
                         let num = eval('source' + parsedSourceKey);
+
                         if (typeof num === 'string')
                             parsedSourceKey = new Function("input", "return Number(input['" + normSourceKey + "'])");
+
                         else if (typeof num === 'number')
                             parsedSourceKey = new Function("input", "return input['" + normSourceKey + "']");
                     }
                 }
 
                 /********************* Destination Field is a String ********************************************/
-            } else if (schemaDestKey && (schemaDestKey.type === 'boolean')) {
+
+             else if (schemaDestKey && (schemaDestKey.type === 'boolean')) 
 
                 parsedSourceKey = new Function("input", "return (input['" + normSourceKey + "'].toLowerCase() == 'true' || input['" + normSourceKey + "'] == 1 || input['" + normSourceKey + "'] == '1'  ) ? true: false");
 
-            } else if (schemaDestKey && schemaDestKey.type === 'string') {
+             else if (schemaDestKey && schemaDestKey.type === 'string') {
 
                 if (schemaDestKey.format === 'date-time') {
 
@@ -403,11 +347,8 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             result.id = utils.createSynchId(result.type, site, service, group, result[entityIdField], isIdPrefix, rowNumber);
             delete result[entityIdField];
         } catch (error) {
-            //result.type = "UnknownEntity"
             log.error("UnknownEntity")
         }
-        //result.id = utils.createSynchId(result.type, site, service, group, result[entityIdField], isIdPrefix, rowNumber);
-        //delete result[entityIdField];
     }
 
     /** Once we added only valid mapped single entries, let's do a final validation against the whole final mapped object
