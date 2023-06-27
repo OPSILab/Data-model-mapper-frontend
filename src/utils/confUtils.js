@@ -183,7 +183,8 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
         try {
             sourcePath = path.normalize(sourcePath);
         } catch (error) {
-            log.error("There was an error while normalizing Source Path: " + error);
+            log.error("There was an error while normalizing Source Path: ");
+            console.log(error)
             return false;
         }
     } else {

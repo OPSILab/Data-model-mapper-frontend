@@ -90,7 +90,8 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 var map = await mapHandler.loadMap(mapData[1] == "mapData" ? mapData[0] : mapData); // map is the file map loaded
                 log.debug("map is the file map loaded")
             } catch (error) {
-                log.error('There was an error while loading Map: ' + error);
+                log.error('There was an error while loading Map: ');
+                console.log(error)
                 return Promise.reject('There was an error while loading Map: ' + error);
             }
 
@@ -115,7 +116,8 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                     log.info('Data Model Schema loaded and dereferenced');
 
                 } catch (error) {
-                    log.error('There was an error while processing Data Model schema: ' + error.stack);
+                    log.error('There was an error while processing Data Model schema: ');
+                    console.log(error)
                     return Promise.reject(error);
                 }
 
@@ -230,6 +232,7 @@ const finalizeProcess = async () => {
         return await Promise.resolve();
 
     } catch (error) {
+        console.log(error)
         return await Promise.reject(error);
     }
 };

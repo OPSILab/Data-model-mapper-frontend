@@ -47,19 +47,28 @@ module.exports = {
 
         if (source.id) {
             try { source.data = await Source.findOne({ id: source.id }) }
-            catch (error) { process.res.sendStatus(404) }
+            catch (error) { 
+                console.log(error)
+                process.res.sendStatus(404) 
+            }
             source.data = source.data.source || source.data.sourceCSV
         }
 
         if (map.id) {
             try { map = await Map.findOne({ id: map.id }) }
-            catch (error) { process.res.sendStatus(404) }
+            catch (error) { 
+                console.log(error)
+                process.res.sendStatus(404) 
+            }
             map = [map.map, "mapData"]
         }
 
         if (dataModel.id) {
             try { dataModel.data = await DataModel.findOne({ id: dataModel.id }) }
-            catch (error) { process.res.sendStatus(404) }
+            catch (error) { 
+                console.log(error)
+                process.res.sendStatus(404) 
+            }
             dataModel.data = dataModel.data.dataModel
             dataModel.schema_id =
                 //dataModel.data.$id || 
@@ -70,7 +79,10 @@ module.exports = {
             try {
                 map = await Map.findOne({ id: adapterID })//type change
             }
-            catch (error) { process.res.sendStatus(404) }
+            catch (error) { 
+                console.log(error)
+                process.res.sendStatus(404) 
+            }
             dataModel = {}
             dataModel.data = map.dataModel
             if (dataModel.data.schema && !dataModel.data.$schema) dataModel.data.$schema = dataModel.data.schema

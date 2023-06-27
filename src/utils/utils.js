@@ -26,7 +26,7 @@ const isFileStream = require('is-file-stream');
 const extensionPattern = /\.[0-9a-z]+$/i;
 const httpPattern = /http:\/\//g;
 const filenameFromPathPattern = /^(.:)?\\(.+\\)*(.+)\.(.+)$/;
-const base64Encode = require ('js-base64')
+const base64Encode = require('js-base64')
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -139,7 +139,7 @@ const uuid = () => {
  * 
  */
 const createSynchId = (type, site, service, group, entityName, isIdPrefix, rowNumber) => {
-
+    console.debug("create id --------------------------------------")
     if (entityName) {
         if (isIdPrefix)
             entityName = ('' + entityName).replace(/\s/g, "") + "-" + rowNumber;
@@ -197,7 +197,8 @@ function spaceCleaner(object) {
 
 const sendOutput = () => {
     if (config.deleteEmptySpaceAtBeginning) apiOutput.outputFile = spaceCleaner(apiOutput.outputFile)
-    if (parseInt((apiOutput.outputFile[apiOutput.outputFile.length-1].MAPPING_REPORT.Mapped_and_NOT_Validated_Objects)[0].charAt(0))) process.res.status(400).send("Validation errors")
+    if (parseInt((apiOutput.outputFile[apiOutput.outputFile.length - 1].MAPPING_REPORT.Mapped_and_NOT_Validated_Objects)[0].charAt(0))) process.res.status(400).send({ error: "Validation errors", report: apiOutput.outputFile[apiOutput.outputFile.length - 1] })
+    else if (!config.mappingReport) process.res.send(apiOutput.outputFile.slice(0, apiOutput.outputFile.length - 1));
     else process.res.send(apiOutput.outputFile);
     apiOutput.outputFile = [];
 };
@@ -212,7 +213,7 @@ const printFinalReportAndSendResponse = async (logger) => {
 
     if (config.mode == 'server') {
         //Mapping report in output file
-        
+
         apiOutput.outputFile[apiOutput.outputFile.length] = {
             MAPPING_REPORT: {
                 Processed_objects: process.env.rowNumber,
@@ -348,5 +349,5 @@ module.exports = {
     isReadableStream: isReadableStream,
     promiseTimeout: promiseTimeout,
     restoreDefaultConfs: restoreDefaultConfs,
-    encode:encode
+    encode: encode
 };

@@ -63,9 +63,10 @@ const writeObject = async (objNumber, obj, addBRLine) => {
 
             } catch (err) {
                 process.env.fileUnWrittenCount++;
-                log.debug('Error while writing mapped object to file');
-                log.debug('----------------------------------------------------------\n' +
+                log.error('Error while writing mapped object to file');
+                log.error('----------------------------------------------------------\n' +
                     'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT written to file');
+                console.log(err)
                 return reject(err);
             }
         });
@@ -89,7 +90,7 @@ const finalizeFile = async () => {
         await outFileStream.end();
         outFileStream = undefined;
         return resolve();
-    }).then(value => {if (value) log.debug(value)}).catch(value => log.error(value));
+    }).then(value => { if (value) log.debug(value) }).catch(value => console.log(value));
 };
 
 const printFileFinalReport = async (logger) => {

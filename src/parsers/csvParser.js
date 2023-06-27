@@ -48,7 +48,8 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
             fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
-            log.error('There was an error while getting buffer from source data: ' + err);
+            log.error('There was an error while getting buffer from source data: ');
+            console.log(err)
         }
     }
 
@@ -58,7 +59,8 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
             urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (error) {
-            console.error('There was an error while getting buffer from source data: \n' + error);
+            console.error('There was an error while getting buffer from source data: \n');
+            console.log(error)
         }
 
     // The Source Data is the file path
@@ -67,7 +69,8 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
             fileToRowStream(fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
-            console.error('There was an error while getting buffer from source data: \n' + err);
+            console.error('There was an error while getting buffer from source data: \n');
+            console.log(err)
         }
     else
         log.error("No valid Source Data was provided");
@@ -106,7 +109,8 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
                 await finalizeProcess();
 
             } catch (error) {
-                log.error("Error While finalizing the streaming process: " + error);
+                log.error("Error While finalizing the streaming process: ");
+                console.log(error)
             }
         });
 }
@@ -146,7 +150,8 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
                 await finalizeProcess();
 
             } catch (error) {
-                log.error("Error While finalizing the streaming process: " + error);
+                log.error("Error While finalizing the streaming process: ");
+                console.log(error)
             }
         });
 

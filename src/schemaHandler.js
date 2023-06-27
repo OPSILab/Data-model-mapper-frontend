@@ -69,6 +69,7 @@ function nestedFieldsHandler(field, model) {
             field = field.replaceAll(":", '":"');
             try { field = JSON.parse(field) }
             catch (error) {
+                console.log(error)
                 field = field.replaceAll('}","{', '},{');
                 while (field.replaceAll('" ', '"') != field) field = field.replaceAll('" ', '"') 
                 while (field.replaceAll(' "', '"') != field) field = field.replaceAll(' "', '"') 
@@ -195,7 +196,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
             data = nestedFieldsHandler(data, schema.allOf[0].properties)
         }
         catch(error){
-            log.error(error)
+            console.log(error)
         }
         validate = ajv.compile(schema);
         valid = validate(data)

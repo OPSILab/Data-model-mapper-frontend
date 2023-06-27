@@ -330,6 +330,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             try {
                 singleResult = converter(source);
             } catch (error) {
+                console.log(error)
                 log.error(`There was an error: ${error} while processing ${parsedSourceKey} field`);
                 continue;
             }
@@ -367,11 +368,14 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
         // Append type field, according to the Data Model Schema
         try {
-            result.type = modelSchema.allOf[0].properties.type.enum[0];
+            console.debug("ngsi----------------")
+            result.type = modelSchema?.allOf? modelSchema.allOf[0]?.properties?.type?.enum[0] : "Unknown Type";
             // Generate unique id for the mapped object (according to Id Pattern)
             result.id = utils.createSynchId(result.type, site, service, group, result[entityIdField], isIdPrefix, rowNumber);
             delete result[entityIdField];
         } catch (error) {
+            console.log(error)
+            console.debug("-------------------catch---------------------")
             log.error("UnknownEntity")
         }
     }

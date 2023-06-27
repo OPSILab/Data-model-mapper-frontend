@@ -42,8 +42,8 @@ module.exports = async (sourceDataIn, mapPathIn, dataModelIn) => {
         try {
             await process.processSource(sourceData, "", mapPath, dataModelPath);
         } catch (error) {
-            //console.log(error)
-            log.error(error)
+            console.log(error)
+            //log.error(error)
             service.error = error
             return error
         }

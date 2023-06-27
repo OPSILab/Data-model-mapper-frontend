@@ -36,7 +36,8 @@ async function sourceDataToRowStream(sourceData, map, schema, rowHandler, mapped
             await fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
-            log.error('There was an error while getting buffer from source data: ' + err);
+            log.error('There was an error while getting buffer from source data: ');
+            console.log(err)
         }
 
     }
@@ -89,7 +90,8 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
                 await utils.printFinalReportAndSendResponse(log);
                 await utils.printFinalReportAndSendResponse(report);
             } catch (error) {
-                log.error("Error While finalizing the streaming process: " + error);
+                log.error("Error While finalizing the streaming process: ");
+                console.log(error)
             }
 
         });
