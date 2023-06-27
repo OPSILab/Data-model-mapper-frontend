@@ -19,6 +19,7 @@
     "geojson-stream": "0.0.1",
     "is-file-stream": "^1.0.0",
     "is-valid-path": "^0.1.1",
+    "js-base64": "^3.7.5",
     "json-mapper": "0.0.12",
     "json-schema-ref-parser": "^5.1.2",
     "mocha": "^10.2.0",

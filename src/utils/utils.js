@@ -26,6 +26,7 @@ const isFileStream = require('is-file-stream');
 const extensionPattern = /\.[0-9a-z]+$/i;
 const httpPattern = /http:\/\//g;
 const filenameFromPathPattern = /^(.:)?\\(.+\\)*(.+)\.(.+)$/;
+const base64Encode = require ('js-base64')
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -35,7 +36,7 @@ function sleep(ms) {
 const cleanString = (string) => {
     var result = '';
     if (typeof string === 'string')
-        result = string.replace(/\n|'|<|>|"|'|=|;|\(|\)/g, ' ');
+        result = string.replace(config.regexClean, ' ');
 
     return result;
 
@@ -44,7 +45,7 @@ const cleanString = (string) => {
 const cleanIdString = (string) => {
     var result = '';
     if (typeof string === 'string')
-        result = string.replace(/\n|'|<|>|"|'|=|;|\(|\)/g, ' ')
+        result = string.replace(config.regexClean, ' ')
             .replace(/à/g, 'a')
             .replace(/ù/g, 'u')
             .replace(/é|è/g, 'e')
@@ -315,8 +316,10 @@ const restoreDefaultConfs = () => {
 };
 
 const encode = (encoding, value) => {
+    console.log("------------------------------------------------")
+    console.log(value)
     if (encoding == "base64")
-        return base64.encode(value)
+        return base64.encode(value)//base64Encode.encode(value)//base64.encode(value)
     return value
 };
 

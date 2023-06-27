@@ -42,13 +42,16 @@ module.exports = async (sourceDataIn, mapPathIn, dataModelIn) => {
         try {
             await process.processSource(sourceData, "", mapPath, dataModelPath);
         } catch (error) {
+            //console.log(error)
             log.error(error)
+            service.error = error
             return error
         }
 
         log.debug("process.processSource end")
 
     } else {
+        console.log(error)
         log.error("There was an error while initializing Mapper configuration");
         service.error = "There was an error while initializing Mapper configuration"
     }

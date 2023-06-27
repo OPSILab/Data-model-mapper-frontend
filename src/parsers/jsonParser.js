@@ -110,6 +110,7 @@ async function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler
             // console.log(columns);
         })
         .on('data', function (row) {
+            console.debug("ROW\n",row)
             rowNumber = Number(process.env.rowNumber) + 1;
             process.env.rowNumber = rowNumber;
 

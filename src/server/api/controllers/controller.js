@@ -5,6 +5,7 @@ const log = require('../../../utils/logger').app(module);
 module.exports = {
 
     mapData: async (req, res) => {
+        console.debug(req.body)
 
         process.res = res;
 

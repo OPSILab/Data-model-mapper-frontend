@@ -59,7 +59,6 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
         }
         catch (error) {
             console.error('There was an error while getting buffer from source data: \n' + error);
-            console.log(error)
         }
 
     // The Source Data is the file path

@@ -47,6 +47,8 @@ const loadMap = (mapData) => {
 };
 
 const cleanValue = (value) => {
+    console.debug("------------clean value------------------")
+    console.debug(value)
     let parsed = false
     let valueWithHeadCleaned
     for (let index = 0; (index < value.length) && !parsed; index++)
@@ -71,18 +73,41 @@ const cleanValue = (value) => {
 };
 
 const encodingHandler = (mapSourceSubField, source) => {
+    console.debug("encoding handler-------------------------"
+        , mapSourceSubField)
     let encoding = mapSourceSubField.split(":")[1]
     let outputValue = ""
     mapSourceSubField = mapSourceSubField.split("encode:" + encoding + ":")[1]
+    console.debug("encoding handler-------------------------"
+        , mapSourceSubField)
     if (mapSourceSubField[0] == "[" && mapSourceSubField[mapSourceSubField.length - 1] == "]") {
         mapSourceSubField = mapSourceSubField.substring(1, mapSourceSubField.length - 1)
         mapSourceSubField = mapSourceSubField.split(",")
         for (let value of mapSourceSubField) {
             value = cleanValue(value);
             if (value.startsWith("static"))
-                outputValue = outputValue.concat(value.split(":")[1])
-            else
+                outputValue = outputValue.concat(value.split("static:")[1])
+            else {
+                console.debug("SOURCE")
+                console.debug(source)
+                console.debug("sourcesubfield")
+                console.debug(value)
+                console.debug("VALUE")
+                console.debug(source[value])
                 outputValue = outputValue.concat(source[value])
+            }
+        }
+    }
+    else if (mapSourceSubField.startsWith("concat:")) {
+        mapSourceSubField = mapSourceSubField.split("concat:")[1]
+        for (let sourceSubField in source) {
+            console.debug("SOURCE")
+            console.debug(source)
+            console.debug("sourcesubfield")
+            console.debug(sourceSubField)
+            console.debug("VALUE")
+            console.debug(source[sourceSubField])
+            outputValue = outputValue.concat(outputValue == "" ? "" : mapSourceSubField).concat(source[sourceSubField])
         }
     }
     return utils.encode(encoding, outputValue)
@@ -225,19 +250,19 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
                 /********************* Destination Key is an Object ****************************************/
 
-            } else if (schemaDestKey && schemaDestKey.type === 'object' && typeof normSourceKey === 'object') 
+            } else if (schemaDestKey && schemaDestKey.type === 'object' && typeof normSourceKey === 'object')
 
                 parsedSourceKey = objectHandler(parsedSourceKey, normSourceKey, schemaDestKey, source)
 
-                /********************* Destination Field is an Array ********************************************/
+            /********************* Destination Field is an Array ********************************************/
 
-             else if (schemaDestKey && schemaDestKey.type === 'array' && Array.isArray(normSourceKey)) 
+            else if (schemaDestKey && schemaDestKey.type === 'array' && Array.isArray(normSourceKey))
 
                 parsedSourceKey = new Function("input", "return " + handleSourceFieldsToDestArray(normSourceKey));
 
-                /********************* Destination Field is a Number ********************************************/
-                
-             else if (schemaDestKey && (schemaDestKey.type === 'number' || schemaDestKey.type === 'integer')) 
+            /********************* Destination Field is a Number ********************************************/
+
+            else if (schemaDestKey && (schemaDestKey.type === 'number' || schemaDestKey.type === 'integer'))
 
                 if (Array.isArray(normSourceKey))
                     parsedSourceKey = new Function("input", "return " + handleSourceFieldsArray(normSourceKey, 'number').result);
@@ -258,13 +283,13 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                     }
                 }
 
-                /********************* Destination Field is a String ********************************************/
+            /********************* Destination Field is a String ********************************************/
 
-             else if (schemaDestKey && (schemaDestKey.type === 'boolean')) 
+            else if (schemaDestKey && (schemaDestKey.type === 'boolean'))
 
                 parsedSourceKey = new Function("input", "return (input['" + normSourceKey + "'].toLowerCase() == 'true' || input['" + normSourceKey + "'] == 1 || input['" + normSourceKey + "'] == '1'  ) ? true: false");
 
-             else if (schemaDestKey && schemaDestKey.type === 'string') {
+            else if (schemaDestKey && schemaDestKey.type === 'string') {
 
                 if (schemaDestKey.format === 'date-time') {
 

@@ -145,12 +145,12 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 return await Promise.resolve("OK");
 
             } else {
-                log.error('There was an error while loading Map File: ' + error.stack);
+                log.error('There was an error while loading Map File');
                 return await Promise.reject('There was an error while loading Map File');
             }
 
         } else {
-            log.error('The source Data is not a valid file nor a valid path/url: ' + error.stack);
+            log.error('The source Data is not a valid file nor a valid path/url: ');
             return await Promise.reject('The source Data is not a valid file nor a valid path/url');
         }
 
