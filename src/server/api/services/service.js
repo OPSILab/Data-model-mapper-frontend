@@ -29,7 +29,7 @@ module.exports = {
         return id;
     },
 
-    async mapData(source, map, dataModel, adapterID, delimiter, entity) {
+    async mapData(source, map, dataModel, adapterID, delimiter, entity, configIn) {
         const cli = require('../../../cli/setup');
         if (!source || (!map || !dataModel) && !adapterID) {
             let error = {}
@@ -41,6 +41,24 @@ module.exports = {
             process.res.status(400).send(error)
             return "Missing fields"
         }
+
+        console.debug(config)
+
+        if (config.backup){
+            for (let configKey in config.backup)
+                config[configKey] = config.backup[configKey]
+            config.backup=undefined
+        }
+
+
+        if (configIn)
+            for (let configKey in configIn){
+                if (!config.backup) config.backup = {}
+                config.backup[configKey] = config[configKey]
+                config[configKey] = configIn[configKey]
+            }
+
+        console.debug(config)
 
         process.env.delimiter = delimiter
         this.NGSI_entity = entity
@@ -115,7 +133,7 @@ module.exports = {
             source.name ? config.sourceDataPath + source.name : config.sourceDataPath + 'sourceFileTemp.' + source.type,
             map,
             dataModel.name ? dataModel.name : dataModel.schema_id ? this.getFilename(dataModel.schema_id) : "DataModelTemp"
-        );
+        );                
     },
 
     async getSources() {

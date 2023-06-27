@@ -28,7 +28,9 @@ module.exports = {
                 req.body.adapterID ? req.body.adapterID : false,
 
                 req.body.csvDelimiter || config.delimiter || ',',
-                req.body.NGSI_entity
+                req.body.NGSI_entity,
+
+                req.body.config
             )
 
         if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")

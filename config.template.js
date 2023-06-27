@@ -29,6 +29,7 @@ var config = {
     modelSchemaFolder: path.join(__dirname, "dataModels"), // DO NOT TOUCH - Data Model schemas folder
     NGSI_entity: true, // enable or disable ngsi entity source 
     ignoreValidation: false, // ignore validation errors
+    mappingReport: false, // disable output mapping report
 
     /********************** 3 INPUTS CONFIGURATION ************************
     * Followings are related to Mapping MANDATORY inputs (source, map, data model).
@@ -45,6 +46,7 @@ var config = {
     **/
     rowStart: 0,
     rowEnd: Infinity,
+    regexClean: /\n|'|<|>|"|'|=|;|\(|\)/g,
 
     /************************* CSV Parser configuration *******************
      * Configuration parameters in case of CSV input
