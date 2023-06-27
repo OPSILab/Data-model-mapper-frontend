@@ -47,8 +47,6 @@ const loadMap = (mapData) => {
 };
 
 const cleanValue = (value) => {
-    console.debug("------------clean value------------------")
-    console.debug(value)
     let parsed = false
     let valueWithHeadCleaned
     for (let index = 0; (index < value.length) && !parsed; index++)
@@ -73,13 +71,9 @@ const cleanValue = (value) => {
 };
 
 const encodingHandler = (mapSourceSubField, source) => {
-    console.debug("encoding handler-------------------------"
-        , mapSourceSubField)
     let encoding = mapSourceSubField.split(":")[1]
     let outputValue = ""
     mapSourceSubField = mapSourceSubField.split("encode:" + encoding + ":")[1]
-    console.debug("encoding handler-------------------------"
-        , mapSourceSubField)
     if (mapSourceSubField[0] == "[" && mapSourceSubField[mapSourceSubField.length - 1] == "]") {
         mapSourceSubField = mapSourceSubField.substring(1, mapSourceSubField.length - 1)
         mapSourceSubField = mapSourceSubField.split(",")
@@ -87,28 +81,14 @@ const encodingHandler = (mapSourceSubField, source) => {
             value = cleanValue(value);
             if (value.startsWith("static"))
                 outputValue = outputValue.concat(value.split("static:")[1])
-            else {
-                console.debug("SOURCE")
-                console.debug(source)
-                console.debug("sourcesubfield")
-                console.debug(value)
-                console.debug("VALUE")
-                console.debug(source[value])
+            else 
                 outputValue = outputValue.concat(source[value])
-            }
         }
     }
     else if (mapSourceSubField.startsWith("concat:")) {
         mapSourceSubField = mapSourceSubField.split("concat:")[1]
-        for (let sourceSubField in source) {
-            console.debug("SOURCE")
-            console.debug(source)
-            console.debug("sourcesubfield")
-            console.debug(sourceSubField)
-            console.debug("VALUE")
-            console.debug(source[sourceSubField])
+        for (let sourceSubField in source) 
             outputValue = outputValue.concat(outputValue == "" ? "" : mapSourceSubField).concat(source[sourceSubField])
-        }
     }
     return utils.encode(encoding, outputValue)
 };
@@ -368,20 +348,17 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
         // Append type field, according to the Data Model Schema
         try {
-            console.debug("ngsi----------------")
             result.type = modelSchema?.allOf? modelSchema.allOf[0]?.properties?.type?.enum[0] : "Unknown Type";
             // Generate unique id for the mapped object (according to Id Pattern)
             result.id = utils.createSynchId(result.type, site, service, group, result[entityIdField], isIdPrefix, rowNumber);
             delete result[entityIdField];
         } catch (error) {
             console.log(error)
-            console.debug("-------------------catch---------------------")
             log.error("UnknownEntity")
         }
     }
-    else {
+    else 
         result[entityIdField] = result[entityIdField].concat(rowNumber)
-    }
 
     /** Once we added only valid mapped single entries, let's do a final validation against the whole final mapped object
     * Despite single validations, the following one is mandatory to be successful
