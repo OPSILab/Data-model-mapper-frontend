@@ -44,6 +44,10 @@ module.exports = {
 
         console.debug(config)
 
+        if (!Array.isArray(source.data)) source.data = [source.data]
+
+        console.debug(source.data)
+
         if (config.backup){
             for (let configKey in config.backup)
                 config[configKey] = config.backup[configKey]

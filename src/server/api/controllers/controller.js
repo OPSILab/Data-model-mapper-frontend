@@ -6,6 +6,8 @@ module.exports = {
 
     mapData: async (req, res) => {
 
+        console.debug(req.body)
+
         process.res = res;
 
         if (req.body.getMapperList)

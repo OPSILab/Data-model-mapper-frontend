@@ -358,7 +358,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
         }
     }
     else 
-        result[entityIdField] = result[entityIdField].concat(rowNumber)
+        if (result[entityIdField]) result[entityIdField] = result[entityIdField].concat(rowNumber)
 
     /** Once we added only valid mapped single entries, let's do a final validation against the whole final mapped object
     * Despite single validations, the following one is mandatory to be successful
