@@ -127,19 +127,19 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
                     case '.txt':
                     case 'txt':
-                        await csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, await processRow, await processMappedObject, await finalizeProcess);
+                        csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
                         break;
                     case '.csv':
                     case 'csv':
-                        await csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, await processRow, await processMappedObject, await finalizeProcess);
+                        csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
                         break;
                     case '.json':
                     case 'json':
-                        await jsonParser.sourceDataToRowStream(sourceData, map, loadedSchema, await processRow, await processMappedObject, await finalizeProcess);
+                        await jsonParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
                         break;
                     case '.geojson':
                     case 'geojson':
-                        await geoParser.sourceDataToRowStream(sourceData, map, loadedSchema, await processRow, await processMappedObject, await finalizeProcess);
+                        geoParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
                         break;
                     default:
                         break;
@@ -181,7 +181,7 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
     delete map['idService'];
     delete map['idGroup'];
 
-    var result = await mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, process.env.idSite, process.env.idService, process.env.idGroup, config.entityNameField);
+    var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, process.env.idSite, process.env.idService, process.env.idGroup, config.entityNameField);
 
     log.debug("Row: " + rowNumber + " - Object mapped correctly ");
     await mappedHandler(rowNumber, result, schema);
@@ -191,7 +191,7 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
 const processMappedObject = async (objNumber, obj, modelSchema) => {
 
     //console.debug(config)
-    await config.writers.forEach(async (writer) => {
+    config.writers.forEach(async (writer) => {
 
         switch (writer) {
 

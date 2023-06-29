@@ -120,13 +120,13 @@ module.exports = {
         }
 
         if (source.data) {
-            await fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
+            fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
                 if (err) throw err;
                 log.debug('File sourceData temp is created successfully.');
             })
         }
         if (dataModel.data) {
-            await fs.writeFile(
+            fs.writeFile(
                 //dataModel.schema_id || 
                 "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
                     if (err) throw err;

@@ -48,7 +48,7 @@ async function sourceDataToRowStream(sourceData, map, schema, rowHandler, mapped
 
     // The Source Data is the file path
     else if (sourceData.ext)
-        await fileToRowStream(await fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
+        await fileToRowStream(fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
     else
         log.error("No valid Source Data was provided");
 
@@ -60,7 +60,7 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
     var rowStart = Number(process.env.rowStart);
     var rowEnd = Number(process.env.rowEnd);
 
-    await request(url).pipe(JSONStream.parse('.*'))
+    request(url).pipe(JSONStream.parse('.*'))
         .on('error', function (err) {
             console.error(err);
         })
@@ -84,14 +84,14 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
         })
         .on('end', async function () {
             try {
-                
+
                 await finalizeProcess();
                 log.debug("urlToRowStream: request(url).pipe(geo.parse()).on(end)");
                 await utils.printFinalReportAndSendResponse(log);
                 await utils.printFinalReportAndSendResponse(report);
             } catch (error) {
                 log.error("Error While finalizing the streaming process: ");
-                console.log(error)
+                console.log(error);
             }
 
         });
