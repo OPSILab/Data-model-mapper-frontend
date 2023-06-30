@@ -99,14 +99,12 @@ module.exports = {
         if (adapterID) {
             try {
                 map = await Map.findOne({ id: adapterID })//type change
-                //console.debug(await Map.find())
             }
             catch (error) {
                 console.log(error)
                 process.res.sendStatus(404)
             }
             dataModel = {}
-            console.debug(map)
             dataModel.data = map.dataModel
             if (dataModel.data.schema && !dataModel.data.$schema) dataModel.data.$schema = dataModel.data.schema
             dataModel.schema_id =
@@ -120,8 +118,6 @@ module.exports = {
             source.data = source.download.data
         }
 
-        console.debug(source)
-        console.debug(source.data)
         if (source.data) {
             fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
                 if (err) throw err;

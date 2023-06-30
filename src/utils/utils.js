@@ -33,20 +33,11 @@ function sleep(ms) {
 }
 
 function ngsi(){
-    console.debug(apiOutput.NGSI_entity == undefined)
-    console.debug("&&")
-    console.debug(global.process.env.NGSI_entity)
-    console.debug("||")
-    console.debug(apiOutput.NGSI_entity)
-    //debug
     return (((apiOutput.NGSI_entity == undefined) && global.process.env.NGSI_entity || apiOutput.NGSI_entity).toString() === 'true')
 }
 
 
 const cleanString = (string) => {
-    console.debug("REGEX")
-    console.debug(config.regexClean[ngsi()? "default" : "custom"])
-    //debug
     var result = '';
     if (typeof string === 'string')
         result = string.replace(config.regexClean[ngsi()? "default" : "custom"], ' ');
@@ -210,8 +201,6 @@ function spaceCleaner(object) {
 
 
 const bodyMapper = (body) => {
-
-    console.debug(body)
     
     let sourceData = {
         name: body.sourceDataIn,
@@ -220,8 +209,6 @@ const bodyMapper = (body) => {
         url: body.sourceDataURL,
         data: body.sourceData
     }
-
-    console.debug(sourceData.data)
 
     let map
     if (body.mapPathIn)
