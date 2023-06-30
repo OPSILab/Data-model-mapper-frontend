@@ -1,40 +1,14 @@
 const service = require("../services/service.js")
-const config = require('../../../../config')
+const utils = require ("../../../utils/utils.js")
 const log = require('../../../utils/logger').app(module);
 
 module.exports = {
 
     mapData: async (req, res) => {
 
-        console.debug(req.body)
-
         process.res = res;
-
-        if (req.body.getMapperList)
-            res.send(await service.getMaps())
-        else
-            await service.mapData(
-                req.body.sourceDataIn ? { name: req.body.sourceDataIn } :
-                    req.body.sourceDataID && req.body.sourceDataType ? { id: req.body.sourceDataID, type: req.body.sourceDataType } :
-                        req.body.sourceDataURL && req.body.sourceDataType ? { url: req.body.sourceDataURL, type: req.body.sourceDataType } :
-                            req.body.sourceData && req.body.sourceDataType ? { data: req.body.sourceData, type: req.body.sourceDataType } : false,
-
-                req.body.mapPathIn ? config.sourceDataPath + req.body.mapPathIn :
-                    req.body.mapID ? { id: req.body.mapID } :
-                        req.body.mapData ? [req.body.mapData, "mapData"] : false,
-
-                req.body.dataModelIn ? { name: req.body.dataModelIn } :
-                    req.body.dataModelID ? { id: req.body.dataModelID } :
-                        req.body.dataModel ? { data: req.body.dataModel, schema_id: req.body.dataModel.$id } : false,
-
-                req.body.adapterID ? req.body.adapterID : false,
-
-                req.body.csvDelimiter || config.delimiter || ',',
-                req.body.NGSI_entity,
-
-                req.body.config
-            )
-
+        let {sourceData, map, dataModel} = utils.bodyMapper(req.body)
+        await service.mapData(sourceData, map, dataModel, req.body.adapterID, req.body.config)
         if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")
         service.error = null
         log.debug("service.mapData end");

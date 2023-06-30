@@ -32,11 +32,24 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function ngsi(){
+    console.debug(apiOutput.NGSI_entity == undefined)
+    console.debug("&&")
+    console.debug(global.process.env.NGSI_entity)
+    console.debug("||")
+    console.debug(apiOutput.NGSI_entity)
+    //debug
+    return (((apiOutput.NGSI_entity == undefined) && global.process.env.NGSI_entity || apiOutput.NGSI_entity).toString() === 'true')
+}
+
 
 const cleanString = (string) => {
+    console.debug("REGEX")
+    console.debug(config.regexClean[ngsi()? "default" : "custom"])
+    //debug
     var result = '';
     if (typeof string === 'string')
-        result = string.replace(config.regexClean, ' ');
+        result = string.replace(config.regexClean[ngsi()? "default" : "custom"], ' ');
 
     return result;
 
@@ -45,7 +58,7 @@ const cleanString = (string) => {
 const cleanIdString = (string) => {
     var result = '';
     if (typeof string === 'string')
-        result = string.replace(config.regexClean, ' ')
+        result = string.replace(config.regexClean[ngsi()? "default" : "custom"], ' ')
             .replace(/à/g, 'a')
             .replace(/ù/g, 'u')
             .replace(/é|è/g, 'e')
@@ -193,6 +206,49 @@ function spaceCleaner(object) {
         else if (typeof object[sub] === "string" && object[sub][0] == " ") object[sub] = object[sub].substring(1, object[sub].length)
     return object
 }
+
+
+
+const bodyMapper = (body) => {
+
+    console.debug(body)
+    
+    let sourceData = {
+        name: body.sourceDataIn,
+        id: body.sourceDataID,
+        type: body.sourceDataType,
+        url: body.sourceDataURL,
+        data: body.sourceData
+    }
+
+    console.debug(sourceData.data)
+
+    let map
+    if (body.mapPathIn)
+        map = config.sourceDataPath + body.mapPathIn
+    else if (body.mapID)
+        map = {
+            id: body.mapID
+        }
+    else if (body.mapData)
+        map = [
+            body.mapData,
+            "mapData"
+        ]
+
+    let dataModel = {
+        name: body.dataModelIn,
+        id: body.dataModelID,
+        data: body.dataModel,
+        schema_id: body.dataModel?.$id
+    }   
+
+    return {
+        sourceData,
+        map,
+        dataModel
+    }
+};
 
 const sendOutput = () => {
     if (config.deleteEmptySpaceAtBeginning) apiOutput.outputFile = spaceCleaner(apiOutput.outputFile)
@@ -348,5 +404,6 @@ module.exports = {
     isReadableStream: isReadableStream,
     promiseTimeout: promiseTimeout,
     restoreDefaultConfs: restoreDefaultConfs,
-    encode: encode
+    encode: encode,
+    bodyMapper: bodyMapper
 };

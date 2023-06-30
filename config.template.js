@@ -46,7 +46,15 @@ var config = {
     **/
     rowStart: 0,
     rowEnd: Infinity,
-    regexClean: /\n|'|<|>|"|'|=|;|\(|\)/g,
+
+    /************************** Output string clean ***********************
+    * The regex to delete from the output string fields
+    * **/
+
+    regexClean:{
+        custom : /\0/g, // the regex provided from the request in server mode
+        default : /\n|'|<|>|"|'|=|;|\(|\)/g // DO NOT TOUCH this is the default value for ngsi entity 
+    },
 
     /************************* CSV Parser configuration *******************
      * Configuration parameters in case of CSV input

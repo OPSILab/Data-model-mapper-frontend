@@ -14,7 +14,7 @@ module.exports = {
 
     NGSI_entity: undefined,
 
-    getFilename(id) {
+    getFilename (id) {
 
         for (let i = 0; i < id.length; i++) {
             if (id[i] == '/') {
@@ -29,9 +29,14 @@ module.exports = {
         return id;
     },
 
-    async mapData(source, map, dataModel, adapterID, delimiter, entity, configIn) {
+    async mapData(source, map, dataModel, adapterID, configIn, getMapperList) {
+
         const cli = require('../../../cli/setup');
-        if (!source || (!map || !dataModel) && !adapterID) {
+
+        if (getMapperList)
+            process.res.send(await this.getMaps())
+
+        if (!(source.name || (source.type && (source.data || source.url || source.id))) || (!map || !(dataModel.id || dataModel.data || dataModel.name)) && !adapterID) {
             let error = {}
             error.message = "Missing fields"
             error.source = source
@@ -42,54 +47,48 @@ module.exports = {
             return "Missing fields"
         }
 
-        console.debug(config)
+        if (!Array.isArray(source.data) && source.type == "json" || source.type == ".json" || source.type == "JSON" || source.type == ".JSON") source.data = [source.data]
 
-        if (!Array.isArray(source.data)) source.data = [source.data]
-
-        console.debug(source.data)
-
-        if (config.backup){
+        if (config.backup) {
             for (let configKey in config.backup)
                 config[configKey] = config.backup[configKey]
-            config.backup=undefined
+            config.backup = undefined
         }
 
 
         if (configIn)
-            for (let configKey in configIn){
+            for (let configKey in configIn) {
                 if (!config.backup) config.backup = {}
                 config.backup[configKey] = config[configKey]
                 config[configKey] = configIn[configKey]
             }
 
-        console.debug(config)
-
-        process.env.delimiter = delimiter
-        this.NGSI_entity = entity
+        process.env.delimiter = configIn ? configIn.delimiter : config.delimiter || ','
+        if (config.NGSI_entity != undefined) this.NGSI_entity = config.NGSI_entity
 
         if (source.id) {
             try { source.data = await Source.findOne({ id: source.id }) }
-            catch (error) { 
+            catch (error) {
                 console.log(error)
-                process.res.sendStatus(404) 
+                process.res.sendStatus(404)
             }
             source.data = source.data.source || source.data.sourceCSV
         }
 
-        if (map.id) {
+        if (map?.id) {
             try { map = await Map.findOne({ id: map.id }) }
-            catch (error) { 
+            catch (error) {
                 console.log(error)
-                process.res.sendStatus(404) 
+                process.res.sendStatus(404)
             }
             map = [map.map, "mapData"]
         }
 
         if (dataModel.id) {
             try { dataModel.data = await DataModel.findOne({ id: dataModel.id }) }
-            catch (error) { 
+            catch (error) {
                 console.log(error)
-                process.res.sendStatus(404) 
+                process.res.sendStatus(404)
             }
             dataModel.data = dataModel.data.dataModel
             dataModel.schema_id =
@@ -100,12 +99,14 @@ module.exports = {
         if (adapterID) {
             try {
                 map = await Map.findOne({ id: adapterID })//type change
+                //console.debug(await Map.find())
             }
-            catch (error) { 
+            catch (error) {
                 console.log(error)
-                process.res.sendStatus(404) 
+                process.res.sendStatus(404)
             }
             dataModel = {}
+            console.debug(map)
             dataModel.data = map.dataModel
             if (dataModel.data.schema && !dataModel.data.$schema) dataModel.data.$schema = dataModel.data.schema
             dataModel.schema_id =
@@ -119,6 +120,8 @@ module.exports = {
             source.data = source.download.data
         }
 
+        console.debug(source)
+        console.debug(source.data)
         if (source.data) {
             fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
                 if (err) throw err;
@@ -137,7 +140,7 @@ module.exports = {
             source.name ? config.sourceDataPath + source.name : config.sourceDataPath + 'sourceFileTemp.' + source.type,
             map,
             dataModel.name ? dataModel.name : dataModel.schema_id ? this.getFilename(dataModel.schema_id) : "DataModelTemp"
-        );                
+        );
     },
 
     async getSources() {
@@ -184,7 +187,7 @@ module.exports = {
     },
 
     async modifyMap(name, id, map, dataModel) {
-        return await Map.findOneAndReplace({ id: id }, { name: name, id: id, map: map, dataModel:dataModel })
+        return await Map.findOneAndReplace({ id: id }, { name: name, id: id, map: map, dataModel: dataModel })
     },
 
     async modifyDataModel(name, id, dataModel) {

@@ -190,7 +190,6 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
 
 const processMappedObject = async (objNumber, obj, modelSchema) => {
 
-    //console.debug(config)
     config.writers.forEach(async (writer) => {
 
         switch (writer) {
