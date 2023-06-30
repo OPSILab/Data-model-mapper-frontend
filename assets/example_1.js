@@ -1,6 +1,6 @@
 module.exports = {
     test: {
-        "NGSI_entity": true,
+        "config":{"NGSI_entity": true},
         "sourceDataType": "geojson",
         "sourceData": {
             "type": "FeatureCollection",
