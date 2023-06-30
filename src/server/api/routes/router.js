@@ -15,7 +15,7 @@ router.get(encodeURI("/maps"), getMaps)
 router.get(encodeURI("/sources"), getSources)
 router.get(encodeURI("/dataModels"), getDataModels)
 
-router.put(encodeURI("/map/modify"), modifyMap)
+router.put(encodeURI("/map"), modifyMap)
 router.put(encodeURI("/source"), modifySource)
 router.put(encodeURI("/dataModel"), modifyDataModel)
 

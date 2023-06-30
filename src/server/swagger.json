@@ -27,7 +27,7 @@
     "application/json"
   ],
   "paths": {
-    "/mapper": {
+    "/map/transform": {
       "post": {
         "tags": [
           "Mapper"
@@ -56,20 +56,19 @@
         }
       }
     },
-    "/map": {
-      "get": {
+    "/map/register": {
+      "post": {
         "tags": [
-          "Get map by id"
+          "Insert map"
         ],
-        "description": "Get map by id",
+        "description": "Insert map in Mongo DB",
         "parameters": [
           {
-            "name": "id",
-            "in": "query",
-            "description": "Example request for getting a map document by id",
+            "name": "Insert map example 1",
+            "in": "body",
+            "description": "Example request for inserting a json map document",
             "schema": {
-              "type": "string",
-              "example": "map_1"
+              "$ref": "#/definitions/Insert Map"
             }
           }
         ],
@@ -84,19 +83,22 @@
             }
           }
         }
-      },
-      "post": {
+      }
+    },
+    "/map": {
+      "get": {
         "tags": [
-          "Insert map"
+          "Get map by id"
         ],
-        "description": "Insert map in Mongo DB",
+        "description": "Get map by id",
         "parameters": [
           {
-            "name": "Insert map example 1",
-            "in": "body",
-            "description": "Example request for inserting a json map document",
+            "name": "id",
+            "in": "query",
+            "description": "Example request for getting a map document by id",
             "schema": {
-              "$ref": "#/definitions/Insert Map"
+              "type": "string",
+              "example": "map_1"
             }
           }
         ],
@@ -1375,10 +1377,13 @@
           "uniqueItems": true,
           "example": "ServiceModel"
         },
-        "csvDelimiter": {
-          "type": "string",
+        "config": {
+          "type": "object",
           "uniqueItems": true,
-          "example": ";"
+          "example": {
+            "delimiter": ";",
+            "NGSI_entity": false
+          }
         }
       }
     },
@@ -1533,10 +1538,17 @@
           "uniqueItems": true,
           "example": "Unfortunately swagger does not allow me to provide an example of a schema because it will show just the field 'properties' and it will cause errors in runtime. If you want to try this field, you can past here a schema like the ones present in the dataModels folder. If you do that, delete the field 'dataModelIn' in this example. However, this field is intended to be used if the data model is not present in the dataModels folder, instead it is recommended to use the field dataModelIn"
         },
-        "csvDelimiter": {
-          "type": "string",
-          "uniqueItems": true,
-          "example": ";"
+        "config": {
+          "delimiter": {
+            "type": "string",
+            "uniqueItems": true,
+            "example": ";"
+          },
+          "NGSI_entity": {
+            "type": "boolean",
+            "uniqueItems": true,
+            "example": false
+          }
         }
       }
     },
@@ -1661,6 +1673,16 @@
           "id": "urn:ngsi-ld:identifier:SomeRZ:SomeService:CSV:serviceModel-2"
         }
       ]
+    },
+    "config": {
+      "properties": {
+        "delimiter": {
+          "type": "string"
+        },
+        "NGSI_entity": {
+          "type": "boolean"
+        }
+      }
     },
     "Insert Map": {
       "type": "object",
