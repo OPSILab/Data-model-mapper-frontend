@@ -80,14 +80,7 @@ The configuration of the Data Model Mapper consists of the following steps:
 * [**Writers**](#conf-writers) (mandatory)
  
 
-> **`IMPORTANT`** The tool takes its default configuration from the `config.js` file, but following configurations will be overriden if the corresponding parameters are provided as Command Line arguments or in the HTTP request, depending on which running mode was selected for the tool:
-
-* **Input**
-* **ID Pattern**
-* **Rows Range** 
-* **Writers** 
-* **CSV delimiter** 
-* **NGSI_entity** 
+> **`IMPORTANT`** The tool takes its default configuration from the `config.js` file, but some parameters in configuration file (config.js) will be overriden if the corresponding parameters are provided as Command Line arguments or in the HTTP request, depending on which running mode was selected for the tool.
 
 --------------------
 
@@ -182,17 +175,17 @@ In order to use data model mapper as server mode, you must set the mode in confi
 You can send a request at <host-url>:<port>/api/map with these parameters in body :
 
 * **``sourceDataType``**: the type of the source data to convert.
-* **``sourceDataIn``**: the path of the source data to convert. Has priority over **``sourceData``** and **``sourceDataID``**.
+* **``sourceDataIn``**: the path of the source data to convert. Has priority over **``sourceData``**, **``sourceDataID``**, and **``sourceDataURL``**.
+* **``sourceDataURL``**: the URL of the source data to convert. Has priority over **``sourceData``** and **``sourceDataID``**.
 * **``sourceDataID``**: the Mongo document ID of the source data to convert. Has priority over **``sourceData``**.
-* **``sourceData``**: the source data to convert, if no sourceDataIn and sourceDataID are specified in their field.
+* **``sourceData``**: the source data to convert, if no sourceDataIn, no sourceDataID and no sourceDataURL are specified in their field.
 * **``mapPathIn``**: the path of the mapping file. Has priority over **``mapData``** and **``mapDataID``**.
 * **``mapDataID``**: the Mongo document ID of the mapping file. Has priority over **``mapData``**.
 * **``mapData``**: the mapping file, if no mapPathIn and mapDataID are specified in their field.
 * **``dataModelIn``**: the name of the target data model (inside the Data Model folder) to compare with the output for validation. Has priority over  **``dataModel``**
 * **``dataModelID``**: the Mongo document ID of the target data model to compare with the output for validation. Has priority over **``dataModel``**
 * **``dataModel``**: the data model to compare with the output for validation, if no dataModelIn and dataModelID are specified in their field.
-* **``csvDelimiter``**: the csvDelimiter. This field has priority over the  **``csvDelimiter``** field in config.js.
-* **``NGSI_entity``**: the output is not an ngsi model. This field has priority over the  **``NGSI_entity``** field in config.js.
+* **``config``**: an object containing the configuration file's keys-values pairs that need to be overwritten just for the specified request. 
 
 **Example:**
 
@@ -201,8 +194,10 @@ You can send a request at <host-url>:<port>/api/map with these parameters in bod
     "sourceDataIn": "5. ServiceModel.csv", 
     "mapPathIn": "5. ServiceModelMap.json", 
     "dataModelIn": "ServiceModel",
-    "csvDelimiter": ";",
-    "NGSI_entity" : "non_NGSI"
+    "config": {
+      "csvDelimiter": ";",
+      "NGSI_entity" : false
+    }
 }
 ```
 
@@ -349,7 +344,7 @@ Depending on input source type, the tool behaves accordingly:
     **`IMPORTANT`** If the value is an array it should be wrapped with []. There is also the possibility to put objects inside array.
 
 * **JSON**
-        The input file must be already in the "intermediate" form, that is a **JSON Array**, where each object contains key-value fields to be mapped directly to a NGSI entity.
+        The input file (unless it contains just one object) must be already in the "intermediate" form, that is a **JSON Array**, where each object contains key-value fields to be mapped directly to a NGSI entity.
 
 * **GeoJSON**
     The file must be a **Feature Collection**. So, the file must be in the form:
@@ -814,6 +809,8 @@ The ID is be composed by:
 * **`entity-type`**, target Data Model, as specified in [**Input**](#conf-input) Configuration step .
 * **`site`**, **`service`**, **`group`**, whose values was defined in [**ID Pattern**](#conf-id) Configuration step.
 * **`entityName`**: as specified either in the **`entitySourceId`** field of JSON Map or automatically generated.
+
+> **`NOTE`** If config.NGSI_entity is set to false, the output ID will just be the value spcified in the map file of the key corresponding on the config.entitySourceId field with the row index concatenated (e.g. if the entitySourceId is "ID" and "ID" in the map file is set to "static:ID : ", the output ID field would be "ID :1" for the first row, "ID :2" for the second row...)
 
 ---------------
 
