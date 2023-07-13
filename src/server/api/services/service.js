@@ -14,7 +14,7 @@ module.exports = {
 
     NGSI_entity: undefined,
 
-    getFilename (id) {
+    getFilename(id) {
 
         for (let i = 0; i < id.length; i++) {
             if (id[i] == '/') {
@@ -76,11 +76,20 @@ module.exports = {
         }
 
         if (map?.id) {
-            try { map = await Map.findOne({ id: map.id }) }
+
+            try {
+                map = await Map.findOne({ id: map.id })
+            }
             catch (error) {
                 console.log(error)
                 process.res.sendStatus(404)
             }
+
+            if (!map.dataModel.$schema && map.dataModel.schema)
+                map.dataModel.$schema = map.dataModel.schema
+            if (!map.dataModel.$id && map.dataModel.id)
+                map.dataModel.$id = map.dataModel.id
+
             map = [map.map, "mapData"]
         }
 
@@ -99,18 +108,24 @@ module.exports = {
         if (adapterID) {
             try {
                 map = await Map.findOne({ id: adapterID })//type change
+
+                dataModel = {}
+                dataModel.data = map.dataModel
+
+                if (!dataModel.data.$schema && dataModel.data.schema)
+                    dataModel.data.$schema = dataModel.data.schema
+                if (!dataModel.data.$id && dataModel.data.id)
+                    dataModel.data.$id = dataModel.data.id
+
+                dataModel.schema_id =
+                    //dataModel.data.$id || 
+                    config.modelSchemaFolder + '/DataModelTemp.json'
+                map = [map.map, "mapData"]//type change
             }
             catch (error) {
                 console.log(error)
                 process.res.sendStatus(404)
             }
-            dataModel = {}
-            dataModel.data = map.dataModel
-            if (dataModel.data.schema && !dataModel.data.$schema) dataModel.data.$schema = dataModel.data.schema
-            dataModel.schema_id =
-                //dataModel.data.$id || 
-                config.modelSchemaFolder + '/DataModelTemp.json'
-            map = [map.map, "mapData"]//type change
         }
 
         if (source.url) {
@@ -183,6 +198,15 @@ module.exports = {
     },
 
     async modifyMap(name, id, map, dataModel) {
+
+        if (dataModel.$schema)
+            dataModel.schema = dataModel.$schema
+        if (dataModel.$id)
+
+            dataModel.id = dataModel.$id
+
+        dataModel.$schema = dataModel.$id = undefined
+
         return await Map.findOneAndReplace({ id: id }, { name: name, id: id, map: map, dataModel: dataModel })
     },
 

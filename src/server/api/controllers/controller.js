@@ -6,10 +6,13 @@ module.exports = {
 
     mapData: async (req, res) => {
 
+        console.debug(req.body)
+
         process.res = res;
         let {sourceData, map, dataModel} = utils.bodyMapper(req.body)
         await service.mapData(sourceData, map, dataModel, req.body.adapterID, req.body.config)
-        if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")
+        try {if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")}
+        catch(error){console.error(error)}
         service.error = null
         log.debug("service.mapData end");
     },
@@ -68,6 +71,7 @@ module.exports = {
     },
 
     modifyMap: async (req, res) => {
+        console.debug(req.body)
         process.res = res;
         res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map, req.body.dataModel))
     },

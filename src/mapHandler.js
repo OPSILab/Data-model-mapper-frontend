@@ -33,6 +33,7 @@ const service = require("./server/api/services/service")
 const loadMap = (mapData) => {
 
     if (typeof mapData === 'object' && mapData.absolute) {
+        console.debug(mapData)
         log.info('Loading Map File');
         return new Promise(function (resolve, reject) {
             resolve(JSON.parse(fs.readFileSync(mapData.absolute, 'utf8')));
