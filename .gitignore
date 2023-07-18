@@ -1,41 +1,43 @@
 # Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-bld/
-[Bb]in/
-[Oo]bj/
+backend/[Dd]ebug/
+backend/[Dd]ebugPublic/
+backend/[Rr]elease/
+backend/[Rr]eleases/
+backend/x64/
+backend/x86/
+backend/bld/
+backend/[Bb]in/
+backend/[Oo]bj/
 
 # Visual Studio 2015 cache/options directory
-.vs/
+backend/.vs/
 
 # Specific
-node_modules/
-reports/
-logs/
-config.js
-result.json
-dataModels/DataModelTemp.json
-testing/
-input/
-output/
+backend/node_modules/
+frontend/node_modules/
+backend/reports/
+backend/logs/
+backend/config.js
+backend/result.json
+backend/dataModels/DataModelTemp.json
+backend/testing/
+backend/input/
+backend/output/
 
 # History
-.history/
-Funzionalità.docx
-Funzionalità.pdf
-dataModels/test_nested_datamodel.json
-debug.txt
-dataModels/schema.json
-dataModels/schema1.json
-dataModels/schema2.json
-.vscode/
-dataModels/nonNgsi.json
-docs/tests/NonNGSI/NonNGSI - Copia.bat
-mapper.bat
-sourceFileTemp.csv
-sourceFileTemp.json
-sourceFileTemp..json
+backend/.history/
+backend/Funzionalità.docx
+backend/Funzionalità.pdf
+backend/dataModels/test_nested_datamodel.json
+backend/debug.txt
+backend/dataModels/schema.json
+backend/dataModels/schema1.json
+backend/dataModels/schema2.json
+backend/.vscode/
+backend/dataModels/nonNgsi.json
+backend/docs/tests/NonNGSI/NonNGSI - Copia.bat
+backend/mapper.bat
+backend/sourceFileTemp.csv
+backend/sourceFileTemp.json
+backend/sourceFileTemp..json
+backend/docs/tests/.history/
