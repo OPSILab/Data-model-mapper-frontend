@@ -126,7 +126,7 @@ export class AccountComponent implements OnInit {
 
   onSubmitReportProblem = (): void => {
           
-    var mailText = "mailto:"+this.config.system.mailTo+"?subject=[Service Catalogue - Report problem]"+this.reportProblemForm.get('reportTopicText').value+"&body="+this.reportProblemForm.get('reportProblemText').value; 
+    var mailText = "mailto:"+this.config.system.mailTo+"?subject=[Data model mapper - Report problem]"+this.reportProblemForm.get('reportTopicText').value+"&body="+this.reportProblemForm.get('reportProblemText').value; 
     console.log(mailText);
     this.windowRef.close();
     window.location.href = mailText;

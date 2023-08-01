@@ -19,7 +19,7 @@ import { AppConfig } from '../../../model/appConfig';
 export class HeaderComponent implements OnInit, OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
   userPictureOnly = false;
- // user: UserClaims;
+  user;
   private config: AppConfig;
 
   themes = [
