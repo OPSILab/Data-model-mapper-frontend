@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { NbAccessChecker } from '@nebular/security';
+//import { NbAccessChecker } from '@nebular/security';
 import { NbMenuItem } from '@nebular/theme';
 
 import { TranslateService } from '@ngx-translate/core';
@@ -24,9 +24,10 @@ export class PagesComponent implements OnInit, OnDestroy {
   private hideManageMenu: boolean;
   private unsubscribe: Subject<void> = new Subject();
 
-  constructor(private translateService: TranslateService, private cdr: ChangeDetectorRef, private accessChecker: NbAccessChecker) { }
+  constructor(private translateService: TranslateService, private cdr: ChangeDetectorRef){}//, private accessChecker: NbAccessChecker) { }
 
   ngOnInit(): void {
+    /*
     this.accessChecker
       .isGranted('view', 'services')
       .pipe(take(1))
@@ -46,7 +47,7 @@ export class PagesComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe((granted: boolean) => {
         this.hideManageMenu = !granted;
-      });
+      });*/
 
 
     const MENU_ITEMS: NbMenuItem[] = [
