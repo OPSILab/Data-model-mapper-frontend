@@ -6,7 +6,7 @@
   "system": {
     "sdkUrl": "http://localhost:8085/cape-service-sdk",
     "checkConsentAtOperator": false,
-    "serviceEditorUrl": "http://localhost:81/data-model-mapper-gui",
+    "serviceEditorUrl": "http://localhost:12345/data-model-mapper-gui",
     "editorSchemaPath": "/assets/data/service-schema/",
     "editorSchemaName": "service-model.json",
     "auth": {
@@ -18,7 +18,7 @@
     },
     "mailTo":"support@across.eu",
     "docsUrl":"https://service-catalogue.readthedocs.io/en/latest/",
-    "dataMapEnumUrl":"http://localhost:81/assets/data/examples/dataMapEnum.json",
+    "dataMapEnumUrl":"http://localhost:12345/assets/data/examples/dataMapEnum.json",
     "detailedErrors" : true,
     "country" : "Italy"
   },
