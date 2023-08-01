@@ -1,5 +1,5 @@
 {
-  "name": "service-catalogue-manager",
+  "name": "data-model-mapper-gui",
   "version": "2.1.0",
   "license": "AGPLv3",
   "scripts": {
@@ -11,7 +11,7 @@
     "test": "ng test",
     "test:coverage": "rimraf coverage && npm run test -- --code-coverage",
     "lint": "ng lint",
-    "lint:fix": "ng lint service-catalogue-manager --fix",
+    "lint:fix": "ng lint data-model-mapper-gui --fix",
     "lint:styles": "stylelint ./src/**/*.scss",
     "lint:ci": "npm run lint && npm run lint:styles",
     "format": "prettier --write \"**/*.{js,json,jsx,ts,tsx}\"",

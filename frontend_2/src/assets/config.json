@@ -6,7 +6,7 @@
   "system": {
     "sdkUrl": "http://localhost:8085/cape-service-sdk",
     "checkConsentAtOperator": false,
-    "serviceEditorUrl": "http://localhost:81/service-catalogue-manager",
+    "serviceEditorUrl": "http://localhost:81/data-model-mapper-gui",
     "editorSchemaPath": "/assets/data/service-schema/",
     "editorSchemaName": "service-model.json",
     "auth": {

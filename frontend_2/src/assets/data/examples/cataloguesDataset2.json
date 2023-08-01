@@ -38,7 +38,7 @@
   "country": "ITA_CTA-Catania",
   "category": "Region",
   "description": "Catalogo regionale edited",
-  "homePage": "http://localhost:81/service-catalogue-manager/pages/services",
+  "homePage": "http://localhost:81/data-model-mapper-gui/pages/services",
   "apiEndpoint": "http://localhost:8085/service-catalogue",
   "type": "Service Catalogue",
   "active": false,

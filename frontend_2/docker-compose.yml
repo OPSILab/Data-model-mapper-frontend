@@ -1,11 +1,11 @@
 version: "3.8"
 services:
-  service-catalogue-manager:
-    image: capesuite/service-catalogue-manager:latest
+  data-model-mapper-gui:
+    image: capesuite/data-model-mapper-gui:latest
     build:
       context: .
       args:
-        BASE_HREF: /service-catalogue-manager/
+        BASE_HREF: /data-model-mapper-gui/
     ports:
       - "81:80"
     volumes:
@@ -17,7 +17,7 @@ services:
 
 networks:
  cape-network:
-   name: service-catalogue-manager-network
+   name: data-model-mapper-gui-network
    driver: bridge
    driver_opts:
      com.docker.network.driver.mtu: 1400
