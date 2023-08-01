@@ -1,0 +1,90 @@
+<button nbButton ghost shape="rectangle" size="small" status="primary" (click)=showAdapterInfoModal()>
+  <i class="material-icons">info</i>
+</button>
+
+<ng-template #availableAdapterInfoModal let-data let-ref="dialogRef">
+  <nb-card style="width: 60vw; height: auto; max-width: 95vw; max-height: 95vh">
+    <nb-card-header class="d-flex justify-content-between">
+      <h5 class="h5">{{ data.modalHeader }}</h5>
+      <button nbButton ghost shape="rectangle" size="tiny" (click)="ref.close()">
+        <i class="material-icons">close</i>
+      </button>
+    </nb-card-header>
+    <nb-card-body>
+      <div class="row justify-content-around align-items-sm-center">
+        <div class="col-sm py-2">
+          <img
+            style="width: 140px; height: 100px"
+            src="http://localhost:81/assets/images/app/across.png"
+            alt="{{ data.modalHeader }}"
+            onerror="this.onerror=null;this.src = 'favicon.png'"
+          />
+        </div>
+        <div class="col-sm">
+          {{value?.description ? value?.description : ""}}
+        </div>
+      </div>
+      <br>
+      <div class="row justify-content-center">
+        <div class="col-sm py-1">
+          <div class="accent">
+            <i><b>{{ 'general.adapters.name' | translate }}:</b> {{ value.name}}</i>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-sm py-1">
+          <div class="accent">
+            <i><b>{{ 'general.adapters.description' | translate }}:</b> {{ value.description }}</i>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-sm py-1">
+          <div class="accent">
+            <i><b>{{ 'general.adapters.status' | translate }}:</b> {{ value.status }}</i>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-sm py-1">
+          <div class="accent">
+            <i><b>{{ 'general.adapters.adapterId' | translate }}:</b> {{ data.adapterId }}</i>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-sm py-1">
+          <div class="accent">
+            <i><b>{{ 'general.adapters.type' | translate }}:</b> {{ value.type }}</i>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-sm py-1">
+          <div class="accent">
+            <i><b>{{ 'general.adapters.url' | translate }}:</b> <a href="{{ value.url }}" target="_blank"><nb-icon
+                  icon="external-link-outline"></nb-icon></a></i>
+          </div>
+        </div>
+      </div>
+      <nb-accordion>
+        <nb-accordion-item expanded=false>
+          <nb-accordion-item-header>
+            {{ 'general.adapters.logs' | translate }}
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
+            <ng2-smart-table [settings]="settings" [source]="logs"> </ng2-smart-table>
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+      </nb-accordion>
+    </nb-card-body>
+    <nb-card-footer>
+      <div class="row justify-content-center">
+        <button nbButton class="mx-4" ghost shape="rectangle" size="large" status="primary" (click)="ref.close()">
+          {{ 'general.close' | translate }}
+        </button>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

@@ -1,0 +1,44 @@
+<nb-card class="aci">
+  <nb-card-header class="d-flex align-content-center justify-content-between">
+    <div> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </div>
+    <h3>{{ 'general.catalogues.dataset.add' | translate }}</h3>
+    <button nbButton appearance="outline" shape="semi-round" size="tiny" status="info" (click)="this.getRef().close()">
+      <i class="material-icons">close</i>
+    </button>
+  </nb-card-header>
+  <nb-card-body class="m-2 p-4">
+    <h6>
+      <form>
+        <label for="type">{{ 'general.catalogues.dataset.type' | translate }}</label>
+        <br>
+        <nb-select fullWidth [placeholder]="placeholders.type" [(ngModel)]="type" [ngModelOptions]="{standalone: true}">
+          <nb-option-group title="type">
+            <nb-option value="Service Catalogue">Service Catalogue</nb-option>
+            <nb-option value="Json">Json</nb-option>
+          </nb-option-group>
+        </nb-select>
+        <br>
+        <br>
+        <label for="name" fullWidth>{{ 'general.catalogues.dataset.name' | translate }}</label>
+        <br>
+        <input [(ngModel)]="name" nbInput type="text" fullWidth [placeholder]="placeholders.name"
+          [ngModelOptions]="{standalone: true}" />
+        <br>
+        <br>
+        <label for="URL">{{ 'general.catalogues.dataset.URL' | translate }}</label>
+        <br>
+        <input type="text" nbInput fullWidth fieldSize="small" [placeholder]="placeholders.URL" [(ngModel)]="URL"
+          [ngModelOptions]="{standalone: true}">
+        <br>
+        <br>
+        <h3>
+          <button nbButton appearance="outline" shape="semi-round" size="medium" status="info"
+            (click)="confirm()">
+            <i class="mx-1">{{ 'general.catalogues.dataset.confirm' | translate }}</i>
+          </button>
+          &nbsp;
+        </h3>
+      </form>
+    </h6>
+  </nb-card-body>
+</nb-card>

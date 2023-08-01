@@ -1,0 +1,114 @@
+<nb-flip-card [showToggleButton]="false" [flipped]="flipped">
+  <nb-card-front>
+    <nb-card>
+      <nb-card-header class="h3">
+        {{ 'general.editor.title' | translate }}{{ serviceName ? ':' : '' }}&nbsp;{{ serviceName }} </nb-card-header>
+
+      <nb-card-body *ngIf="!readOnly" class="row justify-content-center">
+        <ng-container *ngIf="!isNew; then updateButton; else createButton"> </ng-container>
+
+        <ng-template #createButton>
+          <button nbButton class="mx-4" shape="rectangle" size="medium" status="primary"
+            (click)="openSaveToRegistryDialog()" [disabled]="readSessionStorageValue('isTouched') !== 'true'">
+            {{ 'general.save' | translate }}
+            <i class="mx-1 material-icons">save</i>
+          </button>
+        </ng-template>
+        <ng-template #updateButton>
+          <button nbButton class="mx-4" shape="rectangle" size="medium" status="primary"
+            (click)="openUpdateToRegistryDialog()" [disabled]="readSessionStorageValue('isTouched') !== 'true'">
+            {{ 'general.editor.update' | translate }}
+            <i class="mx-1 material-icons">save</i>
+          </button>
+        </ng-template>
+        <button nbButton class="mx-4" shape="rectangle" size="medium" status="warning" (click)="saveAsFile()"
+          [disabled]="isNew || readSessionStorageValue('isTouched') == 'true'">
+          {{ 'general.editor.export' | translate }}
+          <i class="mx-1 fas fa-file-export fa-lg"></i>
+        </button>
+        <button nbButton class="mx-4" shape="rectangle" size="medium" status="danger" (click)="importAsFile()"
+          [disabled]="!isNew">
+          {{ 'general.editor.import' | translate }}
+          <i class="mx-1 fas fa-file-import fa-lg"></i>
+        </button>
+      </nb-card-body>
+      <nb-card-footer [nbSpinner]="loading" nbSpinnerStatus="primary">
+        <div id="editor"></div>
+      </nb-card-footer>
+      <nb-icon icon="question-mark-circle" title="Guide" pack="eva" class="flip-icon" (click)="toggleView()"></nb-icon>
+    </nb-card>
+  </nb-card-front>
+  <nb-card-back>
+    <nb-card>
+      <nb-card-body>
+        <h2 id="introduction">Service Catalogue Model</h2>
+
+        <p>In order to support a uniform and harmonized machine-readable
+          description of public and private services a service model has been
+          defined to collect all information from the three point of view
+          (Informational, Service invocation, Data Governance&amp;Ownership) and
+          managed in the Service Catalogue. The idea is to define this model by
+          including and extending existing common models to describe each view.</p>
+        <br>
+        <img src="https://opsilab.github.io/Service-Catalogue/docs/model/service-model.png" alt="Service Catalogue"
+          width="50%">
+
+        <br>
+        <br>
+
+        <p>See <a href="https://service-catalogue.readthedocs.io/en/latest/model/service-model/" target="_blank">Service
+            Catalogue documentation</a> for further info </p>
+
+
+        <!--<iframe src="https://opsilab.github.io/Service-Catalogue/docs/model/service-model.html" title="Service Catalogue Model guide" scrolling="yes" frameborder="0"
+        style="width: 100%;"></iframe>-->
+      </nb-card-body>
+      <nb-icon icon="chevron-left-outline" title="Back" pack="eva" class="flip-icon" (click)="toggleView()"></nb-icon>
+    </nb-card>
+  </nb-card-back>
+</nb-flip-card>
+
+<!-- Save Service modal ng-template -->
+<ng-template #confirmSaveDialog let-data let-ref="dialogRef">
+  <nb-card status="primary">
+    <nb-card-body class="p-5">{{ 'general.editor.confirm_save' | translate: { name: data.name } }}</nb-card-body>
+    <nb-card-footer class="d-flex justify-content-center">
+      <button nbButton status="primary" size="small" (click)="data.callback()">
+        {{ 'general.save' | translate }}
+      </button>
+      <button nbButton class="ml-2" ghost shape="rectangle" status="primary" (click)="ref.close()">
+        {{ 'general.cancel' | translate }}
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<!-- Update Service modal ng-template -->
+<ng-template #confirmUpdateDialog let-data let-ref="dialogRef">
+  <nb-card status="primary">
+    <nb-card-body class="p-5">{{ 'general.editor.confirm_update' | translate: { name: data.name } }}</nb-card-body>
+    <nb-card-footer class="d-flex justify-content-center">
+      <button nbButton status="primary" size="small" (click)="data.callback()">
+        {{ 'general.editor.update' | translate }}
+      </button>
+      <button nbButton class="ml-2" ghost shape="rectangle" status="primary" (click)="ref.close()">
+        {{ 'general.cancel' | translate }}
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<!-- Existing Service modal - Ask overwrite ng-template -->
+<ng-template #confirmOverwriteDialog let-data let-ref="dialogRef">
+  <nb-card status="primary">
+    <nb-card-body class="p-5">{{ 'general.editor.confirm_overwrite' | translate: { name: data.name } }}</nb-card-body>
+    <nb-card-footer class="d-flex justify-content-center">
+      <button nbButton status="primary" size="small" (click)="data.callback()">
+        {{ 'general.editor.overwrite' | translate }}
+      </button>
+      <button nbButton class="ml-2" ghost shape="rectangle" status="primary" (click)="ref.close()">
+        {{ 'general.cancel' | translate }}
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

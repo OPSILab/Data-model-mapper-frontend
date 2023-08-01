@@ -1,0 +1,219 @@
+<button nbButton outline aria-label="Name" status="basic" [nbContextMenu]="actions"
+  nbContextMenuTag="service-context-menu{{ value.adapterId }}">
+  <nb-icon icon="settings-2"></nb-icon>
+</button>
+<!-- Register Adapter modal ng-template -->
+<ng-template #confirmRegisterDialog let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header class="d-flex justify-content-between">
+      <h5>{{ 'general.adapters.register_adapter' | translate: { adapterName: value.name } }}</h5>
+      <button nbButton ghost shape="rectangle" size="tiny" (click)="ref.close()">
+        <i class="material-icons">close</i>
+      </button>
+    </nb-card-header>
+    <nb-card-body class="p-5 text-center"
+      [innerHTML]="'general.adapters.register_adapter_message' | translate: { adapterName: value.name }"></nb-card-body>
+    <nb-card-footer class="d-flex justify-content-center">
+      <button nbButton status="primary" size="small" (click)="ref.close(true)">
+        {{ 'general.adapters.register' | translate }}
+      </button>
+      <button nbButton class="ml-2" ghost shape="rectangle" status="primary" (click)="ref.close()">
+        {{ 'general.close' | translate }}
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+<!-- DeRegister Adapter modal ng-template -->
+<ng-template #confirmDeRegisterDialog let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header class="d-flex justify-content-between">
+      <h5>{{'general.adapters.deregister_adapter' | translate: {adapterName: value.name} }}</h5>
+      <button nbButton ghost shape="rectangle" size="tiny" (click)="ref.close()">
+        <i class="material-icons">close</i>
+      </button>
+    </nb-card-header>
+    <nb-card-body class="p-5 text-center"
+      [innerHTML]="'general.adapters.deregister_adapter_message' | translate: { adapterName: value.name }"></nb-card-body>
+    <nb-card-footer class="d-flex justify-content-center">
+      <button nbButton status="primary" size="small" (click)="ref.close(true)">
+        {{ 'general.adapters.deregister' | translate }}
+      </button>
+      <button nbButton class="ml-2" ghost shape="rectangle" status="primary" (click)="ref.close()">
+        {{ 'general.close' | translate }}
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+<!-- Delete Adapter modal ng-template -->
+<ng-template #confirmDeleteDialog let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header class="d-flex justify-content-between">
+      <h5>{{ 'general.adapters.delete_adapter' | translate: {adapterName: value.name} }}</h5>
+      <button nbButton ghost shape="rectangle" size="tiny" (click)="ref.close()">
+        <i class="material-icons">close</i>
+      </button>
+    </nb-card-header>
+    <nb-card-body class="p-5 text-center"
+      [innerHTML]="'general.adapters.delete_adapter_message' | translate: {adapterName: value.name}"></nb-card-body>
+    <nb-card-footer class="d-flex justify-content-center">
+      <button nbButton status="danger" size="small" (click)="data.callback()">
+        {{ 'general.editor.delete' | translate }}
+      </button>
+      <button nbButton class="ml-2" ghost shape="rectangle" status="primary" (click)="ref.close()">
+        {{ 'general.cancel' | translate }}
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+<ng-template #editAdapter let-data let-ref="dialogRef">
+  <style>
+    input {
+      text-align: center;
+      width: 100%;
+    }
+
+    nb-card {
+      text-align: center;
+      min-width: 40rem;
+    }
+
+    nb-card-header {
+      text-align: center;
+    }
+
+    textarea {
+      text-align: center;
+    }
+
+    h3 {
+      text-align: center;
+    }
+
+    h6 {
+      text-align: left;
+      font-weight: normal;
+    }
+
+    input[type="text"] {
+      font-weight: normal;
+      text-align: left;
+    }
+
+    textarea {
+      font-weight: normal;
+      text-align: left;
+    }
+
+    label {
+      text-align: left;
+    }
+
+    .btn-success {
+      margin-left: 1rem;
+    }
+  </style>
+  <nb-card class="aci">
+    <nb-card-header class="d-flex align-content-center justify-content-between">
+      <div> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </div>
+      <h3>{{ 'general.adapters.edit' | translate }}</h3>
+      <button nbButton appearance="outline" shape="semi-round" size="tiny" status="info" (click)="ref.close()">
+        <i class="material-icons">close</i>
+      </button>
+    </nb-card-header>
+    <nb-card-body class="m-2 p-4">
+      <h6>
+        <form>
+          <label for="adapterId" fullWidth>{{ 'general.adapters.adapterId' | translate }}</label>
+          <br>
+          <input [ngModel]="adapterId" (ngModelChange)="onAdapterIDChange($event)" (click)="loadMappers()" nbInput
+            type="text" fullWidth [placeholder] = placeholders.adapterId [nbAutocomplete]="IDautoComplete"
+            [ngModelOptions]="{standalone: true}" disabled/>
+          <nb-autocomplete #IDautoComplete>
+            <nb-option *ngFor="let option of filteredIDOptions$ | async" [value]="option">
+              {{ option }}
+            </nb-option>
+          </nb-autocomplete>
+          <br>
+          <br>
+          <label for="name" fullWidth>{{ 'general.adapters.name' | translate }}</label>
+          <br>
+          <input [ngModel]="name" (ngModelChange)="onNameChange($event)" (click)="loadMappers()" nbInput type="text"
+              fullWidth [placeholder]="translate.instant('general.adapters.name')" [nbAutocomplete]="nameAutoComplete" [ngModelOptions]="{standalone: true}"/>
+          <nb-autocomplete #nameAutoComplete>
+            <nb-option *ngFor="let n of filteredNameOptions$ | async" [value]="n">
+              {{ n }}
+            </nb-option>
+          </nb-autocomplete>
+          <br><br>
+          <label for="status">{{ 'general.adapters.status' | translate }}</label>
+          <br>
+          <input type="text" nbInput fullWidth fieldSize="small" [placeholder]="placeholders.status" [(ngModel)]="status"
+            [ngModelOptions]="{standalone: true}">
+          <br>
+          <br>
+          <label for="url">{{ 'general.adapters.url' | translate }}</label>
+          <br>
+          <input type="text" nbInput fullWidth fieldSize="small" [placeholder]="placeholders.url" [(ngModel)]="url"
+            [ngModelOptions]="{standalone: true}">
+          <!--
+          <input type="text" *ngIf="!loaded" nbInput fullWidth fieldSize="small" placeholder="url" [(ngModel)]="url"
+            [ngModelOptions]="{standalone: true}">
+          <input type="text" *ngIf="loaded" nbInput fullWidth fieldSize="small" placeholder="url" [(ngModel)]="url"
+            [ngModelOptions]="{standalone: true}" disabled>
+          -->
+          <br><br>
+          <label for="sourceDataType">{{ 'general.adapters.source_data_type' | translate }}</label>
+          <br>
+          <nb-select fullWidth [placeholder]="placeholders.sourceDataType" [(ngModel)]="sourceDataType"
+              [ngModelOptions]="{standalone: true}">
+              <nb-option-group title="context">
+                <nb-option value="csv">CSV</nb-option>
+                <nb-option value="json">JSON</nb-option>
+              </nb-option-group>
+            </nb-select>
+          <br><br>
+          <label for="description">{{ 'general.adapters.description' | translate }}</label>
+          <br>
+          <textarea nbInput fullWidth fieldSize="medium" [placeholder]="placeholders.description" [(ngModel)]="description"
+            [ngModelOptions]="{standalone: true}"></textarea>
+          <br><br>
+          <label for="type">{{ 'general.adapters.type' | translate }}</label>
+          <br>
+          <nb-select fullWidth [placeholder]="placeholders.type" [(ngModel)]="type" [ngModelOptions]="{standalone: true}">
+            <nb-option-group title="type">
+              <nb-option value="MODEL">Model</nb-option>
+              <nb-option value="DATA">Data</nb-option>
+            </nb-option-group>
+          </nb-select>
+          <br><br>
+          <label *ngIf="type=='MODEL'" for="context">{{ 'general.adapters.context' | translate
+            }}</label>
+          <br *ngIf="type=='MODEL'">
+          <nb-select *ngIf="type=='MODEL'" fullWidth [placeholder]="placeholders.context" [(ngModel)]="context"
+            [ngModelOptions]="{standalone: true}">
+            <nb-option-group title="context">
+              <nb-option value="IMPORT">Import</nb-option>
+              <nb-option value="EXPORT">Export</nb-option>
+            </nb-option-group>
+          </nb-select>
+          <br>
+          <br>
+          <h3>
+            <!--<p *ngIf="validURL==false" style=" text-align : center; font-size: 14px; color: red ">Invalid URL or unable to connect to load mapper list <br><br></p>-->
+            <button nbButton appearance="outline" shape="semi-round"
+              size="medium" status="info" (click)="onEdit(); ref.close()">
+              <i class="mx-1">{{ 'general.adapters.confirm' | translate }}</i>
+            </button>
+            &nbsp;
+            <!--
+            <button *ngIf="(type!='MODEL'||context!='IMPORT') && !loaded" nbButton appearance="outline" shape="semi-round"
+              size="medium" status="info" (click)="loadMappers()">
+              <i class="mx-1">{{ 'general.adapters.load_mapper_list' | translate }}</i>
+            </button>
+            -->
+          </h3>
+        </form>
+      </h6>
+    </nb-card-body>
+  </nb-card>
+</ng-template>

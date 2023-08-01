@@ -1,0 +1,38 @@
+<nb-card>
+  <nb-card-header class="h3">
+    {{ 'general.menu.availableservices' | translate }}
+  </nb-card-header>
+
+  <nb-card-body>
+    <div class="g-0 row mb-2">
+      <div class="col-6 col-md-6 text-left">
+        <nb-checkbox (checkedChange)="toggle($event)">
+          Remote catalogue
+        </nb-checkbox>
+        <br><br>
+        <label *ngIf="remote" style="width:330px">&nbsp;{{this.getSelectLabel()}}</label>
+        <br *ngIf="remote">
+        <nb-select *ngIf="remote" style="width:500px"
+          placeholder="{{ 'general.dashboard.federatedCatalogues' | translate }}" [(ngModel)]="selectedCatalogueName"
+          [ngModelOptions]="{standalone: true}">
+          <nb-option-group title="{{'general.services.local' | translate}}">
+            <nb-option value="{{'general.services.local' | translate}}">{{'general.services.local' |
+              translate}}</nb-option>
+          </nb-option-group>
+          <nb-option-group title="{{ 'general.dashboard.federatedCatalogues' | translate }}">
+            <nb-option *ngFor="let catalogue of getActiveCatalogues()"
+              value={{catalogue.name}}>{{catalogue.name}}</nb-option>
+          </nb-option-group>
+        </nb-select>
+
+        <label *ngIf="remote">&nbsp;&nbsp;{{this.getCountryLabel()}}:</label>
+        <label *ngIf="remote"> &nbsp; &nbsp; {{this.selectedCatalogueCountry}}</label>
+        <catalogue-info *ngIf="remote" [value]=selectedCatalogue></catalogue-info>
+        <br *ngIf="remote">
+      </div>
+    </div>
+    <br>
+    <catalogue-select [selectedCatalogueName]=selectedCatalogueName (selectedCatalogueCountry)="changeCountry($event)">
+    </catalogue-select>
+  </nb-card-body>
+</nb-card>

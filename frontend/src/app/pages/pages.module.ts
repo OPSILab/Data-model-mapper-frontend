@@ -1,24 +1,25 @@
 import { NgModule } from '@angular/core';
-import { NbMenuModule } from '@nebular/theme';
+import { NbCardModule, NbMenuModule } from '@nebular/theme';
 
 import { ThemeModule } from '../@theme/theme.module';
 import { PagesComponent } from './pages.component';
 import { DashboardModule } from './dashboard/dashboard.module';
-import { ECommerceModule } from './e-commerce/e-commerce.module';
 import { PagesRoutingModule } from './pages-routing.module';
-import { MiscellaneousModule } from './miscellaneous/miscellaneous.module';
+import { ErrorComponent } from './error/error.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
     PagesRoutingModule,
     ThemeModule,
     NbMenuModule,
+    NbCardModule,
     DashboardModule,
-    ECommerceModule,
-    MiscellaneousModule,
+    TranslateModule.forChild({})
   ],
   declarations: [
     PagesComponent,
+    ErrorComponent,
   ],
 })
 export class PagesModule {
