@@ -8,7 +8,6 @@ import { Mapper } from '../../../model/adapter/mapper';
 import { AppConfig } from '../../../model/appConfig';
 import { ErrorDialogAdapterService } from '../../error-dialog/error-dialog-adapter.service';
 import { DMMService } from '../dmm.service';
-import { AddAdapterComponent } from '../../adapters/add-adapter/add-adapter.component';
 import { AvailableAdaptersService } from '../../adapters/available-adapters.service';
 
 @Component({
@@ -65,7 +64,7 @@ export class CreateMapAndAdapterComponent implements OnInit {
 
   constructor(
     private dmmService: DMMService,
-    protected ref: NbDialogRef<AddAdapterComponent>,
+    protected ref: NbDialogRef<CreateMapAndAdapterComponent>,
     private toastrService: NbToastrService,
     private errorService: ErrorDialogAdapterService,
     private availableAdapterService: AvailableAdaptersService,

@@ -9,7 +9,6 @@ import * as JSONEditor from '../../../../node_modules/jsoneditor/dist/jsoneditor
 import { DOCUMENT } from '@angular/common';
 import { DialogImportComponent } from './dialog-import/dialog-import.component';
 import { DialogDataMapComponent } from './dialog-dataMap/dialog-dataMap.component';
-import { AvailableServicesService } from '../services/availableServices/availableServices.service';
 import { CreateMapAndAdapterComponent } from './create-map-and-adapter/create-map-and-adapter.component';
 //import { ExportFileComponent } from './export-file/export-file.component';
 import { ErrorDialogAdapterService } from '../error-dialog/error-dialog-adapter.service';
@@ -63,7 +62,6 @@ export class DMMComponent implements OnInit, OnChanges {
     @Inject(DOCUMENT) private document: Document,
     protected dialogService: NbDialogService,
     private windowService: NbWindowService,
-    private availableServicesService: AvailableServicesService,
     private errorService: ErrorDialogAdapterService,
     private dmmService: DMMService,
   ) { }
