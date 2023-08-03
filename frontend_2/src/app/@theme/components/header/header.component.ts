@@ -28,8 +28,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       name: 'Light',
     },
     {
-      value: 'across',
-      name: 'ACROSS',
+      value: 'dmm',
+      name: 'DMM',
     },
     {
       value: 'dark',
@@ -41,7 +41,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     },
   ];
 
-  currentTheme = 'across';
+  currentTheme = 'dmm';
 
   loggedUserMenu = [{ title: 'Profile', link: 'pages/account' },{title: 'Help', link: 'pages/account'}];
   //loggedUserMenu = [];

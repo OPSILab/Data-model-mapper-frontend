@@ -1,7 +1,7 @@
 {
   "general": {
     "welcome": "Welcome to Service Catalogue Manager!",
-    "logo_text": "ACROSS",
+    "logo_text": "DMM",
     "home": "Home",
     "error": "Error",
     "save": "Save",
@@ -470,8 +470,8 @@
     "logout_button": "Logout",
     "logout_error": "There was an error while perfoming logout",
     "select_login": "Select your Digital Identity Provider",
-    "login_with_local_idm": "Login with ACROSS",
-    "login_with_local_idm_description": "ACROSS uses natively the Keycloak IdM",
+    "login_with_local_idm": "Login with DMM",
+    "login_with_local_idm_description": "DMM uses natively the Keycloak IdM",
     "keycloak_idm_link": "Sign in with Keycloak IdM",
     "login_with_eidas": "Login with eIDAS",
     "login_with_eidas_description": "The eIDAS regulation is the legislative basis for electronic interactions between businesses, citizens and public authorities.",

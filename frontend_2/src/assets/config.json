@@ -16,7 +16,7 @@
       "authProfile": "oidc",
       "authRealm": "Cape"
     },
-    "mailTo":"support@across.eu",
+    "mailTo":"support@dmm.eu",
     "docsUrl":"https://service-catalogue.readthedocs.io/en/latest/",
     "dataMapEnumUrl":"http://localhost:12345/assets/data/examples/dataMapEnum.json",
     "detailedErrors" : true,
