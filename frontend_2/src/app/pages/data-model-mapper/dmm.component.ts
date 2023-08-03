@@ -9,7 +9,7 @@ import * as JSONEditor from '../../../../node_modules/jsoneditor/dist/jsoneditor
 import { DOCUMENT } from '@angular/common';
 import { DialogImportComponent } from './dialog-import/dialog-import.component';
 import { DialogDataMapComponent } from './dialog-dataMap/dialog-dataMap.component';
-import { CreateMapAndAdapterComponent } from './create-map-and-adapter/create-map-and-adapter.component';
+import { CreateMapComponent } from './create-map/create-map.component';
 //import { ExportFileComponent } from './export-file/export-file.component';
 import { ErrorDialogAdapterService } from '../error-dialog/error-dialog-adapter.service';
 
@@ -73,7 +73,7 @@ export class DMMComponent implements OnInit, OnChanges {
   updateAdapter() {
     let createAdapter = this.createAdapter
     let type = this.inputType
-    this.dialogService.open(CreateMapAndAdapterComponent, { context: { value: this.adapter, update: true, updateAdapter: createAdapter, sourceDataType: type, jsonMap: JSON.parse(mapperEditor.getText()), schema: this.schemaJson } }).onClose.subscribe(async (adapter) => {
+    this.dialogService.open(CreateMapComponent, { context: { value: this.adapter, update: true, updateAdapter: createAdapter, sourceDataType: type, jsonMap: JSON.parse(mapperEditor.getText()), schema: this.schemaJson } }).onClose.subscribe(async (adapter) => {
       if (adapter) {
         this.adapter = adapter;
         if (adapter.description) this.createAdapter = true
@@ -371,7 +371,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   saveAdapter() {
-    this.dialogService.open(CreateMapAndAdapterComponent, { context: { sourceDataType: this.inputType, save: true, jsonMap: JSON.parse(mapperEditor.getText()), schema: this.schemaJson } }).onClose.subscribe(async (adapter) => {
+    this.dialogService.open(CreateMapComponent, { context: { sourceDataType: this.inputType, save: true, jsonMap: JSON.parse(mapperEditor.getText()), schema: this.schemaJson } }).onClose.subscribe(async (adapter) => {
       if (adapter) {
         this.adapter = adapter;
         this.createAdapter = adapter.description ? true : false

@@ -23,7 +23,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbDropdownModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 import { DMMService } from './dmm.service';
 import { DialogDataMapComponent } from './dialog-dataMap/dialog-dataMap.component';
-import { CreateMapAndAdapterComponent } from './create-map-and-adapter/create-map-and-adapter.component';
+import { CreateMapComponent } from './create-map/create-map.component';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { ExportFileComponent } from './export-file/export-file.component';
 
@@ -52,7 +52,7 @@ import { ExportFileComponent } from './export-file/export-file.component';
     TranslateModule.forChild({}),
     NbAutocompleteModule
   ],
-  declarations: [DMMComponent,DialogImportComponent,DialogDataMapComponent, CreateMapAndAdapterComponent, ExportFileComponent,],
+  declarations: [DMMComponent,DialogImportComponent,DialogDataMapComponent, CreateMapComponent, ExportFileComponent,],
   providers: [DMMService],
   entryComponents: [
     DialogImportComponent,

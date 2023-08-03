@@ -12,10 +12,10 @@ import { AvailableAdaptersService } from '../../adapters/available-adapters.serv
 
 @Component({
   selector: 'create-map-and-adapter',
-  templateUrl: './create-map-and-adapter.component.html',
-  styleUrls: ['./create-map-and-adapter.component.scss']
+  templateUrl: './create-map.component.html',
+  styleUrls: ['./create-map.component.scss']
 })
-export class CreateMapAndAdapterComponent implements OnInit {
+export class CreateMapComponent implements OnInit {
 
   @Input() value: any;
   @Output() editedValue = new EventEmitter<unknown>();
@@ -64,7 +64,7 @@ export class CreateMapAndAdapterComponent implements OnInit {
 
   constructor(
     private dmmService: DMMService,
-    protected ref: NbDialogRef<CreateMapAndAdapterComponent>,
+    protected ref: NbDialogRef<CreateMapComponent>,
     private toastrService: NbToastrService,
     private errorService: ErrorDialogAdapterService,
     private availableAdapterService: AvailableAdaptersService,
