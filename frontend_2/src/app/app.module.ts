@@ -75,14 +75,8 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
     ReactiveFormsModule,
     NbSecurityModule.forRoot({
       accessControl: {
-        CATALOGUE_MANAGER: {
+        DMM_MANAGER: {
           view: '*',
-        },
-        SERVICE_MANAGER: {
-          view: ['services', 'account'],
-        },
-        DATA_CONTROLLER: {
-          view: ['services','consents','account'],
         },
       },
     }),
