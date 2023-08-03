@@ -52,9 +52,9 @@ export class PagesComponent implements OnInit, OnDestroy {
 
     const MENU_ITEMS: NbMenuItem[] = [
       {
-        title: 'general.menu.dashboard',
-        icon: 'pie-chart-outline',
-        link: '/pages/dashboard',
+        title: 'general.menu.home',
+        icon: 'home-outline',
+        link: '/pages/home',
       }
     ];
 
