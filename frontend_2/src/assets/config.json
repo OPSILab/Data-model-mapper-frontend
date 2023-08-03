@@ -10,7 +10,6 @@
       "authRealm": "Cape"
     },
     "mailTo":"support@dmm.eu",
-    "dataMapEnumUrl":"http://localhost:12345/assets/data/examples/dataMapEnum.json",
     "detailedErrors" : true,
     "country" : "Italy"
   },
