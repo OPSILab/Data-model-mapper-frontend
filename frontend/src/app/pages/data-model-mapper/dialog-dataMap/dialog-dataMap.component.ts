@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 import { Observable } from 'rxjs-compat/Observable';
 import { LocalDataSource } from 'ng2-smart-table';
-import { ErrorService } from '../../error/error.service';
 
 @Component({
   selector: 'ngx-dialog-import-prompt',
@@ -40,8 +39,8 @@ export class DialogDataMapComponent implements OnInit {
   source: LocalDataSource = new LocalDataSource();
 
   constructor(
-    protected ref: NbDialogRef<DialogDataMapComponent>,
-    private errorService: ErrorService,
+    protected ref: NbDialogRef<DialogDataMapComponent>//,
+    //private errorService: ErrorDialogService,
   ) {
   }
 

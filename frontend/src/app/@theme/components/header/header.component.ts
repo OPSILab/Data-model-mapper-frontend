@@ -1,21 +1,26 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { NbMediaBreakpointsService, NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 
-import { UserData } from '../../../@core/data/users';
-import { LayoutService } from '../../../@core/utils';
 import { map, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
+//import { OidcUserInformationService } from '../../../auth/services/oidc-user-information.service';
+//import { UserClaims } from '../../../auth/model/oidc';
+import { NgxConfigureService } from 'ngx-configure';
+import { AppConfig } from '../../../model/appConfig';
+
 
 @Component({
   selector: 'ngx-header',
   styleUrls: ['./header.component.scss'],
   templateUrl: './header.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-
   private destroy$: Subject<void> = new Subject<void>();
-  userPictureOnly: boolean = false;
-  user: any;
+  userPictureOnly = false;
+  user;
+  private config: AppConfig;
 
   themes = [
     {
@@ -23,12 +28,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
       name: 'Light',
     },
     {
-      value: 'dark',
-      name: 'Dark',
+      value: 'dmm',
+      name: 'DMM',
     },
     {
-      value: 'cosmic',
-      name: 'Cosmic',
+      value: 'dark',
+      name: 'Dark',
     },
     {
       value: 'corporate',
@@ -36,58 +41,89 @@ export class HeaderComponent implements OnInit, OnDestroy {
     },
   ];
 
-  currentTheme = 'default';
+  currentTheme = 'dmm';
 
-  userMenu = [ { title: 'Profile' }, { title: 'Log out' } ];
+  loggedUserMenu = [{ title: 'Profile', link: 'pages/account' },{title: 'Help', link: 'pages/account'}];
+  //loggedUserMenu = [];
+  userMenu = [{ title: 'Log in', link: '/login' }];
 
-  constructor(private sidebarService: NbSidebarService,
-              private menuService: NbMenuService,
-              private themeService: NbThemeService,
-              private userService: UserData,
-              private layoutService: LayoutService,
-              private breakpointService: NbMediaBreakpointsService) {
+  public languages=[];
+  public userLanguage : String;
+
+  constructor(
+    private sidebarService: NbSidebarService,
+    private menuService: NbMenuService,
+    private themeService: NbThemeService,
+    private breakpointService: NbMediaBreakpointsService,
+    private translateService: TranslateService,
+    //private userService: OidcUserInformationService,
+    private cdr: ChangeDetectorRef,
+    private configService: NgxConfigureService
+  ) {
+    this.config = this.configService.config as AppConfig;
   }
 
-  ngOnInit() {
-    this.currentTheme = this.themeService.currentTheme;
+  ngOnInit(): void {
 
-    this.userService.getUsers()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((users: any) => this.user = users.nick);
+    let lan = this.config.i18n.languages;
+
+    this.userLanguage=this.config.i18n.locale
+
+    lan.forEach(x=>{
+        let f=x;
+         //this.languages.push({lan:x,flag: `flag-icon flag-icon-${f} flag-icon-squared` })
+       this.languages.push({lan:x,flag: f,picture:`assets/flags/${f}.svg` })
+      })
+
+    this.loggedUserMenu.push({ title: this.translateService.instant('login.logout_button') as string, link: '' });
+    this.currentTheme = this.themeService.currentTheme;
+    //this.userService.onUserChange().subscribe((user: UserClaims) => (this.user = user));
 
     const { xl } = this.breakpointService.getBreakpointsMap();
-    this.themeService.onMediaQueryChange()
+    this.themeService
+      .onMediaQueryChange()
       .pipe(
         map(([, currentBreakpoint]) => currentBreakpoint.width < xl),
-        takeUntil(this.destroy$),
+        takeUntil(this.destroy$)
       )
-      .subscribe((isLessThanXl: boolean) => this.userPictureOnly = isLessThanXl);
+      .subscribe((isLessThanXl: boolean) => {
+        this.userPictureOnly = isLessThanXl;
+        this.cdr.detectChanges();
+      });
 
-    this.themeService.onThemeChange()
+    this.themeService
+      .onThemeChange()
       .pipe(
-        map(({ name }) => name),
-        takeUntil(this.destroy$),
+        map(({ name }) => name as string),
+        takeUntil(this.destroy$)
       )
-      .subscribe(themeName => this.currentTheme = themeName);
+      .subscribe((themeName) => (this.currentTheme = themeName));
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  changeTheme(themeName: string) {
+  getDefLang(){
+    return this.translateService.getDefaultLang();
+  }
+
+  changeLang(event){
+    this.translateService.use(event);
+  }
+
+  changeTheme(themeName: string): void {
     this.themeService.changeTheme(themeName);
   }
 
   toggleSidebar(): boolean {
     this.sidebarService.toggle(true, 'menu-sidebar');
-    this.layoutService.changeLayoutSize();
 
     return false;
   }
 
-  navigateHome() {
+  navigateHome(): boolean {
     this.menuService.navigateHome();
     return false;
   }

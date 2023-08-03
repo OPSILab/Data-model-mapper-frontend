@@ -1,18 +1,31 @@
-import { CommonModule } from "@angular/common";
-import { NgModule } from "@angular/core";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { NbAccordionModule, NbButtonModule, NbCardModule, NbToggleModule, NbIconModule, NbTabsetModule, NbSelectModule, NbInputModule, NbRadioModule, NbWindowModule, NbCheckboxModule, NbUserModule, NbAutocompleteModule } from "@nebular/theme";
-import { Ng2SmartTableModule } from "ng2-smart-table";
-import { CreateMapAndAdapterComponent } from "./create-map-and-adapter/create-map-and-adapter.component";
-import { DialogDataMapComponent } from "./dialog-dataMap/dialog-dataMap.component";
-import { DialogImportComponent } from "./dialog-import/dialog-import.component";
-import { DMMRoutingModule } from "./dmm-routing.module";
-import { DMMComponent } from "./dmm.component";
-import { DMMService } from "./dmm.service";
-import { ExportFileComponent } from "./export-file/export-file.component";
-import { AvailableAdaptersService } from "./available-adapters.service";
-import { TranslateModule } from "@ngx-translate/core";
-
+import { NgModule } from '@angular/core';
+import {
+  NbAccordionModule,
+  NbButtonModule,
+  NbCardModule,
+  NbSelectModule,
+  NbIconModule,
+  NbTabsetModule,
+  NbToggleModule,
+  NbInputModule,
+  NbRadioModule,
+  NbWindowModule,
+  NbCheckboxModule,
+  NbUserModule,
+  NbAutocompleteModule,
+} from '@nebular/theme';
+import { CommonModule } from '@angular/common';
+import { DMMRoutingModule } from './dmm-routing.module';
+import { TranslateModule } from '@ngx-translate/core';
+import { DMMComponent } from './dmm.component';
+import { DialogImportComponent } from './dialog-import/dialog-import.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgbDropdownModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
+import { DMMService } from './dmm.service';
+import { DialogDataMapComponent } from './dialog-dataMap/dialog-dataMap.component';
+import { CreateMapComponent } from './create-map/create-map.component';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
+import { ExportFileComponent } from './export-file/export-file.component';
 
 @NgModule({
   imports: [
@@ -27,8 +40,8 @@ import { TranslateModule } from "@ngx-translate/core";
     NbTabsetModule,
     NbToggleModule,
     FormsModule,
-    //NgbDropdownModule,
-    //NgbCollapseModule,
+    NgbDropdownModule,
+    NgbCollapseModule,
     NbSelectModule,
     NbInputModule,
     NbRadioModule,
@@ -39,8 +52,8 @@ import { TranslateModule } from "@ngx-translate/core";
     TranslateModule.forChild({}),
     NbAutocompleteModule
   ],
-  declarations: [DMMComponent,DialogImportComponent,DialogDataMapComponent, CreateMapAndAdapterComponent, ExportFileComponent,],
-  providers: [DMMService, AvailableAdaptersService],
+  declarations: [DMMComponent,DialogImportComponent,DialogDataMapComponent, CreateMapComponent, ExportFileComponent,],
+  providers: [DMMService],
   entryComponents: [
     DialogImportComponent,
     DialogDataMapComponent

@@ -1,8 +1,8 @@
 import { Component, Inject, Input } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
+import { ErrorDialogService } from '../../error-dialog/error-dialog.service';
 import { DOCUMENT } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ErrorService } from '../../error/error.service';
 //import { AppConfig } from '../../../model/appConfig';
 //import { NgxConfigureService } from 'ngx-configure';
 
@@ -27,7 +27,7 @@ export class DialogImportComponent{
   constructor(
     private http: HttpClient,
     protected ref: NbDialogRef<DialogImportComponent>,
-    private errorService: ErrorService,
+    private errorService: ErrorDialogService,
     @Inject(DOCUMENT) private document: Document,
   ) {}
 

@@ -1,14 +1,7 @@
 {
-  "serviceRegistry": {
-    "url": "http://localhost:8086/service-catalogue"
-  },
-
   "system": {
-    "sdkUrl": "http://localhost:8085/cape-service-sdk",
     "checkConsentAtOperator": false,
-    "serviceEditorUrl": "http://localhost:81/service-catalogue-manager",
-    "editorSchemaPath": "/assets/data/service-schema/",
-    "editorSchemaName": "service-model.json",
+    "serviceEditorUrl": "http://localhost:12345/data-model-mapper-gui",
     "auth": {
       "idmHost": "https://idm.cape-suite.eu/auth",
       "clientId": "cape-service-sdk",
@@ -16,9 +9,7 @@
       "authProfile": "oidc",
       "authRealm": "Cape"
     },
-    "mailTo":"support@across.eu",
-    "docsUrl":"https://service-catalogue.readthedocs.io/en/latest/",
-    "dataMapEnumUrl":"http://localhost:81/assets/data/examples/dataMapEnum.json",
+    "mailTo":"support@dmm.eu",
     "detailedErrors" : true,
     "country" : "Italy"
   },
@@ -30,6 +21,6 @@
   },
   "i18n": {
     "locale": "en",
-    "languages": ["it","en","de","el","lv"]
+    "languages": ["it","en"]
   }
 }

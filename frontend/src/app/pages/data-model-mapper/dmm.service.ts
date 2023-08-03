@@ -4,10 +4,9 @@ import { HttpClient } from '@angular/common/http';
 import { AppConfig } from '../../model/appConfig';
 import { AdapterEntry } from '../../model/adapter/adapterEntry';
 
-@Injectable(//{
-  //providedIn: 'root',
-//}
-)
+@Injectable({
+  providedIn: 'root',
+})
 export class DMMService {
 
   private config: AppConfig;
