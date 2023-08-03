@@ -6,7 +6,6 @@ import { Mapper } from '../../../model/adapter/mapper';
 import { AppConfig } from '../../../model/appConfig';
 import { ErrorDialogAdapterService } from '../../error-dialog/error-dialog-adapter.service';
 import { DMMService } from '../dmm.service';
-import { AvailableAdaptersService } from '../../adapters/available-adapters.service';
 
 @Component({
   selector: 'create-map-and-adapter',
@@ -31,13 +30,7 @@ export class CreateMapComponent implements OnInit {
   updateAdapter
   placeholders = {
     adapterId: this.translate.instant('general.adapters.adapterId'),
-    mapId: this.translate.instant('general.dmm.mapId'),
-    status: this.translate.instant('general.adapters.status'),
-    url: this.translate.instant('general.adapters.status'),
-    sourceDataType: this.translate.instant('general.adapters.source_data_type'),
-    description: this.translate.instant('general.adapters.description'),
-    type: this.translate.instant('general.adapters.type'),
-    context: this.translate.instant('general.adapters.context'),
+    mapId: this.translate.instant('general.dmm.mapId')
   }
   private appConfig: AppConfig;
   jsonMap: any;
@@ -48,7 +41,6 @@ export class CreateMapComponent implements OnInit {
     protected ref: NbDialogRef<CreateMapComponent>,
     private toastrService: NbToastrService,
     private errorService: ErrorDialogAdapterService,
-    private availableAdapterService: AvailableAdaptersService,
     private translate: TranslateService,
     private configService: NgxConfigureService
   ) {
