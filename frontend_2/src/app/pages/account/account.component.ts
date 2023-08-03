@@ -37,7 +37,8 @@ export class AccountComponent implements OnInit {
   private config: AppConfig;
   windowRef: NbWindowRef;
   docsUrl: string;
-  
+  user
+
 
   @ViewChild('reportProblemWindowTemplate', { static: false })
   reportProblemWindowTemplate: TemplateRef<unknown>;
@@ -48,7 +49,7 @@ export class AccountComponent implements OnInit {
 
   private accountNotificationsEnum = AccountNotificationEnum;
   public accountNotificationsKeys: string[];
-  
+
 
   constructor(
     private accountService: AccountService,
@@ -63,11 +64,11 @@ export class AccountComponent implements OnInit {
     this.accountNotificationsKeys = Object.keys(this.accountNotificationsEnum);
     this.reportTitle = this.translateService.instant('general.account.report_the_problem') as string;
     this.config = this.configService.config as AppConfig;
-    
+
     this.docsUrl=this.config.system.docsUrl;
   }
 
-  
+
   passwordForm = this.formBuilder.group(
     {
       newPassword: new FormControl('', [
@@ -97,7 +98,7 @@ export class AccountComponent implements OnInit {
     reportTopicText:['']
   });
 
-  
+
   get newPassword(): AbstractControl {
     return this.passwordForm.get('newPassword');
   }
@@ -109,10 +110,10 @@ export class AccountComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    
+
     //this.user=this.userService.user;
 
-    
+
   }
 
   openReportProblem = (): void => {
@@ -121,16 +122,16 @@ export class AccountComponent implements OnInit {
       context: { text: 'some text to pass into template' },
     });
 
-   
+
   };
 
   onSubmitReportProblem = (): void => {
-          
-    var mailText = "mailto:"+this.config.system.mailTo+"?subject=[Data model mapper - Report problem]"+this.reportProblemForm.get('reportTopicText').value+"&body="+this.reportProblemForm.get('reportProblemText').value; 
+
+    var mailText = "mailto:"+this.config.system.mailTo+"?subject=[Data model mapper - Report problem]"+this.reportProblemForm.get('reportTopicText').value+"&body="+this.reportProblemForm.get('reportProblemText').value;
     console.log(mailText);
     this.windowRef.close();
     window.location.href = mailText;
-   
+
   };
 
   openChangePassword = (changePasswordTemplate: TemplateRef<unknown>): void => {
@@ -144,15 +145,15 @@ export class AccountComponent implements OnInit {
     dialogRef.close();
   };
 
-    
 
 
 
-  
 
-  
 
- 
+
+
+
+
 
   private showToast(type: NbComponentStatus, title: string, body: string) {
     const config = {
