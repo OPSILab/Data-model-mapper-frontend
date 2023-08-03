@@ -5,11 +5,6 @@ import { NbCardModule, NbSelectModule, NbAccordionModule, NbButtonModule, NbSpin
 import { TranslateModule } from "@ngx-translate/core";
 import { Ng2SmartTableModule } from "ng2-smart-table";
 
-import { AdaptersRoutingModule } from "./adapters-routing.module";
-import { ActionsAdapterMenuRenderComponent } from "./actions-adapter-menu-render/actions-adapter-menu-render.component";
-import { AdapterInfoRenderComponent } from "./adapter-info-render/adapter-info-render.component";
-import { AddAdapterComponent } from "./add-adapter/add-adapter.component";
-import { AvailableAdaptersComponent } from "./available-adapters.component";
 import { AvailableAdaptersService } from "./available-adapters.service";
 
 
@@ -21,7 +16,6 @@ import { AvailableAdaptersService } from "./available-adapters.service";
     NbSelectModule,
     NbAccordionModule,
     NbButtonModule,
-    AdaptersRoutingModule,
     NbSpinnerModule,
     NbIconModule,
     NbToastrModule,
@@ -37,10 +31,7 @@ import { AvailableAdaptersService } from "./available-adapters.service";
     NbAutocompleteModule
   ],
   declarations: [
-    AvailableAdaptersComponent,
-    AddAdapterComponent,
-    ActionsAdapterMenuRenderComponent,
-    AdapterInfoRenderComponent,
+
   ],
   providers: [AvailableAdaptersService],
   entryComponents: [

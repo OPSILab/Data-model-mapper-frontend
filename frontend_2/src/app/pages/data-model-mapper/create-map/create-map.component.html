@@ -28,18 +28,6 @@
           [ngModelOptions]="{standalone: true}" />
         <br>
         <br>
-        <nb-checkbox *ngIf="!name || !adapterId" disabled appearance="outline" status="info" shape="semi-round"
-          size="medium" (click)="createAdapter = true">
-          <i class="mx-1">{{ 'general.dmm.add_sc' | translate }}</i>
-        </nb-checkbox>
-        <nb-checkbox *ngIf="name && adapterId && update && updateAdapter" appearance="outline" status="info"
-          shape="semi-round" size="medium" (click)="createAdapter = true">
-          <i class="mx-1">{{ 'general.dmm.edit_sc' | translate }}</i>
-        </nb-checkbox>
-        <nb-checkbox *ngIf="name && adapterId && (save || !updateAdapter)" appearance="outline" status="info"
-          shape="semi-round" size="medium" (click)="createAdapter = true">
-          <i class="mx-1">{{ 'general.dmm.add_sc' | translate }}</i>
-        </nb-checkbox>
         <h3>
           <br>
           <button *ngIf="!name || !adapterId" disabled nbButton appearance="outline" shape="semi-round" size="medium"

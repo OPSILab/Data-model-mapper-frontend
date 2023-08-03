@@ -49,7 +49,6 @@ export class DMMComponent implements OnInit, OnChanges {
   outputEditorOptions: any;
   sourceJson: any;
   schemaFromFile
-  createAdapter: any;
   selectedPath: any;
   selectMap
   schemaOrMap = "schema"
@@ -71,12 +70,10 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   updateAdapter() {
-    let createAdapter = this.createAdapter
     let type = this.inputType
-    this.dialogService.open(CreateMapComponent, { context: { value: this.adapter, update: true, updateAdapter: createAdapter, sourceDataType: type, jsonMap: JSON.parse(mapperEditor.getText()), schema: this.schemaJson } }).onClose.subscribe(async (adapter) => {
+    this.dialogService.open(CreateMapComponent, { context: { value: this.adapter, update: true, sourceDataType: type, jsonMap: JSON.parse(mapperEditor.getText()), schema: this.schemaJson } }).onClose.subscribe(async (adapter) => {
       if (adapter) {
         this.adapter = adapter;
-        if (adapter.description) this.createAdapter = true
       }
     });
   }
@@ -371,10 +368,9 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   saveAdapter() {
-    this.dialogService.open(CreateMapComponent, { context: { sourceDataType: this.inputType, save: true, jsonMap: JSON.parse(mapperEditor.getText()), schema: this.schemaJson } }).onClose.subscribe(async (adapter) => {
+    this.dialogService.open(CreateMapComponent, { context: { save: true, jsonMap: JSON.parse(mapperEditor.getText()), schema: this.schemaJson } }).onClose.subscribe(async (adapter) => {
       if (adapter) {
         this.adapter = adapter;
-        this.createAdapter = adapter.description ? true : false
         this.isNew = true
       }
     });
