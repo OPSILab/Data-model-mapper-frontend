@@ -11,7 +11,7 @@ export interface System {
   country: string;
   sdkUrl: string;
   checkConsentAtOperator: boolean;
-  serviceEditorUrl: string;
+  dmmGuiUrl: string;
   editorSchemaPath: string;
   editorSchemaName: string;
   auth: Auth;

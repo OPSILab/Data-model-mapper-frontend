@@ -64,7 +64,7 @@ export class AppComponent implements OnInit, OnDestroy {
       clientAuthMethod: NbOAuth2ClientAuthMethod.NONE,
       token: {
         endpoint: `/realms/${this.appConfig.system.auth.authRealm}/protocol/openid-connect/token`,
-        redirectUri: `${this.appConfig.system.serviceEditorUrl}/login/loginPopup`,
+        redirectUri: `${this.appConfig.system.dmmGuiUrl}/login/loginPopup`,
         //class: OidcJWTToken,
         key: 'access_token',
       },
@@ -73,7 +73,7 @@ export class AppComponent implements OnInit, OnDestroy {
         scope: 'openid',
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         state: uuidv4(),
-        redirectUri: `${this.appConfig.system.serviceEditorUrl}/login/loginPopup`,
+        redirectUri: `${this.appConfig.system.dmmGuiUrl}/login/loginPopup`,
         responseType: NbOAuth2ResponseType.CODE,
       },
       redirect: {
