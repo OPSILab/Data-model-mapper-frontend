@@ -33,7 +33,9 @@ In particular, it performs following steps:
 * **Writing: Orion CB or File**
     - Validated objects are sent to the configured [Orion Context Broker](https://fiware-orion.readthedocs.io/en/master/) and/or to a local file.
 
-The tool is developed in [Node.js](https://nodejs.org) and can be started as a command line tool and as a REST server
+The tool is developed in [Node.js](https://nodejs.org) and can be started as a command line tool and as a REST server.
+
+A GUI for the REST server is available. See [install](./frontend/index.md) for GUI instructions.
 
 --------------------
 <a name="installation"></a>
