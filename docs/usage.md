@@ -143,16 +143,21 @@ A dialog will appear and you can easily select the map options from a select men
 According to your choises : 
 
 - If you chose **Single** and **Direct** you'll see an input menu where you can select the source input subfield to pick for the desired mapped output subfield 
+
 ![](images/map-settings-single-direct.png)
+
 ![](images/map-settings-single.png)
 
 - If you chose **Single** and **Static** you'll see an input field where you can write a static value for the desired mapped output subfield 
+
 ![](images/map-settings-single-static.png)
 
 - If you chose **Multi** and **Direct** you'll see an input menu where you can select the source input subfield to pick for the desired mapped output subfield, an **Add Element** button to add it to an array / string (according to destination schema subfield type) and an ouput preview that will be filled each time you click **Add Element** button.
+
 ![](images/map-settings-multi.png)
 
 - If you chose **Multi** and **Static** you'll see an input field where you can write a static value for the desired mapped output subfield, an **Add Element** button to add it to an array / string (according to destination schema subfield type) and an ouput preview that will be filled each time you click **Add Element** button.
+
 ![](images/map-settings-multi-static.png)
 
 Click **Confirm** to confirm your choices, **Reset** if you want to redo the mapping from the beginning (for the selected subfield)
