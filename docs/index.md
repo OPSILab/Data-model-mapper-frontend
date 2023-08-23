@@ -182,7 +182,7 @@ The Data model mapper GUI is available to the endpoint according to installation
 
 Open your favourite browser and point to that endpoint.
 
-Go to [Data model mapper usage manual](../usage/index.md) section to learn how to use the Data model mapper GUI.
+Go to [Data model mapper usage manual](../usage.md) section to learn how to use the Data model mapper GUI.
 
 ---
 
