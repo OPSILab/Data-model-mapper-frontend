@@ -3,7 +3,7 @@
 ## Introduction
 
 The Data model mapper GUI is a graphic user interface for the Data model mapper.
-The Data model mapper functionalities are explained in [Data model mapper Readme](../../Readme.md)
+The Data model mapper functionalities are explained in [Data model mapper Readme](../Readme.md)
 
 ## Service dashboard
 
@@ -118,7 +118,7 @@ this time, other 2 view features are available :
 
 **Code** and **View** are the same as source editor.
 
-If you selected **Code** you can write manually the mapper settings as explained in [Data model mapper Readme](../../Readme.md).
+If you selected **Code** you can write manually the mapper settings as explained in [Data model mapper Readme](../Readme.md).
 
 If you selected **Tree** you can be guided by a dialog UI.
 

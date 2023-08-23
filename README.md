@@ -35,7 +35,7 @@ In particular, it performs following steps:
 
 The tool is developed in [Node.js](https://nodejs.org) and can be started as a command line tool and as a REST server.
 
-A GUI for the REST server is available. See [install](./frontend/docs/index.md) for GUI instructions.
+A GUI for the REST server is available. See [install](./docs/index.md) for GUI instructions.
 
 --------------------
 <a name="installation"></a>
