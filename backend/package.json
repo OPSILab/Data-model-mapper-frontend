@@ -43,7 +43,7 @@
     "winston-daily-rotate-file": "^3.3.0"
   },
   "scripts": {
-    "start": "nodemon ./mapper.js",
+    "start": "node ./mapper.js",
     "test": "node ./node_modules/mocha/bin/mocha --timeout 0"
   }
 }

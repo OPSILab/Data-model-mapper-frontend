@@ -35,7 +35,7 @@ In particular, it performs following steps:
 
 The tool is developed in [Node.js](https://nodejs.org) and can be started as a command line tool and as a REST server.
 
-A GUI for the REST server is available. See [install](./frontend/index.md) for GUI instructions.
+A GUI for the REST server is available. See [install](./frontend/docs/index.md) for GUI instructions.
 
 --------------------
 <a name="installation"></a>
@@ -58,6 +58,12 @@ After configuring the tool correctly (conf file or cli arguments), start with:
 
 ```
 node mapper
+```
+
+or 
+
+```
+npm start
 ```
 
 If you want to start the automated tests run:
@@ -167,8 +173,6 @@ node mapper -s "path/to/sourcefile.csv" -m "path/to/mapFile.json -d "WeatherObse
 ```
 
 > **`Note`** Previous CLI arguments, if provided, will **override** the default ones specified in `config.js` file.
-
-Do not use npm start at the moment.
 
 #### 3.2.3 Inputs configuration in the body of HTTP request
 
