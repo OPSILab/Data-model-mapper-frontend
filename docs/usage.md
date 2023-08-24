@@ -32,13 +32,13 @@ For CSV input type, this it the source editor
 ![](images/empty-csv.png)
 
 You can either write your CSV data inside the textarea or import it by clicking the import button.
-A dialog will appear
+If you want to import it, click **IMPORT** button and a dialog will appear
 
 ![](images/import.png)
 
 By clicking on the select labeled **Select csv data** you can chose to import a source file from your PC 
 
-![](images/import-from-file.png)
+![](images/import-from-file-csv.png)
 
 or from a remote URL
 
@@ -52,7 +52,7 @@ If you chose **file** then you have to click **BROWSE** button and select your f
 
 Click **open** and then click **UPLOAD**
 
-![](images/import-from-file-csv.png)
+![](images/import-from-file-csv-upload.png)
 
 You'll see the textarea filled with your source file
 
@@ -86,7 +86,11 @@ and selecting **Code**
 
 ![](images/json-as-code.png)
 
-If youu chose to import it , the steps are the same as mentioned for CSV import.
+If you want to import it, the steps are the same as mentioned for CSV import.
+
+![](images/import-from-file-json.png)
+
+![](images/import-from-file-2.png)
 
 If you select **View** instead of **Code** you will see the JSON formatted differently
 
@@ -104,12 +108,6 @@ You can import a schema if you want set automatically the skeleton of the output
 
 ![](images/map-options-2.png)
 
-![](images/manual-insert.png)
-
-As you can see from this image
-
-![](images/map-options-2.png)
-
 this time, other 2 view features are available :
 
 - *Tree*.  A tree like view, with a button near each field to easily map your subfield
@@ -118,21 +116,26 @@ this time, other 2 view features are available :
 
 **Code** and **View** are the same as source editor.
 
+If you imported the schema or you selected it from the select menu, you can start mapping your output subfield.
+
 If you selected **Code** you can write manually the mapper settings as explained in [Data model mapper Readme](../Readme.md).
 
-If you selected **Tree** you can be guided by a dialog UI.
+If you selected **Tree** mode, you can click next to the key subfield , on the **value** input field, and you can manually map the subfield there by texting it. 
 
-Click the button near the mapping subfield
+![](images/manual-insert.png)
+
+or you can click the button near the mapping subfield if you want to be guided by a dialog UI.
+First click it
 
 ![](images/map-options.png)
 
-and click Map
+then click Map
 
 ![](images/map-option.png)
 
-A dialog will appear and you can easily select the map options from a select menu.
+and a dialog will appear so you can easily select the map options from a select menu.
 
-![](images/map-settings-encode.png)
+![](images/map-settings.png)
 
 - Under *Select encode option* you can select the encode option (select *none* if you don't want to encode your output subfield)
 
@@ -152,21 +155,21 @@ According to your choises :
 
 ![](images/map-settings-single-static.png)
 
-- If you chose **Multi** and **Direct** you'll see an input menu where you can select the source input subfield to pick for the desired mapped output subfield, an **Add Element** button to add it to an array / string (according to destination schema subfield type) and an ouput preview that will be filled each time you click **Add Element** button.
+- If you chose **Multi** and **Direct** you'll see an input menu where you can select the source input subfield to pick for the desired mapped output subfield, an **Add Element** button to add it to an array / string (according to destination schema subfield type) and an ouput preview that will be filled each time you click **Add Element** button
 
 ![](images/map-settings-multi.png)
 
-- If you chose **Multi** and **Static** you'll see an input field where you can write a static value for the desired mapped output subfield, an **Add Element** button to add it to an array / string (according to destination schema subfield type) and an ouput preview that will be filled each time you click **Add Element** button.
+- If you chose **Multi** and **Static** you'll see an input field where you can write a static value for the desired mapped output subfield, an **Add Element** button to add it to an array / string (according to destination schema subfield type) and an ouput preview that will be filled each time you click **Add Element** button
 
 ![](images/map-settings-multi-static.png)
 
-Click **Confirm** to confirm your choices, **Reset** if you want to redo the mapping from the beginning (for the selected subfield)
+Click **Confirm** to confirm your choices, **Reset** if you want to redo the mapping from the beginning (for the selected subfield).
 
 You can also import a schema from Data model mapper DB by clicking **Select Json schema** and selecting the desired one
 
 ![](images/select-schema.png)
 
-Or import the entire map settings by clicking **IMPORT** on the top of the page
+or import the entire map settings by clicking **IMPORT** on the top of the page
 
 ![](images/home.png)
 
@@ -180,21 +183,21 @@ In this section you can see an ouptut preview (max 3 rows).
 
 ![](images/output.png)
 
-Click preview and you'll see the output preview in an JSON editor similar to the ones mentioned for the *Source* and *Mapper* accordion, but this time the available view options are **View** and **Preview**.
+Click **PREVIEW** and you'll see the output preview in an JSON editor similar to the ones mentioned for the *Source* and *Mapper* accordion, but this time the available view options are **View** and **Preview**.
 
 ![](images/output-2.png)
 
 ## Saving
 
-If the Output preview is good, then you can save the map or export it.
+If the Output preview is good, you can save the map or export it.
 
 If you want to download map settings, just click **EXPORT** button.
 
-If you want to save map settings into Data model mapper Database , click **SAVE AS NEW**
+If you want to save map settings into Data model mapper Database , click **SAVE AS NEW**.
 
 ![](images/home.png)
 
-A save dialog will appear
+A save dialog will appear.
 
 ![](images/save-dialog.png)
 
