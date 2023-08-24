@@ -97,6 +97,12 @@
       "validationErrors": "Ci sono degli errori di validazione nella descrizione dell'adapter inserito."
     },
     "dmm": {
+      "register" : "Registra",
+      "deregister": "Deregistra",
+      "delete": "Cancella",
+      "details" : "Dettagli",
+      "status" : "Stato",
+      "actions" : "Azioni",
       "add_record": "Aggiungi record",
       "record": "Record",
       "description": "Descrizione",

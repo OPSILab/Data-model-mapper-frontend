@@ -5,11 +5,18 @@ import { NbAccordionModule, NbAutocompleteModule, NbButtonModule, NbCardModule, 
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { ActionsComponent } from './actions/actions.component';
+import { DetailsComponent } from './details/details.component';
+import { StatusComponent } from './status/status.component';
 
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    ActionsComponent,
+    DetailsComponent,
+    StatusComponent
+  ],
   imports: [
     CommonModule,
     HomeRoutingModule,

@@ -8,6 +8,9 @@ import { AdapterEntry } from '../../model/adapter/adapterEntry';
   providedIn: 'root',
 })
 export class DMMService {
+  deleteMap(id: any) {
+    throw new Error('Method not implemented.');
+  }
 
   private config: AppConfig;
 
@@ -57,6 +60,7 @@ export class DMMService {
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map", {
       id: adapter.adapterId,
       name: adapter.name,
+      status : adapter.status,
       map: map,
       dataModel: schema[0]
     }).toPromise();

@@ -97,6 +97,12 @@
       "validationErrors": "There are validation errors in the Adapter description."
     },
     "dmm" : {
+      "register" : "Register",
+      "deregister": "Deregister",
+      "delete": "Delete",
+      "details" : "Details",
+      "status" : "Status",
+      "actions" : "Actions",
       "add_record": "Add record",
       "record" : "Record",
       "description" : "Description",

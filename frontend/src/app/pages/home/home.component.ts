@@ -9,6 +9,9 @@ import { System, AppConfig } from '../../model/appConfig';
 import { ErrorDialogService } from '../error-dialog/error-dialog.service';
 import { DMMService } from '../data-model-mapper/dmm.service';
 import { Router } from '@angular/router';
+import { ActionsComponent } from './actions/actions.component';
+import { DetailsComponent } from './details/details.component';
+import { StatusComponent } from './status/status.component';
 
 @Component({
   selector: 'home',
@@ -121,46 +124,38 @@ export class HomeComponent implements OnInit, OnDestroy {
           },
           width: '65%',
           valuePrepareFunction: (cell, row) => row.description,
-        },/*
+        },
         details: {
           title: this.detailsLabel,
           filter: false,
           sort: false,
           width: '5%',
           type: 'custom',
-          valuePrepareFunction: (cell, row) => row//,
-          //renderComponent: MapRecordInfoRenderComponent,
+          valuePrepareFunction: (cell, row) => row,
+          renderComponent: DetailsComponent,
         },
-          status: {
-            title: this.statusLabel,
-            filter: false,
-            sort: false,
-            width: '5%',
-            type: 'text',
-            valuePrepareFunction: (cell, row) => row.status,
-          },*/
-        /*status: {
+        status: {
           title: this.statusLabel,
           sort: false,
           filter: false,
           width: '5%',
           type: 'custom',
           valuePrepareFunction: (cell, row) => row.status,
-          //renderComponent: MapRecordStatusRenderComponent,
-        }/*,
+          renderComponent: StatusComponent,
+        },
         actions: {
           title: this.actionsLabel,
           sort: false,
           width: '5%',
           filter: false,
           type: 'custom',
-          //valuePrepareFunction: (cell, row) => row,
-          //renderComponent: ActionsConnectorMenuRenderComponent,
+          valuePrepareFunction: (cell, row) => row,
+          renderComponent: ActionsComponent,
           onComponentInitFunction: (instance) => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unused-vars
-            instance.updateResult.pipe(takeUntil(this.unsubscribe)).subscribe(() => this.ngOnInit());
+            instance?.updateResult?.pipe(takeUntil(this.unsubscribe)).subscribe(() => this.ngOnInit());
           },
-        },*/
+        }
       },
     };
   }
