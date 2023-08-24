@@ -8,7 +8,9 @@
     "edit": "Edit",
     "errors": "Some errors occurred.",
     "menu": {
-      "home": "Home"
+      "home": "Home",
+      "editor": "Editor",
+      "map_records" : "Map records"
     },
     "account": {
       "roles": "Your Roles",
@@ -95,6 +97,10 @@
       "validationErrors": "There are validation errors in the Adapter description."
     },
     "dmm" : {
+      "add_record": "Add record",
+      "record" : "Record",
+      "description" : "Description",
+      "clear_filters": "Clear filters",
       "preview" : "Preview",
       "add_element" : "Add element",
       "map" : "Map",

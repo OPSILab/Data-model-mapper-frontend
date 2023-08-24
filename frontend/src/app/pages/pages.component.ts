@@ -55,6 +55,11 @@ export class PagesComponent implements OnInit, OnDestroy {
         title: 'general.menu.home',
         icon: 'home-outline',
         link: '/pages/home',
+      },
+      {
+        title: 'general.menu.editor',
+        icon: 'edit-outline',
+        link: '/pages/dmm-editor'
       }
     ];
 

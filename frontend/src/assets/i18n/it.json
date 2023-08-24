@@ -8,7 +8,9 @@
     "edit": "Modifica",
     "errors": "Si sono verificati degli errori.",
     "menu": {
-      "home": "Home"
+      "home": "Home",
+      "editor": "Editor",
+      "map_records": "File di mapping registrati"
     },
     "account": {
       "roles": "I tuoi ruoli",
@@ -95,21 +97,25 @@
       "validationErrors": "Ci sono degli errori di validazione nella descrizione dell'adapter inserito."
     },
     "dmm": {
+      "add_record": "Aggiungi record",
+      "record": "Record",
+      "description": "Descrizione",
       "preview": "Anteprima",
-      "add_element" : "Aggiungi elemento",
-      "map" : "Mappa",
-      "back" : "Indietro",
-      "reset" : "Reset",
-      "add" : "Aggiungi adattatore",
-      "edit" : "Modifica adattatore",
-      "mapId" : "ID map",
+      "clear_filters": "Cancella filtri",
+      "add_element": "Aggiungi elemento",
+      "map": "Mappa",
+      "back": "Indietro",
+      "reset": "Reset",
+      "add": "Aggiungi adattatore",
+      "edit": "Modifica adattatore",
+      "mapId": "ID map",
       "map_added_message": "E' stata aggiunto un nuova adattatore",
       "map_edited_message": "L' adattatore è stato modificato con successo",
-      "confirmSave" : "Salva",
-      "confirmEdit" : "Modifica",
-      "save_as_new" : "Salva come nuovo",
-      "export" : "Scarica",
-      "confirm" : "Conferma"
+      "confirmSave": "Salva",
+      "confirmEdit": "Modifica",
+      "save_as_new": "Salva come nuovo",
+      "export": "Scarica",
+      "confirm": "Conferma"
     }
   },
   "login": {

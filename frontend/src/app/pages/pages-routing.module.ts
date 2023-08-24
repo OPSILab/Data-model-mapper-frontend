@@ -10,7 +10,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'dmm',
+        redirectTo: 'dmm-editor',
         pathMatch: 'full',
         //canActivate: [AuthGuard],
       },
@@ -20,8 +20,13 @@ const routes: Routes = [
         //canActivate: [AuthGuard],
       },
       {
-        path: 'dmm',
+        path: 'dmm-editor',
         loadChildren: () => import('./data-model-mapper/dmm.module').then((m) => m.DMMModule),
+        //canActivate: [AuthGuard],
+      },
+      {
+        path: 'home',
+        loadChildren: () => import('./home/home.module').then((m) => m.HomeModule),
         //canActivate: [AuthGuard],
       }
     ],
