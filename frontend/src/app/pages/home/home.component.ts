@@ -125,15 +125,16 @@ export class HomeComponent implements OnInit, OnDestroy {
           width: '65%',
           valuePrepareFunction: (cell, row) => row.description,
         },
+        /*
         details: {
           title: this.detailsLabel,
-          filter: false,
           sort: false,
+          filter: false,
           width: '5%',
           type: 'custom',
           valuePrepareFunction: (cell, row) => row,
           renderComponent: DetailsComponent,
-        },
+        },*/
         status: {
           title: this.statusLabel,
           sort: false,
