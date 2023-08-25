@@ -8,9 +8,6 @@ import { AdapterEntry } from '../../model/adapter/adapterEntry';
   providedIn: 'root',
 })
 export class DMMService {
-  deleteMap(id: any) {
-    throw new Error('Method not implemented.');
-  }
 
   private config: AppConfig;
 
@@ -26,6 +23,10 @@ export class DMMService {
 
   getMaps(): any {
     return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/maps").toPromise();
+  }
+
+  deleteMap(id: any) {
+    return this.http.delete<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/"+id).toPromise();
   }
 
   saveMap(adapter: Partial<AdapterEntry>, map, schema): any {
@@ -62,7 +63,7 @@ export class DMMService {
       name: adapter.name,
       status : adapter.status,
       map: map,
-      dataModel: schema[0]
+      dataModel: schema[0] || schema
     }).toPromise();
   }
 

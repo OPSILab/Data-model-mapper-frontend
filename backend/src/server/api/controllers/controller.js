@@ -73,7 +73,7 @@ module.exports = {
     modifyMap: async (req, res) => {
         //console.debug(req.body)
         process.res = res;
-        res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map, req.body.dataModel))
+        res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description))
     },
 
     modifyDataModel: async (req, res) => {
@@ -88,7 +88,7 @@ module.exports = {
 
     deleteMap: async (req, res) => {
         process.res = res;
-        res.send(await service.deleteMap(req.query.id))
+        res.send(await service.deleteMap(req.query.id || req.params.id))
     },
 
     deleteDataModel: async (req, res) => {

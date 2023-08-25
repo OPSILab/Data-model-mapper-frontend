@@ -33,6 +33,8 @@ module.exports = {
 
         const cli = require('../../../cli/setup');
 
+        console.debug(dataModel)
+
         if (getMapperList)
             process.res.send(await this.getMaps())
 
@@ -197,17 +199,17 @@ module.exports = {
         return await Source.findOneAndReplace({ id: id }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source })
     },
 
-    async modifyMap(name, id, map, dataModel) {
+    async modifyMap(name, id, map, dataModel, status, description) {
 
-        if (dataModel.$schema)
+        if (dataModel && dataModel.$schema)
             dataModel.schema = dataModel.$schema
-        if (dataModel.$id)
 
+        if (dataModel && dataModel.$id)
             dataModel.id = dataModel.$id
 
-        dataModel.$schema = dataModel.$id = undefined
+        if (dataModel) dataModel.$schema = dataModel.$id = undefined
 
-        return await Map.findOneAndReplace({ id: id }, { name: name, id: id, map: map, dataModel: dataModel })
+        return await Map.findOneAndReplace({ id: id }, { name: name, id: id, map: map, dataModel: dataModel, status: status, description: description })
     },
 
     async modifyDataModel(name, id, dataModel) {

@@ -89,7 +89,8 @@
       "validationErrors": "There are validation errors in the description.",
       "path": "Path",
       "show_error_details": "Show error details",
-      "hide_error_details": "Hide error details"
+      "hide_error_details": "Hide error details",
+      "delete":"Delete"
     },
     "adapters": {
       "name": "Name",
@@ -112,16 +113,22 @@
       "map" : "Map",
       "back" : "Back",
       "reset" : "Reset",
-      "add" : "Save adapter",
-      "edit" : "Edit adapter",
+      "add" : "Save record",
+      "edit" : "Edit record",
       "mapId" : "Map ID",
-      "map_added_message": "A new adapter was added",
-      "map_edited_message": "Adapter was successfully modified",
+      "map_added_message": "A new record was added",
+      "map_edited_message": "Record was successfully modified",
       "confirmSave" : "Save",
       "confirmEdit" : "Edit",
       "save_as_new" : "Save as new",
       "export" : "Download",
-      "confirm" : "Confirm"
+      "confirm" : "Confirm",
+      "register_message": "Are you sure to register and activate the record ?<br>Once registered, you will not be able to edit it until you disabled it first.",
+      "deregister_message": "Are you sure to disable the record ?\n",
+      "delete_message": "Are you sure to delete permanently the record ?\n",
+      "record_deleted_message": "Record deleted successfully!",
+      "record_registered_message": "Record registered successfully!",
+      "record_deregistered_message": "Record disabled successfully!"
     }
   },
   "login": {

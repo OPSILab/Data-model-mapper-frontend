@@ -19,7 +19,7 @@ router.put(encodeURI("/map"), modifyMap)
 router.put(encodeURI("/source"), modifySource)
 router.put(encodeURI("/dataModel"), modifyDataModel)
 
-router.delete(encodeURI("/map"), deleteMap)
+router.delete(encodeURI("/map/:id"), deleteMap)
 router.delete(encodeURI("/source"), deleteSource)
 router.delete(encodeURI("/dataModel"), deleteDataModel)
 

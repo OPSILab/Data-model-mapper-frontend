@@ -1,21 +1,21 @@
 <button nbButton outline aria-label="Name" status="basic" [nbContextMenu]="actions"
-  nbContextMenuTag="service-context-menu{{ value.connectorId }}">
+  nbContextMenuTag="service-context-menu{{ value.id }}">
   <nb-icon icon="settings-2"></nb-icon>
 </button>
-<!-- Register Connector modal ng-template -->
+<!-- Register Record modal ng-template -->
 <ng-template #confirmRegisterDialog let-data let-ref="dialogRef">
   <nb-card>
     <nb-card-header class="d-flex justify-content-between">
-      <h5>{{ 'general.connectors.register_connector' | translate: { connectorName: value.name } }}</h5>
+      <h5>{{ 'general.dmm.register' | translate: { recordName: value.name } }}</h5>
       <button nbButton ghost shape="rectangle" size="tiny" (click)="ref.close()">
         <i class="material-icons">close</i>
       </button>
     </nb-card-header>
     <nb-card-body class="p-5 text-center"
-      [innerHTML]="'general.connectors.register_connector_message' | translate: { connectorName: value.name }"></nb-card-body>
+      [innerHTML]="'general.dmm.register_message' | translate: { recordName: value.name }"></nb-card-body>
     <nb-card-footer class="d-flex justify-content-center">
       <button nbButton status="primary" size="small" (click)="ref.close(true)">
-        {{ 'general.connectors.register' | translate }}
+        {{ 'general.dmm.register' | translate }}
       </button>
       <button nbButton class="ml-2" ghost shape="rectangle" status="primary" (click)="ref.close()">
         {{ 'general.close' | translate }}
@@ -23,20 +23,20 @@
     </nb-card-footer>
   </nb-card>
 </ng-template>
-<!-- DeRegister Connector modal ng-template -->
+<!-- DeRegister Record modal ng-template -->
 <ng-template #confirmDeRegisterDialog let-data let-ref="dialogRef">
   <nb-card>
     <nb-card-header class="d-flex justify-content-between">
-      <h5>{{'general.connectors.deregister_connector' | translate: {connectorName: value.name} }}</h5>
+      <h5>{{'general.dmm.deregister' | translate: {recordName: value.name} }}</h5>
       <button nbButton ghost shape="rectangle" size="tiny" (click)="ref.close()">
         <i class="material-icons">close</i>
       </button>
     </nb-card-header>
     <nb-card-body class="p-5 text-center"
-      [innerHTML]="'general.connectors.deregister_connector_message' | translate: { connectorName: value.name }"></nb-card-body>
+      [innerHTML]="'general.dmm.deregister_message' | translate: { recordName: value.name }"></nb-card-body>
     <nb-card-footer class="d-flex justify-content-center">
       <button nbButton status="primary" size="small" (click)="ref.close(true)">
-        {{ 'general.connectors.deregister' | translate }}
+        {{ 'general.dmm.deregister' | translate }}
       </button>
       <button nbButton class="ml-2" ghost shape="rectangle" status="primary" (click)="ref.close()">
         {{ 'general.close' | translate }}
@@ -44,7 +44,7 @@
     </nb-card-footer>
   </nb-card>
 </ng-template>
-<!-- Delete Connector modal ng-template -->
+<!-- Delete Record modal ng-template -->
 <ng-template #confirmDeleteDialog let-data let-ref="dialogRef">
   <style>
     input {
@@ -96,13 +96,13 @@
   </style>
   <nb-card>
     <nb-card-header class="d-flex justify-content-between">
-      <h5>{{ 'general.connectors.delete_connector' | translate: {connectorName: value.name} }}</h5>
+      <h5>{{ 'general.dmm.delete' | translate: {recordName: value.name} }}</h5>
       <button nbButton ghost shape="rectangle" size="tiny" (click)="ref.close()">
         <i class="material-icons">close</i>
       </button>
     </nb-card-header>
     <nb-card-body class="p-5 text-center"
-      [innerHTML]="'general.connectors.delete_connector_message' | translate: {connectorName: value.name}"></nb-card-body>
+      [innerHTML]="'general.dmm.delete_message' | translate: {recordName: value.name}"></nb-card-body>
     <nb-card-footer class="d-flex justify-content-center">
       <button nbButton status="danger" size="small" (click)="data.callback()">
         {{ 'general.editor.delete' | translate }}
