@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'status',
   templateUrl: './status.component.html',
-  styleUrls: ['./status.component.css']
+  styleUrls: ['./status.component.scss']
 })
 export class StatusComponent implements OnInit {
 
@@ -12,9 +12,12 @@ export class StatusComponent implements OnInit {
     UNDER_DEVELOMPENT : "Under development"
   }
 
-  constructor() { }
+  completed: boolean = false;
 
-  ngOnInit(): void {
+  @Input() value: String;
+
+  ngOnInit() {
+    this.completed = this.value == "Completed";
   }
 
 }

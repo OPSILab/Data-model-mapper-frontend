@@ -31,9 +31,10 @@ export class DMMService {
 
   saveMap(adapter: Partial<AdapterEntry>, map, schema): any {
 
+    /*
     if (!schema) {
       throw new Error("Schema required")
-    }
+    }*/
 
     if (!map) {
       throw new Error("Map required")
