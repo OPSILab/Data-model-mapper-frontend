@@ -29,7 +29,7 @@ export class DMMService {
     return this.http.delete<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/"+id).toPromise();
   }
 
-  saveMap(adapter: Partial<AdapterEntry>, map, schema): any {
+  saveMap(adapter: Partial<AdapterEntry>, status, description, map, schema): any {
 
     /*
     if (!schema) {
@@ -43,14 +43,14 @@ export class DMMService {
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/register", {
       id: adapter.adapterId,
       name: adapter.name,
-      description: adapter.description,
-      status: adapter.status,
+      status : status,
+      description : description,
       map: map,
       dataModel: schema[0]
     }).toPromise();
   }
 
-  updateMap(adapter: Partial<AdapterEntry>, map, schema): any {
+  updateMap(adapter: Partial<AdapterEntry>, status, description, map, schema): any {
     console.debug(adapter)
 
     if (!schema) {
@@ -64,7 +64,8 @@ export class DMMService {
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map", {
       id: adapter.adapterId,
       name: adapter.name,
-      status : adapter.status,
+      status : status,
+      description : description,
       map: map,
       dataModel: schema[0] || schema
     }).toPromise();

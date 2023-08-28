@@ -71,7 +71,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   updateAdapter() {
     let type = this.inputType
-    this.dialogService.open(CreateMapComponent, { context: { value: this.adapter, update: true, sourceDataType: type, jsonMap: JSON.parse(mapperEditor.getText()), schema: this.schemaJson } }).onClose.subscribe(async (adapter) => {
+    this.dialogService.open(CreateMapComponent, { context: { value: this.adapter, name: this.name, update: true, sourceDataType: type, jsonMap: JSON.parse(mapperEditor.getText()), schema: this.schemaJson } }).onClose.subscribe(async (adapter) => {
       if (adapter) {
         this.adapter = adapter;
       }
@@ -370,6 +370,7 @@ export class DMMComponent implements OnInit, OnChanges {
   saveAdapter() {
     this.dialogService.open(CreateMapComponent, { context: { save: true, jsonMap: JSON.parse(mapperEditor.getText()), schema: this.schemaJson } }).onClose.subscribe(async (adapter) => {
       if (adapter) {
+        console.log(adapter)
         this.adapter = adapter;
         this.isNew = true
       }
@@ -383,6 +384,12 @@ export class DMMComponent implements OnInit, OnChanges {
         mapSettings.dataModel
       ];
       map = mapSettings.map
+      this.adapter = {}
+      this.adapter.adapterId = mapSettings.id
+      this.name = mapSettings.name
+      this.adapter.description = mapSettings.description
+      this.adapter.status = mapSettings.status
+      this.isNew = true
       mapperEditor.update(map)
       this.selectedSchema = "---select schema---"
     }

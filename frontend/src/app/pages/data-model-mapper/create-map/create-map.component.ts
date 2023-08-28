@@ -87,16 +87,16 @@ export class CreateMapComponent implements OnInit {
         throw new Error("Adapter ID must be set");
 
       if (this.save) {
-        await this.dmmService.saveMap({ name, adapterId, status, description }, this.jsonMap, this.schema);
-        this.ref.close({ name, adapterId });
-        this.editedValue.emit(this.value);
+        await this.dmmService.saveMap({ name, adapterId, status, description }, status, description, this.jsonMap, this.schema);
+        this.ref.close({ name, adapterId, status, description});
+        this.editedValue.emit({ name, adapterId, status, description });
         this.showToast('primary', this.translate.instant('general.dmm.map_added_message'), '');
       }
 
       else {
-        await this.dmmService.updateMap({ name, adapterId, status, description }, this.jsonMap, this.schema);
-        this.ref.close({ name, adapterId });
-        this.editedValue.emit(this.value);
+        await this.dmmService.updateMap({ name, adapterId, status, description }, status, description, this.jsonMap, this.schema);
+        this.ref.close({ name, adapterId, status, description });
+        this.editedValue.emit({ name, adapterId, status, description });
         this.showToast('primary', this.translate.instant('general.dmm.map_edited_message'), '');
       }
     }
