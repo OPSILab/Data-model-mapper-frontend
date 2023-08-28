@@ -77,7 +77,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
         .subscribe((event) => {
           switch (event.item.data) {
             case 'edit':
-              this.router.navigate(['/pages/dmm-editor'])
+              this.router.navigate(['/pages/dmm-editor', { inputID: this.value.id}])
               break;
             case 'delete':
               this.openDeleteFromRegistryDialog();
@@ -90,7 +90,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
               break;
             case 'view service':
               //this.showServiceInfoModal();
-              this.router.navigate(['/pages/dmm-editor'])
+              this.router.navigate(['/pages/dmm-editor', { inputID: this.value.id}])
               //this.router.navigate(['/pages/dmm-editor', { id: this.value.id, readOnly: true }]);
               break;
             default:

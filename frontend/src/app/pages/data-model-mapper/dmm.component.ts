@@ -12,6 +12,7 @@ import { DialogDataMapComponent } from './dialog-dataMap/dialog-dataMap.componen
 import { CreateMapComponent } from './create-map/create-map.component';
 //import { ExportFileComponent } from './export-file/export-file.component';
 import { ErrorDialogAdapterService } from '../error-dialog/error-dialog-adapter.service';
+import { ActivatedRoute } from '@angular/router';
 
 //let map = {}, mapperEditor, mapOptions: string[]
 @Component({
@@ -22,6 +23,7 @@ import { ErrorDialogAdapterService } from '../error-dialog/error-dialog-adapter.
 
 export class DMMComponent implements OnInit, OnChanges {
 
+  inputID
   map
   //mapperEditor
   mapOptions
@@ -73,6 +75,7 @@ export class DMMComponent implements OnInit, OnChanges {
     private windowService: NbWindowService,
     private errorService: ErrorDialogAdapterService,
     private dmmService: DMMService,
+    private route: ActivatedRoute
   ) { }
 
   toggleView() {
@@ -89,6 +92,8 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   schemaChanged($event) {
+    //if (this.inputID)
+    console.debug(this.inputID)
     if ($event && $event != "---select schema---") {
       if (this.selectedSchema)
         this.schemaJson = [
@@ -102,7 +107,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
-  reset(){
+  reset() {
     this.adapter = {}
     this.isNew = false
     this.selectedDataModel = {
@@ -182,6 +187,11 @@ export class DMMComponent implements OnInit, OnChanges {
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, preview);
     else
       this.outputEditor.update(preview)
+
+    if (this.route.snapshot.params['inputID'] as string) {
+      this.inputID = this.route.snapshot.params['inputID'] as string;
+      this.mapChanged(this.inputID)
+    }
   }
 
   schema() {
