@@ -95,6 +95,16 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
+  reset(){
+    this.adapter = {}
+    this.isNew = false
+    this.selectedDataModel = {
+      "info": "set your schema here"
+    }
+    mapperEditor.update({})
+    this.schemaEditor.update(this.selectedDataModel)
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     console.debug(changes);
   }

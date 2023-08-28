@@ -100,6 +100,7 @@
       "validationErrors": "There are validation errors in the Adapter description."
     },
     "dmm" : {
+      "create_new" : "Create new",
       "register" : "Register",
       "deregister": "Deregister",
       "delete": "Delete",
