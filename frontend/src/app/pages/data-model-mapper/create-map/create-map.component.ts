@@ -25,6 +25,8 @@ export class CreateMapComponent implements OnInit {
   mappers: Mapper[];
   createAdapter = false
   mapId: string
+  status
+  description
   save
   update
   updateAdapter
@@ -77,20 +79,22 @@ export class CreateMapComponent implements OnInit {
     try {
 
       let name = this.name,
-        adapterId = this.adapterId
+        adapterId = this.adapterId,
+        description = this.description,
+        status = this.status
 
       if (adapterId == '' || adapterId == null)
         throw new Error("Adapter ID must be set");
 
       if (this.save) {
-        await this.dmmService.saveMap({ name, adapterId }, this.jsonMap, this.schema);
+        await this.dmmService.saveMap({ name, adapterId, status, description }, this.jsonMap, this.schema);
         this.ref.close({ name, adapterId });
         this.editedValue.emit(this.value);
         this.showToast('primary', this.translate.instant('general.dmm.map_added_message'), '');
       }
 
       else {
-        await this.dmmService.updateMap({ name, adapterId }, this.jsonMap, this.schema);
+        await this.dmmService.updateMap({ name, adapterId, status, description }, this.jsonMap, this.schema);
         this.ref.close({ name, adapterId });
         this.editedValue.emit(this.value);
         this.showToast('primary', this.translate.instant('general.dmm.map_edited_message'), '');
@@ -118,6 +122,18 @@ export class CreateMapComponent implements OnInit {
       })
       if (!this.name) errors.push({
         "path": "root.name",
+        "property": "minLength",
+        "message": "Value required",
+        "errorcount": 1
+      })
+      if (!this.status) errors.push({
+        "path": "root.status",
+        "property": "minLength",
+        "message": "Value required",
+        "errorcount": 1
+      })
+      if (!this.description) errors.push({
+        "path": "root.description",
         "property": "minLength",
         "message": "Value required",
         "errorcount": 1

@@ -95,6 +95,8 @@
     "adapters": {
       "name": "Nome",
       "adapterId": "ID adattatore",
+      "status" : "Stato",
+      "description" : "Descrizione",
       "validationErrors": "Ci sono degli errori di validazione nella descrizione dell'adapter inserito."
     },
     "dmm": {

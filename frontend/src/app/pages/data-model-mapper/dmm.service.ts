@@ -43,6 +43,8 @@ export class DMMService {
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/register", {
       id: adapter.adapterId,
       name: adapter.name,
+      description: adapter.description,
+      status: adapter.status,
       map: map,
       dataModel: schema[0]
     }).toPromise();

@@ -4,6 +4,7 @@ const map = mongoose.Schema({
   name: String,
   id: String,
   status: String,
+  description: String,
   map: {},
   dataModel : {}
 }, { versionKey: false });

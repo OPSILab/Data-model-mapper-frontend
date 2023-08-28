@@ -185,8 +185,8 @@ module.exports = {
         else process.res.status(400).send({ error: "id already exists" })
     },//TODO replace with insertOne
 
-    async insertMap(name, id, map, dataModel) {
-        if (!await Map.findOne({ id: id })) return await Map.insertMany([{ name: name, id: id, map: map, dataModel: dataModel }])
+    async insertMap(name, id, map, dataModel, status, description) {
+        if (!await Map.findOne({ id: id })) return await Map.insertMany([{ name: name, id: id, map: map, dataModel: dataModel, status: status, description: description }])
         else process.res.status(400).send({ error: "id already exists" })
     },//TODO replace with insertOne
 
