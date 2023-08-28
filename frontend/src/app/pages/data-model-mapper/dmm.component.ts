@@ -190,6 +190,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
     if (this.route.snapshot.params['inputID'] as string) {
       this.inputID = this.route.snapshot.params['inputID'] as string;
+      this.selectMap = this.inputID
       this.mapChanged(this.inputID)
     }
   }
@@ -434,6 +435,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.isNew = true
       this.mapperEditor.update(this.map)
       this.selectedSchema = "---select schema---"
+      if (mapSettings.dataModel) this.schemaEditor.update(mapSettings.dataModel)
     }
   }
 
