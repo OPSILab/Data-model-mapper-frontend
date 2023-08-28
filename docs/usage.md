@@ -100,7 +100,7 @@ Click on **Select path** and select the path where you want to start analyzing y
 
 ## Mapper
 
-In this section you can set the map settings
+In this section you can set the map record
 
 ![](images/mapper.png)
 
@@ -112,7 +112,7 @@ this time, other 2 view features are available :
 
 - *Tree*.  A tree like view, with a button near each field to easily map your subfield
 
-- *Preview*.  A read only JSON map settings preview
+- *Preview*.  A read only JSON map record preview
 
 **Code** and **View** are the same as source editor.
 
@@ -169,7 +169,7 @@ You can also import a schema from Data model mapper DB by clicking **Select Json
 
 ![](images/select-schema.png)
 
-or import the entire map settings by clicking **IMPORT** on the top of the page
+or import the entire map record by clicking **IMPORT** on the top of the page
 
 ![](images/home.png)
 
@@ -191,9 +191,9 @@ Click **PREVIEW** and you'll see the output preview in an JSON editor similar to
 
 If the Output preview is good, you can save the map or export it.
 
-If you want to download map settings, just click **EXPORT** button.
+If you want to download map record, just click **EXPORT** button.
 
-If you want to save map settings into Data model mapper Database , click **SAVE AS NEW**.
+If you want to save map record into Data model mapper Database , click **SAVE AS NEW**.
 
 ![](images/home.png)
 
@@ -201,11 +201,11 @@ A save dialog will appear.
 
 ![](images/save-dialog.png)
 
-Chose a univoque Map ID and a name for the map settings and then click save.
+Chose a univoque Map ID and a name for the map record and then click save.
 
 ## Updating
 
-If you want to update map settings, click on **UPDATE**  button
+If you want to update map record, click on **UPDATE**  button
 
 ![](images/home-after-save.png)
 
