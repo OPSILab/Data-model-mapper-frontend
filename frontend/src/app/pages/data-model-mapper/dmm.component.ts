@@ -25,6 +25,7 @@ export class DMMComponent implements OnInit, OnChanges {
   sourceEditor: any;
   sourceEditorContainer: any;
   mapperEditorContainer: any;
+  schemaEditorContainer
   outputEditorContainer: any;
   selectBox: any;
   inputType: any;
@@ -56,6 +57,8 @@ export class DMMComponent implements OnInit, OnChanges {
   adapterId
   partialCsv: any;
   rows: string[];
+  schemaEditor: any;
+  selectedDataModel;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -87,6 +90,8 @@ export class DMMComponent implements OnInit, OnChanges {
       map = this.getAllNestedProperties(this.schemaJson[0]);
       mapperEditor.update(map)
       this.selectMap = "---select map---"
+      this.selectedDataModel = this.schemaJson
+      this.schemaEditor.update(this.selectedDataModel)
     }
   }
 
@@ -107,6 +112,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
     this.sourceEditorContainer = this.document.getElementById('jsoneditor');
     this.mapperEditorContainer = this.document.getElementById('jsoneditor2');
+    this.schemaEditorContainer = this.document.getElementById('schemaEditor');
     this.outputEditorContainer = this.document.getElementById('jsoneditor3');
     this.selectBox = <HTMLInputElement>this.document.getElementById('input-type');
     this.csvtable = this.document.getElementById('csv-table');
@@ -129,11 +135,18 @@ export class DMMComponent implements OnInit, OnChanges {
     this.sourceJson = {
       "info": "set your source json here"
     }
+
+    this.selectedDataModel = {
+      "info": "set your schema here"
+    }
+
     let preview = {
       "preview": "set the source, set the json map and click preview to see the output json preview"
     }
 
     this.sourceEditor = new JSONEditor(this.sourceEditorContainer, options, this.sourceJson);
+
+    this.schemaEditor = new JSONEditor(this.schemaEditorContainer, options, this.selectedDataModel)
 
     this.outputEditorOptions = {
       mode: 'view',
