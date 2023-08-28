@@ -128,7 +128,12 @@
       "delete_message": "Are you sure to delete permanently the record ?\n",
       "record_deleted_message": "Record deleted successfully!",
       "record_registered_message": "Record registered successfully!",
-      "record_deregistered_message": "Record disabled successfully!"
+      "record_deregistered_message": "Record disabled successfully!",
+      "info" : "Info",
+      "id" : "ID",
+      "name" : "Name",
+      "dataModel" : "Data model",
+      "view_editor" : "View on editor"
     }
   },
   "login": {
