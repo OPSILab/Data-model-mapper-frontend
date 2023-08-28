@@ -83,7 +83,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   async addNew(): Promise<void> {
     try {
-      void this.router.navigate(['/data-model-mapper-gui/pages/dmm-editor'])
+      this.router.navigate(['/pages/dmm-editor'])
     }
     catch (error) {
       console.error("error in addNew")
