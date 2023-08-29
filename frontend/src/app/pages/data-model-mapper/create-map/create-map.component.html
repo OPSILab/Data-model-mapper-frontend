@@ -36,8 +36,10 @@
         <br>
         <label for="status" fullWidth>{{ 'general.adapters.status' | translate }}</label>
         <br>
-        <input [(ngModel)]="status" nbInput type="text" fullWidth
-          placeholder="{{ 'general.adapters.status' | translate }}" [ngModelOptions]="{standalone: true}" />
+        <nb-select fullWidth placeholder="Under development" [(ngModel)]="status" (click)="fixBrokenPageBug()" [ngModelOptions]="{standalone: true}">
+          <nb-option value="Completed">Completed</nb-option>
+          <nb-option value="Under development">Under development</nb-option>
+        </nb-select>
         <br>
         <br>
         <h3>

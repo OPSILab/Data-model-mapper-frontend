@@ -33,7 +33,7 @@ module.exports = {
 
         const cli = require('../../../cli/setup');
 
-        console.debug(dataModel)
+        //console.debug(dataModel)
 
         if (getMapperList)
             process.res.send(await this.getMaps())
