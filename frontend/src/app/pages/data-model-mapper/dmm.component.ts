@@ -416,6 +416,15 @@ export class DMMComponent implements OnInit, OnChanges {
         console.log(adapter)
         this.adapter = adapter;
         this.isNew = true
+        this.maps.push({
+          id : adapter.adapterId,
+          name:adapter.name,
+          description:adapter.description,
+          status:adapter.status,
+          map:JSON.parse(this.mapperEditor.getText()),
+          dataModel:this.schemaJson
+        })
+        this.selectMap = adapter.adapterId
       }
     });
   }
