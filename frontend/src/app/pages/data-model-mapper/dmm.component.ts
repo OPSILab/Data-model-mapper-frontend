@@ -14,6 +14,8 @@ import { CreateMapComponent } from './create-map/create-map.component';
 import { ErrorDialogAdapterService } from '../error-dialog/error-dialog-adapter.service';
 import { ActivatedRoute } from '@angular/router';
 
+let mapOptionsGl
+
 //let map = {}, mapperEditor, mapOptions: string[]
 @Component({
   selector: 'app-root',
@@ -70,6 +72,8 @@ export class DMMComponent implements OnInit, OnChanges {
   };
   dataModelURL: any;
   sourceDataURL: any;
+  selectedSource
+  sources: any;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -86,7 +90,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   updateAdapter() {
     let type = this.inputType
-    this.dialogService.open(CreateMapComponent, { context: { value: this.adapter, name: this.name, update: true, sourceDataType: type, jsonMap: JSON.parse(this.mapperEditor.getText()), schema: this.schemaJson, config: { delimiter: this.separatorItem }, sourceDataURL: this.sourceDataURL, dataModelURL: this.dataModelURL, sourceData: this.sourceEditor.getText()  } }).onClose.subscribe(async (adapter) => {
+    this.dialogService.open(CreateMapComponent, { context: { value: this.adapter, name: this.name, update: true, sourceDataType: type, jsonMap: JSON.parse(this.mapperEditor.getText()), schema: this.schemaJson, config: { delimiter: this.separatorItem }, sourceDataURL: this.sourceDataURL, dataModelURL: this.dataModelURL, sourceData: this.sourceEditor.getText() } }).onClose.subscribe(async (adapter) => {
       if (adapter) {
         this.adapter = adapter;
       }
@@ -94,8 +98,6 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   schemaChanged($event) {
-    //if (this.inputID)
-    console.debug(this.inputID)
     if ($event && $event != "---select schema---") {
       if (this.selectedSchema)
         this.schemaJson = [
@@ -107,6 +109,20 @@ export class DMMComponent implements OnInit, OnChanges {
       this.selectedDataModel = this.schemaJson
       this.schemaEditor.update(this.selectedDataModel)
     }
+  }
+
+  sourceChanged($event) {
+
+    //if ($event && $event != "---select schema---") {
+    if (this.selectedSource)
+      if (this.inputType == "json")
+        this.sourceJson = [
+          this.source()
+        ];
+      else
+        this.csvSourceData = this.source()
+    this.sourceEditor.update(this.sourceJson)
+    //}
   }
 
   reset() {
@@ -144,6 +160,7 @@ export class DMMComponent implements OnInit, OnChanges {
     try {
       await this.loadMapperList()
       await this.loadSchemaList()
+      await this.loadSourceList()
     }
     catch (error) {
       console.error(error)
@@ -201,12 +218,20 @@ export class DMMComponent implements OnInit, OnChanges {
     return this.schemas.filter(filteredSchema => filteredSchema.id == this.selectedSchema)[0].dataModel
   }
 
+  source() {
+    return this.sources.filter(filteredSource => filteredSource.id == this.selectedSource)[0].source || this.sources.filter(filteredSource => filteredSource.id == this.selectedSource)[0].sourceCSV
+  }
+
   async loadMapperList() {
     this.maps = await this.dmmService.getMaps();
   }
 
   async loadSchemaList() {
     this.schemas = await this.dmmService.getSchemas();
+  }
+
+  async loadSourceList() {
+    this.sources = await this.dmmService.getSources();
   }
 
   async testAdapter() {
@@ -292,16 +317,19 @@ export class DMMComponent implements OnInit, OnChanges {
 
   onUpdatePathForDataMap(event) {
 
-    this.mapOptions = this.selectMapJsonOptions(this.sourceEditor.getText(), event);
+    mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), event);
     this.setMapEditor();
   }
 
   setMapEditor() {
 
     var dialogService = this.dialogService;
-    var mOptions = this.mapOptions
+    //let mOptions = mapOptionsGl = this.mapOptions
     let map = this.map
     let mapperEditor = this.mapperEditor
+
+    //console.debug(mOptions)
+    console.debug(mapOptionsGl)
 
     this.options2 = {
       mode: 'tree',
@@ -317,9 +345,11 @@ export class DMMComponent implements OnInit, OnChanges {
 
         var selectPath = path;
         function pathToMap() {
+          //this.m = mOptions
+          console.debug(mapOptionsGl)
           dialogService
             .open(DialogDataMapComponent, {
-              context: { mapOptions: mOptions, selectPath: selectPath },
+              context: { mapOptions: mapOptionsGl, selectPath: selectPath },
             }).onClose.subscribe((value) => {
               this.updateMapper(selectPath, value)
             });
@@ -452,7 +482,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   updateCSVTable() {
     this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem)
-    this.mapOptions = this.csvSourceData.slice(0, this.csvSourceData.indexOf("\n")).split(this.separatorItem)
+    mapOptionsGl = this.csvSourceData.slice(0, this.csvSourceData.indexOf("\n")).split(this.separatorItem)
     this.setMapEditor();
   }
 
@@ -485,7 +515,7 @@ export class DMMComponent implements OnInit, OnChanges {
             this.sourceDataURL = result.source
             this.csvSourceData = result.content;
             this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem);
-            this.mapOptions = this.csvSourceData.slice(0, this.csvSourceData.indexOf("\n")).split(this.separatorItem);
+            mapOptionsGl = this.csvSourceData.slice(0, this.csvSourceData.indexOf("\n")).split(this.separatorItem);
 
           } else if (field == 'source') {
             this.sourceDataURL = result.source
@@ -499,7 +529,7 @@ export class DMMComponent implements OnInit, OnChanges {
             else
               this.sourceEditor.setText(result.content);
 
-            this.mapOptions = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
+            mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
             this.paths = this.selectMapJsonOptions(result.content, '')
 
             this.onUpdatePathForDataMap("")
@@ -515,6 +545,9 @@ export class DMMComponent implements OnInit, OnChanges {
 
   selectMapJsonOptions(content: string, path: string): string[] {
 
+    let optionsLoc = this.getKeys(_.get(JSON.parse(content), path + '[0]', JSON.parse(content)), true, true)
+    console.debug(optionsLoc)
+    return optionsLoc
     return this.getKeys(_.get(JSON.parse(content), path + '[0]', JSON.parse(content)), true, true)
   }
 

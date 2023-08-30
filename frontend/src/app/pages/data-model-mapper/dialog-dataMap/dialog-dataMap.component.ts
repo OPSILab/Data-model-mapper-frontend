@@ -32,7 +32,8 @@ export class DialogDataMapComponent implements OnInit {
   elements = [0]
   dataMap
 
-  @Input() mapOptions: string[];
+  //@Input()
+  mapOptions: string[];
   @Input() selectPath: string;
   @Output() editedValue = new EventEmitter<unknown>();
   filteredMapOptions$: Observable<string[]>;
@@ -91,6 +92,8 @@ export class DialogDataMapComponent implements OnInit {
   }
 
   async ngOnInit() {
+
+    console.debug(this)
 
     let sourceMapOptions = []
 
