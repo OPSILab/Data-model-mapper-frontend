@@ -115,13 +115,16 @@ export class DMMComponent implements OnInit, OnChanges {
 
     //if ($event && $event != "---select schema---") {
     if (this.selectedSource)
-      if (this.inputType == "json")
-        this.sourceJson = [
-          this.source()
-        ];
+      if (this.inputType == "json") {
+        this.sourceJson = this.source();
+        this.sourceEditor.update(this.sourceJson)
+        mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
+        this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
+        this.onUpdatePathForDataMap("")
+      }
       else
         this.csvSourceData = this.source()
-    this.sourceEditor.update(this.sourceJson)
+
     //}
   }
 
