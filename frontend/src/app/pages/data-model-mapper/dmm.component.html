@@ -45,7 +45,7 @@
               <i>{{sourceRef}}</i></a></p>
           <p *ngIf="sourceRef!==''&&sourceRefFormat==='file'">File: <i>{{sourceRef}}</i></p>
           <div class="mb-2">
-            <nb-select placeholder="Select Input Type" size="small" (selectedChange)="onUpdateInputType($event)">
+            <nb-select [(ngModel)]="inputType"placeholder="Select Input Type" size="small" (selectedChange)="onUpdateInputType($event)">
               <nb-option value="csv">CSV</nb-option>
               <nb-option value="json">JSON</nb-option>
             </nb-select>

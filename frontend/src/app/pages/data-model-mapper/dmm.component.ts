@@ -498,6 +498,19 @@ export class DMMComponent implements OnInit, OnChanges {
       this.schemaJson = [
         mapSettings.dataModel
       ];
+      //this.sourceChanged(mapSettings.sourceData)//TODO add ID/URL/in reference
+      //this.inputType = "suca"
+      this.onUpdateInputType(mapSettings.sourceDataType)
+      if (mapSettings.sourceDataType == "json") {
+        //this.sourceJson = this.source();
+        this.sourceEditor.update(mapSettings.sourceData)
+        mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
+        this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
+        this.onUpdatePathForDataMap("")
+      }
+      else
+        this.csvSourceData = mapSettings.sourceData
+
       this.map = mapSettings.map
       this.adapter = {}
       this.adapter.adapterId = mapSettings.id
