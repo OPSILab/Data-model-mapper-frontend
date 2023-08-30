@@ -181,6 +181,7 @@ export class CreateMapComponent implements OnInit {
         else this.errorService.openErrorDialog({
           error: 'EDITOR_VALIDATION_ERROR', validationErrors: errors
         });
+      else this.errorService.openErrorDialog(error);
     }
   }
 

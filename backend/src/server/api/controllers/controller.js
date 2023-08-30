@@ -1,5 +1,5 @@
 const service = require("../services/service.js")
-const utils = require ("../../../utils/utils.js")
+const utils = require("../../../utils/utils.js")
 const log = require('../../../utils/logger').app(module);
 
 module.exports = {
@@ -9,10 +9,10 @@ module.exports = {
         //console.debug(req.body)
 
         process.res = res;
-        let {sourceData, map, dataModel} = utils.bodyMapper(req.body)
+        let { sourceData, map, dataModel } = utils.bodyMapper(req.body)
         await service.mapData(sourceData, map, dataModel, req.body.adapterID, req.body.config)
-        try {if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")}
-        catch(error){console.error(error)}
+        try { if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.") }
+        catch (error) { console.error(error) }
         service.error = null
         log.debug("service.mapData end");
     },
@@ -55,10 +55,15 @@ module.exports = {
 
     insertMap: async (req, res) => {
         process.res = res;
-        res.send(await service.insertMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
-            req.body.sourceData, req.body.sourceDataID,req.body.sourceDataIn,req.body.sourceDataURL,req.body.dataModelIn,req.body.dataModelID,req.body.dataModelURL,
-            req.body.config,req.body.sourceDataType))
-        log.debug("Map inserted");
+        try {
+            res.send(await service.insertMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
+                req.body.sourceData, req.body.sourceDataID, req.body.sourceDataIn, req.body.sourceDataURL, req.body.dataModelIn, req.body.dataModelID, req.body.dataModelURL,
+                req.body.config, req.body.sourceDataType))
+            log.debug("Map inserted");
+        }
+        catch (error) {
+            log.error(error.message)
+        }
     },
 
     insertDataModel: async (req, res) => {

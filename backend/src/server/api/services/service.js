@@ -130,17 +130,18 @@ module.exports = {
             }
         }
 
-        if (source.url) {
-            source.download = await axios.get(source.url)
-            source.data = source.download.data
-        }
-
         if (source.data) {
             fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
                 if (err) throw err;
                 log.debug('File sourceData temp is created successfully.');
             })
         }
+
+        else if (source.url) {
+            source.download = await axios.get(source.url)
+            source.data = source.download.data
+        }
+
         if (dataModel.data) {
             fs.writeFile(
                 //dataModel.schema_id || 
@@ -149,6 +150,12 @@ module.exports = {
                     log.debug('File dataModel temp is created successfully.');
                 })
         }
+
+        else if (dataModel.url) {
+            dataModel.download = await axios.get(dataModel.url)
+            dataModel.data = dataModel.download.data
+        }
+
         await cli(
             source.name ? config.sourceDataPath + source.name : config.sourceDataPath + 'sourceFileTemp.' + source.type,
             map,
@@ -188,6 +195,8 @@ module.exports = {
     async insertMap(name, id, map, dataModel, status, description,
         sourceData, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
         config, sourceDataType) {
+        if (!dataModelIn && !dataModelID && !dataModelURL && !dataModel)
+            process.res.status(400).send({ error: "schema is required" })
         if (!await Map.findOne({ id: id }))
             return await Map.insertMany([{
                 name: name,
@@ -218,7 +227,7 @@ module.exports = {
         return await Source.findOneAndReplace({ id: id }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source })
     },
 
-    async modifyMap(name, id, map, dataModel, status, description,sourceData, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
+    async modifyMap(name, id, map, dataModel, status, description, sourceData, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
         config, sourceDataType) {
 
         if (dataModel && dataModel.$schema)
