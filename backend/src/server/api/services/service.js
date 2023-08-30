@@ -33,12 +33,12 @@ module.exports = {
 
         const cli = require('../../../cli/setup');
 
-        //console.debug(dataModel)
+        console.debug(dataModel)
 
         if (getMapperList)
             process.res.send(await this.getMaps())
 
-        if (!(source.name || (source.type && (source.data || source.url || source.id))) || (!map || !(dataModel.id || dataModel.data || dataModel.name)) && !adapterID) {
+        if (!(source.name || (source.type && (source.data || source.url || source.id))) || (!map || !(dataModel.id || dataModel.data || dataModel.name || dataModel.url)) && !adapterID) {
             let error = {}
             error.message = "Missing fields"
             error.source = source

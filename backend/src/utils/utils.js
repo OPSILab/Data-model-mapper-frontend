@@ -227,7 +227,7 @@ const bodyMapper = (body) => {
         name: body.dataModelIn,
         id: body.dataModelID,
         data: body.dataModel,
-        url: body.sourceDataURL,
+        url: body.dataModelURL,
         schema_id: body.dataModel?.$id
     }   
 
