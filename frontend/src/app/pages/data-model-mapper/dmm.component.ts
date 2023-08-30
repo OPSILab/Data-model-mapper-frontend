@@ -90,7 +90,22 @@ export class DMMComponent implements OnInit, OnChanges {
 
   updateAdapter() {
     let type = this.inputType
-    this.dialogService.open(CreateMapComponent, { context: { value: this.adapter, name: this.name, update: true, sourceDataType: type, jsonMap: JSON.parse(this.mapperEditor.getText()), schema: this.schemaJson, config: { delimiter: this.separatorItem }, sourceDataURL: this.sourceDataURL, dataModelURL: this.dataModelURL, sourceData: this.sourceEditor.getText() } }).onClose.subscribe(async (adapter) => {
+    this.dialogService.open(CreateMapComponent, {
+      context: {
+        value: this.adapter,
+        name: this.name,
+        update: true,
+        sourceDataType: type,
+        jsonMap: JSON.parse(this.mapperEditor.getText()),
+        schema: this.schemaJson,
+        config: {
+          delimiter: this.separatorItem
+        },
+        sourceDataURL: this.sourceDataURL,
+        dataModelURL: this.dataModelURL,
+        sourceData: this.inputType == "json" ? this.sourceEditor.getText() : this.csvSourceData
+      }
+    }).onClose.subscribe(async (adapter) => {
       if (adapter) {
         this.adapter = adapter;
       }
@@ -446,7 +461,20 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   saveAdapter() {
-    this.dialogService.open(CreateMapComponent, { context: { save: true, jsonMap: JSON.parse(this.mapperEditor.getText()), schema: this.schemaJson, config: { delimiter: this.separatorItem }, sourceDataURL: this.sourceDataURL, dataModelURL: this.dataModelURL, sourceData: this.sourceEditor.getText() } }).onClose.subscribe(async (adapter) => {
+    this.dialogService.open(CreateMapComponent, {
+      context: {
+        save: true,
+        jsonMap: JSON.parse(this.mapperEditor.getText()),
+        schema: this.schemaJson,
+        config: {
+          delimiter: this.separatorItem
+        },
+        sourceDataType: this.inputType,
+        sourceDataURL: this.sourceDataURL,
+        dataModelURL: this.dataModelURL,
+        sourceData: this.inputType == "json" ? this.sourceEditor.getText() : this.csvSourceData
+      }
+    }).onClose.subscribe(async (adapter) => {
       if (adapter) {
         console.log(adapter)
         this.adapter = adapter;
