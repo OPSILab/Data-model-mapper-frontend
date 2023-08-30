@@ -68,6 +68,8 @@ export class DMMComponent implements OnInit, OnChanges {
     mode: string; modes: string[]; // allowed modes
     onModeChange: (newMode: any, oldMode: any) => void; onCreateMenu: (items: any, node: any) => any;
   };
+  dataModelURL: any;
+  sourceDataURL: any;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -84,7 +86,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   updateAdapter() {
     let type = this.inputType
-    this.dialogService.open(CreateMapComponent, { context: { value: this.adapter, name: this.name, update: true, sourceDataType: type, jsonMap: JSON.parse(this.mapperEditor.getText()), schema: this.schemaJson } }).onClose.subscribe(async (adapter) => {
+    this.dialogService.open(CreateMapComponent, { context: { value: this.adapter, name: this.name, update: true, sourceDataType: type, jsonMap: JSON.parse(this.mapperEditor.getText()), schema: this.schemaJson, config: { delimiter: this.separatorItem }, sourceDataURL: this.sourceDataURL, dataModelURL: this.dataModelURL, sourceData: this.sourceEditor.getText()  } }).onClose.subscribe(async (adapter) => {
       if (adapter) {
         this.adapter = adapter;
       }
@@ -411,18 +413,18 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   saveAdapter() {
-    this.dialogService.open(CreateMapComponent, { context: { save: true, jsonMap: JSON.parse(this.mapperEditor.getText()), schema: this.schemaJson } }).onClose.subscribe(async (adapter) => {
+    this.dialogService.open(CreateMapComponent, { context: { save: true, jsonMap: JSON.parse(this.mapperEditor.getText()), schema: this.schemaJson, config: { delimiter: this.separatorItem }, sourceDataURL: this.sourceDataURL, dataModelURL: this.dataModelURL, sourceData: this.sourceEditor.getText() } }).onClose.subscribe(async (adapter) => {
       if (adapter) {
         console.log(adapter)
         this.adapter = adapter;
         this.isNew = true
         this.maps.push({
-          id : adapter.adapterId,
-          name:adapter.name,
-          description:adapter.description,
-          status:adapter.status,
-          map:JSON.parse(this.mapperEditor.getText()),
-          dataModel:this.schemaJson
+          id: adapter.adapterId,
+          name: adapter.name,
+          description: adapter.description,
+          status: adapter.status,
+          map: JSON.parse(this.mapperEditor.getText()),
+          dataModel: this.schemaJson
         })
         this.selectMap = adapter.adapterId
       }
@@ -466,6 +468,8 @@ export class DMMComponent implements OnInit, OnChanges {
           context: { type: typeSource },
         })
       .onClose.subscribe((result: { content: string; source: string; format: string; mapSettings }) => {
+        if (result && result.source)
+          console.debug(result)
         if (result.mapSettings) {
           result.mapSettings = JSON.parse(result.mapSettings)
           this.schemaJson = [
@@ -478,12 +482,13 @@ export class DMMComponent implements OnInit, OnChanges {
           this.sourceRef = result?.source;
           this.sourceRefFormat = result?.format;
           if (typeSource == 'csv') {
+            this.sourceDataURL = result.source
             this.csvSourceData = result.content;
             this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem);
             this.mapOptions = this.csvSourceData.slice(0, this.csvSourceData.indexOf("\n")).split(this.separatorItem);
 
           } else if (field == 'source') {
-
+            this.sourceDataURL = result.source
             if (!this.sourceEditor)
               this.sourceEditor = new JSONEditor(this.sourceEditorContainer, {
                 mode: 'view',
@@ -500,6 +505,8 @@ export class DMMComponent implements OnInit, OnChanges {
             this.onUpdatePathForDataMap("")
           }
           else if (field == 'schema') {
+            this.dataModelURL = result.source
+            this.schemaEditor.update(JSON.parse(result.content))
             this.setSchemaFromFile(JSON.parse(result.content))
           }
         }

@@ -29,7 +29,7 @@ export class DMMService {
     return this.http.delete<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/"+id).toPromise();
   }
 
-  saveMap(adapter: Partial<AdapterEntry>, status, description, map, schema): any {
+  saveMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, sourceData): any {
 
     /*
     if (!schema) {
@@ -40,17 +40,35 @@ export class DMMService {
       throw new Error("Map required")
     }
 
+    console.debug(status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, sourceData)
+
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/register", {
       id: adapter.adapterId,
       name: adapter.name,
       status : status,
       description : description,
       map: map,
+      dataModel: schema[0],
+      sourceDataType:sourceDataType,
+      config:config,
+      sourceDataURL:sourceDataURL,
+      dataModelURL:dataModelURL,
+      sourceData:sourceData
+    }).toPromise();
+  }
+
+  saveSchema(adapter: Partial<AdapterEntry>, status, description, schema): any {
+
+    return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", {
+      id: adapter.adapterId,
+      name: adapter.name,
+      status : status,
+      description : description,
       dataModel: schema[0]
     }).toPromise();
   }
 
-  updateMap(adapter: Partial<AdapterEntry>, status, description, map, schema): any {
+  updateMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, sourceData): any {
     console.debug(adapter)
 
     if (!schema) {
@@ -61,12 +79,35 @@ export class DMMService {
       throw new Error("Map required")
     }
 
+    console.debug(status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, sourceData)
+
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map", {
       id: adapter.adapterId,
       name: adapter.name,
       status : status,
       description : description,
       map: map,
+      dataModel: schema[0] || schema,
+      sourceDataType,
+      config,
+      sourceDataURL,
+      dataModelURL,
+      sourceData
+    }).toPromise();
+  }
+
+  updateSchema(adapter: Partial<AdapterEntry>, status, description, schema): any {
+    console.debug(adapter)
+
+    if (!schema) {
+      throw new Error("Schema required")
+    }
+
+    return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", {
+      id: adapter.adapterId,
+      name: adapter.name,
+      status : status,
+      description : description,
       dataModel: schema[0] || schema
     }).toPromise();
   }

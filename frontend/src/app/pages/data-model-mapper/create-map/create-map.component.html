@@ -36,10 +36,14 @@
         <br>
         <label for="status" fullWidth>{{ 'general.adapters.status' | translate }}</label>
         <br>
-        <nb-select fullWidth placeholder="Under development" [(ngModel)]="status" (click)="fixBrokenPageBug()" [ngModelOptions]="{standalone: true}">
+        <nb-select fullWidth placeholder="Under development" [(ngModel)]="status" (click)="fixBrokenPageBug()"
+          [ngModelOptions]="{standalone: true}">
           <nb-option value="Completed">Completed</nb-option>
           <nb-option value="Under development">Under development</nb-option>
         </nb-select>
+        <br>
+        <br>
+        <nb-checkbox [(ngModel)]="saveSchema" [ngModelOptions]="{standalone: true}">{{ save ? ('general.dmm.save_schema' | translate) : ('general.dmm.save_schema' | translate) }} </nb-checkbox>
         <br>
         <br>
         <h3>

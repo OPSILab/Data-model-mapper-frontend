@@ -55,7 +55,9 @@ module.exports = {
 
     insertMap: async (req, res) => {
         process.res = res;
-        res.send(await service.insertMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description))
+        res.send(await service.insertMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
+            req.body.sourceData, req.body.sourceDataID,req.body.sourceDataIn,req.body.sourceDataURL,req.body.dataModelIn,req.body.dataModelID,req.body.dataModelURL,
+            req.body.config,req.body.sourceDataType))
         log.debug("Map inserted");
     },
 

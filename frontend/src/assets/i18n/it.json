@@ -100,6 +100,7 @@
       "validationErrors": "Ci sono degli errori di validazione nella descrizione dell'adapter inserito."
     },
     "dmm": {
+      "save_schema" : "Salva schema",
       "create_new" : "Crea nuovo",
       "register" : "Registra",
       "deregister": "Deregistra",

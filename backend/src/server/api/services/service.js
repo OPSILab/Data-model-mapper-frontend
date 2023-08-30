@@ -185,8 +185,27 @@ module.exports = {
         else process.res.status(400).send({ error: "id already exists" })
     },//TODO replace with insertOne
 
-    async insertMap(name, id, map, dataModel, status, description) {
-        if (!await Map.findOne({ id: id })) return await Map.insertMany([{ name: name, id: id, map: map, dataModel: dataModel, status: status, description: description }])
+    async insertMap(name, id, map, dataModel, status, description,
+        sourceData, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
+        config, sourceDataType) {
+        if (!await Map.findOne({ id: id }))
+            return await Map.insertMany([{
+                name: name,
+                id: id,
+                map: map,
+                dataModel: dataModel,
+                status: status,
+                description: description,
+                sourceData,
+                sourceDataID,
+                sourceDataIn,
+                sourceDataURL,
+                dataModelIn,
+                dataModelID,
+                dataModelURL,
+                config,
+                sourceDataType
+            }])
         else process.res.status(400).send({ error: "id already exists" })
     },//TODO replace with insertOne
 
@@ -199,7 +218,8 @@ module.exports = {
         return await Source.findOneAndReplace({ id: id }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source })
     },
 
-    async modifyMap(name, id, map, dataModel, status, description) {
+    async modifyMap(name, id, map, dataModel, status, description,sourceData, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
+        config, sourceDataType) {
 
         if (dataModel && dataModel.$schema)
             dataModel.schema = dataModel.$schema
@@ -209,7 +229,28 @@ module.exports = {
 
         if (dataModel) dataModel.$schema = dataModel.$id = undefined
 
-        return await Map.findOneAndReplace({ id: id }, { name: name, id: id, map: map, dataModel: dataModel, status: status, description: description })
+        return await Map.findOneAndReplace(
+            {
+                id: id
+            },
+
+            {
+                name: name,
+                id: id,
+                map: map,
+                dataModel: dataModel,
+                status: status,
+                description: description,
+                sourceData,
+                sourceDataID,
+                sourceDataIn,
+                sourceDataURL,
+                dataModelIn,
+                dataModelID,
+                dataModelURL,
+                config,
+                sourceDataType
+            })
     },
 
     async modifyDataModel(name, id, dataModel) {
