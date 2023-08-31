@@ -12,6 +12,7 @@ export class DialogDataMapComponent implements OnInit {
 
   //private appConfig: AppConfig;
   selectedProp //= 'Json';
+  map
   spreadProps = ""
   selectedProps = []
   public settings: unknown;
@@ -87,7 +88,7 @@ export class DialogDataMapComponent implements OnInit {
       this.selectedProp = this.selectedProps
     else if (this.selectedItem.static)
       this.selectedProp = "static:" + this.selectedProp
-    this.ref.close(this.selectedProp);
+    this.ref.close([this.selectedProp, this.map]);
     this.editedValue.emit(this.selectedProp);
   }
 

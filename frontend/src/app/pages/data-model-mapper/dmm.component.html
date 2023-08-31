@@ -130,6 +130,7 @@
           <div style="height:500px" id="jsoneditor2"></div>
         </nb-accordion-item-body>
       </nb-accordion-item>
+      <input [(ngModel)]="map" (ngModelChange)="updateMap()"  [ngModelOptions]="{standalone: true}">
       <nb-accordion-item expanded="true">
         <nb-accordion-item-header>
           Output
@@ -138,6 +139,10 @@
           <br> <br>
           <button nbButton class="mr-2" shape="rectangle" size="small" (click)="testAdapter()">
             {{ 'general.dmm.preview' | translate }}
+            <i class="mx-1 fas fa-file-import fa-lg"></i>
+          </button> &nbsp;
+          <button nbButton class="mr-2" shape="rectangle" size="small" (click)="transform()">
+            {{ 'general.dmm.transform' | translate }}
             <i class="mx-1 fas fa-file-import fa-lg"></i>
           </button>
           <br> <br>
