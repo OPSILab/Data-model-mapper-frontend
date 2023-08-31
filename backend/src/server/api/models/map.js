@@ -13,7 +13,7 @@ const map = mongoose.Schema({
   dataModelURL : String,
   sourceDataType: String,
   sourceDataIn: String,
-  sourceData: String,
+  sourceData : {} || "",
   sourceDataURL : String,
   sourceDataID : String,
   config : {}

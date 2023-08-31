@@ -103,7 +103,7 @@ export class DMMComponent implements OnInit, OnChanges {
         },
         sourceDataURL: this.sourceDataURL,
         dataModelURL: this.dataModelURL,
-        sourceData: this.inputType == "json" ? this.sourceEditor.getText() : this.csvSourceData
+        sourceData: this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData
       }
     }).onClose.subscribe(async (adapter) => {
       if (adapter) {
@@ -472,7 +472,7 @@ export class DMMComponent implements OnInit, OnChanges {
         sourceDataType: this.inputType,
         sourceDataURL: this.sourceDataURL,
         dataModelURL: this.dataModelURL,
-        sourceData: this.inputType == "json" ? this.sourceEditor.getText() : this.csvSourceData
+        sourceData: this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData
       }
     }).onClose.subscribe(async (adapter) => {
       if (adapter) {
@@ -492,7 +492,7 @@ export class DMMComponent implements OnInit, OnChanges {
     });
   }
 
-  mapChanged($event) {
+  async mapChanged($event) {
     if ($event && $event != "---select map---") {
       let mapSettings = this.maps.filter(filteredMap => filteredMap.id == $event)[0]
       this.schemaJson = [
@@ -501,6 +501,13 @@ export class DMMComponent implements OnInit, OnChanges {
       //this.sourceChanged(mapSettings.sourceData)//TODO add ID/URL/in reference
       //this.inputType = "suca"
       this.onUpdateInputType(mapSettings.sourceDataType)
+      if (mapSettings.sourceDataID && !mapSettings.sourceData){
+        this.selectedSource = mapSettings.sourceDataID
+        mapSettings.sourceData = this.source()
+      }
+      else if (mapSettings.sourceDataURL && !mapSettings.sourceData){
+        mapSettings.sourceData = await this.dmmService.getRemoteSource(mapSettings.sourceDataURL, mapSettings.sourceDataType);
+      }
       if (mapSettings.sourceDataType == "json") {
         //this.sourceJson = this.source();
         this.sourceEditor.update(mapSettings.sourceData)

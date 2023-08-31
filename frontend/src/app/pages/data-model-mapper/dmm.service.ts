@@ -31,7 +31,13 @@ export class DMMService {
   }
 
   deleteMap(id: any) {
-    return this.http.delete<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/"+id).toPromise();
+    return this.http.delete<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/" + id).toPromise();
+  }
+
+  getRemoteSource(url, type) {
+    return type == "csv" ?
+      this.http.get<any>(url, { responseType: 'text' as 'json' }).toPromise() :
+      this.http.get<any>(url).toPromise()
   }
 
   saveMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, sourceData): any {
@@ -50,15 +56,15 @@ export class DMMService {
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/register", {
       id: adapter.adapterId,
       name: adapter.name,
-      status : status,
-      description : description,
+      status: status,
+      description: description,
       map: map,
       dataModel: schema ? schema[0] : schema,
-      sourceDataType:sourceDataType,
-      config:config,
-      sourceDataURL:sourceDataURL,
-      dataModelURL:dataModelURL,
-      sourceData:sourceData
+      sourceDataType: sourceDataType,
+      config: config,
+      sourceDataURL: sourceDataURL,
+      dataModelURL: dataModelURL,
+      sourceData: sourceData
     }).toPromise();
   }
 
@@ -67,8 +73,8 @@ export class DMMService {
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", {
       id: adapter.adapterId,
       name: adapter.name,
-      status : status,
-      description : description,
+      status: status,
+      description: description,
       dataModel: schema[0]
     }).toPromise();
   }
@@ -89,8 +95,8 @@ export class DMMService {
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map", {
       id: adapter.adapterId,
       name: adapter.name,
-      status : status,
-      description : description,
+      status: status,
+      description: description,
       map: map,
       dataModel: schema ? schema[0] : schema,
       sourceDataType,
@@ -111,8 +117,8 @@ export class DMMService {
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", {
       id: adapter.adapterId,
       name: adapter.name,
-      status : status,
-      description : description,
+      status: status,
+      description: description,
       dataModel: schema[0] || schema
     }).toPromise();
   }
