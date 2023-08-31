@@ -3,14 +3,13 @@
   <nb-card-body>
     <p>Select map record from below or upload your map record.
     </p>
-    <nb-select placeholder="Select map record" size="small" [(ngModel)]=selectMap
-      (ngModelChange)="mapChanged($event)">
+    <nb-select placeholder="Select map record" size="small" [(ngModel)]=selectMap (ngModelChange)="mapChanged($event)">
       <nb-option *ngFor="let map of maps" value={{map.id}}>{{map.name}}</nb-option>
     </nb-select>
     <div class="row justify-content-center">
       <button nbButton class="mx-4" shape="rectangle" size="medium" status="info" (click)="reset()">
         {{ 'general.dmm.create_new' | translate }}
-        <i class="mx-1 material-icons">create new</i>
+        <i class="mx-1 material-icons">create</i>
       </button>
       <button nbButton class="mx-4" shape="rectangle" size="medium" status="primary" (click)="saveAdapter()">
         {{ 'general.dmm.save_as_new' | translate }}
@@ -45,7 +44,8 @@
               <i>{{sourceRef}}</i></a></p>
           <p *ngIf="sourceRef!==''&&sourceRefFormat==='file'">File: <i>{{sourceRef}}</i></p>
           <div class="mb-2">
-            <nb-select [(ngModel)]="inputType"placeholder="Select Input Type" size="small" (selectedChange)="onUpdateInputType($event)">
+            <nb-select [(ngModel)]="inputType" placeholder="Select Input Type" size="small"
+              (selectedChange)="onUpdateInputType($event)">
               <nb-option value="csv">CSV</nb-option>
               <nb-option value="json">JSON</nb-option>
             </nb-select>
@@ -53,7 +53,8 @@
           <div style="padding-top:30px"></div>
           <p>Select a source file from below or upload your source file.
           </p>
-          <nb-select placeholder="Select Json Schema" size="small" [(ngModel)]="selectedSource" (ngModelChange)="sourceChanged($event)">
+          <nb-select placeholder="Select Json Schema" size="small" [(ngModel)]="selectedSource"
+            (ngModelChange)="sourceChanged($event)">
             <nb-option *ngFor="let source of sources" value={{source.id}}>{{source.name}}</nb-option>
           </nb-select>
           <br><br><br>
@@ -127,7 +128,8 @@
             </p>
           </div>
           <div style="padding-top:1px"></div>
-          <div (click)="updateCSVTable()" (focusout)="updateCSVTable()" (blur)="updateCSVTable()" style="height:500px" id="jsoneditor2"></div>
+          <div (click)="updateCSVTable()" (focusout)="updateCSVTable()" (blur)="updateCSVTable()" style="height:500px"
+            id="jsoneditor2"></div>
         </nb-accordion-item-body>
       </nb-accordion-item>
       <nb-accordion-item expanded="true">

@@ -161,8 +161,14 @@ export class DMMComponent implements OnInit, OnChanges {
     this.selectedDataModel = {
       "info": "set your schema here"
     }
+    let preview = {
+      "preview": "set the source, set the json map and click preview to see the output json preview"
+    }
     this.mapperEditor.update({})
     this.schemaEditor.update(this.selectedDataModel)
+    this.outputEditor.update(preview)
+    this.selectMap = "---select map---"
+    this.csvSourceData = ""
   }
 
   ngOnChanges(changes: SimpleChanges): void {

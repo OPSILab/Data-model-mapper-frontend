@@ -125,7 +125,7 @@
       "map_added_message": "A new record was added",
       "map_edited_message": "Record was successfully modified",
       "confirmSave" : "Save",
-      "confirmEdit" : "Edit",
+      "confirmEdit" : "Update",
       "save_as_new" : "Save as new",
       "export" : "Download",
       "confirm" : "Confirm",
