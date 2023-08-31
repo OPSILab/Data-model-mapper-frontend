@@ -127,10 +127,9 @@
             </p>
           </div>
           <div style="padding-top:1px"></div>
-          <div style="height:500px" id="jsoneditor2"></div>
+          <div (click)="updateCSVTable()" (focusout)="updateCSVTable()" (blur)="updateCSVTable()" style="height:500px" id="jsoneditor2"></div>
         </nb-accordion-item-body>
       </nb-accordion-item>
-      <input [(ngModel)]="map" (ngModelChange)="updateMap()"  [ngModelOptions]="{standalone: true}">
       <nb-accordion-item expanded="true">
         <nb-accordion-item-header>
           Output

@@ -95,8 +95,8 @@ export class DMMComponent implements OnInit, OnChanges {
     this.flipped = !this.flipped;
   }
 
-  updateMap(){
-    mapGl=this.map
+  updateMap() {
+    mapGl = this.map
   }
 
   updateAdapter() {
@@ -130,7 +130,7 @@ export class DMMComponent implements OnInit, OnChanges {
           this.schema()
         ];
       this.map = this.getAllNestedProperties(this.schemaJson[0]);
-      mapGl= this.map
+      mapGl = this.map
       this.mapperEditor.update(this.map)
       this.selectMap = "---select map---"
       this.selectedDataModel = this.schemaJson
@@ -175,7 +175,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.schemaFromFile
     ]
     this.map = this.getAllNestedProperties(this.schemaJson[0]);
-    mapGl= this.map
+    mapGl = this.map
     this.mapperEditor.update(this.map)
   }
 
@@ -378,13 +378,10 @@ export class DMMComponent implements OnInit, OnChanges {
 
     let updateMapper = this.updateMapper
     var dialogService = this.dialogService;
-    //let mOptions = mapOptionsGl = this.mapOptions
-    let map = this.map
-    mapGl= this.map
-    mapperEditor = this.mapperEditor
 
-    //console.debug(mOptions)
-    console.debug(mapOptionsGl)
+    //let map = this.map
+    mapGl = this.map
+    mapperEditor = this.mapperEditor
 
     this.options2 = {
       mode: 'tree',
@@ -406,7 +403,7 @@ export class DMMComponent implements OnInit, OnChanges {
             .open(DialogDataMapComponent, {
               context: { mapOptions: mapOptionsGl, selectPath: selectPath, map: mapGl },
             }).onClose.subscribe((value) => {
-              updateMapper(selectPath, value[0],mapGl, mapperEditor)// value[1] is the map
+              updateMapper(selectPath, value[0], mapGl, mapperEditor)// value[1] is the map
             });
         }
 
@@ -460,7 +457,7 @@ export class DMMComponent implements OnInit, OnChanges {
       sourceData: this.csvSourceData || JSON.parse(this.sourceEditor.getText()),
       sourceDataID: this.selectedSource,
       dataModelID: this.selectedSchema == "---select schema---" ? undefined : this.selectedSchema,
-      mapID : this.adapter.adapterId || this.selectMap == "---select map---" ? undefined : this.selectMap,
+      mapID: this.adapter.adapterId || this.selectMap == "---select map---" ? undefined : this.selectMap,
       mapData: JSON.parse(this.mapperEditor.getText()),
       dataModel: this.schemaJson[0],
       config: {
@@ -574,7 +571,7 @@ export class DMMComponent implements OnInit, OnChanges {
         this.csvSourceData = mapSettings.sourceData
 
       this.map = mapSettings.map
-      mapGl= this.map
+      mapGl = this.map
       this.adapter = {}
       this.adapter.adapterId = mapSettings.id
       this.name = mapSettings.name
@@ -588,9 +585,17 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   updateCSVTable() {
-    this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem)
-    mapOptionsGl = this.csvSourceData.slice(0, this.csvSourceData.indexOf("\n")).split(this.separatorItem)
-    this.setMapEditor();
+    try {
+      this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem)
+      mapOptionsGl = this.csvSourceData.slice(0, this.csvSourceData.indexOf("\n")).split(this.separatorItem)
+      this.setMapEditor();
+    }
+    catch (error) {
+      if (this.inputType != "json")
+        //console.log(error.message)
+      //else
+        console.error(error)
+    }
   }
 
   import(field, typeSource: string): void {
@@ -611,7 +616,7 @@ export class DMMComponent implements OnInit, OnChanges {
             result.mapSettings.dataModel
           ];
           this.map = result.mapSettings.map
-          mapGl= this.map
+          mapGl = this.map
           this.mapperEditor.update(this.map)
         }
         else if (result && result.content) {
