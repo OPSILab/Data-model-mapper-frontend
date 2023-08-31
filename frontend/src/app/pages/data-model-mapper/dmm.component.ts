@@ -1,3 +1,4 @@
+import { AppConfig } from './../../model/appConfig';
 import { Component, OnInit, TemplateRef, ViewChild, Inject, OnChanges, SimpleChanges } from '@angular/core';
 import { DMMService } from './dmm.service';
 import {
@@ -10,9 +11,10 @@ import { DOCUMENT } from '@angular/common';
 import { DialogImportComponent } from './dialog-import/dialog-import.component';
 import { DialogDataMapComponent } from './dialog-dataMap/dialog-dataMap.component';
 import { CreateMapComponent } from './create-map/create-map.component';
-//import { ExportFileComponent } from './export-file/export-file.component';
+import { ExportFileComponent } from './export-file/export-file.component';
 import { ErrorDialogAdapterService } from '../error-dialog/error-dialog-adapter.service';
 import { ActivatedRoute } from '@angular/router';
+import { NgxConfigureService } from 'ngx-configure';
 
 let mapOptionsGl
 
@@ -74,6 +76,8 @@ export class DMMComponent implements OnInit, OnChanges {
   sourceDataURL: any;
   selectedSource
   sources: any;
+  snippet: any;
+  config: AppConfig;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -81,8 +85,11 @@ export class DMMComponent implements OnInit, OnChanges {
     private windowService: NbWindowService,
     private errorService: ErrorDialogAdapterService,
     private dmmService: DMMService,
-    private route: ActivatedRoute
-  ) { }
+    private route: ActivatedRoute,
+    configService: NgxConfigureService,
+  ) {
+    this.config = configService.config as AppConfig;
+  }
 
   toggleView() {
     this.flipped = !this.flipped;
@@ -416,6 +423,23 @@ export class DMMComponent implements OnInit, OnChanges {
     else this.mapperEditor.update(this.map)
   }
 
+  buildSnippet() {
+    let body = {
+      sourceDataType: this.inputType,
+      sourceDataURL: this.sourceDataURL,
+      sourceData: this.csvSourceData || JSON.parse(this.sourceEditor.getText()),
+      sourceDataID: this.selectedSource,
+      dataModelID: this.selectedSchema == "---select schema---" ? undefined : this.selectedSchema,
+      mapID : this.adapter.adapterId || this.selectMap == "---select map---" ? undefined : this.selectMap,
+      mapData: JSON.parse(this.mapperEditor.getText()),
+      dataModel: this.schemaJson[0],
+      config: {
+        delimiter: this.separatorItem
+      }
+    }
+    return "curl --location '" + this.config.data_model_mapper.default_mapper_url + "' --header 'Content-Type: application/json' --data '" + JSON.stringify(body) + "'"
+  }
+
   saveAsFile(): void {
     /*
     this.windowService.open(
@@ -424,21 +448,22 @@ export class DMMComponent implements OnInit, OnChanges {
       this.saveFile(this.name, this.adapterId);
      });*/
 
-    /*
-   this.dialogService.open(ExportFileComponent).onClose.subscribe((content) => {
-     this.saveFile(content.name, content.id);
-   })
-   */
-    this.saveFile()
+
+    this.dialogService.open(ExportFileComponent).onClose.subscribe((content) => {
+      this.saveFile(content == "file" ? {
+        map: JSON.parse(this.mapperEditor.getText()),
+        dataModel: this.schemaJson
+      }
+        :
+        this.buildSnippet()
+      );
+    })
   }
 
-  async saveFile(): Promise<void> {
-    let model = {
-      map: JSON.parse(this.mapperEditor.getText()),
-      dataModel: this.schemaJson
-    }
+  async saveFile(model): Promise<void> {
+    //let model =
     const filename = "exportedFile.json",
-      blob = new Blob([JSON.stringify(model, null, 2)], {
+      blob = new Blob([model], {
         type: 'application/json;charset=utf-8',
       });
 
@@ -501,11 +526,11 @@ export class DMMComponent implements OnInit, OnChanges {
       //this.sourceChanged(mapSettings.sourceData)//TODO add ID/URL/in reference
       //this.inputType = "suca"
       this.onUpdateInputType(mapSettings.sourceDataType)
-      if (mapSettings.sourceDataID && !mapSettings.sourceData){
+      if (mapSettings.sourceDataID && !mapSettings.sourceData) {
         this.selectedSource = mapSettings.sourceDataID
         mapSettings.sourceData = this.source()
       }
-      else if (mapSettings.sourceDataURL && !mapSettings.sourceData){
+      else if (mapSettings.sourceDataURL && !mapSettings.sourceData) {
         mapSettings.sourceData = await this.dmmService.getRemoteSource(mapSettings.sourceDataURL, mapSettings.sourceDataType);
       }
       if (mapSettings.sourceDataType == "json") {
@@ -549,8 +574,6 @@ export class DMMComponent implements OnInit, OnChanges {
           context: { type: typeSource },
         })
       .onClose.subscribe((result: { content: string; source: string; format: string; mapSettings }) => {
-        if (result && result.source)
-          console.debug(result)
         if (result.mapSettings) {
           result.mapSettings = JSON.parse(result.mapSettings)
           this.schemaJson = [
@@ -595,10 +618,6 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   selectMapJsonOptions(content: string, path: string): string[] {
-
-    let optionsLoc = this.getKeys(_.get(JSON.parse(content), path + '[0]', JSON.parse(content)), true, true)
-    console.debug(optionsLoc)
-    return optionsLoc
     return this.getKeys(_.get(JSON.parse(content), path + '[0]', JSON.parse(content)), true, true)
   }
 
