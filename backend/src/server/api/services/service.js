@@ -33,7 +33,7 @@ module.exports = {
 
         const cli = require('../../../cli/setup');
 
-        console.debug(dataModel)
+        //console.debug(dataModel)
 
         if (getMapperList)
             process.res.send(await this.getMaps())
@@ -142,18 +142,20 @@ module.exports = {
             source.data = source.download.data
         }
 
+        if (dataModel.url) {
+            dataModel.download = await axios.get(dataModel.url)
+            dataModel.data = dataModel.download.data
+        }
+
         if (dataModel.data) {
+            console.debug(dataModel.data)
+            console.debug(this.dataModelDeClean(dataModel.data))
             fs.writeFile(
                 //dataModel.schema_id || 
                 "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
                     if (err) throw err;
                     log.debug('File dataModel temp is created successfully.');
                 })
-        }
-
-        else if (dataModel.url) {
-            dataModel.download = await axios.get(dataModel.url)
-            dataModel.data = dataModel.download.data
         }
 
         await cli(
@@ -227,16 +229,56 @@ module.exports = {
         return await Source.findOneAndReplace({ id: id }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source })
     },
 
+    call: 0,
+
+    dataModelClean(dataModel) {
+        this.call++;
+        //console.debug(this.call)
+        //console.debug(dataModel)
+        for (let key in dataModel) {
+            //console.debug("dataModel")
+            //console.debug(dataModel)
+            //console.debug("key")
+            //console.debug(key)
+            if (Array.isArray(dataModel[key]) || typeof dataModel[key] == "object")
+                dataModel[key] = this.dataModelClean(dataModel[key])
+            else if (key.startsWith("$")) {
+                //console.debug("dataModel")
+                //console.debug(dataModel)
+                //console.debug("key")
+                //console.debug(key)
+                dataModel["dollar" + key.substring(1)] = dataModel[key]
+                dataModel[key] = undefined
+            }
+        }
+        return dataModel
+    },
+
+    dataModelDeClean(dataModel) {
+        this.call++;
+        for (let key in dataModel) {
+            if (Array.isArray(dataModel[key]) || typeof dataModel[key] == "object")
+                dataModel[key] = this.dataModelDeClean(dataModel[key])
+            else if (key.startsWith("dollar")) {
+                dataModel["$" + key.substring(6)] = dataModel[key]
+                dataModel[key] = undefined
+            }
+        }
+        return dataModel
+    },
+
     async modifyMap(name, id, map, dataModel, status, description, sourceData, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
         config, sourceDataType) {
 
-        if (dataModel && dataModel.$schema)
-            dataModel.schema = dataModel.$schema
+        //if (dataModel && dataModel.$schema)
+        //    dataModel.schema = dataModel.$schema
 
-        if (dataModel && dataModel.$id)
-            dataModel.id = dataModel.$id
+        //if (dataModel && dataModel.$id)
+        //    dataModel.id = dataModel.$id
 
-        if (dataModel) dataModel.$schema = dataModel.$id = undefined
+        //if (dataModel) dataModel.$schema = dataModel.$id = undefined
+
+        if (dataModel) dataModel = this.dataModelClean(dataModel)
 
         return await Map.findOneAndReplace(
             {
@@ -263,6 +305,7 @@ module.exports = {
     },
 
     async modifyDataModel(name, id, dataModel) {
+        dataModel = this.dataModelClean(dataModel)
         return await DataModel.findOneAndReplace({ id: id }, { name: name, id: id, dataModel: dataModel })
     },
 
