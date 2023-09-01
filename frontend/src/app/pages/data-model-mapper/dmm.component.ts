@@ -250,7 +250,7 @@ export class DMMComponent implements OnInit, OnChanges {
         this.schema()
       ];
 
-    this.setMapEditor();
+    this.setMapEditor(false);
 
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, preview);
@@ -261,6 +261,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.inputID = this.route.snapshot.params['inputID'] as string;
       this.selectMap = this.inputID
       this.mapChanged(this.inputID)
+      if (this.inputType == "csv") this.updateCSVTable()
     }
   }
 
@@ -405,7 +406,7 @@ export class DMMComponent implements OnInit, OnChanges {
   onUpdatePathForDataMap(event) {
 
     mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), event);
-    this.setMapEditor();
+    this.setMapEditor(false);
   }
 
   updateMapper(path, value, map, mapperEditor) {
@@ -415,7 +416,7 @@ export class DMMComponent implements OnInit, OnChanges {
     mapperEditor.update(map)
   }
 
-  setMapEditor() {
+  setMapEditor(justOptions) {
 
     let updateMapper = this.updateMapper
     var dialogService = this.dialogService;
@@ -487,8 +488,8 @@ export class DMMComponent implements OnInit, OnChanges {
       }
     };
 
-    if (!this.mapperEditor) this.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
-    else this.mapperEditor.update(this.map)
+    if (!this.mapperEditor && !justOptions) this.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
+    else if (!justOptions) this.mapperEditor.update(this.map)
   }
 
   buildSnippet() {
@@ -603,11 +604,9 @@ export class DMMComponent implements OnInit, OnChanges {
       this.schemaJson = [
         mapSettings.dataModel
       ];
-      //this.sourceChanged(mapSettings.sourceData)//TODO add ID/URL/in reference
-      //this.inputType = "suca"
-      this.onUpdateInputType(mapSettings.sourceDataType)
-      this.NGSI = mapSettings.config.NGSI_entity
-      this.separatorItem = mapSettings.config.delimiter
+      this.onUpdateInputType(mapSettings?.sourceDataType)
+      this.NGSI = mapSettings?.config?.NGSI_entity
+      this.separatorItem = mapSettings?.config?.delimiter
 
       if (mapSettings.sourceDataID && !mapSettings.sourceData) {
         this.selectedSource = mapSettings.sourceDataID
@@ -644,7 +643,7 @@ export class DMMComponent implements OnInit, OnChanges {
     try {
       this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem)
       mapOptionsGl = this.csvSourceData.slice(0, this.csvSourceData.indexOf("\n")).split(this.separatorItem)
-      this.setMapEditor();
+      this.setMapEditor(true);
     }
     catch (error) {
       if (this.inputType != "json")
