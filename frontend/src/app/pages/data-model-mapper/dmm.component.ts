@@ -78,6 +78,7 @@ export class DMMComponent implements OnInit, OnChanges {
   sources: any;
   snippet: any;
   config: AppConfig;
+  NGSI: Boolean
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -101,6 +102,12 @@ export class DMMComponent implements OnInit, OnChanges {
 
   updateAdapter() {
     let type = this.inputType
+    let source = JSON.parse(this.sourceEditor.getText())
+
+    if (source[this.selectedPath])
+      source = source[this.selectedPath]
+
+      console.debug(this.NGSI)
     this.dialogService.open(CreateMapComponent, {
       context: {
         value: this.adapter,
@@ -110,11 +117,12 @@ export class DMMComponent implements OnInit, OnChanges {
         jsonMap: JSON.parse(this.mapperEditor.getText()),
         schema: this.schemaJson,
         config: {
-          delimiter: this.separatorItem
+          delimiter: this.separatorItem,
+          NGSI_entity: this.NGSI
         },
         sourceDataURL: this.sourceDataURL,
         dataModelURL: this.dataModelURL,
-        sourceData: this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData
+        sourceData: this.inputType == "json" ? source : this.csvSourceData
       }
     }).onClose.subscribe(async (adapter) => {
       if (adapter) {
@@ -129,6 +137,7 @@ export class DMMComponent implements OnInit, OnChanges {
         this.schemaJson = [
           this.schema()
         ];
+      console.debug(this.schemaJson)
       this.map = this.getAllNestedProperties(this.schemaJson[0]);
       mapGl = this.map
       this.mapperEditor.update(this.map)
@@ -180,8 +189,12 @@ export class DMMComponent implements OnInit, OnChanges {
     this.schemaJson = [
       this.schemaFromFile
     ]
+    console.debug("THIS SCHEMA JSON")
+    console.debug(this.schemaJson)
     this.map = this.getAllNestedProperties(this.schemaJson[0]);
     mapGl = this.map
+    console.debug("THIS MAP")
+    console.debug(this.map)
     this.mapperEditor.update(this.map)
   }
 
@@ -295,7 +308,10 @@ export class DMMComponent implements OnInit, OnChanges {
         .concat("\r\n")
         .concat(this.rows[3])
 
-    let output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.partialCsv : source, m, this.schemaJson[0], ";")
+    let output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.partialCsv : source, m, this.schemaJson[0], {
+      delimiter: this.separatorItem,
+      NGSI_entity: this.NGSI
+    })
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
     else this.outputEditor.update(output)
@@ -310,15 +326,34 @@ export class DMMComponent implements OnInit, OnChanges {
     if (source[this.selectedPath])
       source = source[this.selectedPath]
 
-    let output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.csvSourceData : source, m, this.schemaJson[0], ";")
+    let output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.csvSourceData : source, m, this.schemaJson[0], {
+      delimiter: this.separatorItem,
+      NGSI_entity: this.NGSI
+    })
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
     else this.outputEditor.update(output)
   }
 
+  /*
+  toggleNGSI($event) {
+    console.debug(this.NGSI)
+    console.debug($event)
+    $event == "true" || $event == true ?
+      this.NGSI = true :
+      this.NGSI = false
+    console.debug(this.NGSI)
+    console.debug($event)
+  }*/
+
   getAllNestedProperties(obj) {
 
     let properties = {};
+
+    if (obj.allOf)
+      for (let oneOf of obj.allOf)
+        if (oneOf.properties)
+          return this.getAllNestedProperties(oneOf)
 
     if (obj.properties)
       for (let key in obj.properties)
@@ -457,17 +492,23 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   buildSnippet() {
+    let source = JSON.parse(this.sourceEditor.getText())
+
+    if (source[this.selectedPath])
+      source = source[this.selectedPath]
+
     let body = {
       sourceDataType: this.inputType,
       sourceDataURL: this.sourceDataURL,
-      sourceData: this.csvSourceData || JSON.parse(this.sourceEditor.getText()),
+      sourceData: this.inputType != "json" ? this.csvSourceData : source,
       sourceDataID: this.selectedSource,
       dataModelID: this.selectedSchema == "---select schema---" ? undefined : this.selectedSchema,
       mapID: this.adapter.adapterId || this.selectMap == "---select map---" ? undefined : this.selectMap,
       mapData: JSON.parse(this.mapperEditor.getText()),
       dataModel: this.schemaJson[0],
       config: {
-        delimiter: this.separatorItem
+        delimiter: this.separatorItem,
+        NGSI_entity: this.NGSI
       }
     }
     return "curl --location '" + this.config.data_model_mapper.default_mapper_url + "' --header 'Content-Type: application/json' --data '" + JSON.stringify(body) + "'"
@@ -519,18 +560,24 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   saveAdapter() {
+    let source = JSON.parse(this.sourceEditor.getText())
+
+    if (source[this.selectedPath])
+      source = source[this.selectedPath]
+      console.debug(this.NGSI)
     this.dialogService.open(CreateMapComponent, {
       context: {
         save: true,
         jsonMap: JSON.parse(this.mapperEditor.getText()),
         schema: this.schemaJson,
         config: {
-          delimiter: this.separatorItem
+          delimiter: this.separatorItem,
+          NGSI_entity: this.NGSI
         },
         sourceDataType: this.inputType,
         sourceDataURL: this.sourceDataURL,
         dataModelURL: this.dataModelURL,
-        sourceData: this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData
+        sourceData: this.inputType == "json" ? source : this.csvSourceData
       }
     }).onClose.subscribe(async (adapter) => {
       if (adapter) {
@@ -599,7 +646,7 @@ export class DMMComponent implements OnInit, OnChanges {
     catch (error) {
       if (this.inputType != "json")
         //console.log(error.message)
-      //else
+        //else
         console.error(error)
     }
   }

@@ -53,10 +53,16 @@
           <div style="padding-top:30px"></div>
           <p>Select a source file from below or upload your source file.
           </p>
-          <nb-select placeholder="Select Json Schema" size="small" [(ngModel)]="selectedSource"
+          <nb-select placeholder="Select source file" size="small" [(ngModel)]="selectedSource"
             (ngModelChange)="sourceChanged($event)">
             <nb-option *ngFor="let source of sources" value={{source.id}}>{{source.name}}</nb-option>
           </nb-select>
+          <div style="padding-top:30px"></div>
+          <p>NGSI entity.
+          </p>
+          <nb-checkbox placeholder="True" size="small" [(ngModel)]="NGSI">
+            NGSI entity
+          </nb-checkbox>
           <br><br><br>
           <div style="padding-top:10px"></div>
           <div class="mb-1" style="display:none;" id="json-input">

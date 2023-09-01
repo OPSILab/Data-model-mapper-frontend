@@ -124,16 +124,13 @@ export class DMMService {
   }
 
 
-  test(type: string, source: string, mapper, schema, delimiter): Promise<any[]> {
+  test(type: string, source: string, mapper, schema, config): Promise<any[]> {
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_url, {
       "sourceDataType": type,
       "sourceData": source,
       "mapData": mapper,
       "dataModel": schema,
-      "config": {
-        "delimiter": delimiter,
-        "NGSI_entity": false
-      }
+      "config": config
     }).toPromise();
   }
 
