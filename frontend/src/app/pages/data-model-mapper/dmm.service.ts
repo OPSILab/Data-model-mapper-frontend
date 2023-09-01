@@ -3,6 +3,7 @@ import { NgxConfigureService } from 'ngx-configure';
 import { HttpClient } from '@angular/common/http';
 import { AppConfig } from '../../model/appConfig';
 import { AdapterEntry } from '../../model/adapter/adapterEntry';
+var urlencode = require('urlencode');
 
 @Injectable({
   providedIn: 'root',
@@ -31,7 +32,7 @@ export class DMMService {
   }
 
   deleteMap(id: any) {
-    return this.http.delete<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/" + id).toPromise();
+    return this.http.delete<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/" + urlencode(id)).toPromise();
   }
 
   getRemoteSource(url, type) {
