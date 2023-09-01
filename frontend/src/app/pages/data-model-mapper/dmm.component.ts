@@ -613,6 +613,7 @@ export class DMMComponent implements OnInit, OnChanges {
         mapSettings.sourceData = this.source()
       }
       else if (mapSettings.sourceDataURL && !mapSettings.sourceData) {
+        this.sourceDataURL = mapSettings.sourceDataURL
         mapSettings.sourceData = await this.dmmService.getRemoteSource(mapSettings.sourceDataURL, mapSettings.sourceDataType);
       }
       if (mapSettings.sourceDataType == "json") {

@@ -90,7 +90,8 @@
       "path": "Path",
       "show_error_details": "Show error details",
       "hide_error_details": "Hide error details",
-      "delete":"Delete"
+      "delete":"Delete",
+      "update_field_list" : "Update field list"
     },
     "adapters": {
       "name": "Name",

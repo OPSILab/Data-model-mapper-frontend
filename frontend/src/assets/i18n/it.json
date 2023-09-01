@@ -90,7 +90,8 @@
       "path": "Posizione",
       "show_error_details": "Mostra dettagli errore",
       "hide_error_details": "Nascondi dettagli errore",
-      "delete":"Cancella"
+      "delete":"Cancella",
+      "update_field_list" : "Aggiorna lista campi"
     },
     "adapters": {
       "name": "Nome",

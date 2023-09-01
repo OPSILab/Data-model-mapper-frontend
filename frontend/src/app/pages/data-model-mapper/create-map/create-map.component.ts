@@ -114,75 +114,88 @@ export class CreateMapComponent implements OnInit {
           await this.dmmService.updateSchema({ name, adapterId, status, description }, status, description, this.schema);
     }
     catch (error) {
-      console.error(error)
-      let errors: Object[] = []
+      if (error.status == 413) {
+        this.sourceData = undefined
+        try {
+          this.onSubmit()
+        }
+        catch (error) {
+          this.errorHandle(error)
+        }
+      }
+      else this.errorHandle(error)
+    }
+  }
 
-      if (!this.jsonMap) errors.push({
-        "path": "root.map",
-        "message": "Value required",
-        "errorcount": 1
-      })
-      if (!this.schema) errors.push({
-        "path": "root.schema",
-        "message": "Value required",
-        "errorcount": 1
-      })
-      if (!this.adapterId) errors.push({
-        "path": "root.adapterId",
-        "property": "minLength",
-        "message": "Value required",
-        "errorcount": 1
-      })
-      if (!this.name) errors.push({
-        "path": "root.name",
-        "property": "minLength",
-        "message": "Value required",
-        "errorcount": 1
-      })
-      if (!this.status) errors.push({
-        "path": "root.status",
-        "property": "minLength",
-        "message": "Value required",
-        "errorcount": 1
-      })
-      if (!this.description) errors.push({
-        "path": "root.description",
-        "property": "minLength",
-        "message": "Value required",
-        "errorcount": 1
-      })
+  errorHandle(error) {
+    console.error(error)
+    let errors: Object[] = []
 
-      if (error.message == "Adapter ID must be set") {
+    if (!this.jsonMap) errors.push({
+      "path": "root.map",
+      "message": "Value required",
+      "errorcount": 1
+    })
+    if (!this.schema) errors.push({
+      "path": "root.schema",
+      "message": "Value required",
+      "errorcount": 1
+    })
+    if (!this.adapterId) errors.push({
+      "path": "root.adapterId",
+      "property": "minLength",
+      "message": "Value required",
+      "errorcount": 1
+    })
+    if (!this.name) errors.push({
+      "path": "root.name",
+      "property": "minLength",
+      "message": "Value required",
+      "errorcount": 1
+    })
+    if (!this.status) errors.push({
+      "path": "root.status",
+      "property": "minLength",
+      "message": "Value required",
+      "errorcount": 1
+    })
+    if (!this.description) errors.push({
+      "path": "root.description",
+      "property": "minLength",
+      "message": "Value required",
+      "errorcount": 1
+    })
+
+    if (error.message == "Adapter ID must be set") {
+      this.errorService.openErrorDialog({
+        error: 'EDITOR_VALIDATION_ERROR', validationErrors: [
+          {
+            "path": "root.adapterId",
+            "property": "minLength",
+            "message": "Value required",
+            "errorcount": 1
+          }
+        ]
+      });
+    }
+    else if (error.status == 0)
+      this.errorService.openErrorDialog(error)
+    else if (error.status && error.status == 400 || error.message == "Schema required" || error.message == "Map required")
+      if (error?.error == "id already exists" || error?.error?.error == "id already exists")
         this.errorService.openErrorDialog({
           error: 'EDITOR_VALIDATION_ERROR', validationErrors: [
             {
-              "path": "root.adapterId",
+              "path": "root.mapId",
               "property": "minLength",
-              "message": "Value required",
+              "message": "A map with map ID < " + this.adapterId + " > already exists",
               "errorcount": 1
             }
           ]
         });
-      }
-      else if (error.status == 0)
-        this.errorService.openErrorDialog(error)
-      else if (error.status && error.status == 400 || error.message == "Schema required" || error.message == "Map required")
-        if (error?.error == "id already exists" || error?.error?.error == "id already exists")
-          this.errorService.openErrorDialog({
-            error: 'EDITOR_VALIDATION_ERROR', validationErrors: [
-              {
-                "path": "root.mapId",
-                "property": "minLength",
-                "message": "A map with map ID < " + this.adapterId + " > already exists",
-                "errorcount": 1
-              }
-            ]
-          });
-        else this.errorService.openErrorDialog({
-          error: 'EDITOR_VALIDATION_ERROR', validationErrors: errors
-        });
-      else this.errorService.openErrorDialog(error);
-    }
+      else this.errorService.openErrorDialog({
+        error: 'EDITOR_VALIDATION_ERROR', validationErrors: errors
+      });
+    else this.errorService.openErrorDialog(error);
   }
 
   private showToast(type: NbComponentStatus, title: string, body: string) {
