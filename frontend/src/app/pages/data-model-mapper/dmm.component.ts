@@ -107,7 +107,7 @@ export class DMMComponent implements OnInit, OnChanges {
     if (source[this.selectedPath])
       source = source[this.selectedPath]
 
-      console.debug(this.NGSI)
+    console.debug(this.NGSI)
     this.dialogService.open(CreateMapComponent, {
       context: {
         value: this.adapter,
@@ -564,7 +564,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
     if (source[this.selectedPath])
       source = source[this.selectedPath]
-      console.debug(this.NGSI)
+    console.debug(this.NGSI)
     this.dialogService.open(CreateMapComponent, {
       context: {
         save: true,
@@ -606,6 +606,9 @@ export class DMMComponent implements OnInit, OnChanges {
       //this.sourceChanged(mapSettings.sourceData)//TODO add ID/URL/in reference
       //this.inputType = "suca"
       this.onUpdateInputType(mapSettings.sourceDataType)
+      this.NGSI = mapSettings.config.NGSI_entity
+      this.separatorItem = mapSettings.config.delimiter
+
       if (mapSettings.sourceDataID && !mapSettings.sourceData) {
         this.selectedSource = mapSettings.sourceDataID
         mapSettings.sourceData = this.source()
