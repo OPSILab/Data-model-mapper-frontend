@@ -115,7 +115,7 @@ export class DMMComponent implements OnInit, OnChanges {
         update: true,
         sourceDataType: type,
         jsonMap: JSON.parse(this.mapperEditor.getText()),
-        schema: this.schemaJson,
+        schema: JSON.parse(this.schemaEditor.getText()),
         config: {
           delimiter: this.separatorItem,
           NGSI_entity: this.NGSI
@@ -584,7 +584,7 @@ export class DMMComponent implements OnInit, OnChanges {
       context: {
         save: true,
         jsonMap: JSON.parse(this.mapperEditor.getText()),
-        schema: this.schemaJson,
+        schema: JSON.parse(this.schemaEditor.getText()),
         config: {
           delimiter: this.separatorItem,
           NGSI_entity: this.NGSI
