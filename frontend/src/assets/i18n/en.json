@@ -91,7 +91,8 @@
       "show_error_details": "Show error details",
       "hide_error_details": "Hide error details",
       "delete":"Delete",
-      "update_field_list" : "Update field list"
+      "update_field_list" : "Update field list",
+      "generate_mapper" : "Generate mapper"
     },
     "adapters": {
       "name": "Name",

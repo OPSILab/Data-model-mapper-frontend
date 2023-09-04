@@ -91,7 +91,8 @@
       "show_error_details": "Mostra dettagli errore",
       "hide_error_details": "Nascondi dettagli errore",
       "delete":"Cancella",
-      "update_field_list" : "Aggiorna lista campi"
+      "update_field_list" : "Aggiorna lista campi",
+      "generate_mapper" : "Genera mapper"
     },
     "adapters": {
       "name": "Nome",

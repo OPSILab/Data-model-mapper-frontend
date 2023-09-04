@@ -72,6 +72,12 @@
                 {{ 'general.editor.import' | translate }}
                 <i class="mx-1 fas fa-file-import fa-lg"></i>
               </button>
+              <!--
+              <button nbButton class="mr-2" shape="rectangle" size="small" (click)="setMapEditor(true)">
+                {{ 'general.editor.update_field_list' | translate }}
+                <i class="mx-1 fas fa-lg"></i>
+              </button>
+              -->
               <nb-select [(ngModel)]="selectedPath" placeholder="Select path" size="small"
                 (selectedChange)="onUpdatePathForDataMap($event)">
                 <nb-option value="">root.</nb-option>
@@ -90,7 +96,7 @@
               </button> &nbsp;
               <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateCSVTable()">
                 {{ 'general.editor.update_field_list' | translate }}
-                <i class="mx-1 fas fa-file-import fa-lg"></i>
+                <i class="mx-1 fas fa-lg"></i>
               </button>
               <nb-select placeholder="Separator" size="small" [(selected)]="separatorItem">
                 <nb-option value=",">Comma separator</nb-option>
@@ -128,6 +134,10 @@
             <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('schema','json')">
               {{ 'general.editor.import' | translate }}
               <i class="mx-1 fas fa-file-import fa-lg"></i>
+            </button>
+            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="setMapEditor(false)">
+              {{ 'general.editor.generate_mapper' | translate }}
+              <i class="mx-1 fas fa-lg"></i>
             </button>
             <br>
           </div>
