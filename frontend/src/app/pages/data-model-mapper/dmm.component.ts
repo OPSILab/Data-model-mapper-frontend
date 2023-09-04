@@ -512,20 +512,24 @@ export class DMMComponent implements OnInit, OnChanges {
     if (source[this.selectedPath])
       source = source[this.selectedPath]
 
-    let body = {
-      sourceDataType: this.inputType,
-      sourceDataURL: this.sourceDataURL,
-      sourceData: this.inputType != "json" ? this.csvSourceData : source,
-      sourceDataID: this.selectedSource,
-      dataModelID: this.selectedSchema == "---select schema---" ? undefined : this.selectedSchema,
-      mapID: this.adapter.adapterId || this.selectMap == "---select map---" ? undefined : this.selectMap,
-      mapData: JSON.parse(this.mapperEditor.getText()),
-      dataModel: this.schemaJson[0],
-      config: {
-        delimiter: this.separatorItem,
-        NGSI_entity: this.NGSI
+    let body = this.isNew ?
+      {
+        mapID: this.adapter.adapterId
       }
-    }
+      :
+      {
+        sourceDataType: this.inputType,
+        sourceDataURL: this.sourceDataURL,
+        sourceData: this.sourceDataURL || this.selectedSource ? undefined : this.inputType != "json" ? this.csvSourceData : source,
+        sourceDataID: this.selectedSource,
+        dataModelID: this.selectedSchema == "---select schema---" ? undefined : this.selectedSchema,
+        mapData: JSON.parse(this.mapperEditor.getText()),
+        dataModel: this.selectedSchema == "---select schema---" && !this.dataModelURL ? JSON.parse(this.schemaEditor.getText()) : undefined,
+        config: {
+          delimiter: this.separatorItem,
+          NGSI_entity: this.NGSI
+        }
+      }
     return "curl --location '" + this.config.data_model_mapper.default_mapper_url + "' --header 'Content-Type: application/json' --data '" + JSON.stringify(body) + "'"
   }
 
