@@ -32,7 +32,7 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function ngsi(){
+function ngsi() {
     return (((apiOutput.NGSI_entity == undefined) && global.process.env.NGSI_entity || apiOutput.NGSI_entity).toString() === 'true')
 }
 
@@ -40,7 +40,7 @@ function ngsi(){
 const cleanString = (string) => {
     var result = '';
     if (typeof string === 'string')
-        result = string.replace(config.regexClean[ngsi()? "default" : "custom"], ' ');
+        result = string.replace(config.regexClean[ngsi() ? "default" : "custom"], ' ');
 
     return result;
 
@@ -49,7 +49,7 @@ const cleanString = (string) => {
 const cleanIdString = (string) => {
     var result = '';
     if (typeof string === 'string')
-        result = string.replace(config.regexClean[ngsi()? "default" : "custom"], ' ')
+        result = string.replace(config.regexClean[ngsi() ? "default" : "custom"], ' ')
             .replace(/à/g, 'a')
             .replace(/ù/g, 'u')
             .replace(/é|è/g, 'e')
@@ -201,7 +201,9 @@ function spaceCleaner(object) {
 
 
 const bodyMapper = (body) => {
-    
+
+    if (body.adapterID) body.mapID = body.adapterID
+
     let sourceData = {
         name: body.sourceDataIn,
         id: body.sourceDataID,
@@ -213,15 +215,21 @@ const bodyMapper = (body) => {
     let map
     if (body.mapPathIn)
         map = config.sourceDataPath + body.mapPathIn
-    else if (body.mapID)
+    else if (body.mapID) {
         map = {
             id: body.mapID
         }
-    else if (body.mapData)
+        console.debug("body.mapID")
+        console.debug(body.mapID)
+    }
+    else if (body.mapData){
         map = [
             body.mapData,
             "mapData"
         ]
+        console.debug("body.mapData")
+        console.debug(body.mapData)
+    }
 
     let dataModel = {
         name: body.dataModelIn,
@@ -229,7 +237,9 @@ const bodyMapper = (body) => {
         data: body.dataModel,
         url: body.dataModelURL,
         schema_id: body.dataModel?.$id
-    }   
+    }
+
+    console.debug(map)
 
     return {
         sourceData,

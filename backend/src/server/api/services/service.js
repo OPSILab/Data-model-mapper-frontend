@@ -29,22 +29,52 @@ module.exports = {
         return id;
     },
 
-    async mapData(source, map, dataModel, adapterID, configIn, getMapperList) {
+    async mapData(source, map, dataModel, configIn) {
 
         const cli = require('../../../cli/setup');
 
-        //console.debug(dataModel)
+        if (map?.id) {
 
-        if (getMapperList)
-            process.res.send(await this.getMaps())
+            try {
+                map = await Map.findOne({ id: map.id })
+            }
+            catch (error) {
+                console.log(error)
+                process.res.sendStatus(404)
+            } 
 
-        if (!(source.name || (source.type && (source.data || source.url || source.id))) || (!map || !(dataModel.id || dataModel.data || dataModel.name || dataModel.url)) && !adapterID) {
+            if (!map.dataModel.$schema && map.dataModel.schema)
+                map.dataModel.$schema = map.dataModel.schema
+            if (!map.dataModel.$id && map.dataModel.id)
+                map.dataModel.$id = map.dataModel.id
+
+            dataModel.schema_id =
+                //dataModel.data.$id || 
+                config.modelSchemaFolder + '/DataModelTemp.json'
+
+            if (map.sourceData) source.data = map.sourceData
+            if (map.sourceDataID) source.id = map.sourceDataID
+            if (map.sourceDataURL) source.url = map.sourceDataURL
+            if (map.dataModel) {
+                dataModel = {}
+                dataModel.data = map.dataModel
+            }
+            if (map.dataModelID) dataModel.id = map.dataModelID
+            if (map.dataModelURL) dataModel.url = map.dataModelURL
+            if (map.sourceDataType) source.type = map.sourceDataType
+            if (map.config) configIn = map.config
+
+            console.debug(map)
+            console.debug(source)
+            map = [map.map, "mapData"]
+        }
+
+        if (!(source.name || (source.type && (source.data || source.url || source.id))) || (!map || !(dataModel.id || dataModel.data || dataModel.name || dataModel.url))) {
             let error = {}
             error.message = "Missing fields"
             error.source = source
             error.map = map
             error.dataModel = dataModel
-            error.adapterID = adapterID
             process.res.status(400).send(error)
             return "Missing fields"
         }
@@ -56,7 +86,6 @@ module.exports = {
                 config[configKey] = config.backup[configKey]
             config.backup = undefined
         }
-
 
         if (configIn)
             for (let configKey in configIn) {
@@ -77,24 +106,6 @@ module.exports = {
             source.data = source.data.source || source.data.sourceCSV
         }
 
-        if (map?.id) {
-
-            try {
-                map = await Map.findOne({ id: map.id })
-            }
-            catch (error) {
-                console.log(error)
-                process.res.sendStatus(404)
-            }
-
-            if (!map.dataModel.$schema && map.dataModel.schema)
-                map.dataModel.$schema = map.dataModel.schema
-            if (!map.dataModel.$id && map.dataModel.id)
-                map.dataModel.$id = map.dataModel.id
-
-            map = [map.map, "mapData"]
-        }
-
         if (dataModel.id) {
             try { dataModel.data = await DataModel.findOne({ id: dataModel.id }) }
             catch (error) {
@@ -105,29 +116,6 @@ module.exports = {
             dataModel.schema_id =
                 //dataModel.data.$id || 
                 config.modelSchemaFolder + '/DataModelTemp.json'
-        }
-
-        if (adapterID) {
-            try {
-                map = await Map.findOne({ id: adapterID })//type change
-
-                dataModel = {}
-                dataModel.data = map.dataModel
-
-                if (!dataModel.data.$schema && dataModel.data.schema)
-                    dataModel.data.$schema = dataModel.data.schema
-                if (!dataModel.data.$id && dataModel.data.id)
-                    dataModel.data.$id = dataModel.data.id
-
-                dataModel.schema_id =
-                    //dataModel.data.$id || 
-                    config.modelSchemaFolder + '/DataModelTemp.json'
-                map = [map.map, "mapData"]//type change
-            }
-            catch (error) {
-                console.log(error)
-                process.res.sendStatus(404)
-            }
         }
 
         if (source.data) {
