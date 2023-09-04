@@ -286,51 +286,65 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async testAdapter() {
+    let output
+    try {
+      let m = JSON.parse(this.mapperEditor.getText())
+      m["targetDataModel"] = "DataModelTemp"
+      let source = JSON.parse(this.sourceEditor.getText())
 
-    let m = JSON.parse(this.mapperEditor.getText())
-    m["targetDataModel"] = "DataModelTemp"
-    let source = JSON.parse(this.sourceEditor.getText())
+      if (source[this.selectedPath])
+        source = source[this.selectedPath]
 
-    if (source[this.selectedPath])
-      source = source[this.selectedPath]
+      if (Array.isArray(source))
+        source = [source[0], source[1], source[2]]
 
-    if (Array.isArray(source))
-      source = [source[0], source[1], source[2]]
+      this.partialCsv = ""
 
-    this.partialCsv = ""
+      if (this.rows)
+        this.partialCsv = this.partialCsv
+          .concat(this.rows[0])
+          .concat("\r\n")
+          .concat(this.rows[1])
+          .concat("\r\n")
+          .concat(this.rows[2])
+          .concat("\r\n")
+          .concat(this.rows[3])
 
-    if (this.rows)
-      this.partialCsv = this.partialCsv
-        .concat(this.rows[0])
-        .concat("\r\n")
-        .concat(this.rows[1])
-        .concat("\r\n")
-        .concat(this.rows[2])
-        .concat("\r\n")
-        .concat(this.rows[3])
-
-    let output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.partialCsv : source, m, this.schemaJson[0], {
-      delimiter: this.separatorItem,
-      NGSI_entity: this.NGSI
-    })
+      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.partialCsv : source, m, this.schemaJson[0], {
+        delimiter: this.separatorItem,
+        NGSI_entity: this.NGSI
+      })
+    }
+    catch (error) {
+      if (!output)
+        output = error.error
+      console.error(error)
+    }
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
     else this.outputEditor.update(output)
   }
 
   async transform() {
+    let output
+    try {
+      let m = JSON.parse(this.mapperEditor.getText())
+      m["targetDataModel"] = "DataModelTemp"
+      let source = JSON.parse(this.sourceEditor.getText())
 
-    let m = JSON.parse(this.mapperEditor.getText())
-    m["targetDataModel"] = "DataModelTemp"
-    let source = JSON.parse(this.sourceEditor.getText())
+      if (source[this.selectedPath])
+        source = source[this.selectedPath]
 
-    if (source[this.selectedPath])
-      source = source[this.selectedPath]
-
-    let output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.csvSourceData : source, m, this.schemaJson[0], {
-      delimiter: this.separatorItem,
-      NGSI_entity: this.NGSI
-    })
+      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.csvSourceData : source, m, this.schemaJson[0], {
+        delimiter: this.separatorItem,
+        NGSI_entity: this.NGSI
+      })
+    }
+    catch (error) {
+      if (!output)
+        output = error.error
+      console.error(error)
+    }
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
     else this.outputEditor.update(output)

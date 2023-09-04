@@ -71,10 +71,10 @@ function nestedFieldsHandler(field, model) {
             catch (error) {
                 console.log(error.message)
                 field = field.replaceAll('}","{', '},{');
-                while (field.replaceAll('" ', '"') != field) field = field.replaceAll('" ', '"') 
-                while (field.replaceAll(' "', '"') != field) field = field.replaceAll(' "', '"') 
-                while (field.replaceAll('":"{', '":{') != field) field = field.replaceAll('":"{', '":{'); 
-                while (field.replaceAll('}"', '}') != field) field = field.replaceAll('}"', '}'); 
+                while (field.replaceAll('" ', '"') != field) field = field.replaceAll('" ', '"')
+                while (field.replaceAll(' "', '"') != field) field = field.replaceAll(' "', '"')
+                while (field.replaceAll('":"{', '":{') != field) field = field.replaceAll('":"{', '":{');
+                while (field.replaceAll('}"', '}') != field) field = field.replaceAll('}"', '}');
                 //field = field.replaceAll('\"', '"');
                 field = JSON.parse(field)
             }
@@ -179,23 +179,23 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         schema.anyOf = undefined;
     }
 
-    try { 
+    try {
         if (schema.schema == "http://json-schema.org/draft-04/schema#") schema.schema = "http://json-schema.org/schema#"
         if (schema.$schema == "http://json-schema.org/draft-04/schema#") schema.$schema = "http://json-schema.org/schema#"
-        var validate = ajv.compile(schema); 
-    } catch (error) { 
-        if (schema.anyOf && schema.anyOf[0]==undefined && !isSingleField) schema.anyOf = undefined;
-        console.log(error); 
-        console.log(schema) 
-        var validate = ajv.compile(schema); 
+        var validate = ajv.compile(schema);
+    } catch (error) {
+        if (schema.anyOf && schema.anyOf[0] == undefined && !isSingleField) schema.anyOf = undefined;
+        console.log(error);
+        console.log(schema)
+        var validate = ajv.compile(schema);
     }
     var valid = validate(data);
     if (valid) log.info("Field is valid")
     else {
-        try{
+        try {
             data = nestedFieldsHandler(data, schema.allOf[0].properties)
         }
-        catch(error){
+        catch (error) {
             console.log(error)
         }
         validate = ajv.compile(schema);
@@ -228,6 +228,8 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         return true;
     }
     else {
+        if (!apiOutput.outputFile.errors) apiOutput.outputFile.errors = []
+        apiOutput.outputFile.errors.push({ "Field is not valid": data, details : `Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`})
 
         log.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
         if (!isSingleField) {
