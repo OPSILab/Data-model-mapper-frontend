@@ -13,7 +13,7 @@
       <form>
         <label for="Mode" fullWidth>{{ 'general.dmm.mode' | translate }}</label>
         <br>
-        <nb-select fullWidth placeholder="Under development" [(ngModel)]="mode" (click)="fixBrokenPageBug()"
+        <nb-select fullWidth placeholder="Snippet" [(ngModel)]="mode" (click)="fixBrokenPageBug()"
           [ngModelOptions]="{standalone: true}">
           <nb-option value="snippet">Snippet</nb-option>
           <nb-option value="file">File</nb-option>
