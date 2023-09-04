@@ -41,7 +41,7 @@ export class DMMService {
       this.http.get<any>(url).toPromise()
   }
 
-  saveMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, sourceData): any {
+  saveMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID): any {
 
     /*
     if (!schema) {
@@ -52,20 +52,20 @@ export class DMMService {
       throw new Error("Map required")
     }
 
-    console.debug(status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, sourceData)
-
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/register", {
       id: adapter.adapterId,
       name: adapter.name,
       status: status,
       description: description,
       map: map,
-      dataModel: schema ? schema[0] : schema,
+      dataModel: schema && !dataModelURL && !dataModelID ? schema[0] ? schema[0] : schema : undefined,
       sourceDataType: sourceDataType,
       config: config,
-      sourceDataURL: sourceDataURL,
-      dataModelURL: dataModelURL,
-      sourceData: sourceData
+      sourceDataURL,
+      sourceDataID,
+      dataModelURL,
+      dataModelID,
+      sourceData: !sourceDataURL && !sourceDataID ? sourceData : undefined
     }).toPromise();
   }
 
@@ -76,11 +76,11 @@ export class DMMService {
       name: adapter.name,
       status: status,
       description: description,
-      dataModel: schema[0]
+      dataModel: schema[0] || schema
     }).toPromise();
   }
 
-  updateMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, sourceData): any {
+  updateMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID): any {
     console.debug(adapter)
 
     if (!schema) {
@@ -91,7 +91,7 @@ export class DMMService {
       throw new Error("Map required")
     }
 
-    console.debug(status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, sourceData)
+    console.debug(status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, sourceData, sourceDataID)
 
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map", {
       id: adapter.adapterId,
@@ -99,12 +99,14 @@ export class DMMService {
       status: status,
       description: description,
       map: map,
-      dataModel: schema ? schema[0] : schema,
+      dataModel: schema && !dataModelURL && !dataModelID ? schema[0] ? schema[0] : schema : undefined,
       sourceDataType,
       config,
       sourceDataURL,
       dataModelURL,
-      sourceData
+      dataModelID,
+      sourceDataID,
+      sourceData: !sourceDataURL && !sourceDataID ? sourceData : undefined
     }).toPromise();
   }
 

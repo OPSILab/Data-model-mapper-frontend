@@ -42,6 +42,8 @@ export class CreateMapComponent implements OnInit {
   sourceDataURL: any;
   dataModelURL: any;
   sourceData: any;
+  dataModelID
+  sourceDataID: any;
 
   constructor(
     private dmmService: DMMService,
@@ -81,6 +83,8 @@ export class CreateMapComponent implements OnInit {
 
   async onSubmit() {
 
+    console.debug(this)
+
     try {
 
       let name = this.name,
@@ -92,14 +96,14 @@ export class CreateMapComponent implements OnInit {
         throw new Error("Adapter ID must be set");
 
       if (this.save) {
-        await this.dmmService.saveMap({ name, adapterId, status, description }, status, description, this.jsonMap, this.schema, this.sourceDataType, this.config, this.sourceDataURL, this.dataModelURL, this.sourceData);
+        await this.dmmService.saveMap({ name, adapterId, status, description }, status, description, this.jsonMap, this.schema, this.sourceDataType, this.config, this.sourceDataURL, this.dataModelURL, this.dataModelID, this.sourceData, this.sourceDataID);
         this.ref.close({ name, adapterId, status, description });
         this.editedValue.emit({ name, adapterId, status, description });
         this.showToast('primary', this.translate.instant('general.dmm.map_added_message'), '');
       }
 
       else {
-        await this.dmmService.updateMap({ name, adapterId, status, description }, status, description, this.jsonMap, this.schema, this.sourceDataType, this.config, this.sourceDataURL, this.dataModelURL, this.sourceData);
+        await this.dmmService.updateMap({ name, adapterId, status, description }, status, description, this.jsonMap, this.schema, this.sourceDataType, this.config, this.sourceDataURL, this.dataModelURL, this.dataModelID, this.sourceData, this.sourceDataID);
         this.ref.close({ name, adapterId, status, description });
         this.editedValue.emit({ name, adapterId, status, description });
         this.showToast('primary', this.translate.instant('general.dmm.map_edited_message'), '');

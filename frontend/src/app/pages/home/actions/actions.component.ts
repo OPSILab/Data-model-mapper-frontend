@@ -77,7 +77,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
         .subscribe((event) => {
           switch (event.item.data) {
             case 'edit':
-              this.router.navigate(['/pages/dmm-editor', { inputID: this.value.id}])
+              this.router.navigate(['/pages/dmm-editor', { inputID: this.value.id }])
               break;
             case 'delete':
               this.openDeleteFromRegistryDialog();
@@ -90,7 +90,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
               break;
             case 'view service':
               //this.showServiceInfoModal();
-              this.router.navigate(['/pages/dmm-editor', { inputID: this.value.id}])
+              this.router.navigate(['/pages/dmm-editor', { inputID: this.value.id }])
               //this.router.navigate(['/pages/dmm-editor', { id: this.value.id, readOnly: true }]);
               break;
             default:
@@ -186,7 +186,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
   onRegister = async (): Promise<void> => {
     try {
       this.value.status = this.value.status == "Completed" ? "Under development" : "Completed";
-      this.value = await this.dmmService.updateMap({ status: this.value.status, description: this.description, name: this.name, adapterId: this.value.id }, this.value.status, this.description, this.value.map, this.value.dataModel, this.value.sourceDataType, this.value.config, this.value.sourceDataURL, this.value.dataModelURL, this.value.sourceData)
+      this.value = await this.dmmService.updateMap({ status: this.value.status, description: this.description, name: this.name, adapterId: this.value.id }, this.value.status, this.description, this.value.map, this.value.dataModel, this.value.sourceDataType, this.value.config, this.value.sourceDataURL, this.value.dataModelURL, this.value.dataModelID, this.value.sourceData, this.value.sourceDataID)
       this.showToast('primary', this.translate.instant('general.dmm.record_registered_message', { recordName: this.value.name }), '');
       this.updateResult.emit(this.value);
     } catch (error) {
@@ -197,7 +197,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
   onDeRegister = async (): Promise<void> => {
     try {
       this.value.status = this.value.status == "Completed" ? "Under development" : "Completed";
-      this.value = await this.dmmService.updateMap({ status: this.value.status, description: this.description, name: this.name, adapterId: this.value.id }, this.value.status, this.description, this.value.map, this.value.dataModel, this.value.sourceDataType, this.value.config, this.value.sourceDataURL, this.value.dataModelURL, this.value.sourceData)
+      this.value = await this.dmmService.updateMap({ status: this.value.status, description: this.description, name: this.name, adapterId: this.value.id }, this.value.status, this.description, this.value.map, this.value.dataModel, this.value.sourceDataType, this.value.config, this.value.sourceDataURL, this.value.dataModelURL, this.value.dataModelID, this.value.sourceData, this.value.sourceDataID)
       this.showToast('primary', this.translate.instant('general.dmm.record_deregistered_message', { recordName: this.value.name }), '');
       this.updateResult.emit(this.value);
     } catch (error) {
