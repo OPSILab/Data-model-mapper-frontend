@@ -8,6 +8,7 @@ import { AdapterEntry } from '../../../model/adapter/adapterEntry';
 import { ErrorDialogService } from '../../error-dialog/error-dialog.service';
 import { DMMService } from '../../data-model-mapper/dmm.service';
 import { StatusComponent } from '../status/status.component';
+import { TransformComponent } from '../transform/transform.component';
 
 @Component({
   selector: 'actions',
@@ -88,11 +89,14 @@ export class ActionsComponent implements OnInit, OnDestroy {
             case 'deregister':
               this.openDeRegisterDialog();
               break;
-            case 'view service':
-              //this.showServiceInfoModal();
-              this.router.navigate(['/pages/dmm-editor', { inputID: this.value.id }])
-              //this.router.navigate(['/pages/dmm-editor', { id: this.value.id, readOnly: true }]);
+            case 'view record':
+              this.router.navigate(['/pages/dmm-editor', { inputID: this.value.id, readOnly: true }])
               break;
+            case 'transform':
+              this.dialogService
+                .open(TransformComponent, {
+                  context: { inputID: this.value.id },
+                })
             default:
               console.debug("default")
               break;
@@ -136,6 +140,10 @@ export class ActionsComponent implements OnInit, OnDestroy {
     if (this.ref) this.ref.closed = true
     if (this.registered)
       return [
+        {
+          title: this.translate.instant('general.dmm.transform') as string,
+          data: 'transform',
+        },
         {
           title: this.translate.instant('general.dmm.deregister') as string,
           data: 'deregister',

@@ -8,6 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ActionsComponent } from './actions/actions.component';
 import { DetailsComponent } from './details/details.component';
 import { StatusComponent } from './status/status.component';
+import { TransformComponent } from './transform/transform.component';
 
 
 
@@ -15,7 +16,8 @@ import { StatusComponent } from './status/status.component';
   declarations: [
     ActionsComponent,
     DetailsComponent,
-    StatusComponent
+    StatusComponent,
+    TransformComponent
   ],
   imports: [
     CommonModule,
