@@ -86,17 +86,19 @@ export class CreateMapComponent implements OnInit {
 
   async onSubmit() {
 
-    console.debug(this)
+    //console.debug(this)
+
+
+
+    let name = this.name,
+      adapterId = this.adapterId,
+      description = this.description,
+      status = this.status
+
+    if (adapterId == '' || adapterId == null)
+      throw new Error("Adapter ID must be set");
 
     try {
-
-      let name = this.name,
-        adapterId = this.adapterId,
-        description = this.description,
-        status = this.status
-
-      if (adapterId == '' || adapterId == null)
-        throw new Error("Adapter ID must be set");
 
       while (adapterId[0] == " ") adapterId = adapterId.substring(1)
       while (adapterId[adapterId.length - 1] == " ") adapterId = adapterId.substring(0, adapterId.length - 1)
@@ -110,39 +112,40 @@ export class CreateMapComponent implements OnInit {
 
       else {
         await this.dmmService.updateMap({ name, adapterId, status, description }, status, description, this.jsonMap, this.schema, this.sourceDataType, this.config, this.sourceDataURL, this.dataModelURL, this.dataModelID, this.sourceData, this.sourceDataID);
-        this.ref.close({ name, adapterId, status, description , saveSchema: this.saveSchema, saveSource: this.saveSource});
+        this.ref.close({ name, adapterId, status, description, saveSchema: this.saveSchema, saveSource: this.saveSource });
         this.editedValue.emit({ name, adapterId, status, description });
         this.showToast('primary', this.translate.instant('general.dmm.map_edited_message'), '');
       }
 
-      console.debug("------this.saveSchema--------")
-      console.debug(this.saveSchema)
-      if (this.saveSchema)
+    }
+    catch (error) {
+      this.errorHandle("record", error)
+    }
+
+    if (this.saveSchema)
+      try {
         if (!this.schemaSaved)
           await this.dmmService.saveSchema({ name, adapterId, status, description }, status, description, this.schema);
         else
           await this.dmmService.updateSchema({ name, adapterId, status, description }, status, description, this.schema);
-      if (this.saveSource)
+      }
+      catch (error) {
+        this.errorHandle("schema", error)
+      }
+    if (this.saveSource)
+      try {
         if (!this.sourceSaved)
           await this.dmmService.saveSource({ name, adapterId, status, description }, status, description, this.sourceData);
         else
           await this.dmmService.updateSource({ name, adapterId, status, description }, status, description, this.sourceData);
-    }
-    catch (error) {
-      if (error.status == 413) {
-        this.sourceData = undefined
-        try {
-          this.onSubmit()
-        }
-        catch (error) {
-          this.errorHandle(error)
-        }
       }
-      else this.errorHandle(error)
-    }
+      catch (error) {
+        this.errorHandle("source", error)
+      }
+
   }
 
-  errorHandle(error) {
+  errorHandle(entity, error) {
     console.error(error)
     let errors: Object[] = []
 
@@ -193,6 +196,7 @@ export class CreateMapComponent implements OnInit {
         ]
       });
     }
+    //else if (error.status == 413)
     else if (error.status == 0)
       this.errorService.openErrorDialog(error)
     else if (error.status && error.status == 400 || error.message == "Schema required" || error.message == "Map required")
@@ -200,9 +204,9 @@ export class CreateMapComponent implements OnInit {
         this.errorService.openErrorDialog({
           error: 'EDITOR_VALIDATION_ERROR', validationErrors: [
             {
-              "path": "root.mapId",
+              "path": "root.id",
               "property": "minLength",
-              "message": "A map with map ID < " + this.adapterId + " > already exists",
+              "message": "A " + entity + " with map ID < " + this.adapterId + " > already exists",
               "errorcount": 1
             }
           ]
