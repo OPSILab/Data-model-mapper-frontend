@@ -95,6 +95,9 @@ export class CreateMapComponent implements OnInit {
       if (adapterId == '' || adapterId == null)
         throw new Error("Adapter ID must be set");
 
+      while(adapterId[0]==" ") adapterId = adapterId.substring(1)
+      while(adapterId[adapterId.length-1]==" ") adapterId = adapterId.substring(0,adapterId.length-1)
+
       if (this.save) {
         await this.dmmService.saveMap({ name, adapterId, status, description }, status, description, this.jsonMap, this.schema, this.sourceDataType, this.config, this.sourceDataURL, this.dataModelURL, this.dataModelID, this.sourceData, this.sourceDataID);
         this.ref.close({ name, adapterId, status, description });
