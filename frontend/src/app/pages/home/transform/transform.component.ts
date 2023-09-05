@@ -566,6 +566,10 @@ export class TransformComponent implements OnInit, OnChanges {
     })
   }
 
+  download() {
+    this.saveFile(this.outputEditor.getText())
+  }
+
   async saveFile(model): Promise<void> {
     //let model =
     const filename = "exportedFile.json",
@@ -639,16 +643,16 @@ export class TransformComponent implements OnInit, OnChanges {
     if ($event && $event != "---select map---") {
       let mapSettings = this.maps.filter(filteredMap => filteredMap.id == $event)[0]
       this.savedSource = await this.dmmService.getSource($event),
-      this.savedSchema = await this.dmmService.getSchema($event)
+        this.savedSchema = await this.dmmService.getSchema($event)
 
       //if (sourceByID) {
-        //this.savedSource = sourceByID
-        //console.debug("SOUCE FOUND")
+      //this.savedSource = sourceByID
+      //console.debug("SOUCE FOUND")
       //}
       //if (schemaByID) {
-        //this.savedSchema = schemaByID
-        //console.debug("SCHEMA FOUND")
-     // }
+      //this.savedSchema = schemaByID
+      //console.debug("SCHEMA FOUND")
+      // }
 
       //console.debug(sourceByID)
       //console.debug(schemaByID)
