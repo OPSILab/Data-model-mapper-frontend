@@ -123,18 +123,18 @@ export class DMMComponent implements OnInit, OnChanges {
           NGSI_entity: this.NGSI
         },
         sourceDataURL: this.sourceDataURL,
-        sourceDataID : this.selectedSource,
+        sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
         dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
         sourceData: this.inputType == "json" ? source : this.csvSourceData,
-        schemaSaved:this.savedSchema,
-        sourceSaved:this.savedSource
+        schemaSaved: this.savedSchema,
+        sourceSaved: this.savedSource
       }
     }).onClose.subscribe(async (adapter) => {
       if (adapter) {
         this.adapter = adapter;
-        this.savedSchema=adapter.saveSchema
-        this.savedSource=adapter.saveSource
+        this.savedSchema = adapter.saveSchema
+        this.savedSource = adapter.saveSource
       }
     });
   }
@@ -605,12 +605,12 @@ export class DMMComponent implements OnInit, OnChanges {
         },
         sourceDataType: this.inputType,
         sourceDataURL: this.sourceDataURL,
-        sourceDataID : this.selectedSource,
+        sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
         dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
         sourceData: this.inputType != "json" ? this.csvSourceData : source // this.sourceDataURL || this.selectedSource ? undefined : this.inputType != "json" ? this.csvSourceData : source
-      ,schemaSaved:this.savedSchema,
-      sourceSaved:this.savedSource
+        , schemaSaved: this.savedSchema,
+        sourceSaved: this.savedSource
       }
     }).onClose.subscribe(async (adapter) => {
       if (adapter) {
@@ -626,8 +626,8 @@ export class DMMComponent implements OnInit, OnChanges {
           dataModel: this.schemaJson
         })
         this.selectMap = adapter.adapterId
-        this.savedSchema=adapter.saveSchema
-        this.savedSource=adapter.saveSource
+        this.savedSchema = adapter.saveSchema
+        this.savedSource = adapter.saveSource
       }
     });
   }
@@ -635,6 +635,21 @@ export class DMMComponent implements OnInit, OnChanges {
   async mapChanged($event) {
     if ($event && $event != "---select map---") {
       let mapSettings = this.maps.filter(filteredMap => filteredMap.id == $event)[0]
+      this.savedSource = await this.dmmService.getSource($event),
+      this.savedSchema = await this.dmmService.getSchema($event)
+
+      //if (sourceByID) {
+        //this.savedSource = sourceByID
+        //console.debug("SOUCE FOUND")
+      //}
+      //if (schemaByID) {
+        //this.savedSchema = schemaByID
+        //console.debug("SCHEMA FOUND")
+     // }
+
+      //console.debug(sourceByID)
+      //console.debug(schemaByID)
+
       this.schemaJson = [
         mapSettings.dataModel
       ];
