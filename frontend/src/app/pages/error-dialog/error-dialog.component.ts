@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 import { Location } from '@angular/common';
 //import { LoginService } from '../../auth/login/login.service';
@@ -10,12 +10,16 @@ import { NgxConfigureService } from 'ngx-configure';
   //changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./error-dialog.component.scss']
 })
-export class ErrorDialogComponent {
+export class ErrorDialogComponent implements OnInit {
   public error;
   appConfig: AppConfig;
 
   constructor(private configService: NgxConfigureService, public ref: NbDialogRef<unknown>, private _location: Location){//, private loginService: LoginService) {
     this.appConfig = this.configService.config as AppConfig
+  }
+
+  ngOnInit(): void {
+    document.getElementsByTagName('html')[0].className=""
   }
 
   closeModal(error: { [key: string]: { cause?: string } }): void {

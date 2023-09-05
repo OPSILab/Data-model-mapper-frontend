@@ -4,7 +4,7 @@ import { NbDialogService } from '@nebular/theme';
 
 @Injectable()
 export class ErrorDialogAdapterService {
-  constructor(private modalService: NbDialogService) {}
+  constructor(private modalService: NbDialogService) { }
 
   openErrorDialog(error: unknown): void {
     this.modalService.open(ErrorDialogAdapterComponent, {
@@ -14,6 +14,8 @@ export class ErrorDialogAdapterService {
       hasScroll: false,
       closeOnBackdropClick: false,
       closeOnEsc: false,
+    }).onClose.subscribe(() => {
+      document.getElementsByTagName('html')[0].className = ""
     });
   }
 }

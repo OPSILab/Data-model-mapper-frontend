@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 import { Location } from '@angular/common';
 //import { LoginService } from '../../auth/login/login.service';
@@ -8,10 +8,13 @@ import { Location } from '@angular/common';
   //changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./error-dialog.component.scss']
 })
-export class ErrorDialogAdapterComponent {
+export class ErrorDialogAdapterComponent implements OnInit {
   public error;
 
   constructor(public ref: NbDialogRef<unknown>, private _location: Location){}//, private loginService: LoginService) {}
+  ngOnInit(): void {
+    document.getElementsByTagName('html')[0].className=""
+  }
 
   closeModal(error: { [key: string]: { cause?: string } }): void {
     //if (error.error?.cause === 'it.eng.opsi.cape.exception.AuditLogNotFoundException' || (error.status as any) === 401)
