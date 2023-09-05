@@ -31,6 +31,7 @@ export class CreateMapComponent implements OnInit {
   update
   updateAdapter
   saveSchema
+  saveSource
   placeholders = {
     adapterId: this.translate.instant('general.adapters.adapterId'),
     mapId: this.translate.instant('general.dmm.mapId')
@@ -44,6 +45,8 @@ export class CreateMapComponent implements OnInit {
   sourceData: any;
   dataModelID
   sourceDataID: any;
+  sourceSaved: any;
+  schemaSaved: any;
 
   constructor(
     private dmmService: DMMService,
@@ -95,19 +98,19 @@ export class CreateMapComponent implements OnInit {
       if (adapterId == '' || adapterId == null)
         throw new Error("Adapter ID must be set");
 
-      while(adapterId[0]==" ") adapterId = adapterId.substring(1)
-      while(adapterId[adapterId.length-1]==" ") adapterId = adapterId.substring(0,adapterId.length-1)
+      while (adapterId[0] == " ") adapterId = adapterId.substring(1)
+      while (adapterId[adapterId.length - 1] == " ") adapterId = adapterId.substring(0, adapterId.length - 1)
 
       if (this.save) {
         await this.dmmService.saveMap({ name, adapterId, status, description }, status, description, this.jsonMap, this.schema, this.sourceDataType, this.config, this.sourceDataURL, this.dataModelURL, this.dataModelID, this.sourceData, this.sourceDataID);
-        this.ref.close({ name, adapterId, status, description });
+        this.ref.close({ name, adapterId, status, description, saveSchema: this.saveSchema, saveSource: this.saveSource });
         this.editedValue.emit({ name, adapterId, status, description });
         this.showToast('primary', this.translate.instant('general.dmm.map_added_message'), '');
       }
 
       else {
         await this.dmmService.updateMap({ name, adapterId, status, description }, status, description, this.jsonMap, this.schema, this.sourceDataType, this.config, this.sourceDataURL, this.dataModelURL, this.dataModelID, this.sourceData, this.sourceDataID);
-        this.ref.close({ name, adapterId, status, description });
+        this.ref.close({ name, adapterId, status, description , saveSchema: this.saveSchema, saveSource: this.saveSource});
         this.editedValue.emit({ name, adapterId, status, description });
         this.showToast('primary', this.translate.instant('general.dmm.map_edited_message'), '');
       }
@@ -115,10 +118,15 @@ export class CreateMapComponent implements OnInit {
       console.debug("------this.saveSchema--------")
       console.debug(this.saveSchema)
       if (this.saveSchema)
-        if (this.save)
+        if (!this.schemaSaved)
           await this.dmmService.saveSchema({ name, adapterId, status, description }, status, description, this.schema);
         else
           await this.dmmService.updateSchema({ name, adapterId, status, description }, status, description, this.schema);
+      if (this.saveSource)
+        if (!this.sourceSaved)
+          await this.dmmService.saveSource({ name, adapterId, status, description }, status, description, this.sourceData);
+        else
+          await this.dmmService.updateSource({ name, adapterId, status, description }, status, description, this.sourceData);
     }
     catch (error) {
       if (error.status == 413) {

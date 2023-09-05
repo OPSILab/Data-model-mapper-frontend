@@ -43,7 +43,10 @@
         </nb-select>
         <br>
         <br>
-        <nb-checkbox [(ngModel)]="saveSchema" [ngModelOptions]="{standalone: true}">{{ save ? ('general.dmm.save_schema' | translate) : ('general.dmm.save_schema' | translate) }} </nb-checkbox>
+        <nb-checkbox [(ngModel)]="saveSchema" [ngModelOptions]="{standalone: true}">{{ schemaSaved ? ('general.dmm.update_schema' | translate) : ('general.dmm.save_schema' | translate) }} </nb-checkbox>
+        <br>
+        <br>
+        <nb-checkbox [(ngModel)]="saveSource" [ngModelOptions]="{standalone: true}">{{ sourceSaved? ('general.dmm.update_source' | translate) : ('general.dmm.save_source' | translate) }} </nb-checkbox>
         <br>
         <br>
         <h3>

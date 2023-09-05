@@ -79,6 +79,8 @@ export class DMMComponent implements OnInit, OnChanges {
   snippet: any;
   config: AppConfig;
   NGSI: Boolean
+  savedSource: any;
+  savedSchema: any;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -124,11 +126,15 @@ export class DMMComponent implements OnInit, OnChanges {
         sourceDataID : this.selectedSource,
         dataModelURL: this.dataModelURL,
         dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-        sourceData: this.inputType == "json" ? source : this.csvSourceData
+        sourceData: this.inputType == "json" ? source : this.csvSourceData,
+        schemaSaved:this.savedSchema,
+        sourceSaved:this.savedSource
       }
     }).onClose.subscribe(async (adapter) => {
       if (adapter) {
         this.adapter = adapter;
+        this.savedSchema=adapter.saveSchema
+        this.savedSource=adapter.saveSource
       }
     });
   }
@@ -603,6 +609,8 @@ export class DMMComponent implements OnInit, OnChanges {
         dataModelURL: this.dataModelURL,
         dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
         sourceData: this.inputType != "json" ? this.csvSourceData : source // this.sourceDataURL || this.selectedSource ? undefined : this.inputType != "json" ? this.csvSourceData : source
+      ,schemaSaved:this.savedSchema,
+      sourceSaved:this.savedSource
       }
     }).onClose.subscribe(async (adapter) => {
       if (adapter) {
@@ -618,6 +626,8 @@ export class DMMComponent implements OnInit, OnChanges {
           dataModel: this.schemaJson
         })
         this.selectMap = adapter.adapterId
+        this.savedSchema=adapter.saveSchema
+        this.savedSource=adapter.saveSource
       }
     });
   }

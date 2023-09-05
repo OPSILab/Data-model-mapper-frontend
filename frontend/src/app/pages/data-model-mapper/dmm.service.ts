@@ -10,7 +10,6 @@ var urlencode = require('urlencode');
 })
 export class DMMService {
 
-
   private config: AppConfig;
 
   constructor(configService: NgxConfigureService, private http: HttpClient) {
@@ -79,6 +78,26 @@ export class DMMService {
       dataModel: schema[0] || schema
     }).toPromise();
   }
+
+  updateSource(adapter, status: any, description: any, sourceData: any) {
+    return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source", {
+      id: adapter.adapterId,
+      name: adapter.name,
+      status: status,
+      description: description,
+      source: sourceData
+    }).toPromise();
+  }
+  saveSource(adapter, status: any, description: any, sourceData: any) {
+    return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source", {
+      id: adapter.adapterId,
+      name: adapter.name,
+      status: status,
+      description: description,
+      source: sourceData
+    }).toPromise();
+  }
+
 
   updateMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID): any {
     console.debug(adapter)
