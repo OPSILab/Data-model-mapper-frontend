@@ -270,8 +270,8 @@ export class TransformComponent implements OnInit, OnChanges {
     else
       this.outputEditor.update(preview)
 
-    if (this.route.snapshot.params['inputID'] as string) {
-      this.inputID = this.route.snapshot.params['inputID'] as string;
+    if (this.inputID) {
+      //this.inputID = this.route.snapshot.params['inputID'] as string;
       this.selectMap = this.inputID
       this.mapChanged(this.inputID)
       if (this.inputType == "csv") this.updateCSVTable()

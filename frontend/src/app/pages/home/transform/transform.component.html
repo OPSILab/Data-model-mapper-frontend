@@ -1,5 +1,5 @@
 <div class="scrollable-container">
-  <nb-card>
+  <nb-card style = "width:700px;">
     <nb-card-header class="h3">
       Data Model Mapper
       <button style = "float:right" nbButton appearance="outline" shape="semi-round" size="tiny" status="info" (click)="ref.close()">
@@ -17,21 +17,12 @@
             Source
           </nb-accordion-item-header>
           <nb-accordion-item-body>
-            <p>To get started, select the type of input (CSV or JSON) and upload or paste your data.
+            <p>To get started, select, upload or paste your data.
             </p>
             <p *ngIf="sourceRef!==''&&sourceRefFormat==='url'">URL: <a class="mb-3" href={{sourceRef}} target="_blank">
                 <i>{{sourceRef}}</i></a></p>
             <p *ngIf="sourceRef!==''&&sourceRefFormat==='file'">File: <i>{{sourceRef}}</i></p>
-            <div class="mb-2">
-              <nb-select [(ngModel)]="inputType" placeholder="Select Input Type" size="small"
-                (selectedChange)="onUpdateInputType($event)">
-                <nb-option value="csv">CSV</nb-option>
-                <nb-option value="json">JSON</nb-option>
-              </nb-select>
-            </div>
-            <div style="padding-top:30px"></div>
-            <p>Select a source file from below or upload your source file.
-            </p>
+            <div style="padding-top:10px"></div>
             <nb-select placeholder="Select source file" size="small" [(ngModel)]="selectedSource"
               (ngModelChange)="sourceChanged($event)">
               <nb-option *ngFor="let source of sources" value={{source.id}}>{{source.name}}</nb-option>
@@ -136,10 +127,6 @@
           </nb-accordion-item-header>
           <nb-accordion-item-body>
             <br> <br>
-            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="testAdapter()">
-              {{ 'general.dmm.preview' | translate }}
-              <i class="mx-1 fas fa-file-import fa-lg"></i>
-            </button> &nbsp;
             <button nbButton class="mr-2" shape="rectangle" size="small" (click)="transform()">
               {{ 'general.dmm.transform' | translate }}
               <i class="mx-1 fas fa-file-import fa-lg"></i>
