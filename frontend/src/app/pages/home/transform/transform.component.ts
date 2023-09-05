@@ -1,5 +1,6 @@
 import { Component, OnInit, TemplateRef, ViewChild, Inject, OnChanges, SimpleChanges } from '@angular/core';
 import {
+  NbDialogRef,
   NbDialogService,
   NbWindowService,
 } from '@nebular/theme';
@@ -91,6 +92,7 @@ export class TransformComponent implements OnInit, OnChanges {
     private dmmService: DMMService,
     private route: ActivatedRoute,
     configService: NgxConfigureService,
+    protected ref: NbDialogRef<TransformComponent>,
   ) {
     this.config = configService.config as AppConfig;
   }
