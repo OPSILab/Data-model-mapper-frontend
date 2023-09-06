@@ -152,7 +152,7 @@ export class DMMComponent implements OnInit, OnChanges {
           this.schema()
         ];
       console.debug(this.schemaJson)
-      this.oldMap = { ...this.map }
+      this.oldMap = JSON.parse(JSON.stringify(this.map))
       this.map = this.getAllNestedProperties(this.schemaJson[0]);
       this.compareMaps(this.oldMap, this.map)
       mapGl = this.map
@@ -391,7 +391,21 @@ export class DMMComponent implements OnInit, OnChanges {
     if (obj.allOf)
       for (let oneOf of obj.allOf)
         if (oneOf.properties)
-          return this.getAllNestedProperties(oneOf)
+          obj.properties = { ...obj.properties, ...oneOf.properties }
+
+    if (obj.required)
+      for (let key of obj.required)
+        if (!obj.properties[key])
+          obj.properties[key] = ""
+
+    if (obj.anyOf)
+      for (let oneOf of obj.anyOf)
+        if (oneOf.required)
+          for (let key of oneOf.required)
+            if (!obj.properties[key])
+              obj.properties[key] = ""
+
+    console.debug(obj.properties)
 
     if (obj.properties)
       for (let key in obj.properties)
@@ -405,13 +419,13 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   compareMaps(oldMap, newMap) {
-    console.debug(oldMap, newMap)
+    console.debug(JSON.parse(JSON.stringify(oldMap)), JSON.parse(JSON.stringify(newMap)))
     for (let key in newMap)
       if (oldMap && oldMap[key])
-        if (typeof newMap[key] == "object" || Array.isArray(typeof newMap[key]))
+        if (typeof newMap[key] == "object" || Array.isArray(newMap[key]))
           this.compareMaps(oldMap[key], newMap[key])
         else //if (oldMap[key] && (typeof oldMap[key] == "object" || Array.isArray(typeof oldMap[key])))
-          newMap[key] = oldMap[key] //TODO be careful to this
+          newMap[key] = JSON.parse(JSON.stringify(oldMap[key]))
   }
 
   //skipArrays:Ignore the array part
