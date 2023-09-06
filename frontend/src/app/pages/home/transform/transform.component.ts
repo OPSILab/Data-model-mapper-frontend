@@ -112,7 +112,6 @@ export class TransformComponent implements OnInit, OnChanges {
     if (source[this.selectedPath])
       source = source[this.selectedPath]
 
-    console.debug(this.NGSI)
     this.dialogService.open(CreateMapComponent, {
       context: {
         value: this.adapter,
@@ -149,7 +148,6 @@ export class TransformComponent implements OnInit, OnChanges {
         this.schemaJson = [
           this.schema()
         ];
-      console.debug(this.schemaJson)
       this.map = this.getAllNestedProperties(this.schemaJson[0]);
       mapGl = this.map
       this.mapperEditor.update(this.map)
@@ -202,12 +200,8 @@ export class TransformComponent implements OnInit, OnChanges {
     this.schemaJson = [
       this.schemaFromFile
     ]
-    console.debug("THIS SCHEMA JSON")
-    console.debug(this.schemaJson)
     this.map = this.getAllNestedProperties(this.schemaJson[0]);
     mapGl = this.map
-    console.debug("THIS MAP")
-    console.debug(this.map)
     this.mapperEditor.update(this.map)
   }
 
@@ -273,7 +267,8 @@ export class TransformComponent implements OnInit, OnChanges {
     if (this.inputID) {
       //this.inputID = this.route.snapshot.params['inputID'] as string;
       this.selectMap = this.inputID
-      this.mapChanged(this.inputID)
+      await this.mapChanged(this.inputID)
+      console.debug(this.inputType)
       if (this.inputType == "csv") this.updateCSVTable()
     }
   }
@@ -416,6 +411,8 @@ export class TransformComponent implements OnInit, OnChanges {
 
   onUpdateInputType(event) {
 
+    console.debug(event)
+
     const divJsonElement = document.getElementById('json-input');
     const divCSVElement = document.getElementById('csv-input');
 
@@ -437,8 +434,6 @@ export class TransformComponent implements OnInit, OnChanges {
   }
 
   updateMapper(path, value, map, mapperEditor) {
-    console.debug(mapGl)
-    console.debug(map)
     map[path] = value
     mapperEditor.update(map)
   }
@@ -467,7 +462,6 @@ export class TransformComponent implements OnInit, OnChanges {
         var selectPath = path;
         function pathToMap() {
           //this.m = mOptions
-          console.debug(mapOptionsGl)
           dialogService
             .open(DialogDataMapComponent, {
               context: { mapOptions: mapOptionsGl, selectPath: selectPath, map: mapGl },
@@ -600,7 +594,6 @@ export class TransformComponent implements OnInit, OnChanges {
 
     if (source[this.selectedPath])
       source = source[this.selectedPath]
-    console.debug(this.NGSI)
     this.dialogService.open(CreateMapComponent, {
       context: {
         save: true,
@@ -661,6 +654,7 @@ export class TransformComponent implements OnInit, OnChanges {
         mapSettings.dataModel
       ];
       this.onUpdateInputType(mapSettings?.sourceDataType)
+      console.debug(this.inputType)
       this.NGSI = mapSettings?.config?.NGSI_entity
       this.separatorItem = mapSettings?.config?.delimiter
 
@@ -694,6 +688,7 @@ export class TransformComponent implements OnInit, OnChanges {
       this.mapperEditor.update(this.map)
       this.selectedSchema = "---select schema---"
       if (mapSettings.dataModel) this.schemaEditor.update(mapSettings.dataModel)
+      console.debug(this.inputType)
     }
   }
 

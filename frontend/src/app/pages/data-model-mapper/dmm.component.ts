@@ -270,7 +270,7 @@ export class DMMComponent implements OnInit, OnChanges {
     if (this.route.snapshot.params['inputID'] as string) {
       this.inputID = this.route.snapshot.params['inputID'] as string;
       this.selectMap = this.inputID
-      this.mapChanged(this.inputID)
+      await this.mapChanged(this.inputID)
       if (this.inputType == "csv") this.updateCSVTable()
     }
   }
