@@ -29,6 +29,25 @@ module.exports = {
         return id;
     },
 
+    getConfig() {
+        let configCopy = JSON.parse(JSON.stringify(config))
+        
+        configCopy.mongo =
+            configCopy.writers =
+            configCopy.fileWriter =
+            configCopy.debugger =
+            configCopy.orionWriter =
+            configCopy.regexClean =
+            configCopy.mapPath =
+            configCopy.sourceDataPath =
+            configCopy.modelSchemaFolder =
+            configCopy.httpPort =
+            configCopy.logLevel =
+            configCopy.mode =
+            configCopy.env = undefined
+        return configCopy
+    },
+
     async mapData(source, map, dataModel, configIn) {
 
         const cli = require('../../../cli/setup');
@@ -41,7 +60,7 @@ module.exports = {
             catch (error) {
                 console.log(error)
                 process.res.sendStatus(404)
-            } 
+            }
 
             if (!map.dataModel.$schema && map.dataModel.schema)
                 map.dataModel.$schema = map.dataModel.schema

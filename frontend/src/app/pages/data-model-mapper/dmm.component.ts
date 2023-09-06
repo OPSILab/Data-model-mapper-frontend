@@ -82,6 +82,8 @@ export class DMMComponent implements OnInit, OnChanges {
   savedSource: any;
   savedSchema: any;
   oldMap: any;
+  configEditorContainer: HTMLElement;
+  configEditor: any;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -219,6 +221,7 @@ export class DMMComponent implements OnInit, OnChanges {
   async ngOnInit(): Promise<void> {
 
     this.sourceEditorContainer = this.document.getElementById('jsoneditor');
+    this.configEditorContainer = this.document.getElementById('configEditor');
     this.mapperEditorContainer = this.document.getElementById('jsoneditor2');
     this.schemaEditorContainer = this.document.getElementById('schemaEditor');
     this.outputEditorContainer = this.document.getElementById('jsoneditor3');
@@ -256,6 +259,8 @@ export class DMMComponent implements OnInit, OnChanges {
     this.sourceEditor = new JSONEditor(this.sourceEditorContainer, options, this.sourceJson);
 
     this.schemaEditor = new JSONEditor(this.schemaEditorContainer, options, this.selectedDataModel)
+
+    this.configEditor = new JSONEditor(this.configEditorContainer, this.options2, await this.dmmService.getConfig())//await this.dmmService.getConfig());
 
     this.outputEditorOptions = {
       mode: 'view',

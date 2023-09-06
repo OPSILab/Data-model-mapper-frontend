@@ -42,6 +42,11 @@ module.exports = {
         res.send(await service.getMap(req.query.id))
     },
 
+    getConfig: async (req, res) => {
+        process.res = res;
+        res.send(await service.getConfig())
+    },
+
     getDataModel: async (req, res) => {
         process.res = res;
         res.send(await service.getDataModel(req.query.id))
