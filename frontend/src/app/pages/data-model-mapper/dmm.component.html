@@ -57,12 +57,6 @@
             (ngModelChange)="sourceChanged($event)">
             <nb-option *ngFor="let source of sources" value={{source.id}}>{{source.name}}</nb-option>
           </nb-select>
-          <div style="padding-top:30px"></div>
-          <p>NGSI entity.
-          </p>
-          <nb-checkbox placeholder="True" size="small" [(ngModel)]="NGSI">
-            NGSI entity
-          </nb-checkbox>
           <br><br><br>
           <div style="padding-top:10px"></div>
           <div class="mb-1" style="display:none;" id="json-input">
@@ -98,7 +92,7 @@
                 {{ 'general.editor.update_field_list' | translate }}
                 <i class="mx-1 fas fa-lg"></i>
               </button>
-              <nb-select placeholder="Separator" size="small" [(selected)]="separatorItem">
+              <nb-select placeholder="Separator" size="small" [(selected)]="separatorItem" (click)="updateConfig()">
                 <nb-option value=",">Comma separator</nb-option>
                 <nb-option value=";">Semi-colon separator</nb-option>
                 <nb-option value="\t">Tab separator</nb-option>
@@ -159,8 +153,17 @@
         <nb-accordion-item-body>
           <p>Set transform config.
           </p>
+          <br> <br> <br>
+          <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateConfigSettings()">
+            {{ 'general.dmm.update_config' | translate }}
+            <i class="mx-1 fas fa-file-import fa-lg"></i>
+          </button>
+          <br> <br>
           <div style="height:500px" id="configEditor"></div>
           <br> <br>
+          <p>Test or transform.
+          </p>
+          <br> <br> <br>
           <button nbButton class="mr-2" shape="rectangle" size="small" (click)="testAdapter()">
             {{ 'general.dmm.preview' | translate }}
             <i class="mx-1 fas fa-file-import fa-lg"></i>

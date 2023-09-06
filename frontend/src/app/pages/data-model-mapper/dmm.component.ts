@@ -84,6 +84,7 @@ export class DMMComponent implements OnInit, OnChanges {
   oldMap: any;
   configEditorContainer: HTMLElement;
   configEditor: any;
+  transformSettings: any;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -121,10 +122,7 @@ export class DMMComponent implements OnInit, OnChanges {
         sourceDataType: type,
         jsonMap: JSON.parse(this.mapperEditor.getText()),
         schema: JSON.parse(this.schemaEditor.getText()),
-        config: {
-          delimiter: this.separatorItem,
-          NGSI_entity: this.NGSI
-        },
+        config: this.transformSettings,
         sourceDataURL: this.sourceDataURL,
         sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
@@ -260,7 +258,9 @@ export class DMMComponent implements OnInit, OnChanges {
 
     this.schemaEditor = new JSONEditor(this.schemaEditorContainer, options, this.selectedDataModel)
 
-    this.configEditor = new JSONEditor(this.configEditorContainer, this.options2, await this.dmmService.getConfig())//await this.dmmService.getConfig());
+    this.transformSettings = await this.dmmService.getConfig()
+
+    this.configEditor = new JSONEditor(this.configEditorContainer, this.options2, this.transformSettings)//await this.dmmService.getConfig());
 
     this.outputEditorOptions = {
       mode: 'view',
@@ -314,6 +314,11 @@ export class DMMComponent implements OnInit, OnChanges {
     this.sources = await this.dmmService.getSources();
   }
 
+  updateConfig(){
+    this.transformSettings.delimiter = this.separatorItem
+    this.configEditor.update(this.transformSettings)
+  }
+
   async testAdapter() {
     let output
     try {
@@ -339,10 +344,7 @@ export class DMMComponent implements OnInit, OnChanges {
           .concat("\r\n")
           .concat(this.rows[3])
 
-      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.partialCsv : source, m, this.schemaJson[0], {
-        delimiter: this.separatorItem,
-        NGSI_entity: this.NGSI
-      })
+      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.partialCsv : source, m, this.schemaJson[0], this.transformSettings)
     }
     catch (error) {
       if (!output)
@@ -364,10 +366,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (source[this.selectedPath])
         source = source[this.selectedPath]
 
-      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.csvSourceData : source, m, this.schemaJson[0], {
-        delimiter: this.separatorItem,
-        NGSI_entity: this.NGSI
-      })
+      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.csvSourceData : source, m, this.schemaJson[0], this.transformSettings)
     }
     catch (error) {
       if (!output)
@@ -631,6 +630,10 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
+  updateConfigSettings(){
+    this.transformSettings = JSON.parse(this.configEditor.getText())
+  }
+
   saveAdapter() {
     let source = JSON.parse(this.sourceEditor.getText())
 
@@ -642,10 +645,7 @@ export class DMMComponent implements OnInit, OnChanges {
         save: true,
         jsonMap: JSON.parse(this.mapperEditor.getText()),
         schema: JSON.parse(this.schemaEditor.getText()),//(!this.selectedSchema || this.selectedSchema == "---select schema---") && !this.dataModelURL ? JSON.parse(this.schemaEditor.getText()) : undefined,
-        config: {
-          delimiter: this.separatorItem,
-          NGSI_entity: this.NGSI
-        },
+        config: this.transformSettings,
         sourceDataType: this.inputType,
         sourceDataURL: this.sourceDataURL,
         sourceDataID: this.selectedSource,
@@ -697,7 +697,8 @@ export class DMMComponent implements OnInit, OnChanges {
         mapSettings.dataModel
       ];
       this.onUpdateInputType(mapSettings?.sourceDataType)
-      this.NGSI = mapSettings?.config?.NGSI_entity
+      this.transformSettings = mapSettings?.config
+      this.configEditor.update(this.transformSettings)
       this.separatorItem = mapSettings?.config?.delimiter
 
       if (mapSettings.sourceDataID && !mapSettings.sourceData) {

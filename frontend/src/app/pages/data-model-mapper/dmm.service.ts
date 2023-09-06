@@ -31,19 +31,25 @@ export class DMMService {
   }
 
   getConfig(): any {
-    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/config").toPromise();
+    try {
+      return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/config").toPromise();
+    }
+    catch (error) {
+      console.error(error)
+      return this.http.get<any[]>("assets/config.json").toPromise();
+    }
   }
 
   getSource(id): any {
-    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/source?id="+id).toPromise();
+    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/source?id=" + id).toPromise();
   }
 
   getMap(id): any {
-    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/map?id="+id).toPromise();
+    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/map?id=" + id).toPromise();
   }
 
   getSchema(id): any {
-    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel?id="+id).toPromise();
+    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel?id=" + id).toPromise();
   }
 
   deleteMap(id: any) {
