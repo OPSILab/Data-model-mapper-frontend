@@ -152,9 +152,9 @@ export class DMMComponent implements OnInit, OnChanges {
           this.schema()
         ];
       console.debug(this.schemaJson)
-      this.oldMap = JSON.parse(JSON.stringify(this.map))
+      if (this.map) this.oldMap = JSON.parse(JSON.stringify(this.map))
       this.map = this.getAllNestedProperties(this.schemaJson[0]);
-      this.compareMaps(this.oldMap, this.map)
+      if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
       mapGl = this.map
       this.mapperEditor.update(this.map)
       this.selectMap = "---select map---"
@@ -171,6 +171,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (this.inputType == "json") {
         this.sourceJson = this.source();
         this.sourceEditor.update(this.sourceJson)
+        if (!this.sourceJson[this.selectedPath]) this.selectedPath = ""
         mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
         this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
         this.onUpdatePathForDataMap("")
