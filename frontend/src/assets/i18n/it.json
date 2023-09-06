@@ -102,6 +102,7 @@
       "validationErrors": "Ci sono degli errori di validazione nella descrizione dell'adapter inserito."
     },
     "dmm": {
+      "reset_config" : "Reset configurazione",
       "update_config" : "Aggiorna configurazione",
       "transform" : "Trasforma",
       "mode" : "Modalità",

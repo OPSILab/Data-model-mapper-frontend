@@ -319,6 +319,12 @@ export class DMMComponent implements OnInit, OnChanges {
     this.configEditor.update(this.transformSettings)
   }
 
+  async resetConfigSettings(){
+    this.transformSettings = await this.dmmService.getConfig()
+    this.configEditor.update(this.transformSettings)
+    this.separatorItem = this.transformSettings.delimiter
+  }
+
   async testAdapter() {
     let output
     try {

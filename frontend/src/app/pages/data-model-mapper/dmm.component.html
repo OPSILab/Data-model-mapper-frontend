@@ -158,6 +158,10 @@
             {{ 'general.dmm.update_config' | translate }}
             <i class="mx-1 fas fa-file-import fa-lg"></i>
           </button>
+          <button nbButton class="mr-2" shape="rectangle" size="small" (click)="resetConfigSettings()">
+            {{ 'general.dmm.reset_config' | translate }}
+            <i class="mx-1 fas fa-file-import fa-lg"></i>
+          </button>
           <br> <br>
           <div style="height:500px" id="configEditor"></div>
           <br> <br>

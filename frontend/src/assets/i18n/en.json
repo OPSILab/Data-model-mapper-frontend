@@ -102,6 +102,7 @@
       "validationErrors": "There are validation errors in the Adapter description."
     },
     "dmm" : {
+      "reset_config" : "Reset config",
       "update_config" : "Update config",
       "transform" : "Transform",
       "mode" : "Mode",
