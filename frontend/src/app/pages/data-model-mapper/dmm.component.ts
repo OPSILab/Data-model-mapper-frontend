@@ -81,6 +81,7 @@ export class DMMComponent implements OnInit, OnChanges {
   NGSI: Boolean
   savedSource: any;
   savedSchema: any;
+  oldMap: any;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -139,6 +140,10 @@ export class DMMComponent implements OnInit, OnChanges {
     });
   }
 
+  getSchema() {
+    return JSON.parse(this.schemaEditor.getText())
+  }
+
   schemaChanged($event) {
     if ($event && $event != "---select schema---") {
       if (this.dataModelURL) this.dataModelURL = undefined
@@ -147,7 +152,9 @@ export class DMMComponent implements OnInit, OnChanges {
           this.schema()
         ];
       console.debug(this.schemaJson)
+      this.oldMap = { ...this.map }
       this.map = this.getAllNestedProperties(this.schemaJson[0]);
+      this.compareMaps(this.oldMap, this.map)
       mapGl = this.map
       this.mapperEditor.update(this.map)
       this.selectMap = "---select map---"
@@ -276,7 +283,13 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   schema() {
-    return this.schemas.filter(filteredSchema => filteredSchema.id == this.selectedSchema)[0].dataModel
+    try {
+      return this.schemas.filter(filteredSchema => filteredSchema.id == this.selectedSchema)[0].dataModel
+    }
+    catch (error) {
+      console.error(error)
+      return this.getSchema()
+    }
   }
 
   source() {
@@ -389,6 +402,16 @@ export class DMMComponent implements OnInit, OnChanges {
     else
       return ""
     return properties;
+  }
+
+  compareMaps(oldMap, newMap) {
+    console.debug(oldMap, newMap)
+    for (let key in newMap)
+      if (oldMap && oldMap[key])
+        if (typeof newMap[key] == "object" || Array.isArray(typeof newMap[key]))
+          this.compareMaps(oldMap[key], newMap[key])
+        else //if (oldMap[key] && (typeof oldMap[key] == "object" || Array.isArray(typeof oldMap[key])))
+          newMap[key] = oldMap[key] //TODO be careful to this
   }
 
   //skipArrays:Ignore the array part
@@ -636,16 +659,16 @@ export class DMMComponent implements OnInit, OnChanges {
     if ($event && $event != "---select map---") {
       let mapSettings = this.maps.filter(filteredMap => filteredMap.id == $event)[0]
       this.savedSource = await this.dmmService.getSource($event),
-      this.savedSchema = await this.dmmService.getSchema($event)
+        this.savedSchema = await this.dmmService.getSchema($event)
 
       //if (sourceByID) {
-        //this.savedSource = sourceByID
-        //console.debug("SOUCE FOUND")
+      //this.savedSource = sourceByID
+      //console.debug("SOUCE FOUND")
       //}
       //if (schemaByID) {
-        //this.savedSchema = schemaByID
-        //console.debug("SCHEMA FOUND")
-     // }
+      //this.savedSchema = schemaByID
+      //console.debug("SCHEMA FOUND")
+      // }
 
       //console.debug(sourceByID)
       //console.debug(schemaByID)

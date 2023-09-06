@@ -135,7 +135,7 @@
               {{ 'general.editor.import' | translate }}
               <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button>
-            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="setMapEditor(false)">
+            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="schemaChanged(getSchema())">
               {{ 'general.editor.generate_mapper' | translate }}
               <i class="mx-1 fas fa-lg"></i>
             </button>
