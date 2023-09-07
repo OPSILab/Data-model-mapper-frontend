@@ -5,6 +5,7 @@ const Map = require("../models/map.js")
 const DataModel = require("../models/dataModel.js")
 const log = require('../../../utils/logger').app(module);
 const axios = require('axios')
+const RefParser = require('json-schema-ref-parser');
 
 module.exports = {
 
@@ -198,6 +199,50 @@ module.exports = {
         return await DataModel.findOne({ id: id })
     },
 
+    async parseDataModelSchema(schemaPath) {
+
+        return RefParser.dereference(schemaPath).then((schema) => {
+
+            var rootProperties
+
+            if (schema.allOf) {
+                rootProperties = schema.allOf.pop().properties;
+
+                for (var allOf of schema.allOf) {
+
+                    if (allOf.allOf) {
+                        // nested allOf 
+                        for (var nestedAllOf of allOf.allOf) {
+                            let head = nestedAllOf.properties;
+                            for (let key in head) {
+                                rootProperties[key] = head[key];
+                            }
+                        }
+                    } else if (allOf.properties) {
+                        let head = allOf.properties;
+                        for (let key in head) {
+                            rootProperties[key] = head[key];
+                        }
+                    }
+                }
+            }
+            else rootProperties = schema.properties
+            schema.allOf = new Array({ properties: rootProperties });
+
+            return new Promise((resolve, reject) => {
+                resolve(schema);
+            });
+        });
+
+    },
+
+    async dereferenceSchema(schema) {
+        let schemaCleaned = this.dataModelDeClean(schema)
+        let schemaFixed = this.dataModelRefFix(schemaCleaned)
+        let schemaDereferenced = await this.parseDataModelSchema(schemaFixed)
+        return schemaDereferenced
+    },
+
     async insertSource(name, id, source, path) {
         if (path == "") path = undefined
         if (!await Source.findOne({ id: id })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path }])
@@ -267,6 +312,19 @@ module.exports = {
         return dataModel
     },
 
+    dataModelRefFix(dataModel) {
+        this.call++;
+        for (let key in dataModel) {
+            if (Array.isArray(dataModel[key]) || typeof dataModel[key] == "object")
+                dataModel[key] = this.dataModelRefFix(dataModel[key])
+            else if (key.startsWith("$")) {
+                if (!dataModel[key].startsWith("http")) dataModel[key] = config.modelSchemaFolder+"//"+JSON.parse(JSON.stringify(dataModel[key]))
+                console.debug(dataModel[key])
+            }
+        }
+        return dataModel
+    },
+
     dataModelDeClean(dataModel) {
         this.call++;
         for (let key in dataModel) {
@@ -275,6 +333,7 @@ module.exports = {
             else if (key.startsWith("dollar")) {
                 dataModel["$" + key.substring(6)] = dataModel[key]
                 dataModel[key] = undefined
+                console.debug(dataModel["$" + key.substring(6)])
             }
         }
         return dataModel

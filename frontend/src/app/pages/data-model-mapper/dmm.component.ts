@@ -145,7 +145,7 @@ export class DMMComponent implements OnInit, OnChanges {
     return JSON.parse(this.schemaEditor.getText())
   }
 
-  schemaChanged($event) {
+  async schemaChanged($event) {
     if ($event && $event != "---select schema---") {
       if (this.dataModelURL) this.dataModelURL = undefined
       if (this.selectedSchema)
@@ -154,7 +154,7 @@ export class DMMComponent implements OnInit, OnChanges {
         ];
       console.debug(this.schemaJson)
       if (this.map) this.oldMap = JSON.parse(JSON.stringify(this.map))
-      this.map = this.getAllNestedProperties(this.schemaJson[0]);
+      this.map = this.getAllNestedProperties(await this.dmmService.refParse(this.schemaJson[0]));
       if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
       mapGl = this.map
       this.mapperEditor.update(this.map)
@@ -406,7 +406,7 @@ export class DMMComponent implements OnInit, OnChanges {
       for (let oneOf of obj.allOf)
         if (oneOf.properties)
           obj.properties = { ...obj.properties, ...oneOf.properties }
-
+/*
     if (obj.required)
       for (let key of obj.required)
         if (!obj.properties[key])
@@ -419,7 +419,7 @@ export class DMMComponent implements OnInit, OnChanges {
             if (!obj.properties[key])
               obj.properties[key] = true
 
-    console.debug(obj.properties)
+    console.debug(obj.properties)*/
 
     if (obj.properties)
       for (let key in obj.properties)

@@ -1,11 +1,12 @@
 const express = require("express")
-const { getConfig, insertMap, insertSource, insertDataModel, mapData, getMap, getSource, getDataModel, getMaps, getSources, getDataModels, modifyMap, modifySource, modifyDataModel, deleteMap, deleteSource, deleteDataModel } = require("../controllers/controller.js")
+const { getConfig, insertMap, dereferenceSchema, insertSource, insertDataModel, mapData, getMap, getSource, getDataModel, getMaps, getSources, getDataModels, modifyMap, modifySource, modifyDataModel, deleteMap, deleteSource, deleteDataModel } = require("../controllers/controller.js")
 const router = express.Router()
 
 router.post(encodeURI("/map/transform"), mapData)
 router.post(encodeURI("/map/register"), insertMap)
 router.post(encodeURI("/source"), insertSource)
 router.post(encodeURI("/dataModel"), insertDataModel)
+router.post(encodeURI("/dereferenceSchema"), dereferenceSchema)
 
 router.get(encodeURI("/map"), getMap)
 router.get(encodeURI("/config"), getConfig)

@@ -108,5 +108,10 @@ module.exports = {
     deleteDataModel: async (req, res) => {
         process.res = res;
         res.send(await service.deleteDataModel(req.query.id))
+    },
+
+    dereferenceSchema: async (req, res) => {
+        process.res = res;
+        res.send(await service.dereferenceSchema(req.body))
     }
 };

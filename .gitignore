@@ -42,3 +42,5 @@ backend/sourceFileTemp.json
 backend/sourceFileTemp..json
 backend/docs/tests/.history/
 backup/
+logs/
+reports/

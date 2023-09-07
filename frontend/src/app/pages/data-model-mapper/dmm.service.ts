@@ -56,6 +56,10 @@ export class DMMService {
     return this.http.delete<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/" + urlencode(id)).toPromise();
   }
 
+  refParse(schema) {
+    return this.http.post<any>(this.config.data_model_mapper.default_mapper_base_url + "/dereferenceSchema", schema).toPromise();
+  }
+
   getRemoteSource(url, type) {
     return type == "csv" ?
       this.http.get<any>(url, { responseType: 'text' as 'json' }).toPromise() :
