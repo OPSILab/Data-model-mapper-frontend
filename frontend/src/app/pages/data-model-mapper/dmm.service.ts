@@ -31,13 +31,11 @@ export class DMMService {
   }
 
   getConfig(): any {
-    try {
-      return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/config").toPromise();
-    }
-    catch (error) {
-      console.error(error)
-      return this.http.get<any[]>("assets/config.json").toPromise();
-    }
+    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/config").toPromise();
+  }
+
+  getBackupConfig(): any {
+    return this.http.get<any[]>("assets/transformConfig.json").toPromise();
   }
 
   getSource(id): any {

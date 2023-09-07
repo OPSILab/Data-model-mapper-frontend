@@ -16,7 +16,7 @@ import { ErrorDialogAdapterService } from '../error-dialog/error-dialog-adapter.
 import { ActivatedRoute } from '@angular/router';
 import { NgxConfigureService } from 'ngx-configure';
 
-let mapOptionsGl, mapGl, mapperEditor
+let mapOptionsGl, mapGl = "Set your mapping fields here", mapperEditor
 
 //let map = {}, mapperEditor, mapOptions: string[]
 @Component({
@@ -154,7 +154,14 @@ export class DMMComponent implements OnInit, OnChanges {
         ];
       console.debug(this.schemaJson)
       if (this.map) this.oldMap = JSON.parse(JSON.stringify(this.map))
-      this.map = this.getAllNestedProperties(await this.dmmService.refParse(this.schemaJson[0]));
+      try {
+        this.map = this.getAllNestedProperties(await this.dmmService.refParse(this.schemaJson[0]));
+      }
+      catch (error) {
+        console.error(error)
+        this.errorService.openErrorDialog(error)
+        this.map = "Some errors occurred during generating map object"
+      }
       if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
       mapGl = this.map
       this.mapperEditor.update(this.map)
@@ -227,15 +234,15 @@ export class DMMComponent implements OnInit, OnChanges {
     this.selectBox = <HTMLInputElement>this.document.getElementById('input-type');
     this.csvtable = this.document.getElementById('csv-table');
 
-    try {
-      await this.loadMapperList()
-      await this.loadSchemaList()
-      await this.loadSourceList()
-    }
-    catch (error) {
-      console.error(error)
-      this.errorService.openErrorDialog(error)
-    }
+    //try {
+    await this.loadMapperList()
+    await this.loadSchemaList()
+    await this.loadSourceList()
+    //}
+    //catch (error) {
+    //console.error(error)
+    //this.errorService.openErrorDialog(error)
+    //}
 
     const options = {
       mode: 'view',
@@ -255,11 +262,22 @@ export class DMMComponent implements OnInit, OnChanges {
       "preview": "set the source, set the json map and click preview to see the output json preview"
     }
 
+    this.map = {
+      "set a field from the output schema field list": "set a field from the source input"
+    }
+
     this.sourceEditor = new JSONEditor(this.sourceEditorContainer, options, this.sourceJson);
 
     this.schemaEditor = new JSONEditor(this.schemaEditorContainer, options, this.selectedDataModel)
 
-    this.transformSettings = await this.dmmService.getConfig()
+    try {
+      this.transformSettings = await this.dmmService.getConfig()
+    }
+    catch (error) {
+      this.transformSettings = await this.dmmService.getBackupConfig()
+    }
+
+    console.debug(this)
 
     this.configEditor = new JSONEditor(this.configEditorContainer, this.options2, this.transformSettings)//await this.dmmService.getConfig());
 
@@ -291,12 +309,12 @@ export class DMMComponent implements OnInit, OnChanges {
 
   schema() {
     try {
-      console.debug(this.schemas)
-      console.debug(this.selectedSchema)
+      console.debug(this)
       return this.schemas.filter(filteredSchema => filteredSchema.id == this.selectedSchema)[0].dataModel
     }
     catch (error) {
       console.error(error)
+      this.errorService.openErrorDialog(error)
       return this.getSchema()
     }
   }
@@ -306,15 +324,36 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async loadMapperList() {
-    this.maps = await this.dmmService.getMaps();
+    try {
+      this.maps = await this.dmmService.getMaps();
+    }
+    catch (error) {
+      console.error(error)
+      this.errorService.openErrorDialog(error)
+      this.maps = []
+    }
   }
 
   async loadSchemaList() {
-    this.schemas = await this.dmmService.getSchemas();
+    try {
+      this.schemas = await this.dmmService.getSchemas();
+    }
+    catch (error) {
+      console.error(error)
+      this.errorService.openErrorDialog(error)
+      this.schemas = []
+    }
   }
 
   async loadSourceList() {
-    this.sources = await this.dmmService.getSources();
+    try {
+      this.sources = await this.dmmService.getSources();
+    }
+    catch (error) {
+      console.error(error)
+      this.errorService.openErrorDialog(error)
+      this.sources = []
+    }
   }
 
   updateConfig() {
@@ -359,6 +398,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (!output)
         output = error.error
       console.error(error)
+      this.errorService.openErrorDialog(error)
     }
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
@@ -381,6 +421,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (!output)
         output = error.error
       console.error(error)
+      this.errorService.openErrorDialog(error)
     }
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
@@ -406,20 +447,20 @@ export class DMMComponent implements OnInit, OnChanges {
       for (let oneOf of obj.allOf)
         if (oneOf.properties)
           obj.properties = { ...obj.properties, ...oneOf.properties }
-/*
-    if (obj.required)
-      for (let key of obj.required)
-        if (!obj.properties[key])
-          obj.properties[key] = true
-
-    if (obj.anyOf)
-      for (let oneOf of obj.anyOf)
-        if (oneOf.required)
-          for (let key of oneOf.required)
+    /*
+        if (obj.required)
+          for (let key of obj.required)
             if (!obj.properties[key])
               obj.properties[key] = true
 
-    console.debug(obj.properties)*/
+        if (obj.anyOf)
+          for (let oneOf of obj.anyOf)
+            if (oneOf.required)
+              for (let key of oneOf.required)
+                if (!obj.properties[key])
+                  obj.properties[key] = true
+
+        console.debug(obj.properties)*/
 
     if (obj.properties)
       for (let key in obj.properties)
@@ -499,69 +540,74 @@ export class DMMComponent implements OnInit, OnChanges {
     //let map = this.map
     mapGl = this.map
     mapperEditor = this.mapperEditor
+    try {
+      this.options2 = {
+        mode: 'tree',
+        modes: ['tree', 'code', 'view', 'preview'], // allowed modes
+        onModeChange: function (newMode, oldMode) {
+        },
 
-    this.options2 = {
-      mode: 'tree',
-      modes: ['tree', 'code', 'view', 'preview'], // allowed modes
-      onModeChange: function (newMode, oldMode) {
-      },
+        onCreateMenu: function (items, node) {
+          const path = node.path
 
-      onCreateMenu: function (items, node) {
-        const path = node.path
+          // log the current items and node for inspection
+          //console.log('items:', items, 'node:', node)
 
-        // log the current items and node for inspection
-        //console.log('items:', items, 'node:', node)
-
-        var selectPath = path;
-        function pathToMap() {
-          //this.m = mOptions
-          console.debug(mapOptionsGl)
-          dialogService
-            .open(DialogDataMapComponent, {
-              context: { mapOptions: mapOptionsGl, selectPath: selectPath, map: mapGl },
-            }).onClose.subscribe((value) => {
-              updateMapper(selectPath, value[0], mapGl, mapperEditor)// value[1] is the map
-            });
-        }
-
-        if (path) {
-          // items.push instead items = if you want to maintain other menu options
-          items = [{
-            text: 'Map', // the text for the menu item
-            title: 'Put the map with source', // the HTML title attribute
-            className: 'example-class',
-            click: pathToMap // the function to call when the menu item is clicked
-          }]
-        }
-
-        items.forEach(function (item, index, items) {
-          if ("submenu" in item) {
-            // if the item has a submenu property, it is a submenu heading
-            // and contains another array of menu items. Let's colour
-            // that yellow...
-            items[index].className += ' submenu-highlight'
-          } else {
-            // if it's not a submenu heading, let's make it colorful
-            items[index].className += ' rainbow'
+          var selectPath = path;
+          function pathToMap() {
+            //this.m = mOptions
+            console.debug(mapOptionsGl)
+            dialogService
+              .open(DialogDataMapComponent, {
+                context: { mapOptions: mapOptionsGl, selectPath: selectPath, map: mapGl },
+              }).onClose.subscribe((value) => {
+                updateMapper(selectPath, value[0], mapGl, mapperEditor)// value[1] is the map
+              });
           }
-        })
 
-        // note that the above loop isn't recursive, so it only alters the classes
-        // on the top-level menu items. To also process menu items in submenus
-        // you should iterate through any "submenu" arrays of items if the item has one.
+          if (path) {
+            // items.push instead items = if you want to maintain other menu options
+            items = [{
+              text: 'Map', // the text for the menu item
+              title: 'Put the map with source', // the HTML title attribute
+              className: 'example-class',
+              click: pathToMap // the function to call when the menu item is clicked
+            }]
+          }
 
-        // next, just for fun, let's remove any menu separators (again just at the
-        // top level menu). A menu separator is an item with a type : 'separator'
-        // property
-        items = items.filter(function (item) {
-          return item.type !== 'separator'
-        })
+          items.forEach(function (item, index, items) {
+            if ("submenu" in item) {
+              // if the item has a submenu property, it is a submenu heading
+              // and contains another array of menu items. Let's colour
+              // that yellow...
+              items[index].className += ' submenu-highlight'
+            } else {
+              // if it's not a submenu heading, let's make it colorful
+              items[index].className += ' rainbow'
+            }
+          })
 
-        // finally we need to return the items array. If we don't, the menu
-        // will be empty.
-        return items
-      }
-    };
+          // note that the above loop isn't recursive, so it only alters the classes
+          // on the top-level menu items. To also process menu items in submenus
+          // you should iterate through any "submenu" arrays of items if the item has one.
+
+          // next, just for fun, let's remove any menu separators (again just at the
+          // top level menu). A menu separator is an item with a type : 'separator'
+          // property
+          items = items.filter(function (item) {
+            return item.type !== 'separator'
+          })
+
+          // finally we need to return the items array. If we don't, the menu
+          // will be empty.
+          return items
+        }
+      };
+    }
+    catch (error) {
+      console.error(error)
+      console.error("Error during map setting set")
+    }
 
     if (!this.mapperEditor && !justOptions) this.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
     else if (!justOptions) this.mapperEditor.update(this.map)
@@ -686,8 +732,15 @@ export class DMMComponent implements OnInit, OnChanges {
   async mapChanged($event) {
     if ($event && $event != "---select map---") {
       let mapSettings = this.maps.filter(filteredMap => filteredMap.id == $event)[0]
-      this.savedSource = await this.dmmService.getSource($event)
-      this.savedSchema = await this.dmmService.getSchema($event)
+
+      try {
+        this.savedSource = await this.dmmService.getSource($event)
+        this.savedSchema = await this.dmmService.getSchema($event)
+      }
+      catch (error) {
+        console.error(error)
+        this.errorService.openErrorDialog(error)
+      }
 
       //if (sourceByID) {
       //this.savedSource = sourceByID
@@ -713,7 +766,14 @@ export class DMMComponent implements OnInit, OnChanges {
       else if (mapSettings.sourceDataURL && !mapSettings.sourceData) {
         this.sourceDataURL = mapSettings.sourceDataURL
         if (this.selectedSource) this.selectedSource = undefined
-        mapSettings.sourceData = await this.dmmService.getRemoteSource(mapSettings.sourceDataURL, mapSettings.sourceDataType);
+        try {
+          mapSettings.sourceData = await this.dmmService.getRemoteSource(mapSettings.sourceDataURL, mapSettings.sourceDataType);
+        }
+        catch (error) {
+          console.error(error)
+          this.errorService.openErrorDialog(error)
+          mapSettings.sourceData = "some errors occurred when downloading remote source"
+        }
       }
       if (mapSettings.dataModelID && !mapSettings.dataModel) {
         this.selectedSchema = mapSettings.dataModelID
@@ -723,7 +783,14 @@ export class DMMComponent implements OnInit, OnChanges {
       else if (mapSettings.dataModelURL && !mapSettings.dataModel) {
         this.dataModelURL = mapSettings.dataModelURL
         if (this.selectedDataModel) this.selectedDataModel = undefined
-        mapSettings.dataModel = await this.dmmService.getRemoteSource(mapSettings.dataModelURL, "json");
+        try {
+          mapSettings.dataModel = await this.dmmService.getRemoteSource(mapSettings.dataModelURL, "json");
+        }
+        catch (error) {
+          console.error(error)
+          this.errorService.openErrorDialog(error)
+          mapSettings.dataModel = "Some errors occurred when downloading remote schema"
+        }
       }
       this.schemaJson = [
         mapSettings.dataModel
@@ -764,6 +831,7 @@ export class DMMComponent implements OnInit, OnChanges {
         //console.log(error.message)
         //else
         console.error(error)
+      this.errorService.openErrorDialog(error)
     }
   }
 
