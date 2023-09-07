@@ -31,7 +31,7 @@ module.exports = {
 
     getConfig() {
         let configCopy = JSON.parse(JSON.stringify(config))
-        
+
         configCopy.mongo =
             configCopy.writers =
             configCopy.fileWriter =
@@ -149,6 +149,8 @@ module.exports = {
             source.data = source.download.data
         }
 
+        if (source.data && source.path) source.data = source.data[source.path]
+
         if (dataModel.url) {
             dataModel.download = await axios.get(dataModel.url)
             dataModel.data = dataModel.download.data
@@ -196,14 +198,16 @@ module.exports = {
         return await DataModel.findOne({ id: id })
     },
 
-    async insertSource(name, id, source) {
-        if (!await Source.findOne({ id: id })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source }])
+    async insertSource(name, id, source, path) {
+        if (path == "") path = undefined
+        if (!await Source.findOne({ id: id })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path }])
         else process.res.status(400).send({ error: "id already exists" })
     },//TODO replace with insertOne
 
     async insertMap(name, id, map, dataModel, status, description,
         sourceData, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
-        config, sourceDataType) {
+        config, sourceDataType, path) {
+        if (path == "") path = undefined
         if (!dataModelIn && !dataModelID && !dataModelURL && !dataModel)
             process.res.status(400).send({ error: "schema is required" })
         if (!await Map.findOne({ id: id }))
@@ -222,7 +226,8 @@ module.exports = {
                 dataModelID,
                 dataModelURL,
                 config,
-                sourceDataType
+                sourceDataType,
+                path
             }])
         else process.res.status(400).send({ error: "id already exists" })
     },//TODO replace with insertOne
@@ -232,8 +237,9 @@ module.exports = {
         else process.res.status(400).send({ error: "id already exists" })
     },//TODO replace with insertOne
 
-    async modifySource(name, id, source) {
-        return await Source.findOneAndReplace({ id: id }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source })
+    async modifySource(name, id, source, path) {
+        if (path == "") path = undefined
+        return await Source.findOneAndReplace({ id: id }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path: path })
     },
 
     call: 0,
@@ -275,7 +281,7 @@ module.exports = {
     },
 
     async modifyMap(name, id, map, dataModel, status, description, sourceData, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
-        config, sourceDataType) {
+        config, sourceDataType, path) {
 
         //if (dataModel && dataModel.$schema)
         //    dataModel.schema = dataModel.$schema
@@ -284,6 +290,8 @@ module.exports = {
         //    dataModel.id = dataModel.$id
 
         //if (dataModel) dataModel.$schema = dataModel.$id = undefined
+
+        if (path == "") path = undefined
 
         if (dataModel) dataModel = this.dataModelClean(dataModel)
 
@@ -307,7 +315,8 @@ module.exports = {
                 dataModelID,
                 dataModelURL,
                 config,
-                sourceDataType
+                sourceDataType,
+                path
             })
     },
 

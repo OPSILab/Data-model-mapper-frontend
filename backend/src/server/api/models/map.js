@@ -16,7 +16,8 @@ const map = mongoose.Schema({
   sourceData : {} || "",
   sourceDataURL : String,
   sourceDataID : String,
-  config : {}
+  config : {},
+  path: String
 }, { versionKey: false });
 
 module.exports = mongoose.model("map", map);

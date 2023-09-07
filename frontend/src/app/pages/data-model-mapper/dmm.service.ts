@@ -62,7 +62,7 @@ export class DMMService {
       this.http.get<any>(url).toPromise()
   }
 
-  saveMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID): any {
+  saveMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, path): any {
 
     /*
     if (!schema) {
@@ -85,6 +85,7 @@ export class DMMService {
       sourceDataURL,
       sourceDataID,
       dataModelURL,
+      path,
       dataModelID,
       sourceData: !sourceDataURL && !sourceDataID ? sourceData : undefined
     }).toPromise();
@@ -101,27 +102,29 @@ export class DMMService {
     }).toPromise();
   }
 
-  updateSource(adapter, status: any, description: any, sourceData: any) {
+  updateSource(adapter, status: any, description: any, sourceData: any, path) {
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source", {
       id: adapter.adapterId,
       name: adapter.name,
       status: status,
       description: description,
+      path,
       source: sourceData
     }).toPromise();
   }
-  saveSource(adapter, status: any, description: any, sourceData: any) {
+  saveSource(adapter, status: any, description: any, sourceData: any, path) {
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source", {
       id: adapter.adapterId,
       name: adapter.name,
       status: status,
+      path,
       description: description,
       source: sourceData
     }).toPromise();
   }
 
 
-  updateMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID): any {
+  updateMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, path): any {
     console.debug(adapter)
 
     if (!schema) {
@@ -147,6 +150,7 @@ export class DMMService {
       dataModelURL,
       dataModelID,
       sourceDataID,
+      path,
       sourceData: !sourceDataURL && !sourceDataID ? sourceData : undefined
     }).toPromise();
   }

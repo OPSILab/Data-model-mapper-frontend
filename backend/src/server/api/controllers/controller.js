@@ -54,7 +54,7 @@ module.exports = {
 
     insertSource: async (req, res) => {
         process.res = res;
-        res.send(await service.insertSource(req.body.name, req.body.id, req.body.source))
+        res.send(await service.insertSource(req.body.name, req.body.id, req.body.source, req.body.path))
         log.debug("Source inserted");
     },
 
@@ -63,7 +63,7 @@ module.exports = {
         try {
             res.send(await service.insertMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
                 req.body.sourceData, req.body.sourceDataID, req.body.sourceDataIn, req.body.sourceDataURL, req.body.dataModelIn, req.body.dataModelID, req.body.dataModelURL,
-                req.body.config, req.body.sourceDataType))
+                req.body.config, req.body.sourceDataType, req.body.path))
             log.debug("Map inserted");
         }
         catch (error) {
@@ -79,7 +79,7 @@ module.exports = {
 
     modifySource: async (req, res) => {
         process.res = res;
-        res.send(await service.modifySource(req.body.name, req.body.id, req.body.source))
+        res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path))
     },
 
     modifyMap: async (req, res) => {
@@ -87,7 +87,7 @@ module.exports = {
         process.res = res;
         res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
             req.body.sourceData, req.body.sourceDataID, req.body.sourceDataIn, req.body.sourceDataURL, req.body.dataModelIn, req.body.dataModelID, req.body.dataModelURL,
-            req.body.config, req.body.sourceDataType))
+            req.body.config, req.body.sourceDataType, req.body.path))
     },
 
     modifyDataModel: async (req, res) => {

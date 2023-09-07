@@ -209,7 +209,8 @@ const bodyMapper = (body) => {
         id: body.sourceDataID,
         type: body.sourceDataType,
         url: body.sourceDataURL,
-        data: body.sourceData
+        data: body.sourceData,
+        path: body.path
     }
 
     let map
