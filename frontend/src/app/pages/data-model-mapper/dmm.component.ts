@@ -16,6 +16,7 @@ import { ExportFileComponent } from './export-file/export-file.component';
 import { ErrorDialogAdapterService } from '../error-dialog/error-dialog-adapter.service';
 import { ActivatedRoute } from '@angular/router';
 import { NgxConfigureService } from 'ngx-configure';
+import { TransformComponent } from '../home/transform/transform.component';
 
 let mapOptionsGl, mapGl = "Set your mapping fields here", mapperEditor
 
@@ -87,16 +88,18 @@ export class DMMComponent implements OnInit, OnChanges {
   configEditorContainer: HTMLElement;
   configEditor: any;
   transformSettings: any;
+  //ref
 
   constructor(
-    @Inject(DOCUMENT) private document: Document,
+    @Inject(DOCUMENT) public document: Document,
     protected dialogService: NbDialogService,
-    private windowService: NbWindowService,
-    private errorService: ErrorDialogAdapterService,
-    private dmmService: DMMService,
-    private route: ActivatedRoute,
-    configService: NgxConfigureService,
-    //protected ref: NbDialogRef<DMMComponent>,
+    public windowService: NbWindowService,
+    public errorService: ErrorDialogAdapterService,
+    public dmmService: DMMService,
+    public route: ActivatedRoute,
+    public configService: NgxConfigureService,
+    //public ref : any
+   //public ref: NbDialogRef<any>,
   ) {
     this.config = configService.config as AppConfig;
   }
