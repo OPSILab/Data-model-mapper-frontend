@@ -18,12 +18,13 @@ import { ErrorDialogAdapterService } from '../../error-dialog/error-dialog-adapt
 import * as JSONEditor from '../../../../../node_modules/jsoneditor/dist/jsoneditor.js';
 
 
-let mapOptionsGl, mapGl, mapperEditor
+let mapOptionsGl, mapGl = "Set your mapping fields here", mapperEditor
 
 //let map = {}, mapperEditor, mapOptions: string[]
 @Component({
   selector: 'transform',
-  templateUrl: './transform.component.html',
+  //templateUrl: './transform.component.html',
+  templateUrl: '../../data-model-mapper/dmm.component.html',
   styleUrls: ['./transform.component.scss'],
 })
 
@@ -65,6 +66,7 @@ export class TransformComponent implements OnInit, OnChanges {
   selectMap
   schemaOrMap = "schema"
   name
+  dialog
   adapterId
   partialCsv: any;
   rows: string[];
@@ -83,6 +85,10 @@ export class TransformComponent implements OnInit, OnChanges {
   NGSI: Boolean
   savedSource: any;
   savedSchema: any;
+  oldMap: any;
+  configEditorContainer: HTMLElement;
+  configEditor: any;
+  transformSettings: any;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -105,25 +111,28 @@ export class TransformComponent implements OnInit, OnChanges {
     mapGl = this.map
   }
 
+  fixBrokenPageBug() {
+    document.getElementsByTagName('html')[0].className = ""
+  }
+
   updateAdapter() {
     let type = this.inputType
     let source = JSON.parse(this.sourceEditor.getText())
 
-    if (source[this.selectedPath])
-      source = source[this.selectedPath]
+    //if (source[this.selectedPath])
+    //source = source[this.selectedPath]
 
+    console.debug(this.NGSI)
     this.dialogService.open(CreateMapComponent, {
       context: {
         value: this.adapter,
         name: this.name,
         update: true,
+        path: this.selectedPath,
         sourceDataType: type,
         jsonMap: JSON.parse(this.mapperEditor.getText()),
         schema: JSON.parse(this.schemaEditor.getText()),
-        config: {
-          delimiter: this.separatorItem,
-          NGSI_entity: this.NGSI
-        },
+        config: this.transformSettings,
         sourceDataURL: this.sourceDataURL,
         sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
@@ -141,14 +150,28 @@ export class TransformComponent implements OnInit, OnChanges {
     });
   }
 
-  schemaChanged($event) {
+  getSchema() {
+    return JSON.parse(this.schemaEditor.getText())
+  }
+
+  async schemaChanged($event) {
     if ($event && $event != "---select schema---") {
       if (this.dataModelURL) this.dataModelURL = undefined
       if (this.selectedSchema)
         this.schemaJson = [
           this.schema()
         ];
-      this.map = this.getAllNestedProperties(this.schemaJson[0]);
+      console.debug(this.schemaJson)
+      if (this.map) this.oldMap = JSON.parse(JSON.stringify(this.map))
+      try {
+        this.map = this.getAllNestedProperties(await this.dmmService.refParse(this.schemaJson[0]));
+      }
+      catch (error) {
+        console.error(error)
+        this.errorService.openErrorDialog(error)
+        this.map = "Some errors occurred during generating map object"
+      }
+      if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
       mapGl = this.map
       this.mapperEditor.update(this.map)
       this.selectMap = "---select map---"
@@ -165,6 +188,7 @@ export class TransformComponent implements OnInit, OnChanges {
       if (this.inputType == "json") {
         this.sourceJson = this.source();
         this.sourceEditor.update(this.sourceJson)
+        if (!this.sourceJson[this.selectedPath]) this.selectedPath = ""
         mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
         this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
         this.onUpdatePathForDataMap("")
@@ -200,29 +224,34 @@ export class TransformComponent implements OnInit, OnChanges {
     this.schemaJson = [
       this.schemaFromFile
     ]
+    console.debug("THIS SCHEMA JSON")
+    console.debug(this.schemaJson)
     this.map = this.getAllNestedProperties(this.schemaJson[0]);
     mapGl = this.map
+    console.debug("THIS MAP")
+    console.debug(this.map)
     this.mapperEditor.update(this.map)
   }
 
   async ngOnInit(): Promise<void> {
 
     this.sourceEditorContainer = this.document.getElementById('jsoneditor');
+    this.configEditorContainer = this.document.getElementById('configEditor');
     this.mapperEditorContainer = this.document.getElementById('jsoneditor2');
     this.schemaEditorContainer = this.document.getElementById('schemaEditor');
     this.outputEditorContainer = this.document.getElementById('jsoneditor3');
     this.selectBox = <HTMLInputElement>this.document.getElementById('input-type');
     this.csvtable = this.document.getElementById('csv-table');
 
-    try {
-      await this.loadMapperList()
-      await this.loadSchemaList()
-      await this.loadSourceList()
-    }
-    catch (error) {
-      console.error(error)
-      this.errorService.openErrorDialog(error)
-    }
+    //try {
+    await this.loadMapperList()
+    await this.loadSchemaList()
+    await this.loadSourceList()
+    //}
+    //catch (error) {
+    //console.error(error)
+    //this.errorService.openErrorDialog(error)
+    //}
 
     const options = {
       mode: 'view',
@@ -242,9 +271,24 @@ export class TransformComponent implements OnInit, OnChanges {
       "preview": "set the source, set the json map and click preview to see the output json preview"
     }
 
+    this.map = {
+      "set a field from the output schema field list": "set a field from the source input"
+    }
+
     this.sourceEditor = new JSONEditor(this.sourceEditorContainer, options, this.sourceJson);
 
     this.schemaEditor = new JSONEditor(this.schemaEditorContainer, options, this.selectedDataModel)
+
+    try {
+      this.transformSettings = await this.dmmService.getConfig()
+    }
+    catch (error) {
+      this.transformSettings = await this.dmmService.getBackupConfig()
+    }
+
+    console.debug(this)
+
+    this.configEditor = new JSONEditor(this.configEditorContainer, this.options2, this.transformSettings)//await this.dmmService.getConfig());
 
     this.outputEditorOptions = {
       mode: 'view',
@@ -264,17 +308,24 @@ export class TransformComponent implements OnInit, OnChanges {
     else
       this.outputEditor.update(preview)
 
-    if (this.inputID) {
-      //this.inputID = this.route.snapshot.params['inputID'] as string;
+    if (this.route.snapshot.params['inputID'] as string || this.inputID) {
+      if (this.route.snapshot.params['inputID'] as string) this.inputID = this.route.snapshot.params['inputID'] as string;
       this.selectMap = this.inputID
       await this.mapChanged(this.inputID)
-      console.debug(this.inputType)
       if (this.inputType == "csv") this.updateCSVTable()
     }
   }
 
   schema() {
-    return this.schemas.filter(filteredSchema => filteredSchema.id == this.selectedSchema)[0].dataModel
+    try {
+      console.debug(this)
+      return this.schemas.filter(filteredSchema => filteredSchema.id == this.selectedSchema)[0].dataModel
+    }
+    catch (error) {
+      console.error(error)
+      this.errorService.openErrorDialog(error)
+      return this.getSchema()
+    }
   }
 
   source() {
@@ -282,15 +333,47 @@ export class TransformComponent implements OnInit, OnChanges {
   }
 
   async loadMapperList() {
-    this.maps = await this.dmmService.getMaps();
+    try {
+      this.maps = await this.dmmService.getMaps();
+    }
+    catch (error) {
+      console.error(error)
+      this.errorService.openErrorDialog(error)
+      this.maps = []
+    }
   }
 
   async loadSchemaList() {
-    this.schemas = await this.dmmService.getSchemas();
+    try {
+      this.schemas = await this.dmmService.getSchemas();
+    }
+    catch (error) {
+      console.error(error)
+      this.errorService.openErrorDialog(error)
+      this.schemas = []
+    }
   }
 
   async loadSourceList() {
-    this.sources = await this.dmmService.getSources();
+    try {
+      this.sources = await this.dmmService.getSources();
+    }
+    catch (error) {
+      console.error(error)
+      this.errorService.openErrorDialog(error)
+      this.sources = []
+    }
+  }
+
+  updateConfig() {
+    this.transformSettings.delimiter = this.separatorItem
+    this.configEditor.update(this.transformSettings)
+  }
+
+  async resetConfigSettings() {
+    this.transformSettings = await this.dmmService.getConfig()
+    this.configEditor.update(this.transformSettings)
+    this.separatorItem = this.transformSettings.delimiter
   }
 
   async testAdapter() {
@@ -318,15 +401,13 @@ export class TransformComponent implements OnInit, OnChanges {
           .concat("\r\n")
           .concat(this.rows[3])
 
-      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.partialCsv : source, m, this.schemaJson[0], {
-        delimiter: this.separatorItem,
-        NGSI_entity: this.NGSI
-      })
+      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.partialCsv : source, m, this.schemaJson[0], this.transformSettings)
     }
     catch (error) {
       if (!output)
         output = error.error
       console.error(error)
+      this.errorService.openErrorDialog(error)
     }
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
@@ -343,15 +424,13 @@ export class TransformComponent implements OnInit, OnChanges {
       if (source[this.selectedPath])
         source = source[this.selectedPath]
 
-      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.csvSourceData : source, m, this.schemaJson[0], {
-        delimiter: this.separatorItem,
-        NGSI_entity: this.NGSI
-      })
+      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.csvSourceData : source, m, this.schemaJson[0], this.transformSettings)
     }
     catch (error) {
       if (!output)
         output = error.error
       console.error(error)
+      this.errorService.openErrorDialog(error)
     }
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
@@ -376,7 +455,21 @@ export class TransformComponent implements OnInit, OnChanges {
     if (obj.allOf)
       for (let oneOf of obj.allOf)
         if (oneOf.properties)
-          return this.getAllNestedProperties(oneOf)
+          obj.properties = { ...obj.properties, ...oneOf.properties }
+    /*
+        if (obj.required)
+          for (let key of obj.required)
+            if (!obj.properties[key])
+              obj.properties[key] = true
+
+        if (obj.anyOf)
+          for (let oneOf of obj.anyOf)
+            if (oneOf.required)
+              for (let key of oneOf.required)
+                if (!obj.properties[key])
+                  obj.properties[key] = true
+
+        console.debug(obj.properties)*/
 
     if (obj.properties)
       for (let key in obj.properties)
@@ -387,6 +480,16 @@ export class TransformComponent implements OnInit, OnChanges {
     else
       return ""
     return properties;
+  }
+
+  compareMaps(oldMap, newMap) {
+    console.debug(JSON.parse(JSON.stringify(oldMap)), JSON.parse(JSON.stringify(newMap)))
+    for (let key in newMap)
+      if (oldMap && oldMap[key])
+        if (typeof newMap[key] == "object" || Array.isArray(newMap[key]))
+          this.compareMaps(oldMap[key], newMap[key])
+        else //if (oldMap[key] && (typeof oldMap[key] == "object" || Array.isArray(typeof oldMap[key])))
+          newMap[key] = JSON.parse(JSON.stringify(oldMap[key]))
   }
 
   //skipArrays:Ignore the array part
@@ -411,8 +514,6 @@ export class TransformComponent implements OnInit, OnChanges {
 
   onUpdateInputType(event) {
 
-    console.debug(event)
-
     const divJsonElement = document.getElementById('json-input');
     const divCSVElement = document.getElementById('csv-input');
 
@@ -434,6 +535,8 @@ export class TransformComponent implements OnInit, OnChanges {
   }
 
   updateMapper(path, value, map, mapperEditor) {
+    console.debug(mapGl)
+    console.debug(map)
     map[path] = value
     mapperEditor.update(map)
   }
@@ -446,68 +549,74 @@ export class TransformComponent implements OnInit, OnChanges {
     //let map = this.map
     mapGl = this.map
     mapperEditor = this.mapperEditor
+    try {
+      this.options2 = {
+        mode: 'tree',
+        modes: ['tree', 'code', 'view', 'preview'], // allowed modes
+        onModeChange: function (newMode, oldMode) {
+        },
 
-    this.options2 = {
-      mode: 'tree',
-      modes: ['tree', 'code', 'view', 'preview'], // allowed modes
-      onModeChange: function (newMode, oldMode) {
-      },
+        onCreateMenu: function (items, node) {
+          const path = node.path
 
-      onCreateMenu: function (items, node) {
-        const path = node.path
+          // log the current items and node for inspection
+          //console.log('items:', items, 'node:', node)
 
-        // log the current items and node for inspection
-        //console.log('items:', items, 'node:', node)
-
-        var selectPath = path;
-        function pathToMap() {
-          //this.m = mOptions
-          dialogService
-            .open(DialogDataMapComponent, {
-              context: { mapOptions: mapOptionsGl, selectPath: selectPath, map: mapGl },
-            }).onClose.subscribe((value) => {
-              updateMapper(selectPath, value[0], mapGl, mapperEditor)// value[1] is the map
-            });
-        }
-
-        if (path) {
-          // items.push instead items = if you want to maintain other menu options
-          items = [{
-            text: 'Map', // the text for the menu item
-            title: 'Put the map with source', // the HTML title attribute
-            className: 'example-class',
-            click: pathToMap // the function to call when the menu item is clicked
-          }]
-        }
-
-        items.forEach(function (item, index, items) {
-          if ("submenu" in item) {
-            // if the item has a submenu property, it is a submenu heading
-            // and contains another array of menu items. Let's colour
-            // that yellow...
-            items[index].className += ' submenu-highlight'
-          } else {
-            // if it's not a submenu heading, let's make it colorful
-            items[index].className += ' rainbow'
+          var selectPath = path;
+          function pathToMap() {
+            //this.m = mOptions
+            console.debug(mapOptionsGl)
+            dialogService
+              .open(DialogDataMapComponent, {
+                context: { mapOptions: mapOptionsGl, selectPath: selectPath, map: mapGl },
+              }).onClose.subscribe((value) => {
+                updateMapper(selectPath, value[0], mapGl, mapperEditor)// value[1] is the map
+              });
           }
-        })
 
-        // note that the above loop isn't recursive, so it only alters the classes
-        // on the top-level menu items. To also process menu items in submenus
-        // you should iterate through any "submenu" arrays of items if the item has one.
+          if (path) {
+            // items.push instead items = if you want to maintain other menu options
+            items = [{
+              text: 'Map', // the text for the menu item
+              title: 'Put the map with source', // the HTML title attribute
+              className: 'example-class',
+              click: pathToMap // the function to call when the menu item is clicked
+            }]
+          }
 
-        // next, just for fun, let's remove any menu separators (again just at the
-        // top level menu). A menu separator is an item with a type : 'separator'
-        // property
-        items = items.filter(function (item) {
-          return item.type !== 'separator'
-        })
+          items.forEach(function (item, index, items) {
+            if ("submenu" in item) {
+              // if the item has a submenu property, it is a submenu heading
+              // and contains another array of menu items. Let's colour
+              // that yellow...
+              items[index].className += ' submenu-highlight'
+            } else {
+              // if it's not a submenu heading, let's make it colorful
+              items[index].className += ' rainbow'
+            }
+          })
 
-        // finally we need to return the items array. If we don't, the menu
-        // will be empty.
-        return items
-      }
-    };
+          // note that the above loop isn't recursive, so it only alters the classes
+          // on the top-level menu items. To also process menu items in submenus
+          // you should iterate through any "submenu" arrays of items if the item has one.
+
+          // next, just for fun, let's remove any menu separators (again just at the
+          // top level menu). A menu separator is an item with a type : 'separator'
+          // property
+          items = items.filter(function (item) {
+            return item.type !== 'separator'
+          })
+
+          // finally we need to return the items array. If we don't, the menu
+          // will be empty.
+          return items
+        }
+      };
+    }
+    catch (error) {
+      console.error(error)
+      console.error("Error during map setting set")
+    }
 
     if (!this.mapperEditor && !justOptions) this.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
     else if (!justOptions) this.mapperEditor.update(this.map)
@@ -526,16 +635,14 @@ export class TransformComponent implements OnInit, OnChanges {
       :
       {
         sourceDataType: this.inputType,
+        path: this.selectedPath,
         sourceDataURL: this.sourceDataURL,
         sourceData: this.sourceDataURL || this.selectedSource ? undefined : this.inputType != "json" ? this.csvSourceData : source,
         sourceDataID: this.selectedSource,
         dataModelID: this.selectedSchema == "---select schema---" ? undefined : this.selectedSchema,
         mapData: JSON.parse(this.mapperEditor.getText()),
         dataModel: this.selectedSchema == "---select schema---" && !this.dataModelURL ? JSON.parse(this.schemaEditor.getText()) : undefined,
-        config: {
-          delimiter: this.separatorItem,
-          NGSI_entity: this.NGSI
-        }
+        config: this.transformSettings
       }
     return "curl --location '" + this.config.data_model_mapper.default_mapper_url + "' --header 'Content-Type: application/json' --data '" + JSON.stringify(body) + "'"
   }
@@ -558,10 +665,6 @@ export class TransformComponent implements OnInit, OnChanges {
         this.buildSnippet()
       );
     })
-  }
-
-  download() {
-    this.saveFile(this.outputEditor.getText())
   }
 
   async saveFile(model): Promise<void> {
@@ -589,20 +692,23 @@ export class TransformComponent implements OnInit, OnChanges {
     }
   }
 
+  updateConfigSettings() {
+    this.transformSettings = JSON.parse(this.configEditor.getText())
+  }
+
   saveAdapter() {
     let source = JSON.parse(this.sourceEditor.getText())
 
-    if (source[this.selectedPath])
-      source = source[this.selectedPath]
+    //if (source[this.selectedPath])
+    //source = source[this.selectedPath]
+    console.debug(this.NGSI)
     this.dialogService.open(CreateMapComponent, {
       context: {
         save: true,
+        path: this.selectedPath,
         jsonMap: JSON.parse(this.mapperEditor.getText()),
         schema: JSON.parse(this.schemaEditor.getText()),//(!this.selectedSchema || this.selectedSchema == "---select schema---") && !this.dataModelURL ? JSON.parse(this.schemaEditor.getText()) : undefined,
-        config: {
-          delimiter: this.separatorItem,
-          NGSI_entity: this.NGSI
-        },
+        config: this.transformSettings,
         sourceDataType: this.inputType,
         sourceDataURL: this.sourceDataURL,
         sourceDataID: this.selectedSource,
@@ -635,8 +741,15 @@ export class TransformComponent implements OnInit, OnChanges {
   async mapChanged($event) {
     if ($event && $event != "---select map---") {
       let mapSettings = this.maps.filter(filteredMap => filteredMap.id == $event)[0]
-      this.savedSource = await this.dmmService.getSource($event),
+
+      try {
+        this.savedSource = await this.dmmService.getSource($event)
         this.savedSchema = await this.dmmService.getSchema($event)
+      }
+      catch (error) {
+        console.error(error)
+        this.errorService.openErrorDialog(error)
+      }
 
       //if (sourceByID) {
       //this.savedSource = sourceByID
@@ -650,25 +763,50 @@ export class TransformComponent implements OnInit, OnChanges {
       //console.debug(sourceByID)
       //console.debug(schemaByID)
 
-      this.schemaJson = [
-        mapSettings.dataModel
-      ];
       this.onUpdateInputType(mapSettings?.sourceDataType)
-      console.debug(this.inputType)
-      this.NGSI = mapSettings?.config?.NGSI_entity
+      this.transformSettings = mapSettings?.config
+      this.configEditor.update(this.transformSettings)
       this.separatorItem = mapSettings?.config?.delimiter
 
       if (mapSettings.sourceDataID && !mapSettings.sourceData) {
         this.selectedSource = mapSettings.sourceDataID
-        mapSettings.sourceData = this.source()
+        mapSettings.sourceData = await this.source()
       }
       else if (mapSettings.sourceDataURL && !mapSettings.sourceData) {
         this.sourceDataURL = mapSettings.sourceDataURL
         if (this.selectedSource) this.selectedSource = undefined
-        mapSettings.sourceData = await this.dmmService.getRemoteSource(mapSettings.sourceDataURL, mapSettings.sourceDataType);
+        try {
+          mapSettings.sourceData = await this.dmmService.getRemoteSource(mapSettings.sourceDataURL, mapSettings.sourceDataType);
+        }
+        catch (error) {
+          console.error(error)
+          this.errorService.openErrorDialog(error)
+          mapSettings.sourceData = "some errors occurred when downloading remote source"
+        }
       }
+      if (mapSettings.dataModelID && !mapSettings.dataModel) {
+        this.selectedSchema = mapSettings.dataModelID
+        mapSettings.dataModel = await this.schema()
+        console.debug(mapSettings.dataModel)
+      }
+      else if (mapSettings.dataModelURL && !mapSettings.dataModel) {
+        this.dataModelURL = mapSettings.dataModelURL
+        if (this.selectedDataModel) this.selectedDataModel = undefined
+        try {
+          mapSettings.dataModel = await this.dmmService.getRemoteSource(mapSettings.dataModelURL, "json");
+        }
+        catch (error) {
+          console.error(error)
+          this.errorService.openErrorDialog(error)
+          mapSettings.dataModel = "Some errors occurred when downloading remote schema"
+        }
+      }
+      this.schemaJson = [
+        mapSettings.dataModel
+      ];
       if (mapSettings.sourceDataType == "json") {
         //this.sourceJson = this.source();
+        if (mapSettings.path) this.selectedPath = mapSettings.path
         this.sourceEditor.update(mapSettings.sourceData)
         mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
         this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
@@ -688,7 +826,6 @@ export class TransformComponent implements OnInit, OnChanges {
       this.mapperEditor.update(this.map)
       this.selectedSchema = "---select schema---"
       if (mapSettings.dataModel) this.schemaEditor.update(mapSettings.dataModel)
-      console.debug(this.inputType)
     }
   }
 
@@ -703,6 +840,7 @@ export class TransformComponent implements OnInit, OnChanges {
         //console.log(error.message)
         //else
         console.error(error)
+      this.errorService.openErrorDialog(error)
     }
   }
 

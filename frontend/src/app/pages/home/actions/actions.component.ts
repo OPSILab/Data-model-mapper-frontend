@@ -95,7 +95,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
               break;
             case 'transform':
               this.dialogService
-                .open(DMMComponent, {
+                .open(TransformComponent, {
                   context: { inputID: this.value.id, dialog : true },
                 })
             default:

@@ -38,7 +38,7 @@ import { DMMComponent } from './data-model-mapper/dmm.component';
     ReactiveFormsModule,
     NbAutocompleteModule
   ],
-  declarations: [PagesComponent, HomeComponent, DMMComponent],
+  declarations: [PagesComponent, HomeComponent],
   providers: [],
 })
 export class PagesModule {}

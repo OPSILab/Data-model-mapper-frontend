@@ -1,195 +1,202 @@
 <div class="scrollable-container">
-<nb-card>
-  <nb-card-header class="h3"> Data Model Mapper
-    <button *ngIf="dialog" style = "float:right" nbButton appearance="outline" shape="semi-round" size="tiny" status="info" (click)="ref.close()">
+  <nb-card>
+    <nb-card-header class="h3"> Data Model Mapper
+
+      <button *ngIf="dialog" style="float:right" nbButton appearance="outline" shape="semi-round" size="tiny"
+        status="info" (click)="ref?.close()">
         <i class="material-icons">close</i>
       </button>
-  </nb-card-header>
-  <nb-card-body *ngIf="!dialog">
-    <p>Select map record from below or upload your map record.
-    </p>
-    <nb-select placeholder="Select map record" size="small" [(ngModel)]=selectMap (ngModelChange)="mapChanged($event)">
-      <nb-option *ngFor="let map of maps" value={{map.id}}>{{map.name}}</nb-option>
-    </nb-select>
-    <div class="row justify-content-center">
-      <button nbButton class="mx-4" shape="rectangle" size="medium" status="info" (click)="reset()">
-        {{ 'general.dmm.create_new' | translate }}
-        <i class="mx-1 material-icons">create</i>
-      </button>
-      <button nbButton class="mx-4" shape="rectangle" size="medium" status="primary" (click)="saveAdapter()">
-        {{ 'general.dmm.save_as_new' | translate }}
-        <i class="mx-1 material-icons">save</i>
-      </button>
-      <button *ngIf="isNew" nbButton class="mx-4" shape="rectangle" size="medium" status="primary"
-        (click)="updateAdapter()">
-        {{ 'general.editor.update' | translate }}
-        <i class="mx-1 material-icons">update</i>
-      </button>
-      <button nbButton class="mx-4" shape="rectangle" size="medium" status="warning" (click)="saveAsFile()">
-        {{ 'general.editor.export' | translate }}
-        <i class="mx-1 fas fa-file-export fa-lg"></i>
-      </button>
-      <button nbButton class="mx-4" shape="rectangle" size="medium" status="danger" (click)="import('map', 'json')">
-        {{ 'general.editor.import' | translate }}
-        <i class="mx-1 fas fa-file-import fa-lg"></i>
-      </button>
-    </div>
-  </nb-card-body>
-  <nb-card-footer>
-    <!--Map Editor accordion-->
-    <nb-accordion multi>
-      <nb-accordion-item expanded="true">
-        <nb-accordion-item-header>
-          Source
-        </nb-accordion-item-header>
-        <nb-accordion-item-body>
-          <p>To get started, select the type of input (CSV or JSON) and upload or paste your data.
-          </p>
-          <p *ngIf="sourceRef!==''&&sourceRefFormat==='url'">URL: <a class="mb-3" href={{sourceRef}} target="_blank">
-              <i>{{sourceRef}}</i></a></p>
-          <p *ngIf="sourceRef!==''&&sourceRefFormat==='file'">File: <i>{{sourceRef}}</i></p>
-          <div class="mb-2" *ngIf="!dialog">
-            <nb-select [(ngModel)]="inputType" placeholder="Select Input Type" size="small"
-              (selectedChange)="onUpdateInputType($event)">
-              <nb-option value="csv">CSV</nb-option>
-              <nb-option value="json">JSON</nb-option>
+
+    </nb-card-header>
+    <nb-card-body *ngIf="!dialog">
+      <p>Select map record from below or upload your map record.
+      </p>
+      <nb-select placeholder="Select map record" size="small" [(ngModel)]=selectMap
+        (ngModelChange)="mapChanged($event)">
+        <nb-option *ngFor="let map of maps" value={{map.id}}>{{map.name}}</nb-option>
+      </nb-select>
+      <div class="row justify-content-center">
+        <button nbButton class="mx-4" shape="rectangle" size="medium" status="info" (click)="reset()">
+          {{ 'general.dmm.create_new' | translate }}
+          <i class="mx-1 material-icons">create</i>
+        </button>
+        <button nbButton class="mx-4" shape="rectangle" size="medium" status="primary" (click)="saveAdapter()">
+          {{ 'general.dmm.save_as_new' | translate }}
+          <i class="mx-1 material-icons">save</i>
+        </button>
+        <button *ngIf="isNew" nbButton class="mx-4" shape="rectangle" size="medium" status="primary"
+          (click)="updateAdapter()">
+          {{ 'general.editor.update' | translate }}
+          <i class="mx-1 material-icons">update</i>
+        </button>
+        <button nbButton class="mx-4" shape="rectangle" size="medium" status="warning" (click)="saveAsFile()">
+          {{ 'general.editor.export' | translate }}
+          <i class="mx-1 fas fa-file-export fa-lg"></i>
+        </button>
+        <button nbButton class="mx-4" shape="rectangle" size="medium" status="danger" (click)="import('map', 'json')">
+          {{ 'general.editor.import' | translate }}
+          <i class="mx-1 fas fa-file-import fa-lg"></i>
+        </button>
+      </div>
+    </nb-card-body>
+    <nb-card-footer>
+      <!--Map Editor accordion-->
+      <nb-accordion multi>
+        <nb-accordion-item expanded="true">
+          <nb-accordion-item-header>
+            Source
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
+            <p>To get started, select the type of input (CSV or JSON) and upload or paste your data.
+            </p>
+            <p *ngIf="sourceRef!==''&&sourceRefFormat==='url'">URL: <a class="mb-3" href={{sourceRef}} target="_blank">
+                <i>{{sourceRef}}</i></a></p>
+            <p *ngIf="sourceRef!==''&&sourceRefFormat==='file'">File: <i>{{sourceRef}}</i></p>
+            <div class="mb-2" *ngIf="!dialog">
+              <nb-select [(ngModel)]="inputType" placeholder="Select Input Type" size="small"
+                (selectedChange)="onUpdateInputType($event)" (click)="fixBrokenPageBug()">
+                <nb-option value="csv">CSV</nb-option>
+                <nb-option value="json">JSON</nb-option>
+              </nb-select>
+            </div>
+            <div style="padding-top:30px"></div>
+            <p *ngIf="!dialog">Select a source file from below or upload your source file.
+            </p>
+            <nb-select placeholder="Select source file" size="small" [(ngModel)]="selectedSource"
+              (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
+              <nb-option *ngFor="let source of sources" value={{source.id}}>{{source.name}}</nb-option>
             </nb-select>
-          </div>
-          <div style="padding-top:30px"></div>
-          <p *ngIf="!dialog">Select a source file from below or upload your source file.
-          </p>
-          <nb-select placeholder="Select source file" size="small" [(ngModel)]="selectedSource"
-            (ngModelChange)="sourceChanged($event)">
-            <nb-option *ngFor="let source of sources" value={{source.id}}>{{source.name}}</nb-option>
-          </nb-select>
-          <br><br><br>
-          <div style="padding-top:10px"></div>
-          <div class="mb-1" style="display:none;" id="json-input">
-            <div class="mb-2">
-              <br><br>
-              <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('source','json')">
-                {{ 'general.editor.import' | translate }}
-                <i class="mx-1 fas fa-file-import fa-lg"></i>
-              </button>
-              <!--
+            <br><br><br>
+            <div style="padding-top:10px"></div>
+            <div class="mb-1" style="display:none;" id="json-input">
+              <div class="mb-2">
+                <br><br>
+                <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('source','json')">
+                  {{ 'general.editor.import' | translate }}
+                  <i class="mx-1 fas fa-file-import fa-lg"></i>
+                </button>
+                <!--
               <button nbButton class="mr-2" shape="rectangle" size="small" (click)="setMapEditor(true)">
                 {{ 'general.editor.update_field_list' | translate }}
                 <i class="mx-1 fas fa-lg"></i>
               </button>
               -->
-              <nb-select [(ngModel)]="selectedPath" placeholder="Select path" size="small"
-                (selectedChange)="onUpdatePathForDataMap($event)">
-                <nb-option value="">root.</nb-option>
-                <nb-option *ngFor="let path of paths" value={{path}}>.{{path}}</nb-option>
-              </nb-select>
+                <nb-select [(ngModel)]="selectedPath" placeholder="Select path" size="small"
+                  (selectedChange)="onUpdatePathForDataMap($event)">
+                  <nb-option value="">root.</nb-option>
+                  <nb-option *ngFor="let path of paths" value={{path}}>.{{path}}</nb-option>
+                </nb-select>
+              </div>
+              <div style="height:500px" id="jsoneditor" (click)="onUpdatePathForDataMap(selectedPath)"
+                (focusout)="onUpdatePathForDataMap(selectedPath)" (blur)="onUpdatePathForDataMap(selectedPath)"></div>
             </div>
-            <div style="height:500px" id="jsoneditor" (click)="onUpdatePathForDataMap(selectedPath)"
-              (focusout)="onUpdatePathForDataMap(selectedPath)" (blur)="onUpdatePathForDataMap(selectedPath)"></div>
-          </div>
-          <div class="mb-2" id="csv-input" style="display:none;">
+            <div class="mb-2" id="csv-input" style="display:none;">
+              <div class="mb-2">
+                <br><br>
+                <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('source','csv')">
+                  {{ 'general.editor.import' | translate }}
+                  <i class="mx-1 fas fa-file-import fa-lg"></i>
+                </button> &nbsp;
+                <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateCSVTable()">
+                  {{ 'general.editor.update_field_list' | translate }}
+                  <i class="mx-1 fas fa-lg"></i>
+                </button>
+                <nb-select placeholder="Separator" size="small" [(selected)]="separatorItem" (click)="updateConfig()">
+                  <nb-option value=",">Comma separator</nb-option>
+                  <nb-option value=";">Semi-colon separator</nb-option>
+                  <nb-option value="\t">Tab separator</nb-option>
+                </nb-select>
+              </div>
+              <div class="mb-3" id="csveditor">
+                <nb-tabset>
+                  <nb-tab tabTitle="CSV text">
+                    <textarea id="textarea" nbInput rows="10" fullWidth=true placeholder="Enter CVS text..."
+                      [(ngModel)]="csvSourceData"></textarea>
+                  </nb-tab>
+                  <nb-tab id="csv-table" tabTitle="CSV Table">
+                  </nb-tab>
+                </nb-tabset>
+              </div>
+            </div>
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+        <nb-accordion-item expanded="true" [hidden]=dialog>
+          <nb-accordion-item-header>
+            Mapper
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
             <div class="mb-2">
-              <br><br>
-              <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('source','csv')">
+              <p>Select a schema from below or upload your schema.
+              </p>
+              <nb-select placeholder="Select Json Schema" size="small" [(ngModel)]=selectedSchema
+                (ngModelChange)="schemaChanged($event)">
+                <nb-option *ngFor="let schema of schemas" value={{schema.id}}>{{schema.name}}</nb-option>
+              </nb-select>
+              <br><br><br>
+              <div style="padding-top:10px"></div>
+              <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('schema','json')">
                 {{ 'general.editor.import' | translate }}
                 <i class="mx-1 fas fa-file-import fa-lg"></i>
-              </button> &nbsp;
-              <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateCSVTable()">
-                {{ 'general.editor.update_field_list' | translate }}
+              </button>
+              <button nbButton class="mr-2" shape="rectangle" size="small" (click)="schemaChanged(getSchema())">
+                {{ 'general.editor.generate_mapper' | translate }}
                 <i class="mx-1 fas fa-lg"></i>
               </button>
-              <nb-select placeholder="Separator" size="small" [(selected)]="separatorItem" (click)="updateConfig()">
-                <nb-option value=",">Comma separator</nb-option>
-                <nb-option value=";">Semi-colon separator</nb-option>
-                <nb-option value="\t">Tab separator</nb-option>
-              </nb-select>
+              <br>
             </div>
-            <div class="mb-3" id="csveditor">
-              <nb-tabset>
-                <nb-tab tabTitle="CSV text">
-                  <textarea id="textarea" nbInput rows="10" fullWidth=true placeholder="Enter CVS text..."
-                    [(ngModel)]="csvSourceData"></textarea>
-                </nb-tab>
-                <nb-tab id="csv-table" tabTitle="CSV Table">
-                </nb-tab>
-              </nb-tabset>
+            <div style="height:500px" id="schemaEditor"></div>
+            <div style="padding-top:50px"></div>
+            <div class="mb-2">
+              <p>Set your map settings.
+              </p>
             </div>
-          </div>
-        </nb-accordion-item-body>
-      </nb-accordion-item>
-      <nb-accordion-item expanded="true" hidden=[dialog]>
-        <nb-accordion-item-header>
-          Mapper
-        </nb-accordion-item-header>
-        <nb-accordion-item-body>
-          <div class="mb-2">
-            <p>Select a schema from below or upload your schema.
+            <div style="padding-top:1px"></div>
+            <div style="height:500px" id="jsoneditor2"></div>
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+        <nb-accordion-item expanded="true">
+          <nb-accordion-item-header>
+            Output
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
+            <p *ngIf="!dialog">Set transform config.
             </p>
-            <nb-select placeholder="Select Json Schema" size="small" [(ngModel)]=selectedSchema
-              (ngModelChange)="schemaChanged($event)">
-              <nb-option *ngFor="let schema of schemas" value={{schema.id}}>{{schema.name}}</nb-option>
-            </nb-select>
-            <br><br><br>
-            <div style="padding-top:10px"></div>
-            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('schema','json')">
-              {{ 'general.editor.import' | translate }}
+            <br *ngIf="!dialog"> <br *ngIf="!dialog"> <br *ngIf="!dialog">
+            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
+              (click)="updateConfigSettings()">
+              {{ 'general.dmm.update_config' | translate }}
               <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button>
-            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="schemaChanged(getSchema())">
-              {{ 'general.editor.generate_mapper' | translate }}
-              <i class="mx-1 fas fa-lg"></i>
+            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
+              (click)="resetConfigSettings()">
+              {{ 'general.dmm.reset_config' | translate }}
+              <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button>
-            <br>
-          </div>
-          <div style="height:500px" id="schemaEditor"></div>
-          <div style="padding-top:50px"></div>
-          <div class="mb-2">
-            <p>Set your map settings.
+            <br *ngIf="!dialog"> <br *ngIf="!dialog">
+            <div [hidden]=dialog style="height:500px" id="configEditor"></div>
+            <br *ngIf="!dialog"> <br *ngIf="!dialog">
+            <p *ngIf="!dialog">Test or transform.
             </p>
-          </div>
-          <div style="padding-top:1px"></div>
-          <div style="height:500px"
-            id="jsoneditor2"></div>
-        </nb-accordion-item-body>
-      </nb-accordion-item>
-      <nb-accordion-item expanded="true">
-        <nb-accordion-item-header>
-          Output
-        </nb-accordion-item-header>
-        <nb-accordion-item-body>
-          <p *ngIf="!dialog">Set transform config.
-          </p>
-          <br> <br> <br>
-          <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small" (click)="updateConfigSettings()">
-            {{ 'general.dmm.update_config' | translate }}
-            <i class="mx-1 fas fa-file-import fa-lg"></i>
-          </button>
-          <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small" (click)="resetConfigSettings()">
-            {{ 'general.dmm.reset_config' | translate }}
-            <i class="mx-1 fas fa-file-import fa-lg"></i>
-          </button>
-          <br> <br>
-          <div hidden=[dialog] style="height:500px" id="configEditor"></div>
-          <br> <br>
-          <p>Test or transform.
-          </p>
-          <br> <br> <br>
-          <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small" (click)="testAdapter()">
-            {{ 'general.dmm.preview' | translate }}
-            <i class="mx-1 fas fa-file-import fa-lg"></i>
-          </button> &nbsp;
-          <button nbButton class="mr-2" shape="rectangle" size="small" (click)="transform()">
-            {{ 'general.dmm.transform' | translate }}
-            <i class="mx-1 fas fa-file-import fa-lg"></i>
-          </button>
-          <br> <br>
-          <div style="height:500px" id="jsoneditor3"></div>
-        </nb-accordion-item-body>
-      </nb-accordion-item>
-    </nb-accordion>
-    <!--End Map Editor accordion-->
-    <br>
-    <div class="center">
-    </div>
-  </nb-card-footer>
-</nb-card>
+            <p *ngIf="dialog">Tranform.
+            </p>
+            <br> <br> <br>
+            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small" (click)="testAdapter()">
+              {{ 'general.dmm.preview' | translate }}
+              <i class="mx-1 fas fa-file-import fa-lg"></i>
+            </button> &nbsp;
+            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="transform()">
+              {{ 'general.dmm.transform' | translate }}
+              <i class="mx-1 fas fa-file-import fa-lg"></i>
+            </button>
+            <br> <br>
+            <div style="height:500px" id="jsoneditor3"></div>
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+      </nb-accordion>
+      <!--End Map Editor accordion-->
+      <br>
+      <div class="center">
+      </div>
+    </nb-card-footer>
+  </nb-card>
 </div>

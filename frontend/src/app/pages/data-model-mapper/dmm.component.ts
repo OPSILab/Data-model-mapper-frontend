@@ -64,7 +64,7 @@ export class DMMComponent implements OnInit, OnChanges {
   selectMap
   schemaOrMap = "schema"
   name
-  dialog
+  dialog = false
   adapterId
   partialCsv: any;
   rows: string[];
@@ -96,7 +96,7 @@ export class DMMComponent implements OnInit, OnChanges {
     private dmmService: DMMService,
     private route: ActivatedRoute,
     configService: NgxConfigureService,
-    protected ref: NbDialogRef<DMMComponent>,
+    //protected ref: NbDialogRef<DMMComponent>,
   ) {
     this.config = configService.config as AppConfig;
   }
@@ -107,6 +107,10 @@ export class DMMComponent implements OnInit, OnChanges {
 
   updateMap() {
     mapGl = this.map
+  }
+
+  fixBrokenPageBug() {
+    document.getElementsByTagName('html')[0].className = ""
   }
 
   updateAdapter() {

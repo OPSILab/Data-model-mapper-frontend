@@ -52,7 +52,7 @@ import { ExportFileComponent } from './export-file/export-file.component';
     TranslateModule.forChild({}),
     NbAutocompleteModule
   ],
-  declarations: [DialogImportComponent,DialogDataMapComponent, CreateMapComponent, ExportFileComponent,],
+  declarations: [DialogImportComponent,DialogDataMapComponent, CreateMapComponent, ExportFileComponent, DMMComponent],
   providers: [DMMService],
   entryComponents: [
     DialogImportComponent,
