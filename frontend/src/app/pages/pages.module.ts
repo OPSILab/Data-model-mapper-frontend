@@ -10,6 +10,7 @@ import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HomeRoutingModule } from './home/home-routing.module';
+import { DMMComponent } from './data-model-mapper/dmm.component';
 
 @NgModule({
   imports: [
@@ -37,7 +38,7 @@ import { HomeRoutingModule } from './home/home-routing.module';
     ReactiveFormsModule,
     NbAutocompleteModule
   ],
-  declarations: [PagesComponent, HomeComponent],
+  declarations: [PagesComponent, HomeComponent, DMMComponent],
   providers: [],
 })
 export class PagesModule {}

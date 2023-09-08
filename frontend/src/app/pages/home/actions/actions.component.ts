@@ -9,6 +9,7 @@ import { ErrorDialogService } from '../../error-dialog/error-dialog.service';
 import { DMMService } from '../../data-model-mapper/dmm.service';
 import { StatusComponent } from '../status/status.component';
 import { TransformComponent } from '../transform/transform.component';
+import { DMMComponent } from '../../data-model-mapper/dmm.component';
 
 @Component({
   selector: 'actions',
@@ -94,8 +95,8 @@ export class ActionsComponent implements OnInit, OnDestroy {
               break;
             case 'transform':
               this.dialogService
-                .open(TransformComponent, {
-                  context: { inputID: this.value.id },
+                .open(DMMComponent, {
+                  context: { inputID: this.value.id, dialog : true },
                 })
             default:
               console.debug("default")

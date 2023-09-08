@@ -2,6 +2,7 @@ import { AppConfig } from './../../model/appConfig';
 import { Component, OnInit, TemplateRef, ViewChild, Inject, OnChanges, SimpleChanges } from '@angular/core';
 import { DMMService } from './dmm.service';
 import {
+  NbDialogRef,
   NbDialogService,
   NbWindowService,
 } from '@nebular/theme';
@@ -63,6 +64,7 @@ export class DMMComponent implements OnInit, OnChanges {
   selectMap
   schemaOrMap = "schema"
   name
+  dialog
   adapterId
   partialCsv: any;
   rows: string[];
@@ -94,6 +96,7 @@ export class DMMComponent implements OnInit, OnChanges {
     private dmmService: DMMService,
     private route: ActivatedRoute,
     configService: NgxConfigureService,
+    protected ref: NbDialogRef<DMMComponent>,
   ) {
     this.config = configService.config as AppConfig;
   }
@@ -299,8 +302,8 @@ export class DMMComponent implements OnInit, OnChanges {
     else
       this.outputEditor.update(preview)
 
-    if (this.route.snapshot.params['inputID'] as string) {
-      this.inputID = this.route.snapshot.params['inputID'] as string;
+    if (this.route.snapshot.params['inputID'] as string || this.inputID) {
+      if (this.route.snapshot.params['inputID'] as string) this.inputID = this.route.snapshot.params['inputID'] as string;
       this.selectMap = this.inputID
       await this.mapChanged(this.inputID)
       if (this.inputType == "csv") this.updateCSVTable()

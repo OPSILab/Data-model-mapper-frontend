@@ -1,6 +1,11 @@
+<div class="scrollable-container">
 <nb-card>
-  <nb-card-header class="h3"> Data Model Mapper </nb-card-header>
-  <nb-card-body>
+  <nb-card-header class="h3"> Data Model Mapper
+    <button *ngIf="dialog" style = "float:right" nbButton appearance="outline" shape="semi-round" size="tiny" status="info" (click)="ref.close()">
+        <i class="material-icons">close</i>
+      </button>
+  </nb-card-header>
+  <nb-card-body *ngIf="!dialog">
     <p>Select map record from below or upload your map record.
     </p>
     <nb-select placeholder="Select map record" size="small" [(ngModel)]=selectMap (ngModelChange)="mapChanged($event)">
@@ -43,7 +48,7 @@
           <p *ngIf="sourceRef!==''&&sourceRefFormat==='url'">URL: <a class="mb-3" href={{sourceRef}} target="_blank">
               <i>{{sourceRef}}</i></a></p>
           <p *ngIf="sourceRef!==''&&sourceRefFormat==='file'">File: <i>{{sourceRef}}</i></p>
-          <div class="mb-2">
+          <div class="mb-2" *ngIf="!dialog">
             <nb-select [(ngModel)]="inputType" placeholder="Select Input Type" size="small"
               (selectedChange)="onUpdateInputType($event)">
               <nb-option value="csv">CSV</nb-option>
@@ -51,7 +56,7 @@
             </nb-select>
           </div>
           <div style="padding-top:30px"></div>
-          <p>Select a source file from below or upload your source file.
+          <p *ngIf="!dialog">Select a source file from below or upload your source file.
           </p>
           <nb-select placeholder="Select source file" size="small" [(ngModel)]="selectedSource"
             (ngModelChange)="sourceChanged($event)">
@@ -111,7 +116,7 @@
           </div>
         </nb-accordion-item-body>
       </nb-accordion-item>
-      <nb-accordion-item expanded="true">
+      <nb-accordion-item expanded="true" hidden=[dialog]>
         <nb-accordion-item-header>
           Mapper
         </nb-accordion-item-header>
@@ -151,24 +156,24 @@
           Output
         </nb-accordion-item-header>
         <nb-accordion-item-body>
-          <p>Set transform config.
+          <p *ngIf="!dialog">Set transform config.
           </p>
           <br> <br> <br>
-          <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateConfigSettings()">
+          <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small" (click)="updateConfigSettings()">
             {{ 'general.dmm.update_config' | translate }}
             <i class="mx-1 fas fa-file-import fa-lg"></i>
           </button>
-          <button nbButton class="mr-2" shape="rectangle" size="small" (click)="resetConfigSettings()">
+          <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small" (click)="resetConfigSettings()">
             {{ 'general.dmm.reset_config' | translate }}
             <i class="mx-1 fas fa-file-import fa-lg"></i>
           </button>
           <br> <br>
-          <div style="height:500px" id="configEditor"></div>
+          <div hidden=[dialog] style="height:500px" id="configEditor"></div>
           <br> <br>
           <p>Test or transform.
           </p>
           <br> <br> <br>
-          <button nbButton class="mr-2" shape="rectangle" size="small" (click)="testAdapter()">
+          <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small" (click)="testAdapter()">
             {{ 'general.dmm.preview' | translate }}
             <i class="mx-1 fas fa-file-import fa-lg"></i>
           </button> &nbsp;
@@ -187,3 +192,4 @@
     </div>
   </nb-card-footer>
 </nb-card>
+</div>

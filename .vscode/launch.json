@@ -12,9 +12,8 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\backend\\mapper.js",
-            "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ]
+            "outFiles": [],
+            "resolveSourceMapLocations": null
         }
     ]
 }
