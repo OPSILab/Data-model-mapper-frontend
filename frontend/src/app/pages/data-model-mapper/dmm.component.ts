@@ -55,7 +55,7 @@ export class DMMComponent implements OnInit, OnChanges {
   mapper
   schemas
   selectedSchema
-  schemaJson: any[];
+  schemaJson;
   outputEditor: any;
   outputEditorOptions: any;
   sourceJson: any;
@@ -149,7 +149,9 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   getSchema() {
-    return JSON.parse(this.schemaEditor.getText())
+    console.debug(this.schemaEditor.getText())
+    console.debug(typeof this.schemaEditor.getText())
+    return JSON.parse(this.schemaEditor.getText()? this.schemaEditor.getText() : "Set your schema here")
   }
 
   async schemaChanged($event) {
@@ -160,6 +162,9 @@ export class DMMComponent implements OnInit, OnChanges {
           this.schema()
         ];
       console.debug(this.schemaJson)
+      if (!this.schemaJson)  this.schemaJson = {
+          "info" : "Set your schema here"
+        }
       if (this.map) this.oldMap = JSON.parse(JSON.stringify(this.map))
       try {
         this.map = this.getAllNestedProperties(await this.dmmService.refParse(this.schemaJson[0]));
@@ -167,9 +172,14 @@ export class DMMComponent implements OnInit, OnChanges {
       catch (error) {
         console.error(error)
         this.errorService.openErrorDialog(error)
-        this.map = "Some errors occurred during generating map object"
+        this.map = {"error": "Some errors occurred during generating map object"}
       }
-      if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
+      try {
+        if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
+      }
+      catch (error) {
+        console.error(error)
+      }
       mapGl = this.map
       this.mapperEditor.update(this.map)
       this.selectMap = "---select map---"
@@ -403,7 +413,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       if (!output)
-        output = error.error
+        output = !error.status ? {"error" : "Service unreachable"} : error.error
       console.error(error)
       this.errorService.openErrorDialog(error)
     }
@@ -426,7 +436,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       if (!output)
-        output = error.error
+        output = !error.status ? {"error" : "Service unreachable"} : error.error
       console.error(error)
       this.errorService.openErrorDialog(error)
     }
