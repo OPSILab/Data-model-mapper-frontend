@@ -188,6 +188,11 @@
               {{ 'general.dmm.transform' | translate }}
               <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button>
+            &nbsp;
+            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="download()">
+              {{ 'general.dmm.export' | translate }}
+              <i class="mx-1 fas fa-file-import fa-lg"></i>
+            </button>
             <br> <br>
             <div style="height:500px" id="jsoneditor3"></div>
           </nb-accordion-item-body>

@@ -665,6 +665,10 @@ export class DMMComponent implements OnInit, OnChanges {
     })
   }
 
+  download() {
+    this.saveFile(this.outputEditor.getText())
+  }
+
   async saveFile(model): Promise<void> {
     //let model =
     const filename = "exportedFile.json",
