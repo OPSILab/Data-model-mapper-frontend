@@ -365,8 +365,8 @@ export class TransformComponent implements OnInit, OnChanges {
     }
   }
 
-  updateConfig() {
-    this.transformSettings.delimiter = this.separatorItem
+  updateConfig($event) {
+    if ($event) this.transformSettings.delimiter = $event
     this.configEditor.update(this.transformSettings)
   }
 

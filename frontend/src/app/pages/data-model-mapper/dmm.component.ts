@@ -373,8 +373,8 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
-  updateConfig() {
-    this.transformSettings.delimiter = this.separatorItem
+  updateConfig($event) {
+    if ($event) this.transformSettings.delimiter = $event
     this.configEditor.update(this.transformSettings)
   }
 
@@ -706,6 +706,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   updateConfigSettings() {
     this.transformSettings = JSON.parse(this.configEditor.getText())
+    this.separatorItem = this.transformSettings.delimiter
   }
 
   saveAdapter() {

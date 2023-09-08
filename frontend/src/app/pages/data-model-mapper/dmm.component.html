@@ -101,7 +101,7 @@
                   {{ 'general.editor.update_field_list' | translate }}
                   <i class="mx-1 fas fa-lg"></i>
                 </button>
-                <nb-select placeholder="Separator" size="small" [(selected)]="separatorItem" (click)="updateConfig()">
+                <nb-select placeholder="Separator" size="small" [(selected)]="separatorItem" (selectedChange)="updateConfig($event)">
                   <nb-option value=",">Comma separator</nb-option>
                   <nb-option value=";">Semi-colon separator</nb-option>
                   <nb-option value="\t">Tab separator</nb-option>
