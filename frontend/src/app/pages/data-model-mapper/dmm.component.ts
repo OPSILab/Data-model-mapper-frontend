@@ -226,20 +226,31 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
-  reset() {
+  async reset() {
+    this.inputType = undefined
     this.adapter = {}
     this.isNew = false
+    this.selectedPath = undefined
     this.selectedDataModel = {
       "info": "set your schema here"
     }
     let preview = {
       "preview": "set the source, set the json map and click preview to see the output json preview"
     }
-    this.mapperEditor.update({})
+    this.sourceJson = [{
+      "info": "set your source json here"
+    }]
+    this.map = {
+      "set a field from the output schema field list": "set a field from the source input"
+    }
+    this.oldMap = undefined
+    this.sourceEditor.update (this.sourceJson)
+    this.mapperEditor.update(this.map)
     this.schemaEditor.update(this.selectedDataModel)
     this.outputEditor.update(preview)
     this.selectMap = "---select map---"
     this.csvSourceData = ""
+    await this.resetConfigSettings()
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -286,9 +297,9 @@ export class DMMComponent implements OnInit, OnChanges {
       onModeChange: function (newMode, oldMode) { },
     };
 
-    this.sourceJson = {
+    this.sourceJson = [{
       "info": "set your source json here"
-    }
+    }]
 
     this.selectedDataModel = {
       "info": "set your schema here"
@@ -398,7 +409,14 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async resetConfigSettings() {
-    this.transformSettings = await this.dmmService.getConfig()
+    try {
+      this.transformSettings = await this.dmmService.getConfig()
+    }
+    catch (error) {
+      console.error(error)
+      this.errorService.openErrorDialog(error)
+      this.transformSettings = await this.dmmService.getBackupConfig()
+    }
     this.configEditor.update(this.transformSettings)
     this.separatorItem = this.transformSettings.delimiter
   }
