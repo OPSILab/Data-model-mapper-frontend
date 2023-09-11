@@ -179,7 +179,11 @@ export class DMMComponent implements OnInit, OnChanges {
       if (!this.schemaJson) this.schemaJson = {
         "info": "Set your schema here"
       }
-      if (this.map) this.oldMap = JSON.parse(JSON.stringify(this.map))
+      if (this.map) {
+        this.map = JSON.parse(this.mapperEditor.getText())
+        this.oldMap = JSON.parse(JSON.stringify(this.map))
+      }
+      console.debug(this)
       try {
         this.map = this.getAllNestedProperties(await this.refParse(false));
       }
@@ -188,6 +192,7 @@ export class DMMComponent implements OnInit, OnChanges {
         this.errorService.openErrorDialog(error)
         this.map = { "error": "Some errors occurred during generating map object" }
       }
+      console.debug(this)
       try {
         if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
       }
