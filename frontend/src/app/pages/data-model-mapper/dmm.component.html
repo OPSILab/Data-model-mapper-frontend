@@ -11,7 +11,7 @@
     <nb-card-body *ngIf="!dialog">
       <p>Select map record from below or upload your map record.
       </p>
-      <nb-select placeholder="Select map record" size="small" [(ngModel)]=selectMap
+      <nb-select placeholder="Select map record" size="small" [(ngModel)]="selectMap"
         (ngModelChange)="mapChanged($event)">
         <nb-option *ngFor="let map of maps" value={{map.id}}>{{map.name}}</nb-option>
       </nb-select>

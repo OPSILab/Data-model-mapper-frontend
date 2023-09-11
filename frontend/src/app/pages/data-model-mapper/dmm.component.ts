@@ -215,7 +215,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (this.inputType == "json") {
         this.sourceJson = this.source();
         this.sourceEditor.update(this.sourceJson)
-        if (!this.sourceJson[this.selectedPath]) this.selectedPath = ""
+        if (this.selectedPath != "" && !this.sourceJson[this.selectedPath]) this.selectedPath = ""
         mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
         this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
         this.onUpdatePathForDataMap("")
@@ -244,7 +244,7 @@ export class DMMComponent implements OnInit, OnChanges {
       "set a field from the output schema field list": "set a field from the source input"
     }
     this.oldMap = undefined
-    this.sourceEditor.update (this.sourceJson)
+    this.sourceEditor.update(this.sourceJson)
     this.mapperEditor.update(this.map)
     this.schemaEditor.update(this.selectedDataModel)
     this.outputEditor.update(preview)
@@ -575,9 +575,11 @@ export class DMMComponent implements OnInit, OnChanges {
 
   onUpdatePathForDataMap(event) {
 
+    console.debug(event)
+
     mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), event);
     if (!mapOptionsGl[0])
-    mapOptionsGl[0] = "---no keys for selected path---"
+      mapOptionsGl[0] = "---no keys for selected path---"
     this.setMapEditor(false);
   }
 
@@ -617,7 +619,7 @@ export class DMMComponent implements OnInit, OnChanges {
               .open(DialogDataMapComponent, {
                 context: { mapOptions: mapOptionsGl, selectPath: selectPath, map: mapGl },
               }).onClose.subscribe((value) => {
-                updateMapper(selectPath, value? value[0] : "", mapGl, mapperEditor)// value[1] is the map
+                updateMapper(selectPath, value ? value[0] : "", mapGl, mapperEditor)// value[1] is the map
               });
           }
 
@@ -673,8 +675,8 @@ export class DMMComponent implements OnInit, OnChanges {
     console.debug(this)
     let source = JSON.parse(this.sourceEditor.getText())
 
-    if (source[this.selectedPath])
-      source = source[this.selectedPath]
+    //if (source[this.selectedPath])
+    //source = source[this.selectedPath]
 
     let body = this.isNew ?
       {
@@ -877,11 +879,17 @@ export class DMMComponent implements OnInit, OnChanges {
       ];
       if (mapSettings.sourceDataType == "json") {
         //this.sourceJson = this.source();
-        if (mapSettings.path) this.selectedPath = mapSettings.path
+        if (mapSettings.path || mapSettings.path == '') this.selectedPath = mapSettings.path
         this.sourceEditor.update(mapSettings.sourceData)
-        mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
+        if (mapSettings.path || mapSettings.path == '') mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), mapSettings.path);
+        else mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
+        //if (mapSettings.path) this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
+        //else
         this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
-        this.onUpdatePathForDataMap("")
+        if (mapSettings.path || mapSettings.path == '') this.onUpdatePathForDataMap(mapSettings.path)
+        else this.onUpdatePathForDataMap("")
+        console.debug(this.selectedPath, mapSettings.path)
+        if (mapSettings.path) console.debug(this.selectedPath, mapSettings.path)
       }
       else
         this.csvSourceData = mapSettings.sourceData
