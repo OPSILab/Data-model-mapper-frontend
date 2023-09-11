@@ -17,7 +17,7 @@
     </nb-select>
     <div class="row justify-content-left p-3" *ngIf="!selectedItem.base64">
       Single or multi input</div>
-    <nb-select (click)="fixBrokenPageBug()" *ngIf="!selectedItem.base64" [(ngModel)]="selectedItem.concat">
+    <nb-select (click)="fixBrokenPageBug()" *ngIf="!selectedItem.base64" [(ngModel)]="selectedItem.concat" placeholder="single">
       <nb-option [value]=true>
         {{ "multi" }}
       </nb-option>

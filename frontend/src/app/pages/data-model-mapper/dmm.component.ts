@@ -576,6 +576,8 @@ export class DMMComponent implements OnInit, OnChanges {
   onUpdatePathForDataMap(event) {
 
     mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), event);
+    if (!mapOptionsGl[0])
+    mapOptionsGl[0] = "---no keys for selected path---"
     this.setMapEditor(false);
   }
 
@@ -615,7 +617,7 @@ export class DMMComponent implements OnInit, OnChanges {
               .open(DialogDataMapComponent, {
                 context: { mapOptions: mapOptionsGl, selectPath: selectPath, map: mapGl },
               }).onClose.subscribe((value) => {
-                updateMapper(selectPath, value[0], mapGl, mapperEditor)// value[1] is the map
+                updateMapper(selectPath, value? value[0] : "", mapGl, mapperEditor)// value[1] is the map
               });
           }
 
