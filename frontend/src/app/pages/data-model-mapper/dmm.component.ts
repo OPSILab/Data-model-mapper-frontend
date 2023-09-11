@@ -645,6 +645,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   buildSnippet() {
+    console.debug(this)
     let source = JSON.parse(this.sourceEditor.getText())
 
     if (source[this.selectedPath])
@@ -663,7 +664,7 @@ export class DMMComponent implements OnInit, OnChanges {
         sourceDataID: this.selectedSource,
         dataModelID: this.selectedSchema == "---select schema---" ? undefined : this.selectedSchema,
         mapData: JSON.parse(this.mapperEditor.getText()),
-        dataModel: this.selectedSchema == "---select schema---" && !this.dataModelURL ? JSON.parse(this.schemaEditor.getText()) : undefined,
+        dataModel: (!this.selectedSchema || this.selectedSchema == "---select schema---") && !this.dataModelURL ? JSON.parse(this.schemaEditor.getText()) : undefined,
         config: this.transformSettings
       }
     return "curl --location '" + this.config.data_model_mapper.default_mapper_url + "' --header 'Content-Type: application/json' --data '" + JSON.stringify(body) + "'"
@@ -676,13 +677,24 @@ export class DMMComponent implements OnInit, OnChanges {
     ).onClose.subscribe((content) => {
       this.saveFile(this.name, this.adapterId);
      });*/
+     let source = JSON.parse(this.sourceEditor.getText())
+
+     //if (source[this.selectedPath])
+       //source = source[this.selectedPath]
 
 
     this.dialogService.open(ExportFileComponent).onClose.subscribe((content) => {
-      this.saveFile(content == "file" ? {
-        map: JSON.parse(this.mapperEditor.getText()),
-        dataModel: this.schemaJson
-      }
+      this.saveFile(content == "file" ? JSON.stringify({
+        sourceDataType: this.inputType,
+        path: this.selectedPath,
+        sourceDataURL: this.sourceDataURL,
+        sourceData: this.sourceDataURL || this.selectedSource ? undefined : this.inputType != "json" ? this.csvSourceData : source,
+        sourceDataID: this.selectedSource,
+        dataModelID: this.selectedSchema == "---select schema---" ? undefined : this.selectedSchema,
+        mapData: JSON.parse(this.mapperEditor.getText()),
+        dataModel: (!this.selectedSchema || this.selectedSchema == "---select schema---") && !this.dataModelURL ? JSON.parse(this.schemaEditor.getText()) : undefined,
+        config: this.transformSettings
+      })
         :
         this.buildSnippet()
       );
