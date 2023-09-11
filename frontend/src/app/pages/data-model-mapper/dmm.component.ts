@@ -154,7 +154,8 @@ export class DMMComponent implements OnInit, OnChanges {
   getSchema() {
     console.debug(this.schemaEditor.getText())
     console.debug(typeof this.schemaEditor.getText())
-    return JSON.parse(this.schemaEditor.getText() ? this.schemaEditor.getText() : "Set your schema here")
+    this.schemaJson = this.schemaEditor.getText() ? JSON.parse(this.schemaEditor.getText()) : {info : "Set your schema here"}
+    return this.schemaJson
   }
 
   async refParse(subObj) {
