@@ -159,14 +159,18 @@ export class DMMComponent implements OnInit, OnChanges {
     return this.schemaJson
   }
 
+  parsed = false
+
   async refParse(subObj) {
+    if (!subObj) this.parsed =false
     console.debug(subObj)
     let obj2 = subObj ? subObj : this.schemaJson
     for (let key in obj2)
       if (typeof obj2[key] == "object" || Array.isArray(obj2[key]))
         await this.refParse(obj2[key])
-      else if (key.startsWith("$ref")) { console.debug("ref found"); return await this.dmmService.refParse(this.schemaJson) }
-    if (!subObj) { console.debug("return obj", this.schemaJson); return this.schemaJson }
+      else if (key.startsWith("$ref")) { console.debug("ref found"); this.parsed = true }
+    if (!subObj) if (!this.parsed) { console.debug("return obj", this.schemaJson); return this.schemaJson }
+    else return await this.dmmService.refParse(this.schemaJson)
   }
 
   async schemaChanged($event) {
