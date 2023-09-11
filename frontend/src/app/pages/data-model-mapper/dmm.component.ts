@@ -154,7 +154,7 @@ export class DMMComponent implements OnInit, OnChanges {
   getSchema() {
     console.debug(this.schemaEditor.getText())
     console.debug(typeof this.schemaEditor.getText())
-    this.schemaJson = this.schemaEditor.getText() ? JSON.parse(this.schemaEditor.getText()) : {info : "Set your schema here"}
+    this.schemaJson = this.schemaEditor.getText() ? JSON.parse(this.schemaEditor.getText()) : { info: "Set your schema here" }
     return this.schemaJson
   }
 
@@ -164,9 +164,8 @@ export class DMMComponent implements OnInit, OnChanges {
     for (let key in obj2)
       if (typeof obj2[key] == "object" || Array.isArray(obj2[key]))
         await this.refParse(obj2[key])
-      else if (key.startsWith("$ref"))
-        {console.debug("ref found");return await this.dmmService.refParse(this.schemaJson)}
-    if (!subObj) {console.debug("return obj", this.schemaJson); return this.schemaJson}
+      else if (key.startsWith("$ref")) { console.debug("ref found"); return await this.dmmService.refParse(this.schemaJson) }
+    if (!subObj) { console.debug("return obj", this.schemaJson); return this.schemaJson }
   }
 
   async schemaChanged($event) {
@@ -175,7 +174,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (this.selectedSchema)
         this.schemaJson =
           this.schema()
-        ;
+          ;
       console.debug(this.schemaJson)
       if (!this.schemaJson) this.schemaJson = {
         "info": "Set your schema here"
@@ -322,7 +321,7 @@ export class DMMComponent implements OnInit, OnChanges {
     if (this.selectedSchema)
       this.schemaJson =
         this.schema()
-      ;
+        ;
 
     this.setMapEditor(false);
 
@@ -334,7 +333,7 @@ export class DMMComponent implements OnInit, OnChanges {
     if (this.route.snapshot.params['inputID'] as string || this.inputID) {
       if (this.route.snapshot.params['inputID'] as string) this.inputID = this.route.snapshot.params['inputID'] as string;
       this.selectMap = this.inputID
-      await this.mapChanged(this.inputID)
+      await this.mapChanged(this.inputID, false)
       if (this.inputType == "csv") this.updateCSVTable()
     }
   }
@@ -678,10 +677,10 @@ export class DMMComponent implements OnInit, OnChanges {
     ).onClose.subscribe((content) => {
       this.saveFile(this.name, this.adapterId);
      });*/
-     let source = JSON.parse(this.sourceEditor.getText())
+    let source = JSON.parse(this.sourceEditor.getText())
 
-     //if (source[this.selectedPath])
-       //source = source[this.selectedPath]
+    //if (source[this.selectedPath])
+    //source = source[this.selectedPath]
 
 
     this.dialogService.open(ExportFileComponent).onClose.subscribe((content) => {
@@ -778,18 +777,25 @@ export class DMMComponent implements OnInit, OnChanges {
     });
   }
 
-  async mapChanged($event) {
-    if ($event && $event != "---select map---") {
-      let mapSettings = this.maps.filter(filteredMap => filteredMap.id == $event)[0]
+  async mapChanged($event, settingsFromFile) {
+    if (settingsFromFile || ($event && $event != "---select map---")) {
+      let mapSettings
 
-      try {
-        this.savedSource = await this.dmmService.getSource($event)
-        this.savedSchema = await this.dmmService.getSchema($event)
+      if ($event && $event != "---select map---") {
+        mapSettings = this.maps.filter(filteredMap => filteredMap.id == $event)[0]
+
+        try {
+          this.savedSource = await this.dmmService.getSource($event)
+          this.savedSchema = await this.dmmService.getSchema($event)
+        }
+        catch (error) {
+          console.error(error)
+          this.errorService.openErrorDialog(error)
+        }
       }
-      catch (error) {
-        console.error(error)
-        this.errorService.openErrorDialog(error)
-      }
+      else mapSettings = JSON.parse(settingsFromFile)
+
+      console.debug(typeof settingsFromFile, mapSettings)
 
       //if (sourceByID) {
       //this.savedSource = sourceByID
@@ -855,14 +861,14 @@ export class DMMComponent implements OnInit, OnChanges {
       else
         this.csvSourceData = mapSettings.sourceData
 
-      this.map = mapSettings.map
+      this.map = mapSettings.map || mapSettings.mapData
       mapGl = this.map
       this.adapter = {}
-      this.adapter.adapterId = mapSettings.id
-      this.name = mapSettings.name
-      this.adapter.description = mapSettings.description
-      this.adapter.status = mapSettings.status
-      this.isNew = true
+      if (mapSettings.id) this.adapter.adapterId = mapSettings.id
+      if (mapSettings.name) this.name = mapSettings.name
+      if (mapSettings.description) this.adapter.description = mapSettings.description
+      if (mapSettings.status) this.adapter.status = mapSettings.status
+      if (this.adapter.adapterId) this.isNew = true
       this.mapperEditor.update(this.map)
       this.selectedSchema = "---select schema---"
       if (mapSettings.dataModel) this.schemaEditor.update(mapSettings.dataModel)
@@ -897,13 +903,15 @@ export class DMMComponent implements OnInit, OnChanges {
         })
       .onClose.subscribe(async (result: { content: string; source: string; format: string; mapSettings }) => {
         if (result.mapSettings) {
+          /*
           result.mapSettings = JSON.parse(result.mapSettings)
-          this.schemaJson = [
+          this.schemaJson =
             result.mapSettings.dataModel
-          ];
+            ;
           this.map = result.mapSettings.map
           mapGl = this.map
-          this.mapperEditor.update(this.map)
+          this.mapperEditor.update(this.map)*/
+          this.mapChanged(false, result.mapSettings)
         }
         else if (result && result.content) {
           this.sourceRef = result?.source;

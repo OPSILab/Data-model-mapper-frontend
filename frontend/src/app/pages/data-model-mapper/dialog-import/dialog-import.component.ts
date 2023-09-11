@@ -68,8 +68,10 @@ export class DialogImportComponent{
     if (type == "url") {
       this.file = await this.http.get<any>(this.dataUrl, { responseType: 'text' as 'json' }).toPromise();
       this.ref.close({ content: this.file, source: this.dataUrl, format: "url" });
-    } else if (this.map)
+    } else if (this.map){
+      console.debug(this.map)
       this.ref.close({ mapSettings: this.file, source: this.selectedFile.name, format: "file" })
+    }
     else
       this.ref.close({ content: this.file, source: this.selectedFile.name, format: "file" });
   }
