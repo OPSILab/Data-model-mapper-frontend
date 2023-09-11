@@ -17,8 +17,9 @@ import { ErrorDialogAdapterService } from '../error-dialog/error-dialog-adapter.
 import { ActivatedRoute } from '@angular/router';
 import { NgxConfigureService } from 'ngx-configure';
 import { TransformComponent } from '../home/transform/transform.component';
+import editor from './mapperEditor'
 
-let mapOptionsGl, mapGl = "Set your mapping fields here", mapperEditor
+let mapOptionsGl, mapGl = "Set your mapping fields here"//, mapperEditor
 
 //let map = {}, mapperEditor, mapOptions: string[]
 @Component({
@@ -131,7 +132,7 @@ export class DMMComponent implements OnInit, OnChanges {
         update: true,
         path: this.selectedPath,
         sourceDataType: type,
-        jsonMap: JSON.parse(this.mapperEditor.getText()),
+        jsonMap: JSON.parse(editor.mapperEditor.getText()),
         schema: JSON.parse(this.schemaEditor.getText()),
         config: this.transformSettings,
         sourceDataURL: this.sourceDataURL,
@@ -180,7 +181,7 @@ export class DMMComponent implements OnInit, OnChanges {
         "info": "Set your schema here"
       }
       if (this.map) {
-        this.map = JSON.parse(this.mapperEditor.getText())
+        this.map = JSON.parse(editor.mapperEditor.getText())
         this.oldMap = JSON.parse(JSON.stringify(this.map))
       }
       console.debug(this)
@@ -200,7 +201,7 @@ export class DMMComponent implements OnInit, OnChanges {
         console.error(error)
       }
       mapGl = this.map
-      this.mapperEditor.update(this.map)
+      editor.mapperEditor.update(this.map)
       this.selectMap = "---select map---"
       this.selectedDataModel = this.schemaJson
       this.schemaEditor.update(this.selectedDataModel)
@@ -245,7 +246,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     this.oldMap = undefined
     this.sourceEditor.update(this.sourceJson)
-    this.mapperEditor.update(this.map)
+    editor.mapperEditor.update(this.map)
     this.schemaEditor.update(this.selectedDataModel)
     this.outputEditor.update(preview)
     this.selectMap = "---select map---"
@@ -268,7 +269,7 @@ export class DMMComponent implements OnInit, OnChanges {
     mapGl = this.map
     console.debug("THIS MAP")
     console.debug(this.map)
-    this.mapperEditor.update(this.map)
+    editor.mapperEditor.update(this.map)
   }
 
   async ngOnInit(): Promise<void> {
@@ -424,7 +425,7 @@ export class DMMComponent implements OnInit, OnChanges {
   async testAdapter() {
     let output
     try {
-      let m = JSON.parse(this.mapperEditor.getText())
+      let m = JSON.parse(editor.mapperEditor.getText())
       m["targetDataModel"] = "DataModelTemp"
       let source = JSON.parse(this.sourceEditor.getText())
 
@@ -462,7 +463,7 @@ export class DMMComponent implements OnInit, OnChanges {
   async transform() {
     let output
     try {
-      let m = JSON.parse(this.mapperEditor.getText())
+      let m = JSON.parse(editor.mapperEditor.getText())
       m["targetDataModel"] = "DataModelTemp"
       let source = JSON.parse(this.sourceEditor.getText())
 
@@ -583,11 +584,17 @@ export class DMMComponent implements OnInit, OnChanges {
     this.setMapEditor(false);
   }
 
-  updateMapper(path, value, map, mapperEditor) {
+  updateMapper(path, value, map){//, mapperEditor) {
     console.debug(mapGl)
     console.debug(map)
     map[path] = value
-    mapperEditor.update(map)
+    try {
+      editor.mapperEditor.update(map)
+    }
+    catch (error) {
+      console.error(error)
+      //editor.mapperEditor.update(map)
+    }
   }
 
   setMapEditor(justOptions) {
@@ -597,7 +604,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
     //let map = this.map
     mapGl = this.map
-    mapperEditor = this.mapperEditor
+    //editor.mapperEditor = editor.mapperEditor
     try {
       this.options2 = {
         mode: 'tree',
@@ -619,7 +626,8 @@ export class DMMComponent implements OnInit, OnChanges {
               .open(DialogDataMapComponent, {
                 context: { mapOptions: mapOptionsGl, selectPath: selectPath, map: mapGl },
               }).onClose.subscribe((value) => {
-                updateMapper(selectPath, value ? value[0] : "", mapGl, mapperEditor)// value[1] is the map
+                let editor = require ('./mapperEditor')
+                updateMapper(selectPath, value ? value[0] : "", mapGl)//, mapperEditor)// value[1] is the map
               });
           }
 
@@ -667,8 +675,9 @@ export class DMMComponent implements OnInit, OnChanges {
       console.error("Error during map setting set")
     }
 
-    if (!this.mapperEditor && !justOptions) this.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
-    else if (!justOptions) this.mapperEditor.update(this.map)
+    if (!editor.mapperEditor && !justOptions) editor.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
+    if (!editor.mapperEditor && !justOptions) editor.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
+    else if (!justOptions) editor.mapperEditor.update(this.map)
   }
 
   buildSnippet() {
@@ -690,7 +699,7 @@ export class DMMComponent implements OnInit, OnChanges {
         sourceData: this.sourceDataURL || this.selectedSource ? undefined : this.inputType != "json" ? this.csvSourceData : source,
         sourceDataID: this.selectedSource,
         dataModelID: this.selectedSchema == "---select schema---" ? undefined : this.selectedSchema,
-        mapData: JSON.parse(this.mapperEditor.getText()),
+        mapData: JSON.parse(editor.mapperEditor.getText()),
         dataModel: (!this.selectedSchema || this.selectedSchema == "---select schema---") && !this.dataModelURL ? JSON.parse(this.schemaEditor.getText()) : undefined,
         config: this.transformSettings
       }
@@ -718,7 +727,7 @@ export class DMMComponent implements OnInit, OnChanges {
         sourceData: this.sourceDataURL || this.selectedSource ? undefined : this.inputType != "json" ? this.csvSourceData : source,
         sourceDataID: this.selectedSource,
         dataModelID: this.selectedSchema == "---select schema---" ? undefined : this.selectedSchema,
-        mapData: JSON.parse(this.mapperEditor.getText()),
+        mapData: JSON.parse(editor.mapperEditor.getText()),
         dataModel: (!this.selectedSchema || this.selectedSchema == "---select schema---") && !this.dataModelURL ? JSON.parse(this.schemaEditor.getText()) : undefined,
         config: this.transformSettings
       })
@@ -772,7 +781,7 @@ export class DMMComponent implements OnInit, OnChanges {
       context: {
         save: true,
         path: this.selectedPath,
-        jsonMap: JSON.parse(this.mapperEditor.getText()),
+        jsonMap: JSON.parse(editor.mapperEditor.getText()),
         schema: JSON.parse(this.schemaEditor.getText()),//(!this.selectedSchema || this.selectedSchema == "---select schema---") && !this.dataModelURL ? JSON.parse(this.schemaEditor.getText()) : undefined,
         config: this.transformSettings,
         sourceDataType: this.inputType,
@@ -794,7 +803,7 @@ export class DMMComponent implements OnInit, OnChanges {
           name: adapter.name,
           description: adapter.description,
           status: adapter.status,
-          map: JSON.parse(this.mapperEditor.getText()),
+          map: JSON.parse(editor.mapperEditor.getText()),
           dataModel: this.schemaJson
         })
         this.selectMap = adapter.adapterId
@@ -902,7 +911,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (mapSettings.description) this.adapter.description = mapSettings.description
       if (mapSettings.status) this.adapter.status = mapSettings.status
       if (this.adapter.adapterId) this.isNew = true
-      this.mapperEditor.update(this.map)
+      editor.mapperEditor.update(this.map)
       this.selectedSchema = "---select schema---"
       if (mapSettings.dataModel) this.schemaEditor.update(mapSettings.dataModel)
     }
@@ -943,7 +952,7 @@ export class DMMComponent implements OnInit, OnChanges {
             ;
           this.map = result.mapSettings.map
           mapGl = this.map
-          this.mapperEditor.update(this.map)*/
+          editor.mapperEditor.update(this.map)*/
           this.mapChanged(false, result.mapSettings)
         }
         else if (result && result.content) {
