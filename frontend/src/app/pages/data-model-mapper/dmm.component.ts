@@ -99,7 +99,7 @@ export class DMMComponent implements OnInit, OnChanges {
     public route: ActivatedRoute,
     public configService: NgxConfigureService,
     //public ref : any
-   //public ref: NbDialogRef<any>,
+    //public ref: NbDialogRef<any>,
   ) {
     this.config = configService.config as AppConfig;
   }
@@ -154,28 +154,39 @@ export class DMMComponent implements OnInit, OnChanges {
   getSchema() {
     console.debug(this.schemaEditor.getText())
     console.debug(typeof this.schemaEditor.getText())
-    return JSON.parse(this.schemaEditor.getText()? this.schemaEditor.getText() : "Set your schema here")
+    return JSON.parse(this.schemaEditor.getText() ? this.schemaEditor.getText() : "Set your schema here")
+  }
+
+  async refParse(subObj) {
+    console.debug(subObj)
+    let obj2 = subObj ? subObj : this.schemaJson
+    for (let key in obj2)
+      if (typeof obj2[key] == "object" || Array.isArray(obj2[key]))
+        await this.refParse(obj2[key])
+      else if (key.startsWith("$ref"))
+        {console.debug("ref found");return await this.dmmService.refParse(this.schemaJson)}
+    if (!subObj) {console.debug("return obj", this.schemaJson); return this.schemaJson}
   }
 
   async schemaChanged($event) {
     if ($event && $event != "---select schema---") {
       if (this.dataModelURL) this.dataModelURL = undefined
       if (this.selectedSchema)
-        this.schemaJson = [
+        this.schemaJson =
           this.schema()
-        ];
+        ;
       console.debug(this.schemaJson)
-      if (!this.schemaJson)  this.schemaJson = {
-          "info" : "Set your schema here"
-        }
+      if (!this.schemaJson) this.schemaJson = {
+        "info": "Set your schema here"
+      }
       if (this.map) this.oldMap = JSON.parse(JSON.stringify(this.map))
       try {
-        this.map = this.getAllNestedProperties(await this.dmmService.refParse(this.schemaJson[0]));
+        this.map = this.getAllNestedProperties(await this.refParse(false));
       }
       catch (error) {
         console.error(error)
         this.errorService.openErrorDialog(error)
-        this.map = {"error": "Some errors occurred during generating map object"}
+        this.map = { "error": "Some errors occurred during generating map object" }
       }
       try {
         if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
@@ -230,14 +241,14 @@ export class DMMComponent implements OnInit, OnChanges {
     console.debug(changes);
   }
 
-  setSchemaFromFile($event) {
+  async setSchemaFromFile($event) {
     this.schemaFromFile = $event
-    this.schemaJson = [
+    this.schemaJson =
       this.schemaFromFile
-    ]
+
     console.debug("THIS SCHEMA JSON")
     console.debug(this.schemaJson)
-    this.map = this.getAllNestedProperties(this.schemaJson[0]);
+    this.map = this.getAllNestedProperties(await this.dmmService.refParse(this.schemaJson));
     mapGl = this.map
     console.debug("THIS MAP")
     console.debug(this.map)
@@ -308,9 +319,9 @@ export class DMMComponent implements OnInit, OnChanges {
     };
 
     if (this.selectedSchema)
-      this.schemaJson = [
+      this.schemaJson =
         this.schema()
-      ];
+      ;
 
     this.setMapEditor(false);
 
@@ -412,11 +423,11 @@ export class DMMComponent implements OnInit, OnChanges {
           .concat("\r\n")
           .concat(this.rows[3])
 
-      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.partialCsv : source, m, this.schemaJson[0], this.transformSettings)
+      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.partialCsv : source, m, this.schemaJson, this.transformSettings)
     }
     catch (error) {
       if (!output)
-        output = !error.status ? {"error" : "Service unreachable"} : error.error
+        output = !error.status ? { "error": "Service unreachable" } : error.error
       console.error(error)
       this.errorService.openErrorDialog(error)
     }
@@ -435,11 +446,11 @@ export class DMMComponent implements OnInit, OnChanges {
       if (source[this.selectedPath])
         source = source[this.selectedPath]
 
-      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.csvSourceData : source, m, this.schemaJson[0], this.transformSettings)
+      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.csvSourceData : source, m, this.schemaJson, this.transformSettings)
     }
     catch (error) {
       if (!output)
-        output = !error.status ? {"error" : "Service unreachable"} : error.error
+        output = !error.status ? { "error": "Service unreachable" } : error.error
       console.error(error)
       this.errorService.openErrorDialog(error)
     }
@@ -871,7 +882,7 @@ export class DMMComponent implements OnInit, OnChanges {
         {
           context: { type: typeSource },
         })
-      .onClose.subscribe((result: { content: string; source: string; format: string; mapSettings }) => {
+      .onClose.subscribe(async (result: { content: string; source: string; format: string; mapSettings }) => {
         if (result.mapSettings) {
           result.mapSettings = JSON.parse(result.mapSettings)
           this.schemaJson = [
@@ -919,7 +930,9 @@ export class DMMComponent implements OnInit, OnChanges {
               this.selectedSchema = "---select schema---"
             }
             this.schemaEditor.update(JSON.parse(result.content))
-            this.setSchemaFromFile(JSON.parse(result.content))
+            this.schemaJson = JSON.parse(result.content)
+            this.schemaChanged(this.getSchema())
+            //await this.setSchemaFromFile(JSON.parse(result.content))
           }
         }
       });

@@ -55,6 +55,7 @@ export class DMMService {
   }
 
   refParse(schema) {
+    console.debug("wait backend")
     return this.http.post<any>(this.config.data_model_mapper.default_mapper_base_url + "/dereferenceSchema", schema).toPromise();
   }
 
