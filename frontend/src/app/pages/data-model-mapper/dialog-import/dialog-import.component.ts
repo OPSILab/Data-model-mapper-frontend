@@ -11,7 +11,7 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: 'dialog-import.component.html',
   styleUrls: ['dialog-import.component.scss'],
 })
-export class DialogImportComponent{
+export class DialogImportComponent {
   //private appConfig: AppConfig;
   selectedFile: File;
   file: String;
@@ -29,7 +29,7 @@ export class DialogImportComponent{
     protected ref: NbDialogRef<DialogImportComponent>,
     private errorService: ErrorDialogService,
     @Inject(DOCUMENT) private document: Document,
-  ) {}
+  ) { }
 
   cancel(): void {
     this.ref.close();
@@ -66,9 +66,15 @@ export class DialogImportComponent{
 
   async onUpload(type: string): Promise<void> {
     if (type == "url") {
-      this.file = await this.http.get<any>(this.dataUrl, { responseType: 'text' as 'json' }).toPromise();
+      try {
+        this.file = await this.http.get<any>(this.dataUrl, { responseType: 'text' as 'json' }).toPromise();
+      }
+      catch (error) {
+        console.error(error)
+        this.errorService.openErrorDialog(error)
+      }
       this.ref.close({ content: this.file, source: this.dataUrl, format: "url" });
-    } else if (this.map){
+    } else if (this.map) {
       console.debug(this.map)
       this.ref.close({ mapSettings: this.file, source: this.selectedFile.name, format: "file" })
     }

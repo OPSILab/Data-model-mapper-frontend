@@ -32,10 +32,10 @@
   <nb-card-back>
     <nb-card>
       <nb-card-header>
-        {{ 'general.error' | translate }} :
+        {{ 'general.error' | translate }} <!--:
         {{error?.statusText}}
         {{error?.header}}
-        {{error?.error?.message}}
+        {{error?.error?.message}}-->
         <button nbButton outline status="info" class="close" (click)="closeModal(error)">{{ 'general.close' | translate
         }} </button>
       </nb-card-header>

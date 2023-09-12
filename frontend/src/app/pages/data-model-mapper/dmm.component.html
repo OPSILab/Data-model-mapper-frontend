@@ -16,16 +16,17 @@
         <nb-option *ngFor="let map of maps" value={{map.id}}>{{map.name}}</nb-option>
       </nb-select>
       <div style="margin-top: 30px;"></div>
+      <div *ngIf="backendDown">Unable to reach server</div>
       <div class="row justify-content-center">
         <button nbButton class="mx-4" shape="rectangle" size="medium" status="info" (click)="reset()">
           {{ 'general.dmm.create_new' | translate }}
           <i class="mx-1 material-icons">create</i>
         </button>
-        <button nbButton class="mx-4" shape="rectangle" size="medium" status="primary" (click)="saveAdapter()">
+        <button *ngIf="!backendDown" nbButton class="mx-4" shape="rectangle" size="medium" status="primary" (click)="saveAdapter()">
           {{ 'general.dmm.save_as_new' | translate }}
           <i class="mx-1 material-icons">save</i>
         </button>
-        <button *ngIf="isNew" nbButton class="mx-4" shape="rectangle" size="medium" status="primary"
+        <button *ngIf="isNew && !backendDown" nbButton class="mx-4" shape="rectangle" size="medium" status="primary"
           (click)="updateAdapter()">
           {{ 'general.editor.update' | translate }}
           <i class="mx-1 material-icons">update</i>

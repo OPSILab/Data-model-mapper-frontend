@@ -71,7 +71,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.mapRecords = await this.dmmService.getMaps();
       void this.source.load(this.mapRecords);
     } catch (error) {
-      console.error("error:<\n", error, ">\n")
+      console.error(error)
+      if (error.status == 0 || error.error.status == 0){
+        error.statusText = undefined
+        error.message = error.error.message = "Unable to reach server"
+      }
       this.errorService.openErrorDialog(error);
     }
   }

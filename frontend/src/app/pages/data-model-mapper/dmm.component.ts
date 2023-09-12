@@ -32,6 +32,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   inputID
   map
+  backendDown
   //mapperEditor
   mapOptions
   sourceEditor: any;
@@ -194,6 +195,10 @@ export class DMMComponent implements OnInit, OnChanges {
       }
       catch (error) {
         console.error(error)
+        if (error.status == 0 || error.error.status == 0){
+          error.statusText = undefined
+          error.message = error.error.message = "Unable to import schema"
+        }
         this.errorService.openErrorDialog(error)
         this.map = { "error": "Some errors occurred during generating map object" }
       }
@@ -286,15 +291,20 @@ export class DMMComponent implements OnInit, OnChanges {
     this.selectBox = <HTMLInputElement>this.document.getElementById('input-type');
     this.csvtable = this.document.getElementById('csv-table');
 
-    //try {
-    await this.loadMapperList()
-    await this.loadSchemaList()
-    await this.loadSourceList()
-    //}
-    //catch (error) {
-    //console.error(error)
-    //this.errorService.openErrorDialog(error)
-    //}
+    try {
+      await this.loadMapperList()
+      await this.loadSchemaList()
+      await this.loadSourceList()
+    }
+    catch (error) {
+      console.error(error)
+      if (error.status == 0 || error.error.status == 0){
+        error.statusText = undefined
+        error.message = error.error.message = "Unable to reach server"
+        this.backendDown = true
+      }
+      this.errorService.openErrorDialog(error)
+    }
 
     const options = {
       mode: 'view',
@@ -366,7 +376,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       console.error(error)
-      this.errorService.openErrorDialog(error)
+      //this.errorService.openErrorDialog(error)
       return this.getSchema()
     }
   }
@@ -381,8 +391,9 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       console.error(error)
-      this.errorService.openErrorDialog(error)
+      //this.errorService.openErrorDialog(error)
       this.maps = []
+      throw error
     }
   }
 
@@ -392,8 +403,9 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       console.error(error)
-      this.errorService.openErrorDialog(error)
+      //this.errorService.openErrorDialog(error)
       this.schemas = []
+      throw error
     }
   }
 
@@ -403,8 +415,9 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       console.error(error)
-      this.errorService.openErrorDialog(error)
+      //this.errorService.openErrorDialog(error)
       this.sources = []
+      throw error
     }
   }
 
@@ -419,7 +432,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       console.error(error)
-      this.errorService.openErrorDialog(error)
+      //this.errorService.openErrorDialog(error)
       this.transformSettings = await this.dmmService.getBackupConfig()
     }
     this.configEditor.update(this.transformSettings)
@@ -457,7 +470,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (!output)
         output = !error.status ? { "error": "Service unreachable" } : error.error
       console.error(error)
-      this.errorService.openErrorDialog(error)
+      //this.errorService.openErrorDialog(error)
     }
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
@@ -480,7 +493,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (!output)
         output = !error.status ? { "error": "Service unreachable" } : error.error
       console.error(error)
-      this.errorService.openErrorDialog(error)
+      //this.errorService.openErrorDialog(error)
     }
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
@@ -621,7 +634,7 @@ export class DMMComponent implements OnInit, OnChanges {
     let fixedPath = ""
     console.debug(path)
     if (path[1]) {
-      map[path[0]]=deepInPath(path, value, map)
+      map[path[0]] = deepInPath(path, value, map)
     }
     else map[path] = value
     try {
@@ -863,7 +876,7 @@ export class DMMComponent implements OnInit, OnChanges {
         }
         catch (error) {
           console.error(error)
-          this.errorService.openErrorDialog(error)
+          //this.errorService.openErrorDialog(error)
         }
       }
       else mapSettings = JSON.parse(settingsFromFile)
@@ -965,7 +978,7 @@ export class DMMComponent implements OnInit, OnChanges {
         //console.log(error.message)
         //else
         console.error(error)
-      this.errorService.openErrorDialog(error)
+      //this.errorService.openErrorDialog(error)
     }
   }
 
