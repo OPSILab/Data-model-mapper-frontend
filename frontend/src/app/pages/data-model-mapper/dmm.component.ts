@@ -90,6 +90,7 @@ export class DMMComponent implements OnInit, OnChanges {
   configEditorContainer: HTMLElement;
   configEditor: any;
   transformSettings: any;
+  tempSchema: any;
   //ref
 
   constructor(
@@ -156,6 +157,7 @@ export class DMMComponent implements OnInit, OnChanges {
   getSchema() {
     console.debug(this.schemaEditor.getText())
     console.debug(typeof this.schemaEditor.getText())
+    if (this.tempSchema) return this.tempSchema
     this.schemaJson = this.schemaEditor.getText() ? JSON.parse(this.schemaEditor.getText()) : { info: "Set your schema here" }
     return this.schemaJson
   }
@@ -192,28 +194,32 @@ export class DMMComponent implements OnInit, OnChanges {
       console.debug(this)
       try {
         this.map = this.getAllNestedProperties(await this.refParse(false));
+        console.debug(this)
+        try {
+          if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
+        }
+        catch (error) {
+          console.error(error)
+        }
+        mapGl = this.map
+        editor.mapperEditor.update(this.map)
+        this.selectMap = "---select map---"
+        this.selectedDataModel = this.schemaJson
+        this.schemaEditor.update(this.selectedDataModel)
       }
       catch (error) {
         console.error(error)
-        if (error.status == 0 || error.error.status == 0){
+        if (error.status == 0 || error.error.status == 0) {
           error.statusText = undefined
           error.message = error.error.message = "Unable to import schema"
         }
         this.errorService.openErrorDialog(error)
         this.map = { "error": "Some errors occurred during generating map object" }
+        this.schemaJson = {
+          "info": "set your schema here"
+        }
       }
-      console.debug(this)
-      try {
-        if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
-      }
-      catch (error) {
-        console.error(error)
-      }
-      mapGl = this.map
-      editor.mapperEditor.update(this.map)
-      this.selectMap = "---select map---"
-      this.selectedDataModel = this.schemaJson
-      this.schemaEditor.update(this.selectedDataModel)
+      this.tempSchema = undefined
     }
   }
 
@@ -298,7 +304,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       console.error(error)
-      if (error.status == 0 || error.error.status == 0){
+      if (error.status == 0 || error.error.status == 0) {
         error.statusText = undefined
         error.message = error.error.message = "Unable to reach server"
         this.backendDown = true
@@ -1042,8 +1048,8 @@ export class DMMComponent implements OnInit, OnChanges {
               this.dataModelURL = result.source
               this.selectedSchema = "---select schema---"
             }
-            this.schemaEditor.update(JSON.parse(result.content))
-            this.schemaJson = JSON.parse(result.content)
+            //this.schemaEditor.update(JSON.parse(result.content))
+            this.tempSchema = this.schemaJson = JSON.parse(result.content)
             this.schemaChanged(this.getSchema())
             //await this.setSchemaFromFile(JSON.parse(result.content))
           }
