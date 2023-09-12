@@ -162,7 +162,7 @@ export class DMMComponent implements OnInit, OnChanges {
   parsed = false
 
   async refParse(subObj) {
-    if (!subObj) this.parsed =false
+    if (!subObj) this.parsed = false
     console.debug(subObj)
     let obj2 = subObj ? subObj : this.schemaJson
     for (let key in obj2)
@@ -588,10 +588,42 @@ export class DMMComponent implements OnInit, OnChanges {
     this.setMapEditor(false);
   }
 
-  updateMapper(path, value, map){//, mapperEditor) {
+  tempMap = { temp: undefined }
+
+  deepInPath(path, value, map) {
+    //for (let sub of path)
+    if (path[1]) {
+      let sub = path.shift()
+      map[sub] = this.deepInPath(path, value, map[sub])// = this.deepInPath(path, value, map[sub])
+      return map[sub]
+    }
+    else {
+      map[path] = value
+      return map
+    }
+  }
+
+  updateMapper(path, value, map) {//, mapperEditor) {
+    const deepInPath = (path, value, map) => {
+      //for (let sub of path)
+      if (path[1]) {
+        let sub = path.shift()
+        map[sub] = deepInPath(path, value, map[sub])// = this.deepInPath(path, value, map[sub])
+        return map[sub]
+      }
+      else {
+        map[path] = value
+        return map
+      }
+    }
     console.debug(mapGl)
     console.debug(map)
-    map[path] = value
+    let fixedPath = ""
+    console.debug(path)
+    if (path[1]) {
+      map[path[0]]=deepInPath(path, value, map)
+    }
+    else map[path] = value
     try {
       editor.mapperEditor.update(map)
     }
@@ -623,6 +655,7 @@ export class DMMComponent implements OnInit, OnChanges {
           //console.log('items:', items, 'node:', node)
 
           var selectPath = path;
+          console.debug(selectPath)
           function pathToMap() {
             //this.m = mOptions
             console.debug(mapOptionsGl)
@@ -630,7 +663,7 @@ export class DMMComponent implements OnInit, OnChanges {
               .open(DialogDataMapComponent, {
                 context: { mapOptions: mapOptionsGl, selectPath: selectPath, map: mapGl },
               }).onClose.subscribe((value) => {
-                let editor = require ('./mapperEditor')
+                let editor = require('./mapperEditor')
                 updateMapper(selectPath, value ? value[0] : "", mapGl)//, mapperEditor)// value[1] is the map
               });
           }
