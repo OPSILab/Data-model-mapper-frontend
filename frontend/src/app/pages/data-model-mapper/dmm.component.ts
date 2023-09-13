@@ -216,7 +216,7 @@ export class DMMComponent implements OnInit, OnChanges {
       }
       catch (error) {
         this.handleError(error)
-        if (error.status == 0 || error.error.status == 0) {
+        if (error?.status == 0 || error?.error?.status == 0) {
           error.statusText = undefined
           error.message = error.error.message = "Unable to import schema"
         }
@@ -1097,7 +1097,14 @@ export class DMMComponent implements OnInit, OnChanges {
               this.selectedSchema = "---select schema---"
             }
             //this.schemaEditor.update(JSON.parse(result.content))
+            try {
             this.tempSchema = this.schemaJson = JSON.parse(result.content)
+
+            }
+            catch (error) {
+              this.handleError(error)
+              this.tempSchema = this.schemaJson = {"error":"import a valid schema"}
+            }
             this.schemaChanged(this.getSchema())
             //await this.setSchemaFromFile(JSON.parse(result.content))
           }
