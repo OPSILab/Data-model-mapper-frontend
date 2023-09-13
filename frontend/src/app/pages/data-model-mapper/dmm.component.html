@@ -80,6 +80,10 @@
                   {{ 'general.editor.upload' | translate }}
                   <i class="mx-1 fas fa-file-import fa-lg"></i>
                 </button>
+                <button nbButton class="mr-2" shape="rectangle" size="small" (click)="onUpdatePathForDataMap(selectedPath)">
+                  {{ 'general.editor.confirm_source' | translate }}
+                  <i class="mx-1 fas fa-file-import fa-lg"></i>
+                </button>
                 <!--
               <button nbButton class="mr-2" shape="rectangle" size="small" (click)="setMapEditor(true)">
                 {{ 'general.editor.update_field_list' | translate }}
@@ -92,8 +96,7 @@
                   <nb-option *ngFor="let path of paths" value={{path}}>.{{path}}</nb-option>
                 </nb-select>
               </div>
-              <div style="height:500px; margin-top:10px" id="jsoneditor" (click)="onUpdatePathForDataMap(selectedPath)"
-                (focusout)="onUpdatePathForDataMap(selectedPath)" (blur)="onUpdatePathForDataMap(selectedPath)"></div>
+              <div style="height:500px; margin-top:10px" id="jsoneditor"></div>
             </div>
             <div class="mb-2" id="csv-input" style="display:none;">
               <div class="mb-2">
@@ -107,7 +110,7 @@
                   <i class="mx-1 fas fa-file-import fa-lg"></i>
                 </button> &nbsp;
                 <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateCSVTable()">
-                  {{ 'general.editor.update_field_list' | translate }}
+                  {{ 'general.editor.confirm_source' | translate }}
                   <i class="mx-1 fas fa-lg"></i>
                 </button>
                 <nb-select placeholder="Separator" size="small" [(selected)]="separatorItem"

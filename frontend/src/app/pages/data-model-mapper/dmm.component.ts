@@ -472,12 +472,12 @@ export class DMMComponent implements OnInit, OnChanges {
       if (this.rows)
         this.partialCsv = this.partialCsv
           .concat(this.rows[0])
-          .concat("\r\n")
-          .concat(this.rows[1])
-          .concat("\r\n")
-          .concat(this.rows[2])
-          .concat("\r\n")
-          .concat(this.rows[3])
+          .concat(this.rows[1] ? "\r\n" : '')
+          .concat(this.rows[1] || '')
+          .concat(this.rows[2] ? "\r\n" : '')
+          .concat(this.rows[2] || '')
+          .concat(this.rows[3] ? "\r\n" : '')
+          .concat(this.rows[3] || '')
 
       output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.partialCsv : source, m, this.schemaJson, this.transformSettings)
     }
@@ -506,7 +506,12 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       if (!output)
-        output = !error.status ? { "error": "Service unreachable" } : error.error
+        if (!error.status)
+          output = { "error": "Service unreachable" }
+        else if (error.status == 413)
+          output = { "error": "Request too large" }
+        else
+          output = error.error
       console.error(error)
       //this.errorService.openErrorDialog(error)
     }
@@ -514,17 +519,6 @@ export class DMMComponent implements OnInit, OnChanges {
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
     else this.outputEditor.update(output)
   }
-
-  /*
-  toggleNGSI($event) {
-   //console.debug(this.NGSI)
-   //console.debug($event)
-    $event == "true" || $event == true ?
-      this.NGSI = true :
-      this.NGSI = false
-   //console.debug(this.NGSI)
-   //console.debug($event)
-  }*/
 
   getAllNestedProperties(obj) {
 
@@ -613,7 +607,7 @@ export class DMMComponent implements OnInit, OnChanges {
     mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), event);
     if (!mapOptionsGl[0])
       mapOptionsGl[0] = "---no keys for selected path---"
-    this.setMapEditor(false);
+    this.setMapEditor(true);
   }
 
   tempMap = { temp: undefined }
@@ -852,7 +846,7 @@ export class DMMComponent implements OnInit, OnChanges {
       //if (this.map.targetDataModel)
       mapGl = this.map.targetDataModel = undefined
       let m = {}
-      for (let key in this.map){
+      for (let key in this.map) {
         console.debug(this.map[key])
         m[key] = this.map[key]
       }
@@ -989,7 +983,10 @@ export class DMMComponent implements OnInit, OnChanges {
         if (mapSettings.path || mapSettings.path == '') this.selectedPath = mapSettings.path
         this.sourceEditor.update(mapSettings.sourceData)
         if (mapSettings.path || mapSettings.path == '') mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), mapSettings.path);
-        else mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
+        else {
+          this.selectedPath = ""
+          mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
+        }
         //if (mapSettings.path) this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
         //else
         this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
@@ -1042,7 +1039,7 @@ export class DMMComponent implements OnInit, OnChanges {
           context: { type: typeSource },
         })
       .onClose.subscribe(async (result: { content: string; source: string; format: string; mapSettings }) => {
-        if (result.mapSettings) {
+        if (result?.mapSettings) {
           /*
           result.mapSettings = JSON.parse(result.mapSettings)
           this.schemaJson =
@@ -1053,7 +1050,7 @@ export class DMMComponent implements OnInit, OnChanges {
           editor.mapperEditor.update(this.map)*/
           this.mapChanged(false, result.mapSettings)
         }
-        else if (result && result.content) {
+        else if (result && result?.content) {
           this.sourceRef = result?.source;
           this.sourceRefFormat = result?.format;
           if (typeSource == 'csv') {
@@ -1078,10 +1075,21 @@ export class DMMComponent implements OnInit, OnChanges {
               }, JSON.parse(result.content));
 
             else
-              this.sourceEditor.setText(result.content);
+              try {
+                this.sourceEditor.setText(result.content);
+              }
+              catch (error) {
+                console.error(error)
+                this.sourceEditor.update({message: "you must import a valid json"})
+              }
 
-            mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
-            this.paths = this.selectMapJsonOptions(result.content, '')
+            try {
+              mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
+              this.paths = this.selectMapJsonOptions(result.content, '')
+            }
+            catch (error) {
+              console.error(error)
+            }
 
             this.onUpdatePathForDataMap("")
           }

@@ -81,6 +81,7 @@
     },
     "editor": {
       "confirm_mapping": "Confirm mapping",
+      "confirm_source": "Confirm source",
       "import": "Import",
       "update": "Update",
       "export": "Export",

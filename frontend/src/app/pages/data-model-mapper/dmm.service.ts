@@ -56,7 +56,7 @@ export class DMMService {
 
   refParse(schema) {
     console.debug("wait backend")
-    if (Array.isArray(schema)) schema = schema [0]
+    if (Array.isArray(schema)) schema = schema[0]
     return this.http.post<any>(this.config.data_model_mapper.default_mapper_base_url + "/dereferenceSchema", schema).toPromise();
   }
 
@@ -152,11 +152,13 @@ export class DMMService {
 
 
   test(type: string, source: string, mapper, schema, config): Promise<any[]> {
+    if (schema && schema[0])
+      schema = schema[0]
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_url, {
       "sourceDataType": type,
       "sourceData": source,
       "mapData": mapper,
-      "dataModel": schema[0] || schema,
+      "dataModel": schema,
       "config": config
     }).toPromise();
   }
