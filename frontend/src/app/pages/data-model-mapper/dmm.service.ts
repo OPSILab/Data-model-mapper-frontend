@@ -68,15 +68,6 @@ export class DMMService {
 
   saveMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, path): any {
 
-    /*
-    if (!schema) {
-      throw new Error("Schema required")
-    }*/
-
-    if (!map) {
-      throw new Error("Map required")
-    }
-
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/register", {
       id: adapter.adapterId,
       name: adapter.name,
@@ -129,17 +120,6 @@ export class DMMService {
 
 
   updateMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, path): any {
-    console.debug(adapter)
-
-    if (!schema) {
-      throw new Error("Schema required")
-    }
-
-    if (!map) {
-      throw new Error("Map required")
-    }
-
-    console.debug(status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, sourceData, sourceDataID)
 
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map", {
       id: adapter.adapterId,
@@ -160,11 +140,6 @@ export class DMMService {
   }
 
   updateSchema(adapter: Partial<AdapterEntry>, status, description, schema): any {
-    console.debug(adapter)
-
-    if (!schema) {
-      throw new Error("Schema required")
-    }
 
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", {
       id: adapter.adapterId,

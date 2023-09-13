@@ -80,6 +80,7 @@
       "delete_account_message": "Are you sure you want to delete the account?"
     },
     "editor": {
+      "confirm_mapping": "Confirm mapping",
       "import": "Import",
       "update": "Update",
       "export": "Export",

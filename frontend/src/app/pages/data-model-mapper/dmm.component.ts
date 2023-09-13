@@ -126,7 +126,7 @@ export class DMMComponent implements OnInit, OnChanges {
     //if (source[this.selectedPath])
     //source = source[this.selectedPath]
 
-    console.debug(this.NGSI)
+    //console.debug(this.NGSI)
     this.dialogService.open(CreateMapComponent, {
       context: {
         value: this.adapter,
@@ -155,8 +155,8 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   getSchema() {
-    console.debug(this.schemaEditor.getText())
-    console.debug(typeof this.schemaEditor.getText())
+    //console.debug(this.schemaEditor.getText())
+    //console.debug(typeof this.schemaEditor.getText())
     if (this.tempSchema) return this.tempSchema
     this.schemaJson = this.schemaEditor.getText() ? JSON.parse(this.schemaEditor.getText()) : { info: "Set your schema here" }
     return this.schemaJson
@@ -166,13 +166,19 @@ export class DMMComponent implements OnInit, OnChanges {
 
   async refParse(subObj) {
     if (!subObj) this.parsed = false
-    console.debug(subObj)
+    //console.debug(subObj)
     let obj2 = subObj ? subObj : this.schemaJson
     for (let key in obj2)
       if (typeof obj2[key] == "object" || Array.isArray(obj2[key]))
         await this.refParse(obj2[key])
-      else if (key.startsWith("$ref")) { console.debug("ref found"); this.parsed = true }
-    if (!subObj) if (!this.parsed) { console.debug("return obj", this.schemaJson); return this.schemaJson }
+      else if (key.startsWith("$ref")) {
+        //console.debug("ref found");
+        this.parsed = true
+      }
+    if (!subObj) if (!this.parsed) {
+      //console.debug("return obj", this.schemaJson);
+      return this.schemaJson
+    }
     else return await this.dmmService.refParse(this.schemaJson)
   }
 
@@ -183,7 +189,7 @@ export class DMMComponent implements OnInit, OnChanges {
         this.schemaJson =
           this.schema()
           ;
-      console.debug(this.schemaJson)
+      //console.debug(this.schemaJson)
       if (!this.schemaJson) this.schemaJson = {
         "info": "Set your schema here"
       }
@@ -191,16 +197,17 @@ export class DMMComponent implements OnInit, OnChanges {
         this.map = JSON.parse(editor.mapperEditor.getText())
         this.oldMap = JSON.parse(JSON.stringify(this.map))
       }
-      console.debug(this)
+      //console.debug(this)
       try {
         this.map = this.getAllNestedProperties(await this.refParse(false));
-        console.debug(this)
+        //console.debug(this)
         try {
           if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
         }
         catch (error) {
           console.error(error)
         }
+        this.generate_NGSI_ID()
         mapGl = this.map
         editor.mapperEditor.update(this.map)
         this.selectMap = "---select map---"
@@ -270,7 +277,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.debug(changes);
+    //console.debug(changes);
   }
 
   async setSchemaFromFile($event) {
@@ -278,16 +285,18 @@ export class DMMComponent implements OnInit, OnChanges {
     this.schemaJson =
       this.schemaFromFile
 
-    console.debug("THIS SCHEMA JSON")
-    console.debug(this.schemaJson)
+    //console.debug("THIS SCHEMA JSON")
+    //console.debug(this.schemaJson)
     this.map = this.getAllNestedProperties(await this.dmmService.refParse(this.schemaJson));
     mapGl = this.map
-    console.debug("THIS MAP")
-    console.debug(this.map)
+    //console.debug("THIS MAP")
+    //console.debug(this.map)
     editor.mapperEditor.update(this.map)
   }
 
   async ngOnInit(): Promise<void> {
+
+    editor.mapperEditor = undefined
 
     this.sourceEditorContainer = this.document.getElementById('jsoneditor');
     this.configEditorContainer = this.document.getElementById('configEditor');
@@ -345,7 +354,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.transformSettings = await this.dmmService.getBackupConfig()
     }
 
-    console.debug(this)
+    //console.debug(this)
 
     this.configEditor = new JSONEditor(this.configEditorContainer, this.options2, this.transformSettings)//await this.dmmService.getConfig());
 
@@ -377,7 +386,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   schema() {
     try {
-      console.debug(this)
+      //console.debug(this)
       return this.schemas.filter(filteredSchema => filteredSchema.id == this.selectedSchema)[0].dataModel
     }
     catch (error) {
@@ -508,13 +517,13 @@ export class DMMComponent implements OnInit, OnChanges {
 
   /*
   toggleNGSI($event) {
-    console.debug(this.NGSI)
-    console.debug($event)
+   //console.debug(this.NGSI)
+   //console.debug($event)
     $event == "true" || $event == true ?
       this.NGSI = true :
       this.NGSI = false
-    console.debug(this.NGSI)
-    console.debug($event)
+   //console.debug(this.NGSI)
+   //console.debug($event)
   }*/
 
   getAllNestedProperties(obj) {
@@ -538,7 +547,7 @@ export class DMMComponent implements OnInit, OnChanges {
                 if (!obj.properties[key])
                   obj.properties[key] = true
 
-        console.debug(obj.properties)*/
+       //console.debug(obj.properties)*/
 
     if (obj.properties)
       for (let key in obj.properties)
@@ -552,7 +561,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   compareMaps(oldMap, newMap) {
-    console.debug(JSON.parse(JSON.stringify(oldMap)), JSON.parse(JSON.stringify(newMap)))
+    //console.debug(JSON.parse(JSON.stringify(oldMap)), JSON.parse(JSON.stringify(newMap)))
     for (let key in newMap)
       if (oldMap && oldMap[key])
         if (typeof newMap[key] == "object" || Array.isArray(newMap[key]))
@@ -599,7 +608,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   onUpdatePathForDataMap(event) {
 
-    console.debug(event)
+    //console.debug(event)
 
     mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), event);
     if (!mapOptionsGl[0])
@@ -635,10 +644,10 @@ export class DMMComponent implements OnInit, OnChanges {
         return map
       }
     }
-    console.debug(mapGl)
-    console.debug(map)
+    //console.debug(mapGl)
+    //console.debug(map)
     let fixedPath = ""
-    console.debug(path)
+    //console.debug(path)
     if (path[1]) {
       map[path[0]] = deepInPath(path, value, map)
     }
@@ -674,10 +683,10 @@ export class DMMComponent implements OnInit, OnChanges {
           //console.log('items:', items, 'node:', node)
 
           var selectPath = path;
-          console.debug(selectPath)
+          //console.debug(selectPath)
           function pathToMap() {
             //this.m = mOptions
-            console.debug(mapOptionsGl)
+            //console.debug(mapOptionsGl)
             dialogService
               .open(DialogDataMapComponent, {
                 context: { mapOptions: mapOptionsGl, selectPath: selectPath, map: mapGl },
@@ -731,13 +740,13 @@ export class DMMComponent implements OnInit, OnChanges {
       console.error("Error during map setting set")
     }
 
-    if (!editor.mapperEditor && !justOptions) editor.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
+    //if (!editor.mapperEditor && !justOptions) editor.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
     if (!editor.mapperEditor && !justOptions) editor.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
     else if (!justOptions) editor.mapperEditor.update(this.map)
   }
 
   buildSnippet() {
-    console.debug(this)
+    //console.debug(this)
     let source = JSON.parse(this.sourceEditor.getText())
 
     //if (source[this.selectedPath])
@@ -822,9 +831,42 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
+  confirmMapping() {
+    mapGl = this.map = JSON.parse(editor.mapperEditor.getText())
+  }
+
+  generate_NGSI_ID() {
+    console.debug(this.transformSettings)
+    if (this.transformSettings.NGSI_entity) {
+      console.debug(true)
+      if (!this.map[this.transformSettings.entityNameField])
+        mapGl = this.map[this.transformSettings.entityNameField] = ""
+      if (!this.map.targetDataModel)
+        mapGl = this.map.targetDataModel = "DataModelTemp"
+      editor.mapperEditor.update(this.map)
+    }
+    else {
+      console.debug(false)
+      //if (this.map[this.transformSettings.entityNameField] || typeof this.map[this.transformSettings.entityNameField] == 'string')
+      mapGl = this.map[this.transformSettings.entityNameField] = undefined
+      //if (this.map.targetDataModel)
+      mapGl = this.map.targetDataModel = undefined
+      let m = {}
+      for (let key in this.map){
+        console.debug(this.map[key])
+        m[key] = this.map[key]
+      }
+      console.debug(m)
+      console.debug(this.map)
+      editor.mapperEditor.update(this.map)
+    }
+  }
+
   updateConfigSettings() {
+    //console.debug(this.transformSettings)
     this.transformSettings = JSON.parse(this.configEditor.getText())
     this.separatorItem = this.transformSettings.delimiter
+    this.generate_NGSI_ID()
   }
 
   saveAdapter() {
@@ -832,7 +874,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
     //if (source[this.selectedPath])
     //source = source[this.selectedPath]
-    console.debug(this.NGSI)
+    //console.debug(this.NGSI)
     this.dialogService.open(CreateMapComponent, {
       context: {
         save: true,
@@ -887,7 +929,7 @@ export class DMMComponent implements OnInit, OnChanges {
       }
       else mapSettings = JSON.parse(settingsFromFile)
 
-      console.debug(typeof settingsFromFile, mapSettings)
+      //console.debug(typeof settingsFromFile, mapSettings)
 
       //if (sourceByID) {
       //this.savedSource = sourceByID
@@ -925,7 +967,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (mapSettings.dataModelID && !mapSettings.dataModel) {
         this.selectedSchema = mapSettings.dataModelID
         mapSettings.dataModel = await this.schema()
-        console.debug(mapSettings.dataModel)
+        //console.debug(mapSettings.dataModel)
       }
       else if (mapSettings.dataModelURL && !mapSettings.dataModel) {
         this.dataModelURL = mapSettings.dataModelURL
@@ -953,8 +995,8 @@ export class DMMComponent implements OnInit, OnChanges {
         this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
         if (mapSettings.path || mapSettings.path == '') this.onUpdatePathForDataMap(mapSettings.path)
         else this.onUpdatePathForDataMap("")
-        console.debug(this.selectedPath, mapSettings.path)
-        if (mapSettings.path) console.debug(this.selectedPath, mapSettings.path)
+        //console.debug(this.selectedPath, mapSettings.path)
+        //if (mapSettings.path)//console.debug(this.selectedPath, mapSettings.path)
       }
       else
         this.csvSourceData = mapSettings.sourceData

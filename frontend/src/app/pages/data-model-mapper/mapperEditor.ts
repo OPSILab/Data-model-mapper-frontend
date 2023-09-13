@@ -1,4 +1,5 @@
 let editor = {
-  mapperEditor : undefined
+  mapperEditor : undefined,
+  container : undefined
 }
 export default editor
