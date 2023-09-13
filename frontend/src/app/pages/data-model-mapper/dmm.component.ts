@@ -831,6 +831,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   handleError(error) {
     console.error(error?.message || error?.error?.message || error?.statusText || error)
+    console.error(error)
   }
 
   generate_NGSI_ID() {
