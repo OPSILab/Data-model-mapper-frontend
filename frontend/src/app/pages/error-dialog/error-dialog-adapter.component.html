@@ -8,7 +8,7 @@
       </nb-card-header>
       <nb-card-body>
         <ng-container
-          *ngIf="error?.error && error?.error !== 'EDITOR_VALIDATION_ERROR'; then genericError; else validationError">
+          *ngIf="error?.error != 'EDITOR_VALIDATION_ERROR'; then genericError; else validationError">
         </ng-container>
         <ng-template #genericError>
           {{ 'general.errors' | translate }}
@@ -37,11 +37,11 @@
         {{error?.header}}
         {{error?.error?.message}}-->
         <button nbButton outline status="info" class="close" (click)="closeModal(error)">{{ 'general.close' | translate
-        }} </button>
+          }} </button>
       </nb-card-header>
       <nb-card-body>
         <ng-container
-          *ngIf="error?.error && error?.error !== 'EDITOR_VALIDATION_ERROR'; then genericErrorDetails; else validationErrorDetails">
+          *ngIf="error?.error != 'EDITOR_VALIDATION_ERROR'; then genericErrorDetails; else validationErrorDetails">
         </ng-container>
         <ng-template #genericErrorDetails>
           {{error?.status ? "Status : " + error?.status + "\n\n" : null }}
