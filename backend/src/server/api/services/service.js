@@ -95,7 +95,7 @@ module.exports = {
             error.source = source
             error.map = map
             error.dataModel = dataModel
-            process.res.status(400).send(error)
+            throw new Error(error)
             return "Missing fields"
         }
 
@@ -244,17 +244,19 @@ module.exports = {
     },
 
     async insertSource(name, id, source, path) {
+        if (!source)
+            throw new Error({ error: "source is required" })
         if (path == "") path = undefined
         if (!await Source.findOne({ id: id })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path }])
-        else process.res.status(400).send({ error: "id already exists" })
+        else throw new Error({ error: "id already exists" })
     },//TODO replace with insertOne
 
     async insertMap(name, id, map, dataModel, status, description,
         sourceData, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
         config, sourceDataType, path) {
         if (path == "") path = undefined
-        if (!dataModelIn && !dataModelID && !dataModelURL && !dataModel)
-            process.res.status(400).send({ error: "schema is required" })
+        if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
+            throw new Error({ error: "schema is required" })
         if (!await Map.findOne({ id: id }))
             return await Map.insertMany([{
                 name: name,
@@ -274,15 +276,19 @@ module.exports = {
                 sourceDataType,
                 path
             }])
-        else process.res.status(400).send({ error: "id already exists" })
+        else throw new Error({ error: "id already exists" })
     },//TODO replace with insertOne
 
     async insertDataModel(name, id, dataModel) {
+        if (!dataModel)
+            throw new Error({ error: "schema is required" })
         if (!await DataModel.findOne({ id: id })) return await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel }])
-        else process.res.status(400).send({ error: "id already exists" })
+        else throw new Error({ error: "id already exists" })
     },//TODO replace with insertOne
 
     async modifySource(name, id, source, path) {
+        if (!source)
+            throw new Error({ error: "source is required" })
         if (path == "") path = undefined
         return await Source.findOneAndReplace({ id: id }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path: path })
     },
@@ -318,7 +324,7 @@ module.exports = {
             if (Array.isArray(dataModel[key]) || typeof dataModel[key] == "object")
                 dataModel[key] = this.dataModelRefFix(dataModel[key])
             else if (key.startsWith("$")) {
-                if (!dataModel[key].startsWith("http")) dataModel[key] = config.modelSchemaFolder+"//"+JSON.parse(JSON.stringify(dataModel[key]))
+                if (!dataModel[key].startsWith("http")) dataModel[key] = config.modelSchemaFolder + "//" + JSON.parse(JSON.stringify(dataModel[key]))
                 console.debug(dataModel[key])
             }
         }
@@ -350,6 +356,9 @@ module.exports = {
 
         //if (dataModel) dataModel.$schema = dataModel.$id = undefined
 
+        if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
+            throw new Error({ error: "schema is required" })
+
         if (path == "") path = undefined
 
         if (dataModel) dataModel = this.dataModelClean(dataModel)
@@ -380,6 +389,8 @@ module.exports = {
     },
 
     async modifyDataModel(name, id, dataModel) {
+        if (!dataModel)
+            throw new Error({ error: "schema is required" })
         dataModel = this.dataModelClean(dataModel)
         return await DataModel.findOneAndReplace({ id: id }, { name: name, id: id, dataModel: dataModel })
     },
