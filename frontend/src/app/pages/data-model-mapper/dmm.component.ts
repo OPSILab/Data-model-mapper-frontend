@@ -491,6 +491,8 @@ export class DMMComponent implements OnInit, OnChanges {
       //this.errorService.openErrorDialog(error)
       this.transformSettings = await this.dmmService.getBackupConfig()
     }
+    if (this.transformSettings.backup)
+      this.transformSettings = this.transformSettings.backup
     if (!this.transformSettings.rowEnd)
       this.transformSettings.rowEnd = 1000
     !this.configEditor ?
@@ -501,6 +503,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async testAdapter() {
+    this.updateConfigSettings()
     let output
     try {
       let m = JSON.parse(editor.mapperEditor.getText())
@@ -539,6 +542,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async transform() {
+    this.updateConfigSettings()
     let output
     try {
       let m = JSON.parse(editor.mapperEditor.getText())
