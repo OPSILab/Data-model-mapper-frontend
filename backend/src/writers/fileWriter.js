@@ -84,10 +84,10 @@ const finalizeFile = async () => {
 
     return new Promise(async (resolve, reject) => {
 
-        await outFileStream.write("]");
-        await outFileStream.on('end', () => resolve("File stream correctly closed"));
-        await outFileStream.on('error', () => reject("File stream failed to close"));
-        await outFileStream.end();
+        await outFileStream?.write("]");
+        await outFileStream?.on('end', () => resolve("File stream correctly closed"));
+        await outFileStream?.on('error', () => reject("File stream failed to close"));
+        await outFileStream?.end();
         outFileStream = undefined;
         return resolve();
     }).then(value => { if (value) log.debug(value) }).catch(value => console.log(value));

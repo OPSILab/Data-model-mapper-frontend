@@ -106,8 +106,8 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                     if ((targetDataModel = map['targetDataModel']) !== undefined) {
                         /* Check if provided TargetDataModel is valid, otherwise return error */
                         if ((dataModelSchemaPath = utils.getDataModelPath(targetDataModel)) === undefined) {
-                            log.error("Incorrect target Data Model name: "+ targetDataModel);
-                            process.res?.status(400).json({"error": "Incorrect target Data Model name: "+ targetDataModel})
+                            log.error("Incorrect target Data Model name: " + targetDataModel);
+                            process.res?.status(400).json({ "error": "Incorrect target Data Model name: " + targetDataModel })
                             return Promise.reject("Incorrect target Data Model name");
                         }
                     }
@@ -190,22 +190,26 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
 };
 
 const processMappedObject = async (objNumber, obj, modelSchema) => {
+    try {
+        config.writers.forEach(async (writer) => {
 
-    config.writers.forEach(async (writer) => {
+            switch (writer) {
 
-        switch (writer) {
-
-            case 'orionWriter':
-                promises.push(await orionWriter.writeObject(objNumber, obj, modelSchema));
-                break;
-            case 'fileWriter':
-                promises.push(await fileWriter.writeObject(objNumber, obj, config.fileWriter.addBlankLine));
-                break;
-            default:
-                promises.push(await utils.sleep(0));
-                break;
-        }
-    });
+                case 'orionWriter':
+                    promises.push(await orionWriter.writeObject(objNumber, obj, modelSchema));
+                    break;
+                case 'fileWriter':
+                    promises.push(await fileWriter.writeObject(objNumber, obj, config.fileWriter.addBlankLine));
+                    break;
+                default:
+                    promises.push(await utils.sleep(0));
+                    break;
+            }
+        });
+    }
+    catch (error) {
+        console.error(error)
+    }
 };
 
 const finalizeProcess = async () => {
