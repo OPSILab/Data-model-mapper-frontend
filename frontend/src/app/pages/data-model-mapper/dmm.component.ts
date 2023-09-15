@@ -732,7 +732,8 @@ export class DMMComponent implements OnInit, OnChanges {
                 context: { mapOptions: mapOptionsGl, selectPath: selectPath, map: mapGl },
               }).onClose.subscribe((value) => {
                 let editor = require('./mapperEditor')
-                updateMapper(selectPath, value ? value[0] : "", mapGl)//, mapperEditor)// value[1] is the map
+                if (value)
+                  updateMapper(selectPath, value ? value[0] : "", mapGl)//, mapperEditor)// value[1] is the map
               });
           }
 
