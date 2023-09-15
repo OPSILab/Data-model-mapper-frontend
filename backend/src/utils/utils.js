@@ -143,6 +143,8 @@ const uuid = () => {
  * 
  */
 const createSynchId = (type, site, service, group, entityName, isIdPrefix, rowNumber) => {
+    if (type === undefined)
+         type = "SomeType"
     if (entityName) {
         if (isIdPrefix)
             entityName = ('' + entityName).replace(/\s/g, "") + "-" + rowNumber;
