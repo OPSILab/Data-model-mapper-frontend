@@ -9,7 +9,7 @@
     "errors": "Some errors occurred.",
     "menu": {
       "home": "Home",
-      "editor": "Editor",
+      "editor": "Mapper editor",
       "map_records" : "Map records"
     },
     "account": {

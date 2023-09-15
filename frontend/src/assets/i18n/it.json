@@ -9,7 +9,7 @@
     "errors": "Si sono verificati degli errori.",
     "menu": {
       "home": "Home",
-      "editor": "Editor",
+      "editor": "Mapper editor",
       "map_records": "File di mapping registrati"
     },
     "account": {
