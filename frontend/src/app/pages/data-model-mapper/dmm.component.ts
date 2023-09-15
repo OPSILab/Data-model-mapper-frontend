@@ -348,16 +348,9 @@ export class DMMComponent implements OnInit, OnChanges {
 
     this.schemaEditor = new JSONEditor(this.schemaEditorContainer, options, this.selectedDataModel)
 
-    try {
-      this.transformSettings = await this.dmmService.getConfig()
-    }
-    catch (error) {
-      this.transformSettings = await this.dmmService.getBackupConfig()
-    }
+    await this.resetConfigSettings()
 
     //console.debug(this)
-
-    this.configEditor = new JSONEditor(this.configEditorContainer, this.options2, this.transformSettings)//await this.dmmService.getConfig());
 
     this.outputEditorOptions = {
       mode: 'view',
@@ -451,7 +444,12 @@ export class DMMComponent implements OnInit, OnChanges {
       //this.errorService.openErrorDialog(error)
       this.transformSettings = await this.dmmService.getBackupConfig()
     }
-    this.configEditor.update(this.transformSettings)
+    if (!this.transformSettings.rowEnd)
+      this.transformSettings.rowEnd = 1000
+    !this.configEditor ?
+      this.configEditor = new JSONEditor(this.configEditorContainer, this.options2, this.transformSettings)
+      :
+      this.configEditor.update(this.transformSettings)
     this.separatorItem = this.transformSettings.delimiter
   }
 
@@ -975,9 +973,9 @@ export class DMMComponent implements OnInit, OnChanges {
           mapSettings.dataModel = "Some errors occurred when downloading remote schema"
         }
       }
-      this.schemaJson = [
-        mapSettings.dataModel
-      ];
+      this.schemaJson =
+        mapSettings.dataModel // this was strangely an arrray
+        ;
       if (mapSettings.sourceDataType == "json" && !this.emptySource) {
         //this.sourceJson = this.source();
         if (mapSettings.path || mapSettings.path == '') this.selectedPath = mapSettings.path
@@ -1100,12 +1098,12 @@ export class DMMComponent implements OnInit, OnChanges {
             }
             //this.schemaEditor.update(JSON.parse(result.content))
             try {
-            this.tempSchema = this.schemaJson = JSON.parse(result.content)
+              this.tempSchema = this.schemaJson = JSON.parse(result.content)
 
             }
             catch (error) {
               this.handleError(error)
-              this.tempSchema = this.schemaJson = {"error":"import a valid schema"}
+              this.tempSchema = this.schemaJson = { "error": "import a valid schema" }
             }
             this.schemaChanged(this.getSchema())
             //await this.setSchemaFromFile(JSON.parse(result.content))

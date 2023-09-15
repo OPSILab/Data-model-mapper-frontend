@@ -22,7 +22,8 @@
           {{ 'general.dmm.create_new' | translate }}
           <i class="mx-1 material-icons">create</i>
         </button>
-        <button *ngIf="!backendDown" nbButton class="mx-4" shape="rectangle" size="medium" status="primary" (click)="saveAdapter()">
+        <button *ngIf="!backendDown" nbButton class="mx-4" shape="rectangle" size="medium" status="primary"
+          (click)="saveAdapter()">
           {{ 'general.dmm.save_as_new' | translate }}
           <i class="mx-1 material-icons">save</i>
         </button>
@@ -80,7 +81,8 @@
                   {{ 'general.editor.upload' | translate }}
                   <i class="mx-1 fas fa-file-import fa-lg"></i>
                 </button>
-                <button nbButton class="mr-2" shape="rectangle" size="small" (click)="onUpdatePathForDataMap(selectedPath)">
+                <button nbButton class="mr-2" shape="rectangle" size="small"
+                  (click)="onUpdatePathForDataMap(selectedPath)">
                   {{ 'general.editor.confirm_source' | translate }}
                   <i class="mx-1 fas fa-file-import fa-lg"></i>
                 </button>
@@ -151,7 +153,8 @@
                 {{ 'general.editor.upload' | translate }}
                 <i class="mx-1 fas fa-file-import fa-lg"></i>
               </button>
-              <button *ngIf="schemaJson && schemaJson.info!='set your schema here' && !tempSchema" nbButton class="mr-2" shape="rectangle" size="small" (click)="schemaChanged(getSchema())">
+              <button *ngIf="schemaJson && schemaJson.info!='set your schema here' && !tempSchema" nbButton class="mr-2"
+                shape="rectangle" size="small" (click)="schemaChanged(getSchema())">
                 {{ 'general.editor.generate_mapper' | translate }}
                 <i class="mx-1 fas fa-lg"></i>
               </button>
@@ -163,7 +166,8 @@
               <p>Set your map settings.
               </p>
             </div>
-            <button *ngIf="schemaJson && schemaJson.info!='set your schema here' && !tempSchema" nbButton class="mr-2" shape="rectangle" size="small" (click)="confirmMapping()">
+            <button *ngIf="schemaJson && schemaJson.info!='set your schema here' && !tempSchema" nbButton class="mr-2"
+              shape="rectangle" size="small" (click)="confirmMapping()">
               {{ 'general.editor.confirm_mapping' | translate }}
               <i class="mx-1 fas fa-lg"></i>
             </button>
@@ -176,22 +180,6 @@
             Output
           </nb-accordion-item-header>
           <nb-accordion-item-body>
-            <p *ngIf="!dialog">Set transform config.
-            </p>
-            <br *ngIf="!dialog"> <br *ngIf="!dialog"> <br *ngIf="!dialog">
-            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
-              (click)="updateConfigSettings()">
-              {{ 'general.dmm.update_config' | translate }}
-              <i class="mx-1 fas fa-file-import fa-lg"></i>
-            </button>
-            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
-              (click)="resetConfigSettings()">
-              {{ 'general.dmm.reset_config' | translate }}
-              <i class="mx-1 fas fa-file-import fa-lg"></i>
-            </button>
-            <br *ngIf="!dialog"> <br *ngIf="!dialog">
-            <div [hidden]=dialog style="height:500px" id="configEditor"></div>
-            <br *ngIf="!dialog"> <br *ngIf="!dialog">
             <p *ngIf="!dialog">Test or transform.
             </p>
             <p *ngIf="dialog">Tranform.
@@ -212,6 +200,29 @@
             </button>
             <br> <br>
             <div style="height:500px" id="jsoneditor3"></div>
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+        <nb-accordion-item expanded="false">
+          <nb-accordion-item-header>
+            Config
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
+            <p *ngIf="!dialog">Set transform config.
+            </p>
+            <br *ngIf="!dialog"> <br *ngIf="!dialog"> <br *ngIf="!dialog">
+            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
+              (click)="updateConfigSettings()">
+              {{ 'general.dmm.update_config' | translate }}
+              <i class="mx-1 fas fa-file-import fa-lg"></i>
+            </button>
+            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
+              (click)="resetConfigSettings()">
+              {{ 'general.dmm.reset_config' | translate }}
+              <i class="mx-1 fas fa-file-import fa-lg"></i>
+            </button>
+            <br *ngIf="!dialog"> <br *ngIf="!dialog">
+            <div [hidden]=dialog style="height:500px" id="configEditor"></div>
+
           </nb-accordion-item-body>
         </nb-accordion-item>
       </nb-accordion>
