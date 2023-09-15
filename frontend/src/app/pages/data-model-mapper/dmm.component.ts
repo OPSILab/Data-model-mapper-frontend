@@ -482,6 +482,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async resetConfigSettings() {
+    this.confirmMapping()
     try {
       this.transformSettings = await this.dmmService.getConfig()
     }
@@ -648,7 +649,7 @@ export class DMMComponent implements OnInit, OnChanges {
   onUpdatePathForDataMap(event) {
 
     //console.debug(event)
-
+    this.confirmMapping()
     mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), event);
     if (!mapOptionsGl[0])
       mapOptionsGl[0] = "---no keys for selected path---"
@@ -871,7 +872,12 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   confirmMapping() {
-    mapGl = this.map = JSON.parse(editor.mapperEditor.getText())
+    try {
+      mapGl = this.map = JSON.parse(editor.mapperEditor.getText())
+    }
+    catch (error) {
+      this.handleError(error)
+    }
   }
 
   handleError(error) {
@@ -901,6 +907,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   updateConfigSettings() {
+    this.confirmMapping()
     //console.debug(this.transformSettings)
     this.transformSettings = JSON.parse(this.configEditor.getText())
     this.separatorItem = this.transformSettings.delimiter
