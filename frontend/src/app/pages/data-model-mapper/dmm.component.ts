@@ -241,8 +241,8 @@ export class DMMComponent implements OnInit, OnChanges {
       //console.debug(this.schemaJson)
       if (!this.schemaJson) {
         this.schemaJson = {
-        "info": "Set your schema here"
-      }
+          "info": "Set your schema here"
+        }
       }
       //
       try {
