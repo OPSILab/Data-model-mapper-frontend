@@ -48,6 +48,7 @@ export class DMMComponent implements OnInit, OnChanges {
   sourceRef: string = '';
   typeSource: string;
   adapter
+  emptySource
   mapObject
   flipped = false;
   csvtable: any;
@@ -380,7 +381,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (this.route.snapshot.params['inputID'] as string) this.inputID = this.route.snapshot.params['inputID'] as string;
       this.selectMap = this.inputID
       await this.mapChanged(this.inputID, false)
-      if (this.inputType == "csv") this.updateCSVTable()
+      if (this.inputType == "csv" && !this.emptySource) this.updateCSVTable()
     }
   }
 
@@ -941,11 +942,11 @@ export class DMMComponent implements OnInit, OnChanges {
       this.configEditor.update(this.transformSettings)
       this.separatorItem = mapSettings?.config?.delimiter
 
-      if (mapSettings.sourceDataID && !mapSettings.sourceData) {
+      if (mapSettings.sourceDataID && !mapSettings.sourceData && !this.emptySource) {
         this.selectedSource = mapSettings.sourceDataID
         mapSettings.sourceData = await this.source()
       }
-      else if (mapSettings.sourceDataURL && !mapSettings.sourceData) {
+      else if (mapSettings.sourceDataURL && !mapSettings.sourceData && !this.emptySource) {
         this.sourceDataURL = mapSettings.sourceDataURL
         if (this.selectedSource) this.selectedSource = undefined
         try {
@@ -977,7 +978,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.schemaJson = [
         mapSettings.dataModel
       ];
-      if (mapSettings.sourceDataType == "json") {
+      if (mapSettings.sourceDataType == "json" && !this.emptySource) {
         //this.sourceJson = this.source();
         if (mapSettings.path || mapSettings.path == '') this.selectedPath = mapSettings.path
         this.sourceEditor.update(mapSettings.sourceData)
@@ -994,7 +995,7 @@ export class DMMComponent implements OnInit, OnChanges {
         //console.debug(this.selectedPath, mapSettings.path)
         //if (mapSettings.path)//console.debug(this.selectedPath, mapSettings.path)
       }
-      else
+      else if (!this.emptySource)
         this.csvSourceData = mapSettings.sourceData
 
       this.map = mapSettings.map || mapSettings.mapData

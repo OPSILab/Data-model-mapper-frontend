@@ -43,6 +43,7 @@ export class TransformComponent extends DMMComponent implements OnInit, OnChange
   ) {
     super(document, dialogService, windowService, errorService, dmmService, route, configService)
     this.config = configService.config as AppConfig;
+    this.emptySource = true
   }
 }
 
