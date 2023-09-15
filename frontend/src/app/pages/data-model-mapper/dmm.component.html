@@ -143,6 +143,10 @@
             <div class="mb-2">
               <p>Select a schema or upload your schema.
               </p>
+              <p *ngIf="schemaRef!==''&&schemaRefFormat==='url'">URL: <a class="mb-3" href={{schemaRef}}
+                  target="_blank">
+                  <i>{{schemaRef}}</i></a></p>
+              <p *ngIf="schemaRef!==''&&schemaRefFormat==='file'">File: <i>{{schemaRef}}</i></p>
               <nb-select placeholder="Select Json Schema" size="small" [(ngModel)]=selectedSchema
                 (ngModelChange)="schemaChanged($event)">
                 <nb-option *ngFor="let schema of schemas" value={{schema.id}}>{{schema.name}}</nb-option>

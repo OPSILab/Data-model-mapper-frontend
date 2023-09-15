@@ -92,6 +92,8 @@ export class DMMComponent implements OnInit, OnChanges {
   configEditor: any;
   transformSettings: any;
   tempSchema: any;
+  schemaRef: string;
+  schemaRefFormat: string;
   //ref
 
   constructor(
@@ -292,6 +294,8 @@ export class DMMComponent implements OnInit, OnChanges {
     this.tempMap = undefined
     this.sourceRef = ''
     this.sourceRefFormat = undefined
+    this.schemaRef = '';
+    this.schemaRefFormat = undefined;
     this.isNew = false
     this.selectedPath = undefined
     this.selectedSchema = "---select schema---"
@@ -1091,9 +1095,9 @@ export class DMMComponent implements OnInit, OnChanges {
           this.mapChanged(false, result.mapSettings)
         }
         else if (result && result?.content) {
-          this.sourceRef = result?.source;
-          this.sourceRefFormat = result?.format;
           if (typeSource == 'csv') {
+            this.sourceRef = result?.source;
+            this.sourceRefFormat = result?.format;
             if (this.sourceRefFormat == "url") {
               this.sourceDataURL = result.source
               if (this.selectedSource) this.selectedSource = undefined
@@ -1102,7 +1106,10 @@ export class DMMComponent implements OnInit, OnChanges {
             this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem);
             mapOptionsGl = this.csvSourceData.slice(0, this.csvSourceData.indexOf("\n")).split(this.separatorItem);
 
-          } else if (field == 'source') {
+          }
+          else if (field == 'source') {
+            this.sourceRef = result?.source;
+            this.sourceRefFormat = result?.format;
             if (this.sourceRefFormat == "url") {
               this.sourceDataURL = result.source
               if (this.selectedSource) this.selectedSource = undefined
@@ -1134,6 +1141,8 @@ export class DMMComponent implements OnInit, OnChanges {
             this.onUpdatePathForDataMap("")
           }
           else if (field == 'schema') {
+            this.schemaRef = result?.source;
+            this.schemaRefFormat = result?.format;
             if (this.sourceRefFormat == "url") {
               this.dataModelURL = result.source
               this.selectedSchema = "---select schema---"
