@@ -21,6 +21,18 @@ import editor from './mapperEditor'
 
 let mapOptionsGl, mapGl = "Set your mapping fields here"//, mapperEditor
 
+function schemaEditorMode(newMode) {
+  schemaEditorCodeMode = (newMode == true)
+}
+
+let schemaEditorCodeMode = false
+
+function sourceEditorMode(newMode) {
+  sourceEditorCodeMode = (newMode == true)
+}
+
+let sourceEditorCodeMode = false
+
 //let map = {}, mapperEditor, mapOptions: string[]
 @Component({
   selector: 'app-root',
@@ -138,13 +150,13 @@ export class DMMComponent implements OnInit, OnChanges {
         path: this.selectedPath,
         sourceDataType: type,
         jsonMap: JSON.parse(editor.mapperEditor.getText()),
-        schema: JSON.parse(this.schemaEditor.getText()),
+        schema: schemaEditorCodeMode ? JSON.parse(this.schemaEditor.getText()) : undefined,
         config: this.transformSettings,
         sourceDataURL: this.sourceDataURL,
         sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
         dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-        sourceData: this.inputType == "json" ? source : this.csvSourceData,
+        sourceData: sourceEditorCodeMode? this.inputType == "json" ? source : this.csvSourceData : undefined,
         schemaSaved: this.savedSchema,
         sourceSaved: this.savedSource
       }
@@ -220,14 +232,17 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async schemaChanged($event) {
+    let errors
     if ($event && $event != "---select schema---") {
       if (this.dataModelURL)
         this.dataModelURL = undefined
       if (this.selectedSchema)
         this.schemaJson = this.selectFilteredSchema();
       //console.debug(this.schemaJson)
-      if (!this.schemaJson) this.schemaJson = {
+      if (!this.schemaJson) {
+        this.schemaJson = {
         "info": "Set your schema here"
+      }
       }
       //
       try {
@@ -239,6 +254,7 @@ export class DMMComponent implements OnInit, OnChanges {
         this.schemaEditor.update(this.selectedDataModel)
       }
       catch (error) {
+        errors = true
         this.handleError(error)
         if (error?.status == 0 || error?.error?.status == 0) {
           error.statusText = undefined
@@ -249,7 +265,10 @@ export class DMMComponent implements OnInit, OnChanges {
         this.schemaJson = {
           "info": "set your schema here"
         }
+
       }
+      if (typeof $event != 'string' && !errors)
+        schemaEditorCodeMode = false
       this.tempSchema = undefined
     }
   }
@@ -269,11 +288,13 @@ export class DMMComponent implements OnInit, OnChanges {
       }
       else
         this.csvSourceData = this.source()
-
+      sourceEditorCodeMode = false
     }
   }
 
   async reset() {
+    schemaEditorCodeMode = false
+    sourceEditorCodeMode = false
     this.adapterId = undefined
     this.dataModelURL = undefined
     this.inputID = undefined
@@ -343,6 +364,8 @@ export class DMMComponent implements OnInit, OnChanges {
 
   async ngOnInit(): Promise<void> {
 
+    schemaEditorCodeMode = false
+
     editor.mapperEditor = undefined
 
     this.sourceEditorContainer = this.document.getElementById('jsoneditor');
@@ -368,10 +391,16 @@ export class DMMComponent implements OnInit, OnChanges {
       this.errorService.openErrorDialog(error)
     }
 
-    const options = {
+    const sourceOptions = {
       mode: 'view',
       modes: ['view', 'code'], // allowed modes
-      onModeChange: function (newMode, oldMode) { },
+      onModeChange: function (newMode, oldMode) { sourceEditorMode(newMode) },
+    };
+
+    const schemaOptions = {
+      mode: 'view',
+      modes: ['view', 'code'], // allowed modes
+      onModeChange: function (newMode, oldMode) { schemaEditorMode(newMode) },
     };
 
     this.sourceJson = [{
@@ -390,9 +419,9 @@ export class DMMComponent implements OnInit, OnChanges {
       "set a field from the output schema field list": "set a field from the source input"
     }
 
-    this.sourceEditor = new JSONEditor(this.sourceEditorContainer, options, this.sourceJson);
+    this.sourceEditor = new JSONEditor(this.sourceEditorContainer, sourceOptions, this.sourceJson);
 
-    this.schemaEditor = new JSONEditor(this.schemaEditorContainer, options, this.selectedDataModel)
+    this.schemaEditor = new JSONEditor(this.schemaEditorContainer, schemaOptions, this.selectedDataModel)
 
     await this.resetConfigSettings()
 
@@ -930,15 +959,15 @@ export class DMMComponent implements OnInit, OnChanges {
         save: true,
         path: this.selectedPath,
         jsonMap: JSON.parse(editor.mapperEditor.getText()),
-        schema: JSON.parse(this.schemaEditor.getText()),//(!this.selectedSchema || this.selectedSchema == "---select schema---") && !this.dataModelURL ? JSON.parse(this.schemaEditor.getText()) : undefined,
+        schema: schemaEditorCodeMode ? JSON.parse(this.schemaEditor.getText()) : undefined,
         config: this.transformSettings,
         sourceDataType: this.inputType,
         sourceDataURL: this.sourceDataURL,
         sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
         dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-        sourceData: this.inputType != "json" ? this.csvSourceData : source // this.sourceDataURL || this.selectedSource ? undefined : this.inputType != "json" ? this.csvSourceData : source
-        , schemaSaved: this.savedSchema,
+        sourceData: sourceEditorCodeMode? this.inputType == "json" ? source : this.csvSourceData : undefined,
+        schemaSaved: this.savedSchema,
         sourceSaved: this.savedSource
       }
     }).onClose.subscribe(async (adapter) => {
@@ -1065,6 +1094,7 @@ export class DMMComponent implements OnInit, OnChanges {
       editor.mapperEditor.update(this.map)
       this.selectedSchema = "---select schema---"
       if (mapSettings.dataModel) this.schemaEditor.update(mapSettings.dataModel)
+      sourceEditorCodeMode = schemaEditorCodeMode = false
     }
   }
 
