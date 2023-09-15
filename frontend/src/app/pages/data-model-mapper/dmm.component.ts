@@ -183,36 +183,57 @@ export class DMMComponent implements OnInit, OnChanges {
     else return await this.dmmService.refParse(this.schemaJson)
   }
 
+  generateMapper(schemaParsed) {
+
+    if (this.map) {
+      this.map = JSON.parse(editor.mapperEditor.getText())
+      this.oldMap = JSON.parse(JSON.stringify(this.map))
+    }
+    try {
+      this.map = this.getAllNestedProperties(schemaParsed);
+      //console.debug(this)
+      try {
+        if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
+      }
+      catch (error) {
+        this.handleError(error)
+      }
+      this.generate_NGSI_ID()
+      mapGl = this.map
+      editor.mapperEditor.update(this.map)
+      this.selectMap = "---select map---"
+    }
+    catch (error) {
+      this.handleError(error)
+      if (error?.status == 0 || error?.error?.status == 0) {
+        error.statusText = undefined
+        error.message = error.error.message = "Unable to import schema"
+      }
+      this.errorService.openErrorDialog(error)
+      this.map = { "error": "Some errors occurred during generating map object" }
+      this.schemaJson = {
+        "info": "set your schema here"
+      }
+    }
+  }
+
   async schemaChanged($event) {
     if ($event && $event != "---select schema---") {
       if (this.dataModelURL) this.dataModelURL = undefined
       if (this.selectedSchema)
         this.schemaJson =
-          this.schema()
+          this.selectFilteredSchema()
           ;
       //console.debug(this.schemaJson)
       if (!this.schemaJson) this.schemaJson = {
         "info": "Set your schema here"
       }
-      if (this.map) {
-        this.map = JSON.parse(editor.mapperEditor.getText())
-        this.oldMap = JSON.parse(JSON.stringify(this.map))
-      }
-      //console.debug(this)
+      //
       try {
-        this.map = this.getAllNestedProperties(await this.refParse(false));
-        //console.debug(this)
-        try {
-          if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
-        }
-        catch (error) {
-          this.handleError(error)
-        }
-        this.generate_NGSI_ID()
-        mapGl = this.map
-        editor.mapperEditor.update(this.map)
-        this.selectMap = "---select map---"
+        //this.generateMapper(await this.refParse(false))
+        this.schemaJson = await this.refParse(false)
         this.selectedDataModel = this.schemaJson
+        console.debug(this)
         this.schemaEditor.update(this.selectedDataModel)
       }
       catch (error) {
@@ -360,7 +381,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
     if (this.selectedSchema)
       this.schemaJson =
-        this.schema()
+        this.selectFilteredSchema()
         ;
 
     this.setMapEditor(false);
@@ -378,7 +399,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
-  schema() {
+  selectFilteredSchema() {
     try {
       //console.debug(this)
       return this.schemas.filter(filteredSchema => filteredSchema.id == this.selectedSchema)[0].dataModel
@@ -958,7 +979,7 @@ export class DMMComponent implements OnInit, OnChanges {
       }
       if (mapSettings.dataModelID && !mapSettings.dataModel) {
         this.selectedSchema = mapSettings.dataModelID
-        mapSettings.dataModel = await this.schema()
+        mapSettings.dataModel = await this.selectFilteredSchema()
         //console.debug(mapSettings.dataModel)
       }
       else if (mapSettings.dataModelURL && !mapSettings.dataModel) {

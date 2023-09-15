@@ -154,7 +154,7 @@
                 <i class="mx-1 fas fa-file-import fa-lg"></i>
               </button>
               <button *ngIf="schemaJson && schemaJson.info!='set your schema here' && !tempSchema" nbButton class="mr-2"
-                shape="rectangle" size="small" (click)="schemaChanged(getSchema())">
+                shape="rectangle" size="small" (click)="generateMapper(getSchema())">
                 {{ 'general.editor.generate_mapper' | translate }}
                 <i class="mx-1 fas fa-lg"></i>
               </button>
