@@ -168,7 +168,7 @@ export class DMMComponent implements OnInit, OnChanges {
   async refParse(subObj) {
     if (!subObj) this.parsed = false
     //console.debug(subObj)
-    let obj2 = subObj ? subObj : this.schemaJson
+    let obj2 = subObj ? subObj : this.tempSchema || this.schemaJson
     for (let key in obj2)
       if (typeof obj2[key] == "object" || Array.isArray(obj2[key]))
         await this.refParse(obj2[key])
@@ -176,11 +176,11 @@ export class DMMComponent implements OnInit, OnChanges {
         //console.debug("ref found");
         this.parsed = true
       }
-    if (!subObj) if (!this.parsed) {
+    if (!subObj && !this.parsed) {
       //console.debug("return obj", this.schemaJson);
-      return this.schemaJson
+      return this.tempSchema || this.schemaJson
     }
-    else return await this.dmmService.refParse(this.schemaJson)
+    else return await this.dmmService.refParse(this.tempSchema || this.schemaJson)
   }
 
   generateMapper(schemaParsed) {
@@ -219,11 +219,10 @@ export class DMMComponent implements OnInit, OnChanges {
 
   async schemaChanged($event) {
     if ($event && $event != "---select schema---") {
-      if (this.dataModelURL) this.dataModelURL = undefined
+      if (this.dataModelURL)
+        this.dataModelURL = undefined
       if (this.selectedSchema)
-        this.schemaJson =
-          this.selectFilteredSchema()
-          ;
+        this.schemaJson = this.selectFilteredSchema();
       //console.debug(this.schemaJson)
       if (!this.schemaJson) this.schemaJson = {
         "info": "Set your schema here"
@@ -231,6 +230,7 @@ export class DMMComponent implements OnInit, OnChanges {
       //
       try {
         //this.generateMapper(await this.refParse(false))
+        console.debug(this)
         this.schemaJson = await this.refParse(false)
         this.selectedDataModel = this.schemaJson
         console.debug(this)
@@ -272,10 +272,29 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async reset() {
+    this.adapterId = undefined
+    this.dataModelURL = undefined
+    this.inputID = undefined
+    this.name = undefined
     this.inputType = undefined
     this.adapter = {}
+    this.parsed = false
+    this.partialCsv = undefined
+    this.paths = []
+    this.rows = undefined
+    this.savedSchema = undefined
+    this.savedSource = undefined
+    this.selectedSource = undefined
+    this.schemaFromFile = undefined
+    this.schemaOrMap = "schema"
+    this.typeSource = undefined
+    this.tempSchema = undefined
+    this.tempMap = undefined
+    this.sourceRef = ''
+    this.sourceRefFormat = undefined
     this.isNew = false
     this.selectedPath = undefined
+    this.selectedSchema = "---select schema---"
     this.selectedDataModel = {
       "info": "set your schema here"
     }
@@ -295,7 +314,9 @@ export class DMMComponent implements OnInit, OnChanges {
     this.outputEditor.update(preview)
     this.selectMap = "---select map---"
     this.csvSourceData = ""
+    this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem)
     await this.resetConfigSettings()
+    this.onUpdatePathForDataMap("")
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -1119,12 +1140,12 @@ export class DMMComponent implements OnInit, OnChanges {
             }
             //this.schemaEditor.update(JSON.parse(result.content))
             try {
-              this.tempSchema = this.schemaJson = JSON.parse(result.content)
+              this.tempSchema = JSON.parse(result.content)
 
             }
             catch (error) {
               this.handleError(error)
-              this.tempSchema = this.schemaJson = { "error": "import a valid schema" }
+              this.schemaJson = { "error": "import a valid schema" }
             }
             this.schemaChanged(this.getSchema())
             //await this.setSchemaFromFile(JSON.parse(result.content))
