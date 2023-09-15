@@ -95,7 +95,7 @@ module.exports = {
             error.source = source
             error.map = map
             error.dataModel = dataModel
-            throw new Error(error)
+            throw error
             return "Missing fields"
         }
 

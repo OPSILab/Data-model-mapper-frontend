@@ -155,7 +155,7 @@ export class CreateMapComponent implements OnInit {
       "message": "Value required",
       "errorcount": 1
     })
-    if (!this.schema) errors.push({
+    if (!this.schema && !this.dataModelID && !this.dataModelURL) errors.push({
       "path": "root.schema",
       "message": "Value required",
       "errorcount": 1
@@ -184,12 +184,20 @@ export class CreateMapComponent implements OnInit {
       "message": "Value required",
       "errorcount": 1
     })
+    if (!this.sourceData && !this.sourceDataURL && !this.sourceDataID) errors.push({
+      "path": "root.source",
+      "property": "minLength",
+      "message": "Value required",
+      "errorcount": 1
+    })
+
+    console.debug(this)
 
     if (error.message == "Adapter ID must be set") {
       this.errorService.openErrorDialog({
         error: 'EDITOR_VALIDATION_ERROR', validationErrors: [
           {
-            "path": "root.adapterId",
+            "path": "root.Id",
             "property": "minLength",
             "message": "Value required",
             "errorcount": 1

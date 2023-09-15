@@ -81,7 +81,7 @@
     },
     "editor": {
       "confirm_mapping": "Conferma mapping",
-      "confirm_source": "Conferma sorgente",
+      "confirm_source": "Aggiorna campi sorgente",
       "import": "Importa",
       "update": "Aggiorna",
       "export": "Esporta",

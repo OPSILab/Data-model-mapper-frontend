@@ -81,7 +81,7 @@
     },
     "editor": {
       "confirm_mapping": "Confirm mapping",
-      "confirm_source": "Confirm source",
+      "confirm_source": "Update source fields",
       "import": "Import",
       "update": "Update",
       "export": "Export",
@@ -101,7 +101,7 @@
       "adapterId": "Adapter ID",
       "status" : "Status",
       "description" : "Description",
-      "validationErrors": "There are validation errors in the Adapter description."
+      "validationErrors": "There are validation errors in the Record description."
     },
     "dmm" : {
       "reset_config" : "Reset config",

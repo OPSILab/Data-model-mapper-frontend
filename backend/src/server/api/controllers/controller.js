@@ -10,8 +10,11 @@ module.exports = {
 
         process.res = res;
         let { sourceData, map, dataModel } = utils.bodyMapper(req.body)
-        await service.mapData(sourceData, map, dataModel, req.body.config) //TODO delete adapterID
-        try { if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.") }
+        
+        try {
+            await service.mapData(sourceData, map, dataModel, req.body.config) //TODO delete adapterID 
+            if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.") 
+        }
         catch (error) { 
             console.error(error)
             res.status(400).send(error)
