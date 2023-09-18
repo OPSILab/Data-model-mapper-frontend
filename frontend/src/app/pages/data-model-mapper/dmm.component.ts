@@ -246,6 +246,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (this.dataModelURL && from!= "url"){
         this.dataModelURL = undefined
         console.debug(this.dataModelURL)
+        schemaEditorCodeMode = false
       }
       if (this.selectedSchema)
         this.schemaJson = this.selectFilteredSchema();
@@ -1144,6 +1145,7 @@ export class DMMComponent implements OnInit, OnChanges {
             mapOptionsGl = this.csvSourceData.slice(0, this.csvSourceData.indexOf("\n")).split(this.separatorItem);
             if (this.selectedSource) this.selectedSource = undefined
             console.debug(sourceEditorCodeMode)
+            sourceEditorCodeMode = true
           }
           else if (field == 'source') {
             this.sourceRef = result?.source;
@@ -1159,6 +1161,7 @@ export class DMMComponent implements OnInit, OnChanges {
               try {
                 this.sourceEditor.setText(result.content);
                 if (this.selectedSource) this.selectedSource = undefined
+                sourceEditorCodeMode = true
               }
               catch (error) {
                 this.handleError(error)
