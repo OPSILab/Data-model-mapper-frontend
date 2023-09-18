@@ -25,6 +25,7 @@ function schemaEditorMode(newMode) {
   console.debug(newMode)
   console.debug(newMode == "code")
   if (newMode == "code") schemaEditorCodeMode = true
+  //editor.toggleSchemaMode = false
 }
 
 let schemaEditorCodeMode = false
@@ -33,6 +34,7 @@ function sourceEditorMode(newMode) {
   console.debug(newMode)
   console.debug(newMode == "code")
   if (newMode == "code") sourceEditorCodeMode = true
+  //editor.toggleSourceMode = false
 }
 
 let sourceEditorCodeMode = false
@@ -159,10 +161,10 @@ export class DMMComponent implements OnInit, OnChanges {
         jsonMap: JSON.parse(editor.mapperEditor.getText()),
         schema: schemaEditorCodeMode ? JSON.parse(this.schemaEditor.getText()) : undefined,
         config: this.transformSettings,
-        sourceDataURL: this.sourceDataURL,
-        sourceDataID: this.selectedSource,
-        dataModelURL: this.dataModelURL,
-        dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
+        sourceDataURL: !sourceEditorCodeMode ? this.sourceDataURL : undefined,
+        sourceDataID: !sourceEditorCodeMode ? this.selectedSource : undefined,
+        dataModelURL: !schemaEditorCodeMode ? this.dataModelURL : undefined,
+        dataModelID: !schemaEditorCodeMode ? this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined : undefined,
         sourceData: sourceEditorCodeMode ? this.inputType == "json" ? source : this.csvSourceData : undefined,
         schemaSaved: this.savedSchema,
         sourceSaved: this.savedSource
@@ -974,13 +976,13 @@ export class DMMComponent implements OnInit, OnChanges {
         schema: schemaEditorCodeMode ? JSON.parse(this.schemaEditor.getText()) : undefined,
         config: this.transformSettings,
         sourceDataType: this.inputType,
-        sourceDataURL: this.sourceDataURL,
-        sourceDataID: this.selectedSource,
-        dataModelURL: this.dataModelURL,
-        dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
+        sourceDataURL: !sourceEditorCodeMode ? this.sourceDataURL : undefined,
+        sourceDataID: !sourceEditorCodeMode ? this.selectedSource : undefined,
+        dataModelURL: !schemaEditorCodeMode ? this.dataModelURL : undefined,
+        dataModelID: !schemaEditorCodeMode ? this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined : undefined,
         sourceData: sourceEditorCodeMode ? this.inputType == "json" ? source : this.csvSourceData : undefined,
-        schemaSaved: this.savedSchema,
-        sourceSaved: this.savedSource
+        schemaSaved: false,
+        sourceSaved: false
       }
     }).onClose.subscribe(async (adapter) => {
       if (adapter) {
