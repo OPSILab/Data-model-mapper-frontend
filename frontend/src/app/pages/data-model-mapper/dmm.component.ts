@@ -24,7 +24,7 @@ let mapOptionsGl, mapGl = "Set your mapping fields here"//, mapperEditor
 function schemaEditorMode(newMode) {
   console.debug(newMode)
   console.debug(newMode == "code")
-  schemaEditorCodeMode = (newMode == "code")
+  if (newMode == "code") schemaEditorCodeMode = true
 }
 
 let schemaEditorCodeMode = false
@@ -32,7 +32,7 @@ let schemaEditorCodeMode = false
 function sourceEditorMode(newMode) {
   console.debug(newMode)
   console.debug(newMode == "code")
-  sourceEditorCodeMode = (newMode == "code")
+  if (newMode == "code") sourceEditorCodeMode = true
 }
 
 let sourceEditorCodeMode = false
@@ -238,11 +238,13 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
-  async schemaChanged($event) {
+  async schemaChanged($event, from) {
     let errors
     if ($event && $event != "---select schema---") {
-      if (this.dataModelURL)
+      if (this.dataModelURL && from!= "url"){
         this.dataModelURL = undefined
+        console.debug(this.dataModelURL)
+      }
       if (this.selectedSchema)
         this.schemaJson = this.selectFilteredSchema();
       //console.debug(this.schemaJson)
@@ -962,6 +964,8 @@ export class DMMComponent implements OnInit, OnChanges {
     //if (source[this.selectedPath])
     //source = source[this.selectedPath]
 
+    console.debug(this.dataModelURL)
+
     this.dialogService.open(CreateMapComponent, {
       context: {
         save: true,
@@ -1184,7 +1188,7 @@ export class DMMComponent implements OnInit, OnChanges {
               this.handleError(error)
               this.schemaJson = { "error": "import a valid schema" }
             }
-            this.schemaChanged(this.getSchema())
+            this.schemaChanged(this.getSchema(), "url")
           }
         }
       });

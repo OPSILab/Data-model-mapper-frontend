@@ -92,7 +92,10 @@ module.exports = {
 
     modifySource: async (req, res) => {
         process.res = res;
-        try{res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path))}
+        try{
+            res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path))
+            log.debug("Source modified");
+        }
         catch(error){ res.status(400).send(error)}
     },
 
@@ -101,13 +104,15 @@ module.exports = {
         process.res = res;
         try{res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
             req.body.sourceData, req.body.sourceDataID, req.body.sourceDataIn, req.body.sourceDataURL, req.body.dataModelIn, req.body.dataModelID, req.body.dataModelURL,
-            req.body.config, req.body.sourceDataType, req.body.path))}
+            req.body.config, req.body.sourceDataType, req.body.path))
+            log.debug("Map modified");}
             catch(error){ res.status(400).send(error)}
     },
 
     modifyDataModel: async (req, res) => {
         process.res = res;
-        try{res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel))}
+        try{res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel))
+            log.debug("Schema modified");}
         catch(error){ res.status(400).send(error)}
     },
 

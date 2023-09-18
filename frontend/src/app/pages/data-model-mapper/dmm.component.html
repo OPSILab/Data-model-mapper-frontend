@@ -23,12 +23,12 @@
           <i class="mx-1 material-icons">create</i>
         </button>
         <button *ngIf="!backendDown" nbButton class="mx-4" shape="rectangle" size="medium" status="primary"
-          (click)="saveAdapter()">
+          (click)="saveRecord()">
           {{ 'general.dmm.save_as_new' | translate }}
           <i class="mx-1 material-icons">save</i>
         </button>
         <button *ngIf="isNew && !backendDown" nbButton class="mx-4" shape="rectangle" size="medium" status="primary"
-          (click)="updateAdapter()">
+          (click)="updateRecord()">
           {{ 'general.editor.update' | translate }}
           <i class="mx-1 material-icons">update</i>
         </button>
@@ -149,7 +149,7 @@
                   <i>{{schemaRef}}</i></a></p>
               <p *ngIf="schemaRef!==''&&schemaRefFormat==='file'">File: <i>{{schemaRef}}</i></p>
               <nb-select placeholder="Select Json Schema" size="small" [(ngModel)]=selectedSchema
-                (ngModelChange)="schemaChanged($event)">
+                (ngModelChange)="schemaChanged($event, 'DB')">
                 <nb-option *ngFor="let schema of schemas" value={{schema.id}}>{{schema.name}}</nb-option>
               </nb-select>&nbsp;
               <!--<br><br><br>
