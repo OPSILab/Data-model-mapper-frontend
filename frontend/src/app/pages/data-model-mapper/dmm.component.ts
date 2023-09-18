@@ -37,7 +37,7 @@ function sourceEditorMode(newMode) {
   //editor.toggleSourceMode = false
 }
 
-let alwaysCode = true
+let alwaysCode = false
 
 let sourceEditorCodeMode = false
 
@@ -671,7 +671,7 @@ export class DMMComponent implements OnInit, OnChanges {
   //keepObjKeys:Whether to keep the parent object keys
 
   getKeys(obj, keepObjKeys, skipArrays, keys = [], scope = []) {
-
+    console.debug(obj)
     if (Array.isArray(obj)) {
       /*if (!skipArrays) scope.push('[' + obj.length + ']');
       obj.forEach((o) => this.getKeys(o, keepObjKeys, skipArrays, keys, scope), keys);*/
@@ -684,7 +684,21 @@ export class DMMComponent implements OnInit, OnChanges {
         this.getKeys(obj[k], keepObjKeys, skipArrays, keys, scope.concat(k));
       }, keys);
     }
+    console.debug(keys)
     return keys;
+  }
+
+  keys = []
+
+  getKeys_2(obj, key, path) {
+    if (key && key != "")
+      obj = obj[key]
+    if (typeof obj == "object" || Array.isArray(obj))
+      for (let subKey in obj)
+        if (typeof obj[subKey] == "object" || Array.isArray(obj[subKey]))
+          this.getKeys_2(JSON.parse(JSON.stringify(obj)), subKey, path ? path + "." + subKey : subKey)
+        else this.keys.push(path + "." + subKey)
+    else this.keys.push(path)
   }
 
   onUpdateInputType(event) {
@@ -707,6 +721,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
     //console.debug(event)
     this.confirmMapping()
+    this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), "")
     mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), event);
     if (!mapOptionsGl[0])
       mapOptionsGl[0] = "---no keys for selected path---"
@@ -1211,7 +1226,10 @@ export class DMMComponent implements OnInit, OnChanges {
       });
   }
 
-  selectMapJsonOptions(content: string, path: string): string[] {
+  selectMapJsonOptions(content: string, path: string): string[] {/*
+    this.keys = []
+    this.getKeys_2(_.get(JSON.parse(content), path + '[0]', JSON.parse(content)), path, path)//this.getKeys(_.get(JSON.parse(content), path + '[0]', JSON.parse(content)), true, true)
+    return this.keys*/
     return this.getKeys(_.get(JSON.parse(content), path + '[0]', JSON.parse(content)), true, true)
   }
 
