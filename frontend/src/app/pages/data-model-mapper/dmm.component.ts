@@ -37,7 +37,19 @@ function sourceEditorMode(newMode) {
   //editor.toggleSourceMode = false
 }
 
+let alwaysCode = true
+
 let sourceEditorCodeMode = false
+
+function getEditorCodeMode(editor) {
+  if (alwaysCode)
+    return true
+  else if (editor == "source")
+    return sourceEditorCodeMode
+  else if (editor == "schema")
+    return schemaEditorCodeMode
+  else throw new Error("No editor provided")
+}
 
 //let map = {}, mapperEditor, mapOptions: string[]
 @Component({
@@ -159,13 +171,13 @@ export class DMMComponent implements OnInit, OnChanges {
         path: this.selectedPath,
         sourceDataType: type,
         jsonMap: JSON.parse(editor.mapperEditor.getText()),
-        schema: schemaEditorCodeMode ? JSON.parse(this.schemaEditor.getText()) : undefined,
+        schema: getEditorCodeMode("schema") ? JSON.parse(this.schemaEditor.getText()) : undefined,
         config: this.transformSettings,
         sourceDataURL: this.sourceDataURL,
         sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
         dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-        sourceData: sourceEditorCodeMode ? this.inputType == "json" ? source : this.csvSourceData : undefined,
+        sourceData: getEditorCodeMode("source") ? this.inputType == "json" ? source : this.csvSourceData : undefined,
         schemaSaved: this.savedSchema,
         sourceSaved: this.savedSource
       }
@@ -243,7 +255,7 @@ export class DMMComponent implements OnInit, OnChanges {
   async schemaChanged($event, from) {
     let errors
     if ($event && $event != "---select schema---") {
-      if (this.dataModelURL && from!= "url"){
+      if (this.dataModelURL && from != "url") {
         this.dataModelURL = undefined
         console.debug(this.dataModelURL)
         schemaEditorCodeMode = false
@@ -279,7 +291,7 @@ export class DMMComponent implements OnInit, OnChanges {
         }
 
       }
-      if (typeof $event != 'string' && !errors)
+      if (typeof $event == 'string' && !errors)
         schemaEditorCodeMode = false
       this.tempSchema = undefined
     }
@@ -974,14 +986,14 @@ export class DMMComponent implements OnInit, OnChanges {
         save: true,
         path: this.selectedPath,
         jsonMap: JSON.parse(editor.mapperEditor.getText()),
-        schema: schemaEditorCodeMode ? JSON.parse(this.schemaEditor.getText()) : undefined,
+        schema: getEditorCodeMode("schema") ? JSON.parse(this.schemaEditor.getText()) : undefined,
         config: this.transformSettings,
         sourceDataType: this.inputType,
         sourceDataURL: this.sourceDataURL,
         sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
         dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-        sourceData: sourceEditorCodeMode ? this.inputType == "json" ? source : this.csvSourceData : undefined,
+        sourceData: getEditorCodeMode("source") ? this.inputType == "json" ? source : this.csvSourceData : undefined,
         schemaSaved: false,
         sourceSaved: false
       }
