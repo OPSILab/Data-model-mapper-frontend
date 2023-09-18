@@ -103,14 +103,49 @@ export class CreateMapComponent implements OnInit {
       while (adapterId[adapterId.length - 1] == " ") adapterId = adapterId.substring(0, adapterId.length - 1)
 
       if (this.save) {
-        await this.dmmService.saveMap({ name, adapterId, status, description }, status, description, this.jsonMap, this.schema, this.sourceDataType, this.config, this.sourceDataURL, this.dataModelURL, this.dataModelID, this.sourceData, this.sourceDataID, this.path);
+        await this.dmmService.saveMap({
+          name,
+          adapterId,
+          status,
+          description
+        },
+        status,
+        description,
+        this.jsonMap,
+        this.saveSchema ? this.schema : undefined,
+        this.sourceDataType,
+        this.config,
+        this.saveSource ? undefined : this.sourceDataURL,
+        this.saveSchema ? undefined : this.dataModelURL,
+        this.saveSchema ? undefined : this.dataModelID,
+        this.saveSource ? this.sourceData : undefined,
+        this.saveSource ? undefined : this.sourceDataID,
+        this.path);
         this.ref.close({ name, adapterId, status, description, saveSchema: this.saveSchema, saveSource: this.saveSource });
         this.editedValue.emit({ name, adapterId, status, description });
         this.showToast('primary', this.translate.instant('general.dmm.map_added_message'), '');
       }
 
       else {
-        await this.dmmService.updateMap({ name, adapterId, status, description }, status, description, this.jsonMap, this.schema, this.sourceDataType, this.config, this.sourceDataURL, this.dataModelURL, this.dataModelID, this.sourceData, this.sourceDataID, this.path);
+        await this.dmmService.updateMap(
+          {
+            name,
+            adapterId,
+            status,
+            description
+          },
+          status,
+          description,
+          this.jsonMap,
+          this.saveSchema ? this.schema : undefined,
+          this.sourceDataType,
+          this.config,
+          this.saveSource ? undefined : this.sourceDataURL,
+          this.saveSchema ? undefined : this.dataModelURL,
+          this.saveSchema ? undefined : this.dataModelID,
+          this.saveSource ? this.sourceData : undefined,
+          this.saveSource ? undefined : this.sourceDataID,
+          this.path);
         this.ref.close({ name, adapterId, status, description, saveSchema: this.saveSchema, saveSource: this.saveSource });
         this.editedValue.emit({ name, adapterId, status, description });
         this.showToast('primary', this.translate.instant('general.dmm.map_edited_message'), '');
