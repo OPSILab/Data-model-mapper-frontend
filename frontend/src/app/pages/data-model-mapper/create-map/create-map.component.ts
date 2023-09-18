@@ -87,9 +87,7 @@ export class CreateMapComponent implements OnInit {
 
   async onSubmit() {
 
-    //console.debug(this)
-
-
+    console.debug(this)
 
     let name = this.name,
       adapterId = this.adapterId,

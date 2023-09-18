@@ -22,13 +22,17 @@ import editor from './mapperEditor'
 let mapOptionsGl, mapGl = "Set your mapping fields here"//, mapperEditor
 
 function schemaEditorMode(newMode) {
-  schemaEditorCodeMode = (newMode == true)
+  console.debug(newMode)
+  console.debug(newMode == "code")
+  schemaEditorCodeMode = (newMode == "code")
 }
 
 let schemaEditorCodeMode = false
 
 function sourceEditorMode(newMode) {
-  sourceEditorCodeMode = (newMode == true)
+  console.debug(newMode)
+  console.debug(newMode == "code")
+  sourceEditorCodeMode = (newMode == "code")
 }
 
 let sourceEditorCodeMode = false
@@ -106,6 +110,8 @@ export class DMMComponent implements OnInit, OnChanges {
   tempSchema: any;
   schemaRef: string;
   schemaRefFormat: string;
+  sourceOptions: any;
+  schemaOptions: any;
   //ref
 
   constructor(
@@ -126,6 +132,8 @@ export class DMMComponent implements OnInit, OnChanges {
     this.flipped = !this.flipped;
   }
 
+  sourceEditorMode = sourceEditorMode
+
   updateMap() {
     mapGl = this.map
   }
@@ -134,14 +142,13 @@ export class DMMComponent implements OnInit, OnChanges {
     document.getElementsByTagName('html')[0].className = ""
   }
 
-  updateAdapter() {
+  updateRecord() {
     let type = this.inputType
     let source = JSON.parse(this.sourceEditor.getText())
 
     //if (source[this.selectedPath])
     //source = source[this.selectedPath]
 
-    //console.debug(this.NGSI)
     this.dialogService.open(CreateMapComponent, {
       context: {
         value: this.adapter,
@@ -156,7 +163,7 @@ export class DMMComponent implements OnInit, OnChanges {
         sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
         dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-        sourceData: sourceEditorCodeMode? this.inputType == "json" ? source : this.csvSourceData : undefined,
+        sourceData: sourceEditorCodeMode ? this.inputType == "json" ? source : this.csvSourceData : undefined,
         schemaSaved: this.savedSchema,
         sourceSaved: this.savedSource
       }
@@ -391,13 +398,13 @@ export class DMMComponent implements OnInit, OnChanges {
       this.errorService.openErrorDialog(error)
     }
 
-    const sourceOptions = {
+    this.sourceOptions = {
       mode: 'view',
       modes: ['view', 'code'], // allowed modes
       onModeChange: function (newMode, oldMode) { sourceEditorMode(newMode) },
     };
 
-    const schemaOptions = {
+    this.schemaOptions = {
       mode: 'view',
       modes: ['view', 'code'], // allowed modes
       onModeChange: function (newMode, oldMode) { schemaEditorMode(newMode) },
@@ -419,9 +426,9 @@ export class DMMComponent implements OnInit, OnChanges {
       "set a field from the output schema field list": "set a field from the source input"
     }
 
-    this.sourceEditor = new JSONEditor(this.sourceEditorContainer, sourceOptions, this.sourceJson);
+    this.sourceEditor = new JSONEditor(this.sourceEditorContainer, this.sourceOptions, this.sourceJson);
 
-    this.schemaEditor = new JSONEditor(this.schemaEditorContainer, schemaOptions, this.selectedDataModel)
+    this.schemaEditor = new JSONEditor(this.schemaEditorContainer, this.schemaOptions, this.selectedDataModel)
 
     await this.resetConfigSettings()
 
@@ -910,7 +917,8 @@ export class DMMComponent implements OnInit, OnChanges {
       mapGl = this.map = JSON.parse(editor.mapperEditor.getText())
     }
     catch (error) {
-      this.handleError(error)
+      error.message == "Cannot read properties of undefined (reading 'getText')" ? console.debug() :
+        this.handleError(error)
     }
   }
 
@@ -948,12 +956,12 @@ export class DMMComponent implements OnInit, OnChanges {
     this.generate_NGSI_ID()
   }
 
-  saveAdapter() {
+  saveRecord() {
     let source = JSON.parse(this.sourceEditor.getText())
 
     //if (source[this.selectedPath])
     //source = source[this.selectedPath]
-    //console.debug(this.NGSI)
+
     this.dialogService.open(CreateMapComponent, {
       context: {
         save: true,
@@ -966,7 +974,7 @@ export class DMMComponent implements OnInit, OnChanges {
         sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
         dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-        sourceData: sourceEditorCodeMode? this.inputType == "json" ? source : this.csvSourceData : undefined,
+        sourceData: sourceEditorCodeMode ? this.inputType == "json" ? source : this.csvSourceData : undefined,
         schemaSaved: this.savedSchema,
         sourceSaved: this.savedSource
       }
@@ -1093,6 +1101,8 @@ export class DMMComponent implements OnInit, OnChanges {
       if (this.adapter.adapterId) this.isNew = true
       editor.mapperEditor.update(this.map)
       this.selectedSchema = "---select schema---"
+      this.selectedSource = undefined
+      console.debug(this.selectedSource)
       if (mapSettings.dataModel) this.schemaEditor.update(mapSettings.dataModel)
       sourceEditorCodeMode = schemaEditorCodeMode = false
     }
@@ -1106,48 +1116,28 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       if (this.inputType != "json")
-        //console.log(error.message)
-        //else
         this.handleError(error)
-      //this.errorService.openErrorDialog(error)
     }
   }
 
   import(field, typeSource: string): void {
     this.typeSource = typeSource;
     this.dialogService
-      .open(DialogImportComponent, field == "map" ?
-        {
-          context: { map: true },
-        }
-        :
-        {
-          context: { type: typeSource },
-        })
+      .open(DialogImportComponent, field == "map" ? { context: { map: true } } : { context: { type: typeSource } })
       .onClose.subscribe(async (result: { content: string; source: string; format: string; mapSettings }) => {
-        if (result?.mapSettings) {
-          /*
-          result.mapSettings = JSON.parse(result.mapSettings)
-          this.schemaJson =
-            result.mapSettings.dataModel
-            ;
-          this.map = result.mapSettings.map
-          mapGl = this.map
-          editor.mapperEditor.update(this.map)*/
+        if (result?.mapSettings)
           this.mapChanged(false, result.mapSettings)
-        }
         else if (result && result?.content) {
           if (typeSource == 'csv') {
             this.sourceRef = result?.source;
             this.sourceRefFormat = result?.format;
-            if (this.sourceRefFormat == "url") {
+            if (this.sourceRefFormat == "url")
               this.sourceDataURL = result.source
-              if (this.selectedSource) this.selectedSource = undefined
-            }
             this.csvSourceData = result.content;
             this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem);
             mapOptionsGl = this.csvSourceData.slice(0, this.csvSourceData.indexOf("\n")).split(this.separatorItem);
-
+            if (this.selectedSource) this.selectedSource = undefined
+            console.debug(sourceEditorCodeMode)
           }
           else if (field == 'source') {
             this.sourceRef = result?.source;
@@ -1157,15 +1147,12 @@ export class DMMComponent implements OnInit, OnChanges {
               if (this.selectedSource) this.selectedSource = undefined
             }
             if (!this.sourceEditor)
-              this.sourceEditor = new JSONEditor(this.sourceEditorContainer, {
-                mode: 'view',
-                modes: ['view', 'code'], // allowed modes
-                onModeChange: function (newMode, oldMode) { },
-              }, JSON.parse(result.content));
+              this.sourceEditor = new JSONEditor(this.sourceEditorContainer, this.sourceOptions, JSON.parse(result.content));
 
             else
               try {
                 this.sourceEditor.setText(result.content);
+                if (this.selectedSource) this.selectedSource = undefined
               }
               catch (error) {
                 this.handleError(error)
@@ -1189,7 +1176,6 @@ export class DMMComponent implements OnInit, OnChanges {
               this.dataModelURL = result.source
               this.selectedSchema = "---select schema---"
             }
-            //this.schemaEditor.update(JSON.parse(result.content))
             try {
               this.tempSchema = JSON.parse(result.content)
 
@@ -1199,7 +1185,6 @@ export class DMMComponent implements OnInit, OnChanges {
               this.schemaJson = { "error": "import a valid schema" }
             }
             this.schemaChanged(this.getSchema())
-            //await this.setSchemaFromFile(JSON.parse(result.content))
           }
         }
       });
