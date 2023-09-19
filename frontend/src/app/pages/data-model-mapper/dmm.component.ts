@@ -126,6 +126,8 @@ export class DMMComponent implements OnInit, OnChanges {
   schemaRefFormat: string;
   sourceOptions: any;
   schemaOptions: any;
+  importedSchema: any;
+  importedSource: any;
   //ref
 
   constructor(
@@ -171,13 +173,13 @@ export class DMMComponent implements OnInit, OnChanges {
         path: this.selectedPath,
         sourceDataType: type,
         jsonMap: JSON.parse(editor.mapperEditor.getText()),
-        schema: getEditorCodeMode("schema") ? JSON.parse(this.schemaEditor.getText()) : undefined,
+        schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())) ? JSON.parse(this.schemaEditor.getText()) : undefined,
         config: this.transformSettings,
         sourceDataURL: this.sourceDataURL,
         sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
         dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-        sourceData: getEditorCodeMode("source") ? this.inputType == "json" ? source : this.csvSourceData : undefined,
+        sourceData: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText())) ? this.inputType == "json" ? source : this.csvSourceData : undefined,
         schemaSaved: this.savedSchema,
         sourceSaved: this.savedSource
       }
@@ -231,7 +233,7 @@ export class DMMComponent implements OnInit, OnChanges {
         if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
       }
       catch (error) {
-        this.handleError(error)
+        this.handleError(error, false, false)
       }
       this.generate_NGSI_ID()
       mapGl = this.map
@@ -239,7 +241,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.selectMap = "---select map---"
     }
     catch (error) {
-      this.handleError(error)
+      this.handleError(error, false, false)
       if (error?.status == 0 || error?.error?.status == 0) {
         error.statusText = undefined
         error.message = error.error.message = "Unable to import schema"
@@ -268,6 +270,7 @@ export class DMMComponent implements OnInit, OnChanges {
           "info": "Set your schema here"
         }
       }
+
       //
       try {
         //this.generateMapper(await this.refParse(false))
@@ -279,7 +282,7 @@ export class DMMComponent implements OnInit, OnChanges {
       }
       catch (error) {
         errors = true
-        this.handleError(error)
+        this.handleError(error, false, false)
         if (error?.status == 0 || error?.error?.status == 0) {
           error.statusText = undefined
           error.message = error.error.message = "Unable to import schema"
@@ -291,8 +294,12 @@ export class DMMComponent implements OnInit, OnChanges {
         }
 
       }
-      if (typeof $event == 'string' && !errors)
+      if (typeof $event == 'string' && !errors) {
         schemaEditorCodeMode = false
+        this.importedSchema = JSON.parse(this.schemaEditor.getText())
+      }
+      else if (!errors)
+        this.importedSchema = JSON.parse(this.schemaEditor.getText())
       this.tempSchema = undefined
     }
   }
@@ -300,19 +307,27 @@ export class DMMComponent implements OnInit, OnChanges {
   sourceChanged($event) {
 
     //if ($event && $event != "---select schema---") {
-    if (this.selectedSource) {
-      if (this.sourceDataURL) this.sourceDataURL = undefined
-      if (this.inputType == "json") {
-        this.sourceJson = this.source();
-        this.sourceEditor.update(this.sourceJson)
-        if (this.selectedPath != "" && !this.sourceJson[this.selectedPath]) this.selectedPath = ""
-        mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
-        this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
-        this.onUpdatePathForDataMap("")
+    try {
+      if (this.selectedSource) {
+        if (this.sourceDataURL) this.sourceDataURL = undefined
+        if (this.inputType == "json") {
+          this.sourceJson = this.source();
+          this.sourceEditor.update(this.sourceJson)
+          if (this.selectedPath != "" && !this.sourceJson[this.selectedPath]) this.selectedPath = ""
+          mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
+          this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
+          this.onUpdatePathForDataMap("")
+          this.importedSource = JSON.parse(this.sourceEditor.getText())
+        }
+        else {
+          this.csvSourceData = this.source()
+          this.importedSource = this.csvSourceData
+        }
+        sourceEditorCodeMode = false
       }
-      else
-        this.csvSourceData = this.source()
-      sourceEditorCodeMode = false
+    }
+    catch (error) {
+      this.handleError(error, true, "Error during importing source")
     }
   }
 
@@ -406,7 +421,7 @@ export class DMMComponent implements OnInit, OnChanges {
       await this.loadSourceList()
     }
     catch (error) {
-      this.handleError(error)
+      this.handleError(error, false, false)
       if (error.status == 0 || error.error.status == 0) {
         error.statusText = undefined
         error.message = error.error.message = "Unable to reach server"
@@ -483,7 +498,7 @@ export class DMMComponent implements OnInit, OnChanges {
       return this.schemas.filter(filteredSchema => filteredSchema.id == this.selectedSchema)[0].dataModel
     }
     catch (error) {
-      this.handleError(error)
+      this.handleError(error, false, false)
       //this.errorService.openErrorDialog(error)
       return this.getSchema()
     }
@@ -498,7 +513,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.maps = await this.dmmService.getMaps();
     }
     catch (error) {
-      this.handleError(error)
+      this.handleError(error, false, false)
       //this.errorService.openErrorDialog(error)
       this.maps = []
       throw error
@@ -510,7 +525,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.schemas = await this.dmmService.getSchemas();
     }
     catch (error) {
-      this.handleError(error)
+      this.handleError(error, false, false)
       //this.errorService.openErrorDialog(error)
       this.schemas = []
       throw error
@@ -522,7 +537,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.sources = await this.dmmService.getSources();
     }
     catch (error) {
-      this.handleError(error)
+      this.handleError(error, false, false)
       //this.errorService.openErrorDialog(error)
       this.sources = []
       throw error
@@ -540,7 +555,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.transformSettings = await this.dmmService.getConfig()
     }
     catch (error) {
-      this.handleError(error)
+      this.handleError(error, false, false)
       //this.errorService.openErrorDialog(error)
       this.transformSettings = await this.dmmService.getBackupConfig()
     }
@@ -586,7 +601,7 @@ export class DMMComponent implements OnInit, OnChanges {
     catch (error) {
       if (!output)
         output = !error.status ? { "error": "Service unreachable" } : error.error
-      this.handleError(error)
+      this.handleError(error, false, false)
       //this.errorService.openErrorDialog(error)
     }
     if (!this.outputEditor)
@@ -615,7 +630,7 @@ export class DMMComponent implements OnInit, OnChanges {
           output = { "error": "Request too large" }
         else
           output = error.error
-      this.handleError(error)
+      this.handleError(error, false, false)
       //this.errorService.openErrorDialog(error)
     }
     if (!this.outputEditor)
@@ -665,6 +680,13 @@ export class DMMComponent implements OnInit, OnChanges {
           this.compareMaps(oldMap[key], newMap[key])
         else //if (oldMap[key] && (typeof oldMap[key] == "object" || Array.isArray(typeof oldMap[key])))
           newMap[key] = JSON.parse(JSON.stringify(oldMap[key]))
+  }
+
+  differences(object1, object2) {
+    console.debug(JSON.stringify(object1))
+    console.debug(JSON.stringify(object2))
+    console.debug(JSON.stringify(object1) == JSON.stringify(object2))
+    return JSON.stringify(object1) != JSON.stringify(object2)
   }
 
   //skipArrays:Ignore the array part
@@ -768,7 +790,7 @@ export class DMMComponent implements OnInit, OnChanges {
       editor.mapperEditor.update(map)
     }
     catch (error) {
-      this.handleError(error)
+      this.handleError(error, false, false)
       //editor.mapperEditor.update(map)
     }
   }
@@ -849,7 +871,7 @@ export class DMMComponent implements OnInit, OnChanges {
       };
     }
     catch (error) {
-      this.handleError(error)
+      this.handleError(error, false, false)
       console.error("Error during map setting set")
     }
 
@@ -950,12 +972,17 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       error.message == "Cannot read properties of undefined (reading 'getText')" ? console.debug() :
-        this.handleError(error)
+        this.handleError(error, false, false)
     }
   }
 
-  handleError(error) {
-    console.error(error?.message || error?.error?.message || error?.statusText || error)
+  handleError(error, modal, message) {
+    if (modal)
+      this.errorService.openErrorDialog(error)
+    if (message)
+      console.error(message)
+    else
+      console.error(error?.message || error?.error?.message || error?.statusText || error)
     console.error(error)
   }
 
@@ -1001,14 +1028,14 @@ export class DMMComponent implements OnInit, OnChanges {
         save: true,
         path: this.selectedPath,
         jsonMap: JSON.parse(editor.mapperEditor.getText()),
-        schema: getEditorCodeMode("schema") ? JSON.parse(this.schemaEditor.getText()) : undefined,
+        schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())) ? JSON.parse(this.schemaEditor.getText()) : undefined,
         config: this.transformSettings,
         sourceDataType: this.inputType,
         sourceDataURL: this.sourceDataURL,
         sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
         dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-        sourceData: getEditorCodeMode("source") ? this.inputType == "json" ? source : this.csvSourceData : undefined,
+        sourceData: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText())) ? this.inputType == "json" ? source : this.csvSourceData : undefined,
         schemaSaved: false,
         sourceSaved: false
       }
@@ -1044,7 +1071,7 @@ export class DMMComponent implements OnInit, OnChanges {
           this.savedSchema = await this.dmmService.getSchema($event)
         }
         catch (error) {
-          this.handleError(error)
+          this.handleError(error, false, false)
           //this.errorService.openErrorDialog(error)
         }
       }
@@ -1080,7 +1107,7 @@ export class DMMComponent implements OnInit, OnChanges {
           mapSettings.sourceData = await this.dmmService.getRemoteSource(mapSettings.sourceDataURL, mapSettings.sourceDataType);
         }
         catch (error) {
-          this.handleError(error)
+          this.handleError(error, false, false)
           this.errorService.openErrorDialog(error)
           mapSettings.sourceData = "some errors occurred when downloading remote source"
         }
@@ -1097,7 +1124,7 @@ export class DMMComponent implements OnInit, OnChanges {
           mapSettings.dataModel = await this.dmmService.getRemoteSource(mapSettings.dataModelURL, "json");
         }
         catch (error) {
-          this.handleError(error)
+          this.handleError(error, false, false)
           this.errorService.openErrorDialog(error)
           mapSettings.dataModel = "Some errors occurred when downloading remote schema"
         }
@@ -1150,7 +1177,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       if (this.inputType != "json")
-        this.handleError(error)
+        this.handleError(error, false, false)
     }
   }
 
@@ -1173,6 +1200,7 @@ export class DMMComponent implements OnInit, OnChanges {
             if (this.selectedSource) this.selectedSource = undefined
             console.debug(sourceEditorCodeMode)
             sourceEditorCodeMode = true
+            this.importedSource = this.csvSourceData
           }
           else if (field == 'source') {
             this.sourceRef = result?.source;
@@ -1181,17 +1209,19 @@ export class DMMComponent implements OnInit, OnChanges {
               this.sourceDataURL = result.source
               if (this.selectedSource) this.selectedSource = undefined
             }
-            if (!this.sourceEditor)
+            if (!this.sourceEditor) {
               this.sourceEditor = new JSONEditor(this.sourceEditorContainer, this.sourceOptions, JSON.parse(result.content));
-
+              this.importedSource = JSON.parse(result.content)
+            }
             else
               try {
                 this.sourceEditor.setText(result.content);
                 if (this.selectedSource) this.selectedSource = undefined
                 sourceEditorCodeMode = true
+                this.importedSource = JSON.parse(result.content)
               }
               catch (error) {
-                this.handleError(error)
+                this.handleError(error, false, false)
                 this.sourceEditor.update({ message: "you must import a valid json" })
               }
 
@@ -1200,7 +1230,7 @@ export class DMMComponent implements OnInit, OnChanges {
               this.paths = this.selectMapJsonOptions(result.content, '')
             }
             catch (error) {
-              this.handleError(error)
+              this.handleError(error, false, false)
             }
 
             this.onUpdatePathForDataMap("")
@@ -1214,10 +1244,9 @@ export class DMMComponent implements OnInit, OnChanges {
             }
             try {
               this.tempSchema = JSON.parse(result.content)
-
             }
             catch (error) {
-              this.handleError(error)
+              this.handleError(error, false, false)
               this.schemaJson = { "error": "import a valid schema" }
             }
             this.schemaChanged(this.getSchema(), "url")
