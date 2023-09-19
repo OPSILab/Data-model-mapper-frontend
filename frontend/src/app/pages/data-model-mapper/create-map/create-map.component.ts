@@ -1,11 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { NbDialogRef, NbToastrService, NbComponentStatus, NbGlobalPhysicalPosition, NbToastrConfig } from '@nebular/theme';
+import { NbDialogRef, NbToastrService, NbComponentStatus, NbGlobalPhysicalPosition, NbToastrConfig, NbDialogService } from '@nebular/theme';
 import { TranslateService } from '@ngx-translate/core';
 import { NgxConfigureService } from 'ngx-configure';
 import { Mapper } from '../../../model/adapter/mapper';
 import { AppConfig } from '../../../model/appConfig';
 import { ErrorDialogAdapterService } from '../../error-dialog/error-dialog-adapter.service';
 import { DMMService } from '../dmm.service';
+import { async } from 'rxjs';
+import { DialogComponent } from './dialog/dialog.component';
+import editor from '../mapperEditor';
 
 @Component({
   selector: 'create-map-and-adapter',
@@ -17,6 +20,7 @@ export class CreateMapComponent implements OnInit {
   @Input() value: any;
   @Output() editedValue = new EventEmitter<unknown>();
   adapterId: string
+  message
   name: string = ''
   sourceDataType: string
   selectedFile: File;
@@ -50,6 +54,7 @@ export class CreateMapComponent implements OnInit {
   schemaSaved: any;
 
   constructor(
+    protected dialogService: NbDialogService,
     private dmmService: DMMService,
     protected ref: NbDialogRef<CreateMapComponent>,
     private toastrService: NbToastrService,
@@ -85,10 +90,27 @@ export class CreateMapComponent implements OnInit {
     }
   }
 
+  confirmSubmit() {
+    this.ref.close(true)
+  }
+
   async onSubmit() {
 
-    console.debug(this)
+    if (this.schema && !this.saveSchema || this.sourceData && !this.saveSource)
+      this.dialogService.open(CreateMapComponent, {
+        context: {
+          message: "There are unsaved changes. Are you sure you want to discard them ?"
+        }
+      }).onClose.subscribe(async (confirm) => {
+        if (confirm) {
+          await this.submit()
+        }
+      });
+      else
+        await this.submit()
+  }
 
+  async submit() {
     let name = this.name,
       adapterId = this.adapterId,
       description = this.description,
@@ -109,18 +131,18 @@ export class CreateMapComponent implements OnInit {
           status,
           description
         },
-        status,
-        description,
-        this.jsonMap,
-        this.saveSchema ? this.schema : undefined,
-        this.sourceDataType,
-        this.config,
-        this.saveSource ? undefined : this.sourceDataURL,
-        this.saveSchema ? undefined : this.dataModelURL,
-        this.saveSchema ? undefined : this.dataModelID,
-        this.saveSource ? this.sourceData : undefined,
-        this.saveSource ? undefined : this.sourceDataID,
-        this.path);
+          status,
+          description,
+          this.jsonMap,
+          this.saveSchema ? this.schema : undefined,
+          this.sourceDataType,
+          this.config,
+          this.saveSource ? undefined : this.sourceDataURL,
+          this.saveSchema ? undefined : this.dataModelURL,
+          this.saveSchema ? undefined : this.dataModelID,
+          this.saveSource ? this.sourceData : undefined,
+          this.saveSource ? undefined : this.sourceDataID,
+          this.path);
         this.ref.close({ name, adapterId, status, description, saveSchema: this.saveSchema, saveSource: this.saveSource });
         this.editedValue.emit({ name, adapterId, status, description });
         this.showToast('primary', this.translate.instant('general.dmm.map_added_message'), '');
@@ -176,7 +198,6 @@ export class CreateMapComponent implements OnInit {
       catch (error) {
         this.errorHandle("source", error)
       }
-
   }
 
   errorHandle(entity, error) {

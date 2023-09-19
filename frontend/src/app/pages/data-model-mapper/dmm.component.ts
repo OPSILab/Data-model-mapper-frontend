@@ -18,6 +18,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NgxConfigureService } from 'ngx-configure';
 import { TransformComponent } from '../home/transform/transform.component';
 import editor from './mapperEditor'
+import { DialogComponent } from './create-map/dialog/dialog.component';
 
 let mapOptionsGl, mapGl = "Set your mapping fields here"//, mapperEditor
 
@@ -128,6 +129,7 @@ export class DMMComponent implements OnInit, OnChanges {
   schemaOptions: any;
   importedSchema: any;
   importedSource: any;
+  openDialog = editor.openDialog
   //ref
 
   constructor(
@@ -146,6 +148,21 @@ export class DMMComponent implements OnInit, OnChanges {
 
   toggleView() {
     this.flipped = !this.flipped;
+  }
+
+  test(){
+    this.dialogService.open(DialogComponent)
+  }
+
+  openConfirmDialog($event) {
+    console.debug($event)
+    if ($event) {
+      this.dialogService.open(DialogComponent, {
+        context: {
+          message: "Suca?"
+        }
+      }).onClose.subscribe((suca) => { console.debug("suca", suca) })
+    }
   }
 
   sourceEditorMode = sourceEditorMode
@@ -683,9 +700,6 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   differences(object1, object2) {
-    console.debug(JSON.stringify(object1))
-    console.debug(JSON.stringify(object2))
-    console.debug(JSON.stringify(object1) == JSON.stringify(object2))
     return JSON.stringify(object1) != JSON.stringify(object2)
   }
 

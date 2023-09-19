@@ -26,6 +26,7 @@ import { DialogDataMapComponent } from './dialog-dataMap/dialog-dataMap.componen
 import { CreateMapComponent } from './create-map/create-map.component';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { ExportFileComponent } from './export-file/export-file.component';
+import { DialogComponent } from './create-map/dialog/dialog.component';
 
 @NgModule({
   imports: [
@@ -52,7 +53,7 @@ import { ExportFileComponent } from './export-file/export-file.component';
     TranslateModule.forChild({}),
     NbAutocompleteModule
   ],
-  declarations: [DialogImportComponent,DialogDataMapComponent, CreateMapComponent, ExportFileComponent, DMMComponent],
+  declarations: [DialogImportComponent,DialogDataMapComponent, CreateMapComponent, ExportFileComponent, DMMComponent, DialogComponent],
   providers: [DMMService],
   entryComponents: [
     DialogImportComponent,
