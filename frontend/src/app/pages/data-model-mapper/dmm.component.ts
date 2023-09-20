@@ -255,7 +255,7 @@ export class DMMComponent implements OnInit, OnChanges {
     for (let key in obj2)
       if (typeof obj2[key] == "object" || Array.isArray(obj2[key]))
         await this.refParse(obj2[key])
-      else if (key.startsWith("$ref")) {
+      else if (key.startsWith("$ref")|| key.startsWith("dollarref")) {
         //console.debug("ref found");
         this.parsed = true
       }
