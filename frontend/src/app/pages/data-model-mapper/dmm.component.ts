@@ -175,12 +175,16 @@ export class DMMComponent implements OnInit, OnChanges {
     document.getElementsByTagName('html')[0].className = ""
   }
 
-  rawSource() {
-    if (this.dataModelURL || this.selectedDataModel && this.selectedDataModel != "---select schema---") return false
+  rawSchema() {
+    console.debug(this.dataModelURL)
+    console.debug(this.selectedDataModel)
+    console.debug(this.selectedDataModel != "---select schema---")
+    console.debug(this.selectedDataModel && this.selectedDataModel != "---select schema---")
+    if (this.dataModelURL || (this.selectedDataModel && this.selectedDataModel != "---select schema---" && typeof this.selectedDataModel == "string")) return false
     return true
   }
 
-  rawSchema() {
+  rawSource() {
     if (this.sourceDataURL || this.selectedSource) return false
     return true
   }
@@ -191,12 +195,13 @@ export class DMMComponent implements OnInit, OnChanges {
 
     //if (source[this.selectedPath])
     //source = source[this.selectedPath]
+    console.debug(this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText())) || this.rawSource())
 
     this.dialogService.open(CreateMapComponent, {
       context: {
-        unsaved:{
-          schema : this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())),
-          source : this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText()))
+        unsaved: {
+          schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())),
+          source: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText()))
         },
         value: this.adapter,
         name: this.name,
@@ -210,7 +215,7 @@ export class DMMComponent implements OnInit, OnChanges {
         sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
         dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-        sourceData: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText())) || this.rawSource() ? this.inputType == "json" ? source : this.csvSourceData : undefined,
+        sourceData: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText())) || this.rawSource() ? this.setSource(source) : undefined,
         schemaSaved: this.savedSchema,
         sourceSaved: this.savedSource
       }
@@ -224,7 +229,7 @@ export class DMMComponent implements OnInit, OnChanges {
           this.selectedDataModel = undefined
           this.dataModelURL = undefined
         }
-        if (adapter.saveSource){
+        if (adapter.saveSource) {
           this.importedSource = JSON.parse(this.sourceEditor.getText())
           this.selectedSource = undefined
           this.sourceDataURL = undefined
@@ -613,33 +618,34 @@ export class DMMComponent implements OnInit, OnChanges {
     this.separatorItem = this.transformSettings.delimiter
   }
 
+  setSource(source) {
+    if (Array.isArray(source))
+      source = [source[0], source[1], source[2]]
+
+    this.partialCsv = ""
+
+    if (this.rows)
+      this.partialCsv = this.partialCsv
+        .concat(this.rows[0])
+        .concat(this.rows[1] ? "\r\n" : '')
+        .concat(this.rows[1] || '')
+        .concat(this.rows[2] ? "\r\n" : '')
+        .concat(this.rows[2] || '')
+        .concat(this.rows[3] ? "\r\n" : '')
+        .concat(this.rows[3] || '')
+
+    return this.inputType == "csv" ? this.partialCsv : source
+  }
+
   async testAdapter() {
     this.updateConfigSettings()
     let output
     try {
       let m = JSON.parse(editor.mapperEditor.getText())
       m["targetDataModel"] = "DataModelTemp"
-      let source = JSON.parse(this.sourceEditor.getText())
+      let source = this.setSource(JSON.parse(this.sourceEditor.getText()))
 
-      if (source[this.selectedPath])
-        source = source[this.selectedPath]
-
-      if (Array.isArray(source))
-        source = [source[0], source[1], source[2]]
-
-      this.partialCsv = ""
-
-      if (this.rows)
-        this.partialCsv = this.partialCsv
-          .concat(this.rows[0])
-          .concat(this.rows[1] ? "\r\n" : '')
-          .concat(this.rows[1] || '')
-          .concat(this.rows[2] ? "\r\n" : '')
-          .concat(this.rows[2] || '')
-          .concat(this.rows[3] ? "\r\n" : '')
-          .concat(this.rows[3] || '')
-
-      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.partialCsv : source, m, this.schemaJson, this.transformSettings)
+      output = await this.dmmService.test(this.inputType, source, m, this.schemaJson, this.transformSettings)
     }
     catch (error) {
       if (!output)
@@ -1061,13 +1067,15 @@ export class DMMComponent implements OnInit, OnChanges {
     //if (source[this.selectedPath])
     //source = source[this.selectedPath]
 
-    console.debug(this.dataModelURL)
+
+    console.debug(this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText())) || this.rawSource())
+
 
     this.dialogService.open(CreateMapComponent, {
       context: {
-        unsaved:{
-          schema : this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())),
-          source : this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText()))
+        unsaved: {
+          schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())),
+          source: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText()))
         },
         save: true,
         path: this.selectedPath,
@@ -1079,7 +1087,7 @@ export class DMMComponent implements OnInit, OnChanges {
         sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
         dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-        sourceData: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText())) || this.rawSource() ? this.inputType == "json" ? source : this.csvSourceData : undefined,
+        sourceData: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText())) || this.rawSource() ? this.setSource(source) : undefined,
         schemaSaved: false,
         sourceSaved: false
       }
@@ -1104,7 +1112,7 @@ export class DMMComponent implements OnInit, OnChanges {
           this.selectedDataModel = undefined
           this.dataModelURL = undefined
         }
-        if (adapter.saveSource){
+        if (adapter.saveSource) {
           this.importedSource = JSON.parse(this.sourceEditor.getText())
           this.selectedSource = undefined
           this.sourceDataURL = undefined

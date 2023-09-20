@@ -96,21 +96,8 @@ export class CreateMapComponent implements OnInit {
   }
 
   async onSubmit() {
-    console.debug(this.unsaved.schema)
-    console.debug(this.unsaved.source)
-    console.debug(this.saveSchema)
-    console.debug(this.saveSource)
-    console.debug(this.unsaved.schema && !this.saveSchema)
-    console.debug(this.unsaved.sourceData && !this.saveSource)
-    console.debug((this.unsaved.schema && !this.saveSchema) || (this.unsaved.sourceData && !this.saveSource))
-    console.debug(typeof this.unsaved.schema)
-    console.debug(typeof this.unsaved.sourceData)
-    console.debug(typeof this.saveSchema)
-    console.debug(typeof this.saveSource)
-    console.debug(typeof this.unsaved.schema && !this.saveSchema)
-    console.debug(typeof this.unsaved.sourceData && !this.saveSource)
-    console.debug(typeof (this.unsaved.schema && !this.saveSchema) || (this.unsaved.sourceData && !this.saveSource))
-    if ((this.unsaved.schema && !this.saveSchema) || (this.unsaved.source && !this.saveSource))//TODO fix
+    console.debug(this)
+    if ((this.unsaved.schema && !this.saveSchema) || (this.unsaved.source && !this.saveSource))
       this.dialogService.open(CreateMapComponent, {
         context: {
           message: "There are unsaved changes. Are you sure you want to discard them ?"
