@@ -255,7 +255,7 @@ export class DMMComponent implements OnInit, OnChanges {
     for (let key in obj2)
       if (typeof obj2[key] == "object" || Array.isArray(obj2[key]))
         await this.refParse(obj2[key])
-      else if (key.startsWith("$ref")|| key.startsWith("dollarref")) {
+      else if (key.startsWith("$ref") || key.startsWith("dollarref")) {
         //console.debug("ref found");
         this.parsed = true
       }
@@ -367,7 +367,7 @@ export class DMMComponent implements OnInit, OnChanges {
           if (this.selectedPath != "" && !this.sourceJson[this.selectedPath]) this.selectedPath = ""
           mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
           this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
-          this.onUpdatePathForDataMap("")
+          this.onUpdatePathForDataMap("", true)
           this.importedSource = JSON.parse(this.sourceEditor.getText())
         }
         else {
@@ -433,7 +433,7 @@ export class DMMComponent implements OnInit, OnChanges {
     this.csvSourceData = ""
     this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem)
     await this.resetConfigSettings()
-    this.onUpdatePathForDataMap("")
+    this.onUpdatePathForDataMap("", true)
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -790,12 +790,14 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
-  onUpdatePathForDataMap(event) {
+  onUpdatePathForDataMap(event, root) {
 
-    //console.debug(event)
+    console.debug(event)
     this.confirmMapping()
     this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), "")
     mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), event);
+    if (!event && !root)
+      mapOptionsGl[0] = "---no keys for selected path---"
     if (!mapOptionsGl[0])
       mapOptionsGl[0] = "---no keys for selected path---"
     this.setMapEditor(true);
@@ -1211,8 +1213,8 @@ export class DMMComponent implements OnInit, OnChanges {
         //if (mapSettings.path) this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
         //else
         this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), '')
-        if (mapSettings.path || mapSettings.path == '') this.onUpdatePathForDataMap(mapSettings.path)
-        else this.onUpdatePathForDataMap("")
+        if (mapSettings.path) this.onUpdatePathForDataMap(mapSettings.path, false)
+        else this.onUpdatePathForDataMap("", true)
         //console.debug(this.selectedPath, mapSettings.path)
         //if (mapSettings.path)//console.debug(this.selectedPath, mapSettings.path)
       }
@@ -1246,6 +1248,10 @@ export class DMMComponent implements OnInit, OnChanges {
       if (this.inputType != "json")
         this.handleError(error, false, false)
     }
+  }
+
+  verifyRoot($event){
+    return $event == ".root$$$"
   }
 
   import(field, typeSource: string): void {
@@ -1300,7 +1306,7 @@ export class DMMComponent implements OnInit, OnChanges {
               this.handleError(error, false, false)
             }
 
-            this.onUpdatePathForDataMap("")
+            this.onUpdatePathForDataMap("", true)
           }
           else if (field == 'schema') {
             this.schemaRef = result?.source;
