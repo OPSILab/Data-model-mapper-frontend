@@ -180,7 +180,7 @@ export class DMMComponent implements OnInit, OnChanges {
     console.debug(this.selectedDataModel)
     console.debug(this.selectedDataModel != "---select schema---")
     console.debug(this.selectedDataModel && this.selectedDataModel != "---select schema---")
-    if (this.dataModelURL || (this.selectedDataModel && this.selectedDataModel != "---select schema---" && typeof this.selectedDataModel == "string")) return false
+    if (this.dataModelURL || (this.selectedSchema && this.selectedSchema != "---select schema---" && typeof this.selectedSchema == "string")) return false
     return true
   }
 
@@ -301,6 +301,9 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async schemaChanged($event, from) {
+    console.debug(this.selectedSchema)
+    console.debug($event)
+
     let errors
     if ($event && $event != "---select schema---") {
       if (this.dataModelURL && from != "url") {
@@ -348,6 +351,8 @@ export class DMMComponent implements OnInit, OnChanges {
         this.importedSchema = JSON.parse(this.schemaEditor.getText())
       this.tempSchema = undefined
     }
+    console.debug(this.selectedSchema)
+
   }
 
   sourceChanged($event) {
