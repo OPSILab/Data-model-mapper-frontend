@@ -497,6 +497,14 @@ export class DMMComponent implements OnInit, OnChanges {
       await this.mapChanged(this.inputID, false)
       if (this.inputType == "csv" && !this.emptySource) this.updateCSVTable()
     }
+    else {
+      this.importedSchema = {
+        "info": "set your schema here"
+      }
+      this.importedSource = [{
+        "info": "set your source json here"
+      }]
+    }
   }
 
   selectFilteredSchema() {
@@ -578,7 +586,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   setSource(source) {
     if (Array.isArray(source))
-      source = source.slice(0,3)
+      source = source.slice(0, 3)
 
     this.partialCsv = ""
 
@@ -1046,14 +1054,14 @@ export class DMMComponent implements OnInit, OnChanges {
           this.selectedDataModel = undefined
           this.dataModelURL = undefined
         }
-        else
+        else if (this.importedSchema)
           this.schemaEditor.update(this.importedSchema)
         if (adapter.saveSource) {
           this.importedSource = JSON.parse(this.sourceEditor.getText())
           this.selectedSource = undefined
           this.sourceDataURL = undefined
         }
-        else
+        else if (this.importedSource)
           this.sourceEditor.update(this.importedSource)
       }
     });
