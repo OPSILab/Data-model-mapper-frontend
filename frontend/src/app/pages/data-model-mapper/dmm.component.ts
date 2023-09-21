@@ -578,7 +578,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   setSource(source) {
     if (Array.isArray(source))
-      source = [source[0], source[1], source[2]]
+      source = source.slice(0,3)
 
     this.partialCsv = ""
 
@@ -780,7 +780,7 @@ export class DMMComponent implements OnInit, OnChanges {
         return map
       }
     }
-    let fixedPath = ""
+    //let fixedPath = ""
     if (path[1]) {
       map[path[0]] = deepInPath(path, value, map)
     }
@@ -888,48 +888,41 @@ export class DMMComponent implements OnInit, OnChanges {
         mapID: this.adapter.adapterId
       }
       :
-      {
-        sourceDataType: this.inputType,
-        path: this.selectedPath,
-        sourceDataURL: this.sourceDataURL,
-        sourceData: this.sourceDataURL || this.selectedSource ? undefined : this.inputType != "json" ? this.csvSourceData : source,
-        sourceDataID: this.selectedSource,
-        dataModelID: this.selectedSchema == "---select schema---" ? undefined : this.selectedSchema,
-        mapData: JSON.parse(editor.mapperEditor.getText()),
-        dataModel: (!this.selectedSchema || this.selectedSchema == "---select schema---") && !this.dataModelURL ? JSON.parse(this.schemaEditor.getText()) : undefined,
-        config: this.transformSettings
-      }
+      this.bodyBuilder(source)
     return "curl --location '" + this.config.data_model_mapper.default_mapper_url + "' --header 'Content-Type: application/json' --data '" + JSON.stringify(body) + "'"
   }
 
+  bodyBuilder(source) {
+    let body = {
+      sourceDataType: this.inputType,
+      path: this.selectedPath,
+      mapData: JSON.parse(editor.mapperEditor.getText()),
+      config: this.transformSettings
+    }
+    if (this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())) || this.rawSchema()) body["schema"] = JSON.parse(this.schemaEditor.getText())
+    else {
+      if (this.selectedSchema && this.selectedSchema != "---select schema---")
+        body["dataModelID"] = this.selectedSchema
+      body["dataModelURL"] = this.dataModelURL
+    }
+    if (this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText())) || this.rawSource())
+      body["sourceData"] = this.setSource(source)
+    else {
+      body["sourceDataURL"] = this.sourceDataURL
+      body["sourceDataID"] = this.selectedSource
+    }
+    return body
+  }
+
   saveAsFile(): void {
-    /*
-    this.windowService.open(
-      this.contentTemplate
-    ).onClose.subscribe((content) => {
-      this.saveFile(this.name, this.adapterId);
-     });*/
+
     let source = JSON.parse(this.sourceEditor.getText())
 
     //if (source[this.selectedPath])
     //source = source[this.selectedPath]
 
-
     this.dialogService.open(ExportFileComponent).onClose.subscribe((content) => {
-      this.saveFile(content == "file" ? JSON.stringify({
-        sourceDataType: this.inputType,
-        path: this.selectedPath,
-        sourceDataURL: this.sourceDataURL,
-        sourceData: this.sourceDataURL || this.selectedSource ? undefined : this.inputType != "json" ? this.csvSourceData : source,
-        sourceDataID: this.selectedSource,
-        dataModelID: this.selectedSchema == "---select schema---" ? undefined : this.selectedSchema,
-        mapData: JSON.parse(editor.mapperEditor.getText()),
-        dataModel: (!this.selectedSchema || this.selectedSchema == "---select schema---") && !this.dataModelURL ? JSON.parse(this.schemaEditor.getText()) : undefined,
-        config: this.transformSettings
-      })
-        :
-        this.buildSnippet()
-      );
+      this.saveFile(content == "file" ? JSON.stringify(this.bodyBuilder(source)) : this.buildSnippet());
     })
   }
 
@@ -1303,5 +1296,3 @@ export class DMMComponent implements OnInit, OnChanges {
     element.appendChild(divElement);
   }
 }
-
-
