@@ -1119,11 +1119,15 @@ export class DMMComponent implements OnInit, OnChanges {
           this.selectedDataModel = undefined
           this.dataModelURL = undefined
         }
+        else
+          this.schemaEditor.update(this.importedSchema)
         if (adapter.saveSource) {
           this.importedSource = JSON.parse(this.sourceEditor.getText())
           this.selectedSource = undefined
           this.sourceDataURL = undefined
         }
+        else
+          this.sourceEditor.update(this.importedSource)
       }
     });
   }
@@ -1250,7 +1254,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
-  verifyRoot($event){
+  verifyRoot($event) {
     return $event == ".root$$$"
   }
 
