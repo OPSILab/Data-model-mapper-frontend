@@ -744,7 +744,7 @@ export class DMMComponent implements OnInit, OnChanges {
   //keepObjKeys:Whether to keep the parent object keys
 
   getKeys(obj, keepObjKeys, skipArrays, keys = [], scope = []) {
-    console.debug(obj)
+    //console.debug(obj)
     if (Array.isArray(obj)) {
       /*if (!skipArrays) scope.push('[' + obj.length + ']');
       obj.forEach((o) => this.getKeys(o, keepObjKeys, skipArrays, keys, scope), keys);*/
@@ -757,7 +757,7 @@ export class DMMComponent implements OnInit, OnChanges {
         this.getKeys(obj[k], keepObjKeys, skipArrays, keys, scope.concat(k));
       }, keys);
     }
-    console.debug(keys)
+    //onsole.debug(keys)
     return keys;
   }
 
@@ -1336,6 +1336,22 @@ export class DMMComponent implements OnInit, OnChanges {
     this.keys = []
     this.getKeys_2(_.get(JSON.parse(content), path + '[0]', JSON.parse(content)), path, path)//this.getKeys(_.get(JSON.parse(content), path + '[0]', JSON.parse(content)), true, true)
     return this.keys*/
+    console.debug("FIX BUG")
+    let options = []
+    console.debug(JSON.parse(content)[path])
+    let allMapOptions = []
+    let arrayTemp
+    let arrayTemp2 = JSON.parse(content)
+    if (Array.isArray(JSON.parse(content)[path])) {
+      for (let element of JSON.parse(content)[path]) {
+        arrayTemp = [element]
+        arrayTemp2[path] = arrayTemp
+        allMapOptions = allMapOptions.concat(this.getKeys(_.get(arrayTemp2, path + '[0]', arrayTemp2), true, true))
+        console.debug(allMapOptions)
+      }
+      options = allMapOptions.filter((item, pos) => allMapOptions.indexOf(item) === pos)
+      return options
+    }
     return this.getKeys(_.get(JSON.parse(content), path + '[0]', JSON.parse(content)), true, true)
   }
 
