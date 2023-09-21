@@ -25,10 +25,10 @@ export class DialogImportComponent {
   @Input() type: string;
 
   constructor(
-    private http: HttpClient,
-    protected ref: NbDialogRef<DialogImportComponent>,
-    private errorService: ErrorDialogService,
-    @Inject(DOCUMENT) private document: Document,
+    public http: HttpClient,
+    public ref: NbDialogRef<DialogImportComponent>,
+    public errorService: ErrorDialogService,
+    @Inject(DOCUMENT) public document: Document,
   ) { }
 
   cancel(): void {

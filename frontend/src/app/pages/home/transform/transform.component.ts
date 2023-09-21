@@ -17,6 +17,7 @@ import { DMMService } from '../../data-model-mapper/dmm.service';
 import { ExportFileComponent } from '../../data-model-mapper/export-file/export-file.component';
 import { ErrorDialogAdapterService } from '../../error-dialog/error-dialog-adapter.service';
 import * as JSONEditor from '../../../../../node_modules/jsoneditor/dist/jsoneditor.js';
+import { ImportComponent } from '../import/import.component';
 
 
 let mapOptionsGl, mapGl = "Set your mapping fields here", mapperEditor
@@ -44,6 +45,79 @@ export class TransformComponent extends DMMComponent implements OnInit, OnChange
     super(document, dialogService, windowService, errorService, dmmService, route, configService)
     this.config = configService.config as AppConfig;
     this.emptySource = true
+  }
+
+  import(field, typeSource: string): void {
+    this.typeSource = typeSource;
+    this.dialogService
+      .open(ImportComponent, field == "map" ? { context: { map: true } } : { context: { type: typeSource } })
+      .onClose.subscribe(async (result: { content: string; source: string; format: string; mapSettings }) => {
+        if (result?.mapSettings)
+          this.mapChanged(false, result.mapSettings)
+        else if (result && result?.content) {
+          if (typeSource == 'csv') {
+            this.sourceRef = result?.source;
+            this.sourceRefFormat = result?.format;
+            if (this.sourceRefFormat == "url")
+              this.sourceDataURL = result.source
+            this.csvSourceData = result.content;
+            this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem);
+            mapOptionsGl = this.csvSourceData.slice(0, this.csvSourceData.indexOf("\n")).split(this.separatorItem);
+            if (this.selectedSource) this.selectedSource = undefined
+            //sourceEditorCodeMode = true
+            this.importedSource = this.csvSourceData
+          }
+          else if (field == 'source') {
+            this.sourceRef = result?.source;
+            this.sourceRefFormat = result?.format;
+            if (this.sourceRefFormat == "url") {
+              this.sourceDataURL = result.source
+              if (this.selectedSource) this.selectedSource = undefined
+            }
+            if (!this.sourceEditor) {
+              this.sourceEditor = new JSONEditor(this.sourceEditorContainer, this.sourceOptions, JSON.parse(result.content));
+              this.importedSource = JSON.parse(result.content)
+            }
+            else
+              try {
+                this.sourceEditor.setText(result.content);
+                if (this.selectedSource) this.selectedSource = undefined
+                //sourceEditorCodeMode = true
+                this.importedSource = JSON.parse(result.content)
+              }
+              catch (error) {
+                this.handleError(error, false, false)
+                this.sourceEditor.update({ message: "you must import a valid json" })
+              }
+
+            try {
+              mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
+              this.paths = this.selectMapJsonOptions(result.content, '')
+            }
+            catch (error) {
+              this.handleError(error, false, false)
+            }
+
+            this.onUpdatePathForDataMap("", true)
+          }
+          else if (field == 'schema') {
+            this.schemaRef = result?.source;
+            this.schemaRefFormat = result?.format;
+            if (this.sourceRefFormat == "url") {
+              this.dataModelURL = result.source
+              this.selectedSchema = "---select schema---"
+            }
+            try {
+              this.tempSchema = JSON.parse(result.content)
+            }
+            catch (error) {
+              this.handleError(error, false, false)
+              this.schemaJson = { "error": "import a valid schema" }
+            }
+            this.schemaChanged(this.getSchema(), "url")
+          }
+        }
+      });
   }
 }
 

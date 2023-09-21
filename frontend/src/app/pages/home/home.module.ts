@@ -9,6 +9,7 @@ import { ActionsComponent } from './actions/actions.component';
 import { DetailsComponent } from './details/details.component';
 import { StatusComponent } from './status/status.component';
 import { TransformComponent } from './transform/transform.component';
+import { ImportComponent } from './import/import.component';
 
 
 
@@ -17,7 +18,8 @@ import { TransformComponent } from './transform/transform.component';
     ActionsComponent,
     DetailsComponent,
     StatusComponent,
-    TransformComponent
+    TransformComponent,
+    ImportComponent
   ],
   imports: [
     CommonModule,

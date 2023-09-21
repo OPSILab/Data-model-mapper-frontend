@@ -9,32 +9,35 @@
 
     </nb-card-header>
     <nb-card-body *ngIf="!dialog">
-      <p>Select map record from below or upload your map record.
+      <p>Select map record or upload your map record.
       </p>
-      <nb-select placeholder="Select map record" size="small" [(ngModel)]=selectMap
-        (ngModelChange)="mapChanged($event)" (click)="fixBrokenPageBug()">
+      <nb-select placeholder="Select map record" size="small" [(ngModel)]="selectMap"
+        (ngModelChange)="mapChanged($event)">
         <nb-option *ngFor="let map of maps" value={{map.id}}>{{map.name}}</nb-option>
       </nb-select>
+      <div style="margin-top: 30px;"></div>
+      <div *ngIf="backendDown">Unable to reach server</div>
       <div class="row justify-content-center">
         <button nbButton class="mx-4" shape="rectangle" size="medium" status="info" (click)="reset()">
-          {{ 'general.dmm.create_new' | translate }}
+          Create new
           <i class="mx-1 material-icons">create</i>
         </button>
-        <button nbButton class="mx-4" shape="rectangle" size="medium" status="primary" (click)="saveAdapter()">
-          {{ 'general.dmm.save_as_new' | translate }}
+        <button *ngIf="!backendDown" nbButton class="mx-4" shape="rectangle" size="medium" status="primary"
+          (click)="saveRecord()">
+          Save as new
           <i class="mx-1 material-icons">save</i>
         </button>
-        <button *ngIf="isNew" nbButton class="mx-4" shape="rectangle" size="medium" status="primary"
-          (click)="updateAdapter()">
-          {{ 'general.editor.update' | translate }}
+        <button *ngIf="isNew && !backendDown" nbButton class="mx-4" shape="rectangle" size="medium" status="primary"
+          (click)="updateRecord()">
+          Update
           <i class="mx-1 material-icons">update</i>
         </button>
         <button nbButton class="mx-4" shape="rectangle" size="medium" status="warning" (click)="saveAsFile()">
-          {{ 'general.editor.export' | translate }}
+          Export
           <i class="mx-1 fas fa-file-export fa-lg"></i>
         </button>
         <button nbButton class="mx-4" shape="rectangle" size="medium" status="danger" (click)="import('map', 'json')">
-          {{ 'general.editor.import' | translate }}
+          Import
           <i class="mx-1 fas fa-file-import fa-lg"></i>
         </button>
       </div>
@@ -54,25 +57,34 @@
             <p *ngIf="sourceRef!==''&&sourceRefFormat==='file'">File: <i>{{sourceRef}}</i></p>
             <div class="mb-2" *ngIf="!dialog">
               <nb-select [(ngModel)]="inputType" placeholder="Select Input Type" size="small"
-                (selectedChange)="onUpdateInputType($event)">
+                (selectedChange)="onUpdateInputType($event)" (click)="fixBrokenPageBug()">
                 <nb-option value="csv">CSV</nb-option>
                 <nb-option value="json">JSON</nb-option>
               </nb-select>
             </div>
             <div style="padding-top:30px"></div>
-            <p *ngIf="!dialog">Select a source file from below or upload your source file.
+            <p *ngIf="!dialog">Select a source file or upload your source file.
             </p>
-            <nb-select placeholder="Select source file" size="small" [(ngModel)]="selectedSource"
-              (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
-              <nb-option *ngFor="let source of sources" value={{source.id}}>{{source.name}}</nb-option>
-            </nb-select>
+            <!--
             <br><br><br>
             <div style="padding-top:10px"></div>
+-->
             <div class="mb-1" style="display:none;" id="json-input">
               <div class="mb-2">
                 <br><br>
+                <nb-select placeholder="Select source file" size="small" [(ngModel)]="selectedSource"
+                  (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
+                  <!--<nb-option value="">---select source---</nb-option>-->
+                  <nb-option *ngFor="let source of sources" value={{source.id}}>{{source.name}}</nb-option>
+                </nb-select>
+                &nbsp;
                 <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('source','json')">
-                  {{ 'general.editor.import' | translate }}
+                  Upload
+                  <i class="mx-1 fas fa-file-import fa-lg"></i>
+                </button>
+                <button nbButton class="mr-2" shape="rectangle" size="small"
+                  (click)="onUpdatePathForDataMap(selectedPath, verifyRoot($event))">
+                  Update source field list
                   <i class="mx-1 fas fa-file-import fa-lg"></i>
                 </button>
                 <!--
@@ -82,26 +94,30 @@
               </button>
               -->
                 <nb-select [(ngModel)]="selectedPath" placeholder="Select path" size="small"
-                  (selectedChange)="onUpdatePathForDataMap($event)">
-                  <nb-option value="">root.</nb-option>
+                  (selectedChange)="onUpdatePathForDataMap($event, verifyRoot($event))">
+                  <nb-option value=".root$$$">root.</nb-option>
                   <nb-option *ngFor="let path of paths" value={{path}}>.{{path}}</nb-option>
                 </nb-select>
               </div>
-              <div style="height:500px" id="jsoneditor" (click)="onUpdatePathForDataMap(selectedPath)"
-                (focusout)="onUpdatePathForDataMap(selectedPath)" (blur)="onUpdatePathForDataMap(selectedPath)"></div>
+              <div style="height:500px; margin-top:10px" id="jsoneditor"></div>
             </div>
             <div class="mb-2" id="csv-input" style="display:none;">
               <div class="mb-2">
                 <br><br>
+                <nb-select placeholder="Select source file" size="small" [(ngModel)]="selectedSource"
+                  (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
+                  <nb-option *ngFor="let source of sources" value={{source.id}}>{{source.name}}</nb-option>
+                </nb-select>&nbsp;
                 <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('source','csv')">
-                  {{ 'general.editor.import' | translate }}
+                  Upload
                   <i class="mx-1 fas fa-file-import fa-lg"></i>
                 </button> &nbsp;
                 <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateCSVTable()">
-                  {{ 'general.editor.update_field_list' | translate }}
+                  Update source field list
                   <i class="mx-1 fas fa-lg"></i>
                 </button>
-                <nb-select placeholder="Separator" size="small" [(selected)]="separatorItem" (click)="updateConfig()">
+                <nb-select placeholder="Separator" size="small" [(selected)]="separatorItem"
+                  (selectedChange)="updateConfig($event)">
                   <nb-option value=",">Comma separator</nb-option>
                   <nb-option value=";">Semi-colon separator</nb-option>
                   <nb-option value="\t">Tab separator</nb-option>
@@ -110,8 +126,8 @@
               <div class="mb-3" id="csveditor">
                 <nb-tabset>
                   <nb-tab tabTitle="CSV text">
-                    <textarea id="textarea" nbInput rows="10" fullWidth=true placeholder="Enter CVS text..."
-                      [(ngModel)]="csvSourceData"></textarea>
+                    <textarea (blur)="updateCSVTable()" id="textarea" nbInput rows="10" fullWidth=true placeholder="Enter CVS text..."
+                      [(ngModel)]="csvSourceData" (ngModelChange)="sourceEditorMode('code')"></textarea>
                   </nb-tab>
                   <nb-tab id="csv-table" tabTitle="CSV Table">
                   </nb-tab>
@@ -126,20 +142,25 @@
           </nb-accordion-item-header>
           <nb-accordion-item-body>
             <div class="mb-2">
-              <p>Select a schema from below or upload your schema.
+              <p>Select a schema or upload your schema.
               </p>
+              <p *ngIf="schemaRef!==''&&schemaRefFormat==='url'">URL: <a class="mb-3" href={{schemaRef}}
+                  target="_blank">
+                  <i>{{schemaRef}}</i></a></p>
+              <p *ngIf="schemaRef!==''&&schemaRefFormat==='file'">File: <i>{{schemaRef}}</i></p>
               <nb-select placeholder="Select Json Schema" size="small" [(ngModel)]=selectedSchema
-                (ngModelChange)="schemaChanged($event)">
+                (ngModelChange)="schemaChanged($event, 'DB')">
                 <nb-option *ngFor="let schema of schemas" value={{schema.id}}>{{schema.name}}</nb-option>
-              </nb-select>
-              <br><br><br>
-              <div style="padding-top:10px"></div>
+              </nb-select>&nbsp;
+              <!--<br><br><br>
+              <div style="padding-top:10px"></div>-->
               <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('schema','json')">
-                {{ 'general.editor.import' | translate }}
+                Upload
                 <i class="mx-1 fas fa-file-import fa-lg"></i>
               </button>
-              <button nbButton class="mr-2" shape="rectangle" size="small" (click)="schemaChanged(getSchema())">
-                {{ 'general.editor.generate_mapper' | translate }}
+              <button *ngIf="schemaJson && schemaJson.info!='set your schema here' && !tempSchema" nbButton class="mr-2"
+                shape="rectangle" size="small" (click)="generateMapper(getSchema())">
+                Generate mapper
                 <i class="mx-1 fas fa-lg"></i>
               </button>
               <br>
@@ -159,37 +180,49 @@
             Output
           </nb-accordion-item-header>
           <nb-accordion-item-body>
-            <p *ngIf="!dialog">Set transform config.
-            </p>
-            <br *ngIf="!dialog"> <br *ngIf="!dialog"> <br *ngIf="!dialog">
-            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
-              (click)="updateConfigSettings()">
-              {{ 'general.dmm.update_config' | translate }}
-              <i class="mx-1 fas fa-file-import fa-lg"></i>
-            </button>
-            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
-              (click)="resetConfigSettings()">
-              {{ 'general.dmm.reset_config' | translate }}
-              <i class="mx-1 fas fa-file-import fa-lg"></i>
-            </button>
-            <br *ngIf="!dialog"> <br *ngIf="!dialog">
-            <div [hidden]=dialog style="height:500px" id="configEditor"></div>
-            <br *ngIf="!dialog"> <br *ngIf="!dialog">
             <p *ngIf="!dialog">Test or transform.
             </p>
             <p *ngIf="dialog">Tranform.
             </p>
             <br> <br> <br>
             <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small" (click)="testAdapter()">
-              {{ 'general.dmm.preview' | translate }}
+              Preview
               <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button> &nbsp;
             <button nbButton class="mr-2" shape="rectangle" size="small" (click)="transform()">
-              {{ 'general.dmm.transform' | translate }}
+              Transform
+              <i class="mx-1 fas fa-file-import fa-lg"></i>
+            </button>
+            &nbsp;
+            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="download()">
+              Download
               <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button>
             <br> <br>
             <div style="height:500px" id="jsoneditor3"></div>
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+        <nb-accordion-item expanded="false" [hidden]=dialog>
+          <nb-accordion-item-header>
+            Config
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
+            <p *ngIf="!dialog">Set transform config.
+            </p>
+            <br *ngIf="!dialog"> <br *ngIf="!dialog"> <br *ngIf="!dialog">
+            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
+              (click)="updateConfigSettings()">
+              Update config
+              <i class="mx-1 fas fa-file-import fa-lg"></i>
+            </button>
+            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
+              (click)="resetConfigSettings()">
+              Reset config
+              <i class="mx-1 fas fa-file-import fa-lg"></i>
+            </button>
+            <br *ngIf="!dialog"> <br *ngIf="!dialog">
+            <div [hidden]=dialog style="height:500px" id="configEditor"></div>
+
           </nb-accordion-item-body>
         </nb-accordion-item>
       </nb-accordion>
