@@ -14,7 +14,6 @@ export class ErrorDialogAdapterComponent implements OnInit {
   constructor(public ref: NbDialogRef<unknown>, private _location: Location){}//, private loginService: LoginService) {}
   ngOnInit(): void {
     document.getElementsByTagName('html')[0].className=""
-    console.debug(this.error?.error != 'EDITOR_VALIDATION_ERROR')
   }
 
   closeModal(error: { [key: string]: { cause?: string } }): void {

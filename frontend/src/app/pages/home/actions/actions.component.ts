@@ -62,7 +62,6 @@ export class ActionsComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
-    //console.debug(this.value)
     try {
       this.name = this.value.name
       this.description = this.value.description
@@ -99,7 +98,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
                   context: { inputID: this.value.id, dialog : true },
                 })
             default:
-              console.debug("default")
+              console.log("default")
               break;
           }
         });

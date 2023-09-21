@@ -6,8 +6,6 @@ module.exports = {
 
     mapData: async (req, res) => {
 
-        console.debug(req.body)
-
         process.res = res;
         let { sourceData, map, dataModel } = utils.bodyMapper(req.body)
         
@@ -100,7 +98,6 @@ module.exports = {
     },
 
     modifyMap: async (req, res) => {
-        //console.debug(req.body)
         process.res = res;
         try{res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
             req.body.sourceData, req.body.sourceDataID, req.body.sourceDataIn, req.body.sourceDataURL, req.body.dataModelIn, req.body.dataModelID, req.body.dataModelURL,

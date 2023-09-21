@@ -20,7 +20,6 @@ export class ErrorDialogComponent implements OnInit {
 
   ngOnInit(): void {
     document.getElementsByTagName('html')[0].className=""
-    console.debug(this.error?.error != 'EDITOR_VALIDATION_ERROR')
   }
 
   closeModal(error: { [key: string]: { cause?: string } }): void {

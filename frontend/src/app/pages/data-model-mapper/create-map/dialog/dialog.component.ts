@@ -34,7 +34,6 @@ message
   }
 
   ngOnInit(): void {
-console.debug("suca")
   }
 
 }

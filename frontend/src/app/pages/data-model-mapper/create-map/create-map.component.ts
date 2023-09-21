@@ -96,7 +96,6 @@ export class CreateMapComponent implements OnInit {
   }
 
   async onSubmit() {
-    console.debug(this)
     if ((this.unsaved.schema && !this.saveSchema) || (this.unsaved.source && !this.saveSource))
       this.dialogService.open(CreateMapComponent, {
         context: {
@@ -245,8 +244,6 @@ export class CreateMapComponent implements OnInit {
       "message": "Value required",
       "errorcount": 1
     })
-
-    console.debug(this)
 
     if (error.message == "Adapter ID must be set") {
       this.errorService.openErrorDialog({

@@ -55,7 +55,7 @@ export class DMMService {
   }
 
   refParse(schema) {
-    console.debug("wait backend")
+    console.log("wait backend")
     if (Array.isArray(schema)) schema = schema[0]
     return this.http.post<any>(this.config.data_model_mapper.default_mapper_base_url + "/dereferenceSchema", schema).toPromise();
   }
@@ -67,7 +67,6 @@ export class DMMService {
   }
 
   saveMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, path): any {
-    //console.debug(adapter, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, path)
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/register", {
       id: adapter.adapterId,
       name: adapter.name,

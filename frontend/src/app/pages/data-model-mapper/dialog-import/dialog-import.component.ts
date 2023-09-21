@@ -75,7 +75,6 @@ export class DialogImportComponent {
       }
       this.ref.close({ content: this.file, source: this.dataUrl, format: "url" });
     } else if (this.map) {
-      console.debug(this.map)
       this.ref.close({ mapSettings: this.file, source: this.selectedFile.name, format: "file" })
     }
     else

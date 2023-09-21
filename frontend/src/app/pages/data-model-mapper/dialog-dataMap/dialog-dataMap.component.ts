@@ -94,8 +94,6 @@ export class DialogDataMapComponent implements OnInit {
 
   async ngOnInit() {
 
-    console.debug(this)
-
     let sourceMapOptions = []
 
     for (let option in this.mapOptions)

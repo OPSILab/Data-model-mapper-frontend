@@ -84,8 +84,6 @@ module.exports = {
             if (map.sourceDataType) source.type = map.sourceDataType
             if (map.config) configIn = map.config
 
-            console.debug(map)
-            console.debug(source)
             map = [map.map, "mapData"]
         }
 
@@ -158,8 +156,7 @@ module.exports = {
         }
 
         if (dataModel.data) {
-            console.debug(dataModel.data)
-            console.debug(this.dataModelDeClean(dataModel.data))
+            console.log(this.dataModelDeClean(dataModel.data))
             fs.writeFile(
                 //dataModel.schema_id || 
                 "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
@@ -297,20 +294,10 @@ module.exports = {
 
     dataModelClean(dataModel) {
         this.call++;
-        //console.debug(this.call)
-        //console.debug(dataModel)
         for (let key in dataModel) {
-            //console.debug("dataModel")
-            //console.debug(dataModel)
-            //console.debug("key")
-            //console.debug(key)
             if (Array.isArray(dataModel[key]) || typeof dataModel[key] == "object")
                 dataModel[key] = this.dataModelClean(dataModel[key])
             else if (key.startsWith("$")) {
-                //console.debug("dataModel")
-                //console.debug(dataModel)
-                //console.debug("key")
-                //console.debug(key)
                 dataModel["dollar" + key.substring(1)] = dataModel[key]
                 dataModel[key] = undefined
             }
