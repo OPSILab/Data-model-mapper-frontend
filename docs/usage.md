@@ -7,15 +7,16 @@ The Data model mapper functionalities are explained in [Data model mapper Readme
 
 ## Service dashboard
 
-The section **Home** is where you can save or edit mapper settings.
+The section **Map editor** is where you can save or edit mapper settings.
 
-![](images/home.png)
+![](images/editor.png)
 
 It contains the following accordion 
 
 -   *Source*. Where you can set the source input
 -   *Mapper*. Where you can set the mapper options
 -   *Output*. Where you can see a preview of the mapped source
+-   *Config*. Where you can ser the transform config
 
 ## Source
 
@@ -23,7 +24,7 @@ In the **Source** accordion you can import a source file or edit it.
 
 ![](images/source-1.png)
 
-Firstly, select the inout type source
+Firstly, select the input type source
 
 ![](images/select-input-type.png)
 
@@ -31,8 +32,8 @@ For CSV input type, this it the source editor
 
 ![](images/empty-csv.png)
 
-You can either write your CSV data inside the textarea or import it by clicking the import button.
-If you want to import it, click **IMPORT** button and a dialog will appear
+You can either write your CSV data inside the textarea or import it by clicking the upload button.
+If you want to import it, click **UPLOAD** button and a dialog will appear
 
 ![](images/import.png)
 
@@ -100,11 +101,15 @@ Click on **Select path** and select the path where you want to start analyzing y
 
 ## Mapper
 
-In this section you can set the map record
+In this section you can set the output schema
 
-![](images/mapper.png)
+![](images/mapper_1.png)
 
-You can import a schema if you want set automatically the skeleton of the output. Click **IMPORT** and the steps are the same as mentioned before for source imput. Same if you want to set it manually, just click **Tree** and then select **View**
+and the mapper settings
+
+![](images/mapper_2.png)
+
+You can import a schema if you want set automatically the skeleton of the output. Click **UPLOAD** and the steps are the same as mentioned before for source imput. Same if you want to set it manually, just click **Tree** and then select **View**
 
 ![](images/map-options-2.png)
 
@@ -171,7 +176,7 @@ You can also import a schema from Data model mapper DB by clicking **Select Json
 
 or import the entire map record by clicking **IMPORT** on the top of the page
 
-![](images/home.png)
+![](images/editor.png)
 
 or by selecting it from the Data model mapper DB 
 
@@ -195,7 +200,7 @@ If you want to download map record, just click **EXPORT** button.
 
 If you want to save map record into Data model mapper Database , click **SAVE AS NEW**.
 
-![](images/home.png)
+![](images/editor_top.png)
 
 A save dialog will appear.
 
@@ -207,10 +212,11 @@ Chose a univoque Map ID and a name for the map record and then click save.
 
 If you want to update map record, click on **UPDATE**  button
 
-![](images/home-after-save.png)
+![](images/editor-after-save.png)
 
 and an update dialog will appear.
 
 ![](images/update-dialog.png)
 
-You can just update the name. After finished, click **EDIT** button.
+The Map ID is can't be touched, but you can edit the other fields. 
+After finished, click **UPDATE** button.

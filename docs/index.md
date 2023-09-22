@@ -62,13 +62,6 @@ Once the dist folder files are deployed and the server has started, modify the
 fields of `config.json` configuration file, located in `dist/assets/` folder.
 (These modifications can be made also in `frontend/src/assets/config.json` file before building the Application, as described in the section above).
 
-- **`system.sdkUrl`**: with **PUBLIC** (as the Dashboard will make HTTP calls from frontend running locally on browser) endpoint (**`host`:`port`/api/v2**) where (if any) Cape SDK Client is listening (see [CaPe](https://github.com/OPSILab/Cape))
-
-```  
-  "system": {
-    "sdkUrl": "http://localhost:8085/cape-service-sdk/api/v2",
-``` 
-
 - **`system.dmmGuiUrl`**: with endpoint (**`host`:`port`**) where the dashboard is running (depends on Web server configuration or if running with Docker on different published port).
 
 ```   
@@ -155,7 +148,6 @@ The provided `docker-compose.yml` file has also directives to mount the provided
 
 It contains also the mount to the `src/assets/config.json` file, which allows to configure the Dashboard as described in the [Deployment and Configuration](#deployment-and-configuration) section.
 
-**SOON.** Will be available configuration with environment variables to be set directly in `environment` section of `docker-compose.yml` file.
 
 ### Start it up with Docker Compose
 

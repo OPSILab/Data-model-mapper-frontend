@@ -9,7 +9,7 @@ export interface AppConfig {
 
 export interface System {
   country: string;
-  sdkUrl: string;
+  //sdkUrl: string;
   checkConsentAtOperator: boolean;
   dmmGuiUrl: string;
   editorSchemaPath: string;
