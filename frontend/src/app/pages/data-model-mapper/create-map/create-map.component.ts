@@ -76,7 +76,7 @@ export class CreateMapComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.adapterId = Date.now().toString(); this.name = "name"; this.description = "description"; this.status = "Under development"
+    //this.adapterId = Date.now().toString(); this.name = "name"; this.description = "description"; this.status = "Under development"
     this.loaded = false
     if (this.value)
       for (let key in this.value)
