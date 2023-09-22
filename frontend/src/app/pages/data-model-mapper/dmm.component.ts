@@ -906,6 +906,7 @@ export class DMMComponent implements OnInit, OnChanges {
     //if (!editor.mapperEditor && !justOptions) editor.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
     if (!editor.mapperEditor && !justOptions) editor.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
     else if (!justOptions) editor.mapperEditor.update(this.map)
+    if (editor.mapperEditor) this.map = JSON.parse(editor.mapperEditor.getText())
   }
 
   buildSnippet() {
@@ -1274,21 +1275,22 @@ export class DMMComponent implements OnInit, OnChanges {
   properties
 
   onKeydownMain($event) {
-    console.debug(JSON.parse(this.schemaEditor?.getText())?.allOf?.filter(o => o.properties)[0])
-    console.debug(JSON.parse(this.schemaEditor?.getText())?.anyOf?.filter(o => o?.properties)[0])
+
     try {
-      if (!this.schemaJson?.properties && (
+      console.debug(JSON.parse(this.schemaEditor?.getText())?.properties)
+      if //( &&!this.schemaJson?.properties
+        (
         JSON.parse(this.schemaEditor?.getText())?.properties ||
         JSON.parse(this.schemaEditor?.getText())?.allOf?.filter(o => o.properties)[0] ||
         JSON.parse(this.schemaEditor?.getText())?.anyOf?.filter(o => o?.properties)[0]
-      )
+      //)
       ) {
         this.schemaJson = JSON.parse(this.schemaEditor?.getText())
-        if (!this.schemaJson.properties) {
+        //if (!this.schemaJson.properties) {
           this.properties = true
-          console.debug("this.schemaJson.properies")
+          //console.debug("this.schemaJson.properies")
           //this.schemaEditor.update(this.schemaJson)
-        }
+        //}
       }
     }
     catch (error) {
@@ -1296,6 +1298,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (!error.message.startsWith("Expected") &&
         !error.message.startsWith("Unexpected"))
         this.handleError(error, false, false)
+      //console.log(JSON.stringify(error))
     }
   }
 
