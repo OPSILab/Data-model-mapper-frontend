@@ -1030,6 +1030,7 @@ export class DMMComponent implements OnInit, OnChanges {
     this.transformSettings = JSON.parse(this.configEditor.getText())
     this.separatorItem = this.transformSettings.delimiter
     this.generate_NGSI_ID()
+    this.generateMapper(this.getSchema())
   }
 
   saveRecord() {
@@ -1307,8 +1308,16 @@ export class DMMComponent implements OnInit, OnChanges {
     let allMapOptions = []
     let arrayTemp
     let arrayTemp2 = JSON.parse(content)
-    if (Array.isArray(JSON.parse(content)[path])) {
-      for (let element of JSON.parse(content)[path]) {
+    let root = false
+    if (path == "") root = true
+    if (Array.isArray(JSON.parse(content)[path]) || (root && Array.isArray(JSON.parse(content))) ) {
+      if (root && Array.isArray(JSON.parse(content)))
+      for (let element of JSON.parse(content)) {
+        arrayTemp = [element]
+        arrayTemp2 = arrayTemp
+        allMapOptions = allMapOptions.concat(this.getKeys(_.get(arrayTemp2, path + '[0]', arrayTemp2), true, true))
+      }
+      else for (let element of JSON.parse(content)[path]) {
         arrayTemp = [element]
         arrayTemp2[path] = arrayTemp
         allMapOptions = allMapOptions.concat(this.getKeys(_.get(arrayTemp2, path + '[0]', arrayTemp2), true, true))
