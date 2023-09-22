@@ -213,11 +213,30 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   getSchema() {
-    if (this.tempSchema)
-      return this.tempSchema
-    this.schemaJson = this.schemaEditor.getText() ? JSON.parse(this.schemaEditor.getText()) : { info: "Set your schema here" }
+    try {
+      if (this.tempSchema)
+        return this.tempSchema
+      this.schemaJson = this.schemaEditor?.getText() ? JSON.parse(this.schemaEditor.getText()) : { info: "Set your schema here" }
+    }
+    catch (error) {
+      this.errorService.openErrorDialog(error)
+    }
     return this.schemaJson
   }
+
+  delay(t) {
+    return new Promise(resolve => setTimeout(resolve, t));
+  }
+
+  /*
+  async schemaTemporized() : Promise<any>{
+    await this.delay(200)//.then(
+      //() => {
+        //console.debug("THIS SCHEMA")
+        return this.getSchema();
+      //}
+    //)
+  }*/
 
   parsed = false
 
@@ -256,6 +275,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.selectMap = "---select map---"
     }
     catch (error) {
+      console.error("generateMapper")
       this.handleError(error, false, false)
       if (error?.status == 0 || error?.error?.status == 0) {
         error.statusText = undefined
@@ -968,7 +988,7 @@ export class DMMComponent implements OnInit, OnChanges {
       mapGl = this.map = JSON.parse(editor.mapperEditor.getText())
     }
     catch (error) {
-      error.message == "Cannot read properties of undefined (reading 'getText')" ? console.debug() :
+      error.message == "Cannot read properties of undefined (reading 'getText')" ? console.log() :
         this.handleError(error, false, false)
     }
   }
@@ -1246,6 +1266,25 @@ export class DMMComponent implements OnInit, OnChanges {
           }
         }
       });
+  }
+
+  onKeydownMain($event) {
+    try {
+      if (!this.schemaJson?.properties && (
+        JSON.parse(this.schemaEditor?.getText())?.properties ||
+        JSON.parse(this.schemaEditor?.getText())?.allOf?.filter(o => o.properties)[0] ||
+        JSON.parse(this.schemaEditor?.getText())?.anyOf?.filter(o => o?.properties)[0]
+      )
+      ) {
+        this.schemaJson = JSON.parse(this.schemaEditor?.getText())
+        if (!this.schemaJson.properties) this.schemaJson.properies = {}
+      }
+    }
+    catch (error) {
+      if (!error.message.startsWith("Expected") &&
+        !error.message.startsWith("Unexpected"))
+        this.handleError(error, false, false)
+    }
   }
 
   selectMapJsonOptions(content: string, path: string): string[] {

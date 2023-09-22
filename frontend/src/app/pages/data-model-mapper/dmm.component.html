@@ -158,14 +158,14 @@
                 {{ 'general.editor.upload' | translate }}
                 <i class="mx-1 fas fa-file-import fa-lg"></i>
               </button>
-              <button *ngIf="schemaJson && schemaJson.info!='set your schema here' && !tempSchema" nbButton class="mr-2"
+              <button *ngIf="schemaJson?.properties! && !tempSchema" nbButton class="mr-2"
                 shape="rectangle" size="small" (click)="generateMapper(getSchema())">
                 {{ 'general.editor.generate_mapper' | translate }}
                 <i class="mx-1 fas fa-lg"></i>
               </button>
               <br>
             </div>
-            <div style="height:500px" id="schemaEditor"></div>
+            <div style="height:500px" id="schemaEditor" (keydown)="onKeydownMain($event)" ></div>
             <div style="padding-top:50px"></div>
             <div class="mb-2">
               <p>Set your mapper settings.
