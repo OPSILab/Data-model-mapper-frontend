@@ -328,9 +328,12 @@ export class DMMComponent implements OnInit, OnChanges {
       if (typeof $event == 'string' && !errors) {
         schemaEditorCodeMode = false
         this.importedSchema = JSON.parse(this.schemaEditor.getText())
+        this.onKeydownMain($event)
       }
-      else if (!errors)
+      else if (!errors) {
         this.importedSchema = JSON.parse(this.schemaEditor.getText())
+        this.onKeydownMain($event)
+      }
       this.tempSchema = undefined
     }
   }
@@ -768,12 +771,12 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
-  onUpdatePathForDataMap(event, root) {
-
+  onUpdatePathForDataMap($event, root) {
+    if ($event == ".root$$$") $event = ""
     this.confirmMapping()
     this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), "")
-    mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), event);
-    if (!event && !root)
+    mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), $event);
+    if (!$event && !root)
       mapOptionsGl[0] = "---no keys for selected path---"
     if (!mapOptionsGl[0])
       mapOptionsGl[0] = "---no keys for selected path---"
@@ -1268,7 +1271,11 @@ export class DMMComponent implements OnInit, OnChanges {
       });
   }
 
+  properties
+
   onKeydownMain($event) {
+    console.debug(JSON.parse(this.schemaEditor?.getText())?.allOf?.filter(o => o.properties)[0])
+    console.debug(JSON.parse(this.schemaEditor?.getText())?.anyOf?.filter(o => o?.properties)[0])
     try {
       if (!this.schemaJson?.properties && (
         JSON.parse(this.schemaEditor?.getText())?.properties ||
@@ -1277,10 +1284,15 @@ export class DMMComponent implements OnInit, OnChanges {
       )
       ) {
         this.schemaJson = JSON.parse(this.schemaEditor?.getText())
-        if (!this.schemaJson.properties) this.schemaJson.properies = {}
+        if (!this.schemaJson.properties) {
+          this.properties = true
+          console.debug("this.schemaJson.properies")
+          //this.schemaEditor.update(this.schemaJson)
+        }
       }
     }
     catch (error) {
+      this.properties = false
       if (!error.message.startsWith("Expected") &&
         !error.message.startsWith("Unexpected"))
         this.handleError(error, false, false)
