@@ -617,6 +617,7 @@ export class DMMComponent implements OnInit, OnChanges {
       source = source.slice(0, 3)
 
     this.partialCsv = ""
+    this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem);
 
     if (this.rows)
       this.partialCsv = this.partialCsv
@@ -1031,11 +1032,18 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   updateConfigSettings() {
-    this.confirmMapping()
-    this.transformSettings = JSON.parse(this.configEditor.getText())
-    this.separatorItem = this.transformSettings.delimiter
-    this.generate_NGSI_ID()
-    this.generateMapper(this.getSchema())
+    let backSet = JSON.parse(JSON.stringify(this.transformSettings))
+    try {
+      this.confirmMapping()
+      this.transformSettings = JSON.parse(this.configEditor.getText())
+      this.separatorItem = this.transformSettings.delimiter
+      this.generate_NGSI_ID()
+      this.generateMapper(this.getSchema())
+    }
+    catch (error) {
+      this.transformSettings = backSet
+      this.configEditor.update(this.transformSettings)
+    }
   }
 
   saveRecord() {
