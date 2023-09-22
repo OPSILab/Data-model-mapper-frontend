@@ -158,11 +158,12 @@
                 {{ 'general.editor.upload' | translate }}
                 <i class="mx-1 fas fa-file-import fa-lg"></i>
               </button>
-              <button *ngIf="properties && !tempSchema" nbButton class="mr-2"
+              <button *ngIf="properties && !tempSchema || canGenerateSchema" nbButton class="mr-2"
                 shape="rectangle" size="small" (click)="generateMapper(getSchema())">
                 {{ 'general.editor.generate_mapper' | translate }}
                 <i class="mx-1 fas fa-lg"></i>
               </button>
+
               <br>
             </div>
             <div style="height:500px" id="schemaEditor" (keydown)="onKeydownMain($event)" ></div>

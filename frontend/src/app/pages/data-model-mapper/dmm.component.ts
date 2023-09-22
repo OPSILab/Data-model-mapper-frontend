@@ -125,6 +125,21 @@ export class DMMComponent implements OnInit, OnChanges {
   importedSchema: any;
   importedSource: any;
   openDialog = editor.openDialog
+  exampleSchema = {
+    info: "set your schema here"
+  }
+
+  exampleSchema2 = {
+    info: "set your schema here",
+    properties: {
+      outputKey1: {
+        "type": "string"
+      },
+      outputKey2: {
+        "type": "string"
+      }
+    }
+  }
 
   constructor(
     @Inject(DOCUMENT) public document: Document,
@@ -216,7 +231,7 @@ export class DMMComponent implements OnInit, OnChanges {
     try {
       if (this.tempSchema)
         return this.tempSchema
-      this.schemaJson = this.schemaEditor?.getText() ? JSON.parse(this.schemaEditor.getText()) : { info: "Set your schema here" }
+      this.schemaJson = this.schemaEditor?.getText() ? JSON.parse(this.schemaEditor.getText()) : this.exampleSchema
     }
     catch (error) {
       this.errorService.openErrorDialog(error)
@@ -283,9 +298,7 @@ export class DMMComponent implements OnInit, OnChanges {
       }
       this.errorService.openErrorDialog(error)
       this.map = { "error": "Some errors occurred during generating map object" }
-      this.schemaJson = {
-        "info": "set your schema here"
-      }
+      this.schemaJson = this.exampleSchema
     }
   }
 
@@ -300,9 +313,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (this.selectedSchema)
         this.schemaJson = this.selectFilteredSchema();
       if (!this.schemaJson) {
-        this.schemaJson = {
-          "info": "Set your schema here"
-        }
+        this.schemaJson = this.exampleSchema
       }
 
       try {
@@ -320,9 +331,7 @@ export class DMMComponent implements OnInit, OnChanges {
         }
         this.errorService.openErrorDialog(error)
         this.map = { "error": "Some errors occurred during generating map object" }
-        this.schemaJson = {
-          "info": "set your schema here"
-        }
+        this.schemaJson = this.exampleSchema
 
       }
       if (typeof $event == 'string' && !errors) {
@@ -395,9 +404,7 @@ export class DMMComponent implements OnInit, OnChanges {
     this.isNew = false
     this.selectedPath = undefined
     this.selectedSchema = "---select schema---"
-    this.selectedDataModel = {
-      "info": "set your schema here"
-    }
+    this.selectedDataModel = this.exampleSchema
     let preview = {
       "preview": "set the source, set the json map and click preview to see the output json preview"
     }
@@ -478,9 +485,7 @@ export class DMMComponent implements OnInit, OnChanges {
       "info": "set your source json here"
     }]
 
-    this.selectedDataModel = {
-      "info": "set your schema here"
-    }
+    this.selectedDataModel = this.exampleSchema
 
     let preview = {
       "preview": "set the source, set the json map and click preview to see the output json preview"
@@ -493,6 +498,8 @@ export class DMMComponent implements OnInit, OnChanges {
     this.sourceEditor = new JSONEditor(this.sourceEditorContainer, this.sourceOptions, this.sourceJson);
 
     this.schemaEditor = new JSONEditor(this.schemaEditorContainer, this.schemaOptions, this.selectedDataModel)
+
+    this.schemaEditor.update(this.exampleSchema)
 
     await this.resetConfigSettings()
 
@@ -521,9 +528,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (this.inputType == "csv" && !this.emptySource) this.updateCSVTable()
     }
     else {
-      this.importedSchema = {
-        "info": "set your schema here"
-      }
+      this.importedSchema = this.exampleSchema
       this.importedSource = [{
         "info": "set your source json here"
       }]
@@ -1275,7 +1280,14 @@ export class DMMComponent implements OnInit, OnChanges {
 
   properties
 
+  canGenerateSchema
+
   onKeydownMain($event) {
+
+    this.canGenerateSchema = true
+  }
+
+  onKeydownReactive($event) {
 
     try {
       console.debug(JSON.parse(this.schemaEditor?.getText())?.properties)
@@ -1284,13 +1296,13 @@ export class DMMComponent implements OnInit, OnChanges {
         JSON.parse(this.schemaEditor?.getText())?.properties ||
         JSON.parse(this.schemaEditor?.getText())?.allOf?.filter(o => o.properties)[0] ||
         JSON.parse(this.schemaEditor?.getText())?.anyOf?.filter(o => o?.properties)[0]
-      //)
+        //)
       ) {
         this.schemaJson = JSON.parse(this.schemaEditor?.getText())
         //if (!this.schemaJson.properties) {
-          this.properties = true
-          //console.debug("this.schemaJson.properies")
-          //this.schemaEditor.update(this.schemaJson)
+        this.properties = true
+        //console.debug("this.schemaJson.properies")
+        //this.schemaEditor.update(this.schemaJson)
         //}
       }
     }
@@ -1303,6 +1315,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
+
   selectMapJsonOptions(content: string, path: string): string[] {
     let options = []
     let allMapOptions = []
@@ -1310,13 +1323,13 @@ export class DMMComponent implements OnInit, OnChanges {
     let arrayTemp2 = JSON.parse(content)
     let root = false
     if (path == "") root = true
-    if (Array.isArray(JSON.parse(content)[path]) || (root && Array.isArray(JSON.parse(content))) ) {
+    if (Array.isArray(JSON.parse(content)[path]) || (root && Array.isArray(JSON.parse(content)))) {
       if (root && Array.isArray(JSON.parse(content)))
-      for (let element of JSON.parse(content)) {
-        arrayTemp = [element]
-        arrayTemp2 = arrayTemp
-        allMapOptions = allMapOptions.concat(this.getKeys(_.get(arrayTemp2, path + '[0]', arrayTemp2), true, true))
-      }
+        for (let element of JSON.parse(content)) {
+          arrayTemp = [element]
+          arrayTemp2 = arrayTemp
+          allMapOptions = allMapOptions.concat(this.getKeys(_.get(arrayTemp2, path + '[0]', arrayTemp2), true, true))
+        }
       else for (let element of JSON.parse(content)[path]) {
         arrayTemp = [element]
         arrayTemp2[path] = arrayTemp
