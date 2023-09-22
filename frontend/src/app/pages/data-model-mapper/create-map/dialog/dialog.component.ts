@@ -25,7 +25,7 @@ message
   }
 
   error(){
-    this.errorService.openErrorDialog({error:"suca"})
+    this.errorService.openErrorDialog({error:"example"})
   }
 
 

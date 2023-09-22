@@ -1010,7 +1010,7 @@ export class DMMComponent implements OnInit, OnChanges {
       console.error(message)
     else
       console.error(error?.message || error?.error?.message || error?.statusText || error)
-    console.error(error)
+    //console.error(error)
   }
 
   generate_NGSI_ID() {
@@ -1298,7 +1298,6 @@ export class DMMComponent implements OnInit, OnChanges {
   onKeydownReactive($event) {
 
     try {
-      console.debug(JSON.parse(this.schemaEditor?.getText())?.properties)
       if //( &&!this.schemaJson?.properties
         (
         JSON.parse(this.schemaEditor?.getText())?.properties ||
@@ -1309,7 +1308,6 @@ export class DMMComponent implements OnInit, OnChanges {
         this.schemaJson = JSON.parse(this.schemaEditor?.getText())
         //if (!this.schemaJson.properties) {
         this.properties = true
-        //console.debug("this.schemaJson.properies")
         //this.schemaEditor.update(this.schemaJson)
         //}
       }

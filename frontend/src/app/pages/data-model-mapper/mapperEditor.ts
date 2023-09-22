@@ -2,7 +2,7 @@ let editor = {
   mapperEditor : undefined,
   container : undefined,
   openDialog : {
-    suca:"suca"
+    Example:"Example"
   }
 }
 export default editor
