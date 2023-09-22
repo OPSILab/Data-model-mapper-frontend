@@ -5,7 +5,24 @@
 The Data model mapper GUI is a graphic user interface for the Data model mapper.
 The Data model mapper functionalities are explained in [Data model mapper Readme](../Readme.md)
 
-## Service dashboard
+## Home
+
+The section **Home** is where you can see all mapper records
+
+![](images/home.png)
+
+By clicking the button in the column **Actions** you can see a menu. If the status of the record is *Under development* you can see thee options: 
+
+- *Edit record*. You'll be redirected in the mapper editor section and you can edit the record
+- *Register*. You'll set the status of the record to *Completed*
+- *Delete*. The record will be deleted.
+
+ If the status of the record is *Completed* you can see thee options: 
+
+- *Transform*. You can try the record with an input file
+- *Deregister*. You'll change the status to *Under development*
+
+## Mapper editor
 
 The section **Map editor** is where you can save or edit mapper settings.
 
