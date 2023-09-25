@@ -94,7 +94,6 @@ module.exports = {
             error.map = map
             error.dataModel = dataModel
             throw error
-            return "Missing fields"
         }
 
         if (!Array.isArray(source.data) && source.type == "json" || source.type == ".json" || source.type == "JSON" || source.type == ".JSON") source.data = [source.data]
@@ -245,7 +244,7 @@ module.exports = {
             throw new Error({ error: "source is required" })
         if (path == "") path = undefined
         if (!await Source.findOne({ id: id })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path }])
-        else throw new Error({ error: "id already exists" })
+        throw { "error": "id already exists" }
     },//TODO replace with insertOne
 
     async insertMap(name, id, map, dataModel, status, description,
@@ -273,14 +272,14 @@ module.exports = {
                 sourceDataType,
                 path
             }])
-        else throw new Error({ error: "id already exists" })
+        throw { "error": "id already exists" }
     },//TODO replace with insertOne
 
     async insertDataModel(name, id, dataModel) {
         if (!dataModel)
             throw new Error({ error: "schema is required" })
         if (!await DataModel.findOne({ id: id })) return await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel }])
-        else throw new Error({ error: "id already exists" })
+        throw { "error": "id already exists" }
     },//TODO replace with insertOne
 
     async modifySource(name, id, source, path) {
