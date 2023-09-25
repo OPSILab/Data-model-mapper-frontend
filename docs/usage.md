@@ -11,16 +11,40 @@ The section **Home** is where you can see all mapper records
 
 ![](images/home.png)
 
-By clicking the button in the column **Actions** you can see a menu. If the status of the record is *Under development* you can see thee options: 
+By clicking the button in the column **Actions** you can see a menu. If the status of the record is *Under development* you can see three options: 
+
+![](images/home-actions-menu.png)
 
 - *Edit record*. You'll be redirected in the mapper editor section and you can edit the record
 - *Register*. You'll set the status of the record to *Completed*
 - *Delete*. The record will be deleted.
 
- If the status of the record is *Completed* you can see thee options: 
+ If the status of the record is *Completed* you can see two options:
+
+ ![](images/home-actions-menu-2.png) 
 
 - *Transform*. You can try the record with an input file
 - *Deregister*. You'll change the status to *Under development*
+
+If you click *Transform*, a dialog with two accordion will appear.
+
+## Source
+
+In the *Source* accordion, you'll see the csv input editor for sourceDataType csv
+
+![](images/transform-1.png)
+
+or the json input editor for sourceDataType json
+
+![](images/transform-1_2.png)
+
+You can edit the source data in the same way explained in **Mapper editor section**.
+
+## Output
+
+In the *Output* accordion, you can transform your source input file by clicking *TRANFORM* button and download the transformed source by clicking the *DOWNLOAD* button.
+
+![](images/transform-2.png)
 
 ## Mapper editor
 
@@ -114,7 +138,7 @@ If you select **View** instead of **Code** you will see the JSON formatted diffe
 
 ![](images/json-input-2.png)
 
-Click on **Select path** and select the path where you want to start analyzing your source field and subfields in order to map them.
+When you finished editing your source, click on **UPDATE SOURCE FIELDS** button and then click on **Select path** to select the path where you want to start analyzing your source field and subfields in order to map them.
 
 ## Mapper
 
@@ -126,7 +150,17 @@ and the mapper settings
 
 ![](images/mapper_2.png)
 
-You can import a schema if you want set automatically the skeleton of the output. Click **UPLOAD** and the steps are the same as mentioned before for source imput. Same if you want to set it manually, just click **Tree** and then select **View**
+You can import a schema if you want set automatically the skeleton of the output. Click **UPLOAD** and the steps are the same as mentioned before for source imput. Same if you want to set it manually, just click **View** and then select **Code**
+
+Once you finished writing or importing the schema, click on **GENERATE MAPPER** button (it will be showed once you start typing or once you imported the schema) to generate the mapper skeleton. 
+
+![](images/Schema-wrote.png)
+
+If you prefer doing it manually, go down to the mapper editor
+
+![](images/mapper_2.png)
+
+click **tree** and then **code**
 
 ![](images/map-options-2.png)
 
@@ -213,6 +247,8 @@ Click **PREVIEW** and you'll see the output preview in an JSON editor similar to
 
 If the Output preview is good, you can save the map or export it.
 
+If you want to change something, you can go back to the desired editor and modify the related text. If you want to reset all, click **CREATE NEW** button.
+
 If you want to download map record, just click **EXPORT** button.
 
 If you want to save map record into Data model mapper Database , click **SAVE AS NEW**.
@@ -237,3 +273,11 @@ and an update dialog will appear.
 
 The Map ID is can't be touched, but you can edit the other fields. 
 After finished, click **UPDATE** button.
+
+## Config accordion
+
+The config settings can be modified by writing them on the [Config file](../backend/config.js) once you install the Data model mapper, however you can set your transform config template for each record. Go down to the *Config* accordion and click it.
+
+![](images/config.png)
+
+You can go to [README](../README.md) to read what each field mean. Once you finished modifying it, click on **UPDATE CONFIG** button or **RESER CONFIG** button if you want to revert all config fields to default.

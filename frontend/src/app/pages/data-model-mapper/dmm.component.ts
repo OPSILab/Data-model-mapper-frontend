@@ -34,6 +34,14 @@ function sourceEditorMode(newMode) {
   //editor.toggleSourceMode = false
 }
 
+function debug(property) {
+  console.debug(property)
+}
+
+function log(property) {
+  console.log(property)
+}
+
 let alwaysCode = false
 
 let sourceEditorCodeMode = false
@@ -125,6 +133,9 @@ export class DMMComponent implements OnInit, OnChanges {
   importedSchema: any;
   importedSource: any;
   openDialog = editor.openDialog
+  exampleSource = [{
+    "info": "set your source json here"
+  }]
   exampleSchema = {
     info: "set your schema here"
   }
@@ -941,7 +952,7 @@ export class DMMComponent implements OnInit, OnChanges {
       mapData: JSON.parse(editor.mapperEditor.getText()),
       config: this.transformSettings
     }
-    if (this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())) || this.rawSchema()) body["schema"] = JSON.parse(this.schemaEditor.getText())
+    if (this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())) || this.rawSchema()) body["dataModel"] = JSON.parse(this.schemaEditor.getText())
     else {
       if (this.selectedSchema && this.selectedSchema != "---select schema---")
         body["dataModelID"] = this.selectedSchema
@@ -1130,9 +1141,10 @@ export class DMMComponent implements OnInit, OnChanges {
       else mapSettings = JSON.parse(settingsFromFile)
 
       this.onUpdateInputType(mapSettings?.sourceDataType)
-      this.transformSettings = mapSettings?.config
-      this.configEditor.update(this.transformSettings)
-      this.separatorItem = mapSettings?.config?.delimiter
+
+      if (mapSettings?.config)
+        this.newConfig(mapSettings?.config)
+      else this.resetConfigSettings()
 
       if (mapSettings.sourceDataID && !mapSettings.sourceData && !this.emptySource) {
         this.selectedSource = mapSettings.sourceDataID
@@ -1150,6 +1162,13 @@ export class DMMComponent implements OnInit, OnChanges {
           mapSettings.sourceData = "some errors occurred when downloading remote source"
         }
       }
+      else if (!mapSettings.sourceData) {
+        mapSettings.sourceData = this.exampleSource
+        this.csvSourceData = ""
+        this.updateCSVTable()
+        this.sourceEditor.update(mapSettings.sourceData)
+      }
+
       if (mapSettings.dataModelID && !mapSettings.dataModel) {
         this.selectedSchema = mapSettings.dataModelID
         mapSettings.dataModel = await this.selectFilteredSchema()
@@ -1167,13 +1186,16 @@ export class DMMComponent implements OnInit, OnChanges {
         }
       }
       this.schemaJson =
-        mapSettings.dataModel // this was strangely an arrray
+        mapSettings.dataModel // this was strangely an array
         ;
+
       if (mapSettings.sourceDataType == "json" && !this.emptySource) {
         //this.sourceJson = this.source();
-        if (mapSettings.path || mapSettings.path == '') this.selectedPath = mapSettings.path
         this.sourceEditor.update(mapSettings.sourceData)
-        if (mapSettings.path || mapSettings.path == '') mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), mapSettings.path);
+        if (mapSettings.path || mapSettings.path == '') {
+          this.selectedPath = mapSettings.path
+          mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), mapSettings.path);
+        }
         else {
           this.selectedPath = ""
           mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), "");
@@ -1184,8 +1206,12 @@ export class DMMComponent implements OnInit, OnChanges {
         if (mapSettings.path) this.onUpdatePathForDataMap(mapSettings.path, false)
         else this.onUpdatePathForDataMap("", true)
       }
+      else if (mapSettings.sourceDataType == "csv" && !this.emptySource){
+        this.csvSourceData = typeof mapSettings.sourceData == "string" ? mapSettings.sourceData : JSON.stringify(mapSettings.sourceData)
+        this.updateCSVTable()
+      }
       else if (!this.emptySource)
-        this.csvSourceData = mapSettings.sourceData
+        this.onUpdateInputType("")
 
       this.map = mapSettings.map || mapSettings.mapData
       mapGl = this.map
@@ -1201,6 +1227,11 @@ export class DMMComponent implements OnInit, OnChanges {
       if (mapSettings.dataModel) this.schemaEditor.update(mapSettings.dataModel)
       sourceEditorCodeMode = schemaEditorCodeMode = false
     }
+  }
+  newConfig(config: any) {
+    this.transformSettings = config
+    this.configEditor.update(config)
+    if (config?.delimiter) this.separatorItem = config?.delimiter
   }
 
   updateCSVTable() {
