@@ -203,6 +203,8 @@ export class DMMComponent implements OnInit, OnChanges {
           schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())),
           source: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText()))
         },
+        sources:this.sources,
+        dataModels:this.schemas,
         value: this.adapter,
         name: this.name,
         update: true,
@@ -1075,6 +1077,8 @@ export class DMMComponent implements OnInit, OnChanges {
           schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())),
           source: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText()))
         },
+        sources:this.sources,
+        dataModels:this.schemas,
         save: true,
         path: this.selectedPath,
         jsonMap: JSON.parse(editor.mapperEditor.getText()),

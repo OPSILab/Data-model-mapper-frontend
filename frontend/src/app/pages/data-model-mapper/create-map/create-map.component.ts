@@ -34,6 +34,8 @@ export class CreateMapComponent implements OnInit {
   description
   save
   update
+  sources
+  dataModels
   updateAdapter
   saveSchema = false
   path
@@ -74,6 +76,16 @@ export class CreateMapComponent implements OnInit {
     document.getElementsByTagName('html')[0].className = ""
   }
 
+  selectFiltered(property, id) {
+    try {
+      return this[property].filter(filteredProperty => filteredProperty.id == id)[0]
+    }
+    catch (error) {
+      console.error(error)
+      return false
+    }
+  }
+
   ngOnInit(): void {
 
     //this.adapterId = Date.now().toString(); this.name = "name"; this.description = "description"; this.status = "Under development"
@@ -112,6 +124,7 @@ export class CreateMapComponent implements OnInit {
   }
 
   async submit() {
+    let errors
     let name = this.name,
       adapterId = this.adapterId,
       description = this.description,
@@ -120,66 +133,78 @@ export class CreateMapComponent implements OnInit {
     if (adapterId == '' || adapterId == null)
       throw new Error("Adapter ID must be set");
 
-    try {
+    if (this.selectFiltered("sources", adapterId)) {
+      errors = true
+      this.errorHandle("source", { error: "id already exists", status: 400 })
+    }
 
-      while (adapterId[0] == " ") adapterId = adapterId.substring(1)
-      while (adapterId[adapterId.length - 1] == " ") adapterId = adapterId.substring(0, adapterId.length - 1)
-
-      if (this.save) {
-        await this.dmmService.saveMap({
-          name,
-          adapterId,
-          status,
-          description
-        },
-          status,
-          description,
-          this.jsonMap,
-          this.saveSchema || (!this.dataModelURL && !this.dataModelID)? this.schema : undefined,
-          this.sourceDataType,
-          this.config,
-          this.saveSource ? undefined : this.sourceDataURL,
-          this.saveSchema ? undefined : this.dataModelURL,
-          this.saveSchema ? undefined : this.dataModelID,
-          this.saveSource ? this.sourceData : undefined,
-          this.saveSource ? undefined : this.sourceDataID,
-          this.path);
-        this.ref.close({ name, adapterId, status, description, saveSchema: this.saveSchema, saveSource: this.saveSource });
-        this.editedValue.emit({ name, adapterId, status, description });
-        this.showToast('primary', this.translate.instant('general.dmm.map_added_message'), '');
+    if (!errors)
+      if (this.selectFiltered("dataModels", adapterId)) {
+        errors = true
+        this.errorHandle("schema", { error: "id already exists", status: 400 })
       }
 
-      else {
-        await this.dmmService.updateMap(
-          {
+    if (!errors)
+      try {
+
+        while (adapterId[0] == " ") adapterId = adapterId.substring(1)
+        while (adapterId[adapterId.length - 1] == " ") adapterId = adapterId.substring(0, adapterId.length - 1)
+
+        if (this.save) {
+          await this.dmmService.saveMap({
             name,
             adapterId,
             status,
             description
           },
-          status,
-          description,
-          this.jsonMap,
-          this.saveSchema ? this.schema : undefined,
-          this.sourceDataType,
-          this.config,
-          this.saveSource ? undefined : this.sourceDataURL,
-          this.saveSchema ? undefined : this.dataModelURL,
-          this.saveSchema ? undefined : this.dataModelID,
-          this.saveSource ? this.sourceData : undefined,
-          this.saveSource ? undefined : this.sourceDataID,
-          this.path);
-        this.ref.close({ name, adapterId, status, description, saveSchema: this.saveSchema, saveSource: this.saveSource });
-        this.editedValue.emit({ name, adapterId, status, description });
-        this.showToast('primary', this.translate.instant('general.dmm.map_edited_message'), '');
+            status,
+            description,
+            this.jsonMap,
+            this.saveSchema || (!this.dataModelURL && !this.dataModelID) ? this.schema : undefined,
+            this.sourceDataType,
+            this.config,
+            this.saveSource ? undefined : this.sourceDataURL,
+            this.saveSchema ? undefined : this.dataModelURL,
+            this.saveSchema ? undefined : this.dataModelID,
+            this.saveSource ? this.sourceData : undefined,
+            this.saveSource ? undefined : this.sourceDataID,
+            this.path);
+          this.ref.close({ name, adapterId, status, description, saveSchema: this.saveSchema, saveSource: this.saveSource });
+          this.editedValue.emit({ name, adapterId, status, description });
+          this.showToast('primary', this.translate.instant('general.dmm.map_added_message'), '');
+        }
+
+        else {
+          await this.dmmService.updateMap(
+            {
+              name,
+              adapterId,
+              status,
+              description
+            },
+            status,
+            description,
+            this.jsonMap,
+            this.saveSchema ? this.schema : undefined,
+            this.sourceDataType,
+            this.config,
+            this.saveSource ? undefined : this.sourceDataURL,
+            this.saveSchema ? undefined : this.dataModelURL,
+            this.saveSchema ? undefined : this.dataModelID,
+            this.saveSource ? this.sourceData : undefined,
+            this.saveSource ? undefined : this.sourceDataID,
+            this.path);
+          this.ref.close({ name, adapterId, status, description, saveSchema: this.saveSchema, saveSource: this.saveSource });
+          this.editedValue.emit({ name, adapterId, status, description });
+          this.showToast('primary', this.translate.instant('general.dmm.map_edited_message'), '');
+        }
+
       }
-
-    }
-    catch (error) {
-      this.errorHandle("record", error)
-    }
-
-    if (this.saveSchema)
+      catch (error) {
+        this.errorHandle("record", error)
+        errors = true
+      }
+    if (!errors && this.saveSchema)
       try {
         if (!this.schemaSaved)
           await this.dmmService.saveSchema({ name, adapterId, status, description }, status, description, this.schema);
@@ -188,8 +213,9 @@ export class CreateMapComponent implements OnInit {
       }
       catch (error) {
         this.errorHandle("schema", error)
+        errors = true
       }
-    if (this.saveSource)
+    if (!errors && this.saveSource)
       try {
         if (!this.sourceSaved)
           await this.dmmService.saveSource({ name, adapterId, status, description }, status, description, this.sourceData, this.path);
@@ -198,6 +224,7 @@ export class CreateMapComponent implements OnInit {
       }
       catch (error) {
         this.errorHandle("source", error)
+        errors = true
       }
   }
 
