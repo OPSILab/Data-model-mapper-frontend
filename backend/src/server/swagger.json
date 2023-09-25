@@ -50,7 +50,13 @@
           "200": {
             "description": "JSON output",
             "schema": {
-              "$ref": "#/definitions/Example Response 1"
+              "$ref": "#/definitions/Example transform response"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST",
+            "schema": {
+              "$ref": "#/definitions/BAD_REQUEST"
             }
           }
         }
@@ -68,7 +74,7 @@
             "in": "body",
             "description": "Example request for inserting a json map document",
             "schema": {
-              "$ref": "#/definitions/Insert Map"
+              "$ref": "#/definitions/Insert Map_6"
             }
           }
         ],
@@ -79,7 +85,13 @@
           "200": {
             "description": "JSON output",
             "schema": {
-              "$ref": "#/definitions/Insert Map response"
+              "$ref": "#/definitions/Insert Map response 2"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST",
+            "schema": {
+              "$ref": "#/definitions/BAD_REQUEST_2"
             }
           }
         }
@@ -88,17 +100,16 @@
     "/map": {
       "get": {
         "tags": [
-          "Get map by id"
+          "Get map"
         ],
-        "description": "Get map by id",
+        "description": "Get map",
         "parameters": [
           {
             "name": "id",
             "in": "query",
             "description": "Example request for getting a map document by id",
             "schema": {
-              "type": "string",
-              "example": "map_1"
+              "type": "string"
             }
           }
         ],
@@ -109,7 +120,13 @@
           "200": {
             "description": "JSON output",
             "schema": {
-              "$ref": "#/definitions/Insert Map response"
+              "$ref": "#/definitions/get map by id"
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "$ref": "#/definitions/404"
             }
           }
         }
@@ -125,7 +142,7 @@
             "in": "body",
             "description": "Example request for modifying a json map document",
             "schema": {
-              "$ref": "#/definitions/Insert Map"
+              "$ref": "#/definitions/Insert Map_6"
             }
           }
         ],
@@ -136,7 +153,18 @@
           "200": {
             "description": "JSON output",
             "schema": {
-              "$ref": "#/definitions/Insert Map response"
+              "$ref": "#/definitions/Insert Map response_2"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
             }
           }
         }
@@ -152,8 +180,7 @@
             "in": "query",
             "description": "Example request for inserting a json map document",
             "schema": {
-              "type": "string",
-              "example": "map_1"
+              "type": "string"
             }
           }
         ],
@@ -175,6 +202,21 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "properties": {
+                "code": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "not found"
+                }
+              }
+            }
           }
         }
       }
@@ -182,17 +224,16 @@
     "/dataModel": {
       "get": {
         "tags": [
-          "Get dataModel by id"
+          "Get dataModel"
         ],
-        "description": "Get dataModel by id",
+        "description": "Get dataModel",
         "parameters": [
           {
             "name": "id",
             "in": "query",
             "description": "Example request for getting a dataModel document by id",
             "schema": {
-              "type": "string",
-              "example": "service_1"
+              "type": "string"
             }
           }
         ],
@@ -203,23 +244,29 @@
           "200": {
             "description": "JSON output",
             "schema": {
-              "$ref": "#/definitions/Insert Model Schema response"
+              "$ref": "#/definitions/Insert data model response"
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "$ref": "#/definitions/404"
             }
           }
         }
       },
       "post": {
         "tags": [
-          "Insert dataModel"
+          "Insert Data model"
         ],
-        "description": "Insert dataModel in Mongo DB",
+        "description": "Insert data model",
         "parameters": [
           {
-            "name": "Insert dataModel example 1",
+            "name": "name",
             "in": "body",
-            "description": "Example request for inserting a json dataModel document",
+            "description": "name for the data model",
             "schema": {
-              "$ref": "#/definitions/Insert Model Schema"
+              "$ref": "#/definitions/Insert data model response"
             }
           }
         ],
@@ -230,7 +277,13 @@
           "200": {
             "description": "JSON output",
             "schema": {
-              "$ref": "#/definitions/Insert Model Schema response"
+              "$ref": "#/definitions/Insert data model response"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST",
+            "schema": {
+              "$ref": "#/definitions/BAD_REQUEST_2"
             }
           }
         }
@@ -242,11 +295,11 @@
         "description": "Modify dataModel in Mongo DB",
         "parameters": [
           {
-            "name": "Modify dataModel example 1",
+            "name": "name",
             "in": "body",
-            "description": "Example request for modifying a json dataModel document",
+            "description": "name for the data model",
             "schema": {
-              "$ref": "#/definitions/Insert Model Schema"
+              "$ref": "#/definitions/Insert data model response"
             }
           }
         ],
@@ -257,7 +310,18 @@
           "200": {
             "description": "JSON output",
             "schema": {
-              "$ref": "#/definitions/Insert Model Schema response"
+              "$ref": "#/definitions/Insert data model response"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
             }
           }
         }
@@ -273,8 +337,7 @@
             "in": "query",
             "description": "Example request for deleting a json dataModel document",
             "schema": {
-              "type": "string",
-              "example": "service_1"
+              "type": "string"
             }
           }
         ],
@@ -293,6 +356,175 @@
                 "deletedCount": {
                   "type": "number",
                   "example": 1
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "properties": {
+                "code": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/source": {
+      "get": {
+        "tags": [
+          "Get source"
+        ],
+        "description": "Get source",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Example request for getting a source document by id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "$ref": "#/definitions/get source by id"
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "$ref": "#/definitions/404"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "source"
+        ],
+        "description": "Insert source",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "body",
+            "description": "name for the source",
+            "schema": {
+              "$ref": "#/definitions/Insert source response"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "$ref": "#/definitions/Insert source response"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST",
+            "schema": {
+              "$ref": "#/definitions/BAD_REQUEST_2"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Modify source"
+        ],
+        "description": "Modify source in Mongo DB",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "body",
+            "description": "name for the source",
+            "schema": {
+              "$ref": "#/definitions/Insert source response"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "$ref": "#/definitions/Insert source response"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Delete sourcee"
+        ],
+        "description": "Delete source in Mongo DB",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Example request for deleting a json source document"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "properties": {
+                "acknowledged": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "deletedCount": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "properties": {
+                "code": {
+                  "type": "number",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "not found"
                 }
               }
             }
@@ -1357,6 +1589,31 @@
           }
         }
       }
+    },
+    "/sources": {
+      "get": {
+        "tags": [
+          "Get sources"
+        ],
+        "description": "Get all sources",
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "type": "array",
+              "example":[
+                {
+                  "string":"string"
+                }
+              ]
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -1364,26 +1621,46 @@
       "properties": {
         "sourceDataIn": {
           "type": "string",
-          "uniqueItems": true,
-          "example": "5. ServiceModel.csv"
+          "uniqueItems": true
+        },
+        "sourceData": {
+          "example": [
+            {
+              "string": "string"
+            }
+          ]
+        },
+        "sourceDataType": {
+          "type": "string"
+        },
+        "sourceDataID": {
+          "type": "string"
+        },
+        "sourceDataURL": {
+          "type": "string"
         },
         "mapPathIn": {
           "type": "string",
-          "uniqueItems": true,
-          "example": "5. ServiceModelMap.json"
+          "uniqueItems": true
         },
         "dataModelIn": {
           "type": "string",
-          "uniqueItems": true,
-          "example": "ServiceModel"
+          "uniqueItems": true
+        },
+        "dataModel": {
+          "type": "object"
+        },
+        "dataModelID": {
+          "type": "string"
+        },
+        "dataModelURL": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
         },
         "config": {
-          "type": "object",
-          "uniqueItems": true,
-          "example": {
-            "delimiter": ";",
-            "NGSI_entity": false
-          }
+          "$ref": "#/definitions/config"
         }
       }
     },
@@ -1681,6 +1958,84 @@
         },
         "NGSI_entity": {
           "type": "boolean"
+        },
+        "modelSchemaFolder": {
+          "type": "string"
+        },
+        "ignoreValidation": {
+          "type": "boolean"
+        },
+        "mappingReport": {
+          "type": "boolean"
+        },
+        "targetDataModel": {
+          "type": "string"
+        },
+        "rowStart": {
+          "type": "number"
+        },
+        "rowEnd": {
+          "type": "number"
+        },
+        "regexClean": {
+          "type": "object",
+          "properties": {
+            "custom": {
+              "type": "string"
+            }
+          }
+        },
+        "endLine": {
+          "type": "string"
+        },
+        "deleteEmptySpaceAtBeginning": {
+          "type": "boolean"
+        },
+        "site": {
+          "type": "string"
+        },
+        "service": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string"
+        },
+        "entityNameField": {
+          "type": "string"
+        },
+        "entityDefaultPrefix": {
+          "type": "string"
+        }
+      }
+    },
+    "BAD_REQUEST": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "source": {
+          "type": "object"
+        },
+        "map": {
+          "type": "array",
+          "example": [
+            {
+              "string": "string"
+            },
+            "mapData"
+          ]
+        },
+        "dataModel": {
+          "type": "object"
+        }
+      }
+    },
+    "BAD_REQUEST_2": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
         }
       }
     },
@@ -1784,6 +2139,82 @@
         }
       }
     },
+    "Insert Map_2": {
+      "type": "object",
+      "example": {
+        "name": "string",
+        "id": "string",
+        "description": "string",
+        "map": {
+          "string": "string"
+        },
+        "dataModel": "object",
+        "sourceData": "array"
+      }
+    },
+    "Insert Map_3": {
+      "type": "object",
+      "example": {
+        "name": "string",
+        "id": "string",
+        "description": "string",
+        "map": {
+          "string": "string"
+        },
+        "dataModel": "object",
+        "sourceCSV": "string"
+      }
+    },
+    "Insert Map_4": {
+      "type": "object",
+      "example": {
+        "name": "string",
+        "id": "string",
+        "description": "string",
+        "map": {
+          "string": "string"
+        },
+        "dataModelID": "string",
+        "sourceDataID": "string"
+      }
+    },
+    "Insert Map_5": {
+      "type": "object",
+      "example": {
+        "name": "string",
+        "id": "string",
+        "description": "string",
+        "map": {
+          "string": "string"
+        },
+        "dataModelURL": "string",
+        "sourceDataURL": "string"
+      }
+    },
+    "Insert Map_6": {
+      "type": "object",
+      "example": {
+        "name": "string",
+        "id": "string",
+        "path": "string",
+        "description": "string",
+        "sourceDataType": "string",
+        "sourceData": "array",
+        "sourceDataID": "string",
+        "sourceDataURL": "string",
+        "map": "object",
+        "dataModelURL": "string",
+        "dataModelID": "string",
+        "dataModel": "object",
+        "config": "object"
+      }
+    },
+    "get map by id": {
+      "type": "object",
+      "example": {
+        "string": "string"
+      }
+    },
     "Insert Map response": {
       "type": "object",
       "example": {
@@ -1883,6 +2314,51 @@
           "targetDataModel": "ServiceModel"
         },
         "_id": "6401c595f3f421ae0a41a1ef"
+      }
+    },
+    "Insert Map response 2": {
+      "example": {
+        "name": "string",
+        "id": "string",
+        "path": "string",
+        "description": "string",
+        "sourceDataType": "string",
+        "sourceData": "array",
+        "sourceDataID": "string",
+        "sourceDataURL": "string",
+        "map": "object",
+        "dataModelURL": "string",
+        "dataModelID": "string",
+        "dataModel": "object",
+        "config": "object"
+      }
+    },
+    "Insert data model": {
+      "example": {
+        "name": "string",
+        "id": "string",
+        "dataModel": "object"
+      }
+    },
+    "Insert data model response": {
+      "example": {
+        "name": "string",
+        "id": "string",
+        "dataModel": "object"
+      }
+    },
+    "Insert source response": {
+      "example": {
+        "name": "string",
+        "id": "string",
+        "sourceData": "object",
+        "sourceCSV": "string"
+      }
+    },
+    "404": {
+      "example": {
+        "code": 404,
+        "message": "NOT FOUND"
       }
     },
     "Insert Model Schema": {
@@ -3659,6 +4135,14 @@
         },
         "_id": "6401c59ff3f421ae0a41a1f5"
       }
+    },
+    "Example transform response": {
+      "type": "array",
+      "example": [
+        {
+          "string": "string"
+        }
+      ]
     }
   }
 }

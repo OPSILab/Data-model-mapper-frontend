@@ -51,7 +51,7 @@ export class DMMService {
   }
 
   deleteMap(id: any) {
-    return this.http.delete<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/" + urlencode(id)).toPromise();
+    return this.http.delete<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map?id=" + urlencode(id)).toPromise();
   }
 
   refParse(schema) {

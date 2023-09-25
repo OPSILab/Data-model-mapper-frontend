@@ -48,7 +48,9 @@ module.exports = {
     getMap: async (req, res) => {
         process.res = res;
         try{res.send(await service.getMap(req.query.id))}
-        catch(error){ res.status(400).send(error)}
+        catch(error){ 
+            res.status(error.code || 400).send(error)
+        }
     },
 
     getConfig: async (req, res) => {

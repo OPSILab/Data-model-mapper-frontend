@@ -184,14 +184,20 @@ module.exports = {
     },
 
     async getSource(id) {
-        return await Source.findOne({ id: id })
+        let source =  await Source.findOne({ id: id })
+        if (!source) throw {code:404, message:"NOT FOUND"}
+        return source
     },
 
     async getMap(id) {
-        return await Map.findOne({ id: id })
+        let map = await Map.findOne({ id: id })
+        if (!map) throw {code:404, message:"NOT FOUND"}
+        return map
     },
 
     async getDataModel(id) {
+        let dataModel =  await DataModel.findOne({ id: id })
+        if (!dataModel) throw {code:404, message:"NOT FOUND"}
         return await DataModel.findOne({ id: id })
     },
 
@@ -343,7 +349,7 @@ module.exports = {
         //if (dataModel) dataModel.$schema = dataModel.$id = undefined
 
         if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
-            throw new Error({ error: "schema is required" })
+            throw { error: "schema is required" }
 
         if (path == "") path = undefined
 
@@ -386,7 +392,11 @@ module.exports = {
     },
 
     async deleteMap(id) {
-        return await Map.deleteOne({ id: id })
+        let deletion = await Map.deleteOne({ id: id })
+        if (deletion.deletedCount)
+            return deletion
+        throw {code:404, message:"NOT FOUND"}
+
     },
 
     async deleteDataModel(id) {
