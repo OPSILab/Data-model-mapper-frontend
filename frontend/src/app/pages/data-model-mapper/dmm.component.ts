@@ -247,7 +247,6 @@ export class DMMComponent implements OnInit, OnChanges {
   async schemaTemporized() : Promise<any>{
     await this.delay(200)//.then(
       //() => {
-        //console.debug("THIS SCHEMA")
         return this.getSchema();
       //}
     //)
@@ -383,7 +382,7 @@ export class DMMComponent implements OnInit, OnChanges {
     this.dataModelURL = undefined
     this.inputID = undefined
     this.name = undefined
-    this.inputType = undefined
+    this.onUpdateInputType("")
     this.adapter = {}
     this.parsed = false
     this.partialCsv = undefined
@@ -615,19 +614,20 @@ export class DMMComponent implements OnInit, OnChanges {
   setSource(source) {
     if (Array.isArray(source))
       source = source.slice(0, 3)
+    else {
+      this.partialCsv = ""
+      this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem);
 
-    this.partialCsv = ""
-    this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem);
-
-    if (this.rows)
-      this.partialCsv = this.partialCsv
-        .concat(this.rows[0])
-        .concat(this.rows[1] ? "\r\n" : '')
-        .concat(this.rows[1] || '')
-        .concat(this.rows[2] ? "\r\n" : '')
-        .concat(this.rows[2] || '')
-        .concat(this.rows[3] ? "\r\n" : '')
-        .concat(this.rows[3] || '')
+      if (this.rows)
+        this.partialCsv = this.partialCsv
+          .concat(this.rows[0])
+          .concat(this.rows[1] ? "\r\n" : '')
+          .concat(this.rows[1] || '')
+          .concat(this.rows[2] ? "\r\n" : '')
+          .concat(this.rows[2] || '')
+          .concat(this.rows[3] ? "\r\n" : '')
+          .concat(this.rows[3] || '')
+    }
 
     return this.inputType == "csv" ? this.partialCsv : source
   }
@@ -703,7 +703,7 @@ export class DMMComponent implements OnInit, OnChanges {
                 if (!obj.properties[key])
                   obj.properties[key] = true
 
-       console.debug(obj.properties)*/
+       */
 
     if (obj.properties)
       for (let key in obj.properties)
@@ -771,9 +771,13 @@ export class DMMComponent implements OnInit, OnChanges {
     if (event === 'csv') {
       divCSVElement.style.display = 'block';
       divJsonElement.style.display = 'none';
-    } else {
+    } else if (event == 'json') {
       divCSVElement.style.display = 'none';
       divJsonElement.style.display = 'block';
+    }
+    else {
+      divCSVElement.style.display = 'none';
+      divJsonElement.style.display = 'none';
     }
   }
 
@@ -960,7 +964,10 @@ export class DMMComponent implements OnInit, OnChanges {
     //source = source[this.selectedPath]
 
     this.dialogService.open(ExportFileComponent).onClose.subscribe((content) => {
-      this.saveFile(content == "file" ? JSON.stringify(this.bodyBuilder(source)) : this.buildSnippet());
+      if (content == "file")
+        this.saveFile(JSON.stringify(this.bodyBuilder(source)));
+      else if (content == "snippet")
+        this.saveFile(this.buildSnippet());
     })
   }
 
@@ -969,7 +976,6 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async saveFile(model): Promise<void> {
-    //let model =
     const filename = "exportedFile.json",
       blob = new Blob([model], {
         type: 'application/json;charset=utf-8',
