@@ -88,7 +88,7 @@ export class CreateMapComponent implements OnInit {
 
   ngOnInit(): void {
 
-    //this.adapterId = Date.now().toString(); this.name = "name"; this.description = "description"; this.status = "Under development"
+    this.adapterId = Date.now().toString(); this.name = Date.now().toString(); this.description = Date.now().toString(); this.status = "Under development"
     this.loaded = false
     if (this.value)
       for (let key in this.value)
@@ -133,13 +133,13 @@ export class CreateMapComponent implements OnInit {
     if (adapterId == '' || adapterId == null)
       throw new Error("Adapter ID must be set");
 
-    if (this.selectFiltered("sources", adapterId)) {
+    if (this.saveSource && !this.sourceSaved &&  this.selectFiltered("sources", adapterId)) {
       errors = true
       this.errorHandle("source", { error: "id already exists", status: 400 })
     }
 
     if (!errors)
-      if (this.selectFiltered("dataModels", adapterId)) {
+      if (this.saveSchema && !this.schemaSaved && this.selectFiltered("dataModels", adapterId)) {
         errors = true
         this.errorHandle("schema", { error: "id already exists", status: 400 })
       }
@@ -185,7 +185,7 @@ export class CreateMapComponent implements OnInit {
             status,
             description,
             this.jsonMap,
-            this.saveSchema ? this.schema : undefined,
+            this.saveSchema || (!this.dataModelURL && !this.dataModelID) ? this.schema : undefined,
             this.sourceDataType,
             this.config,
             this.saveSource ? undefined : this.sourceDataURL,

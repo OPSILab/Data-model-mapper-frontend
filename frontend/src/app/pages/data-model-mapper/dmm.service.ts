@@ -73,7 +73,7 @@ export class DMMService {
       status: status,
       description: description,
       map: map,
-      dataModel: schema ? schema[0] ? schema[0] : schema : undefined,
+      dataModel: schema ? schema[0] ? schema[0] : schema : schema,
       sourceDataType: sourceDataType,
       config: config,
       sourceDataURL,
@@ -92,7 +92,7 @@ export class DMMService {
       name: adapter.name,
       status: status,
       description: description,
-      dataModel: schema ? schema[0] ? schema[0] : schema : undefined
+      dataModel: schema ? schema[0] ? schema[0] : schema : schema
     }).toPromise();
   }
 
@@ -126,7 +126,7 @@ export class DMMService {
       status: status,
       description: description,
       map: map,
-      dataModel: schema ? schema[0] ? schema[0] : schema : undefined,
+      dataModel: schema ? schema[0] ? schema[0] : schema : schema,
       sourceDataType,
       config,
       sourceDataURL,
@@ -145,7 +145,7 @@ export class DMMService {
       name: adapter.name,
       status: status,
       description: description,
-      dataModel: schema ? schema[0] ? schema[0] : schema : undefined
+      dataModel: schema ? schema[0] ? schema[0] : schema : schema
     }).toPromise();
   }
 

@@ -88,12 +88,13 @@ module.exports = {
         }
 
         if (!(source.name || (source.type && (source.data || source.url || source.id))) || (!map || !(dataModel.id || dataModel.data || dataModel.name || dataModel.url))) {
-            let error = {}
-            error.message = "Missing fields"
-            error.source = source
-            error.map = map
-            error.dataModel = dataModel
-            throw error
+
+            throw {
+                message: "Missing fields",
+                source: source,
+                map: map,
+                dataModel: dataModel
+            }
         }
 
         if (!Array.isArray(source.data) && source.type == "json" || source.type == ".json" || source.type == "JSON" || source.type == ".JSON") source.data = [source.data]
@@ -184,20 +185,20 @@ module.exports = {
     },
 
     async getSource(id) {
-        let source =  await Source.findOne({ id: id })
-        if (!source) throw {code:404, message:"NOT FOUND"}
+        let source = await Source.findOne({ id: id })
+        if (!source) throw { code: 404, message: "NOT FOUND" }
         return source
     },
 
     async getMap(id) {
         let map = await Map.findOne({ id: id })
-        if (!map) throw {code:404, message:"NOT FOUND"}
+        if (!map) throw { code: 404, message: "NOT FOUND" }
         return map
     },
 
     async getDataModel(id) {
-        let dataModel =  await DataModel.findOne({ id: id })
-        if (!dataModel) throw {code:404, message:"NOT FOUND"}
+        let dataModel = await DataModel.findOne({ id: id })
+        if (!dataModel) throw { code: 404, message: "NOT FOUND" }
         return await DataModel.findOne({ id: id })
     },
 
@@ -247,7 +248,7 @@ module.exports = {
 
     async insertSource(name, id, source, path) {
         if (!source)
-            throw new Error({ error: "source is required" })
+            throw { error: "source is required" }
         if (path == "") path = undefined
         if (!await Source.findOne({ id: id })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path }])
         throw { "error": "id already exists" }
@@ -258,7 +259,7 @@ module.exports = {
         config, sourceDataType, path) {
         if (path == "") path = undefined
         if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
-            throw new Error({ error: "schema is required" })
+            throw { error: "schema is required" }
         if (!await Map.findOne({ id: id }))
             return await Map.insertMany([{
                 name: name,
@@ -283,14 +284,14 @@ module.exports = {
 
     async insertDataModel(name, id, dataModel) {
         if (!dataModel)
-            throw new Error({ error: "schema is required" })
+            throw { error: "schema is required" }
         if (!await DataModel.findOne({ id: id })) return await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel }])
         throw { "error": "id already exists" }
     },//TODO replace with insertOne
 
     async modifySource(name, id, source, path) {
         if (!source)
-            throw new Error({ error: "source is required" })
+            throw { error: "source is required" }
         if (path == "") path = undefined
         return await Source.findOneAndReplace({ id: id }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path: path })
     },
@@ -382,7 +383,7 @@ module.exports = {
 
     async modifyDataModel(name, id, dataModel) {
         if (!dataModel)
-            throw new Error({ error: "schema is required" })
+            throw { error: "schema is required" }
         dataModel = this.dataModelClean(dataModel)
         return await DataModel.findOneAndReplace({ id: id }, { name: name, id: id, dataModel: dataModel })
     },
@@ -395,7 +396,7 @@ module.exports = {
         let deletion = await Map.deleteOne({ id: id })
         if (deletion.deletedCount)
             return deletion
-        throw {code:404, message:"NOT FOUND"}
+        throw { code: 404, message: "NOT FOUND" }
 
     },
 

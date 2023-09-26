@@ -191,7 +191,6 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   updateRecord() {
-    let type = this.inputType
     let source = JSON.parse(this.sourceEditor.getText())
 
     //if (source[this.selectedPath])
@@ -203,13 +202,13 @@ export class DMMComponent implements OnInit, OnChanges {
           schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())),
           source: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText()))
         },
-        sources:this.sources,
-        dataModels:this.schemas,
+        sources: this.sources,
+        dataModels: this.schemas,
         value: this.adapter,
         name: this.name,
         update: true,
         path: this.selectedPath,
-        sourceDataType: type,
+        sourceDataType: this.inputType,
         jsonMap: JSON.parse(editor.mapperEditor.getText()),
         schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())) || this.rawSchema() ? JSON.parse(this.schemaEditor.getText()) : undefined,
         config: this.transformSettings,
@@ -227,11 +226,25 @@ export class DMMComponent implements OnInit, OnChanges {
         if (!this.savedSchema) this.savedSchema = adapter.saveSchema
         if (!this.savedSource) this.savedSource = adapter.saveSource
         if (adapter.saveSchema) {
+          this.schemas.push({
+            dataModel: JSON.parse(this.schemaEditor.getText()),
+            id: adapter.adapterId,
+            name: adapter.name,
+            description: adapter.description,
+          })
           this.importedSchema = JSON.parse(this.schemaEditor.getText())
           this.selectedDataModel = undefined
           this.dataModelURL = undefined
         }
         if (adapter.saveSource) {
+          this.sources.push({
+            sourceData: this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : undefined,
+            sourceCSV: this.inputType == "json" ? undefined : this.csvSourceData,
+            id: adapter.adapterId,
+            name: adapter.name,
+            description: adapter.description,
+          }
+          )
           this.importedSource = JSON.parse(this.sourceEditor.getText())
           this.selectedSource = undefined
           this.sourceDataURL = undefined
@@ -1077,14 +1090,14 @@ export class DMMComponent implements OnInit, OnChanges {
           schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())),
           source: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText()))
         },
-        sources:this.sources,
-        dataModels:this.schemas,
+        sources: this.sources,
+        dataModels: this.schemas,
         save: true,
         path: this.selectedPath,
+        sourceDataType: this.inputType,
         jsonMap: JSON.parse(editor.mapperEditor.getText()),
         schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())) || this.rawSchema() ? JSON.parse(this.schemaEditor.getText()) : undefined,
         config: this.transformSettings,
-        sourceDataType: this.inputType,
         sourceDataURL: this.sourceDataURL,
         sourceDataID: this.selectedSource,
         dataModelURL: this.dataModelURL,
@@ -1109,6 +1122,12 @@ export class DMMComponent implements OnInit, OnChanges {
         this.savedSchema = adapter.saveSchema
         this.savedSource = adapter.saveSource
         if (adapter.saveSchema) {
+          this.schemas.push({
+            dataModel: JSON.parse(this.schemaEditor.getText()),
+            id: adapter.adapterId,
+            name: adapter.name,
+            description: adapter.description,
+          })
           this.importedSchema = JSON.parse(this.schemaEditor.getText())
           this.selectedDataModel = undefined
           this.dataModelURL = undefined
@@ -1116,6 +1135,13 @@ export class DMMComponent implements OnInit, OnChanges {
         else if (this.importedSchema)
           this.schemaEditor.update(this.importedSchema)
         if (adapter.saveSource) {
+          this.sources.push({
+            sourceData: this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : undefined,
+            sourceCSV: this.inputType == "json" ? undefined : this.csvSourceData,
+            id: adapter.adapterId,
+            name: adapter.name,
+            description: adapter.description,
+          })
           this.importedSource = JSON.parse(this.sourceEditor.getText())
           this.selectedSource = undefined
           this.sourceDataURL = undefined
@@ -1210,7 +1236,7 @@ export class DMMComponent implements OnInit, OnChanges {
         if (mapSettings.path) this.onUpdatePathForDataMap(mapSettings.path, false)
         else this.onUpdatePathForDataMap("", true)
       }
-      else if (mapSettings.sourceDataType == "csv" && !this.emptySource){
+      else if (mapSettings.sourceDataType == "csv" && !this.emptySource) {
         this.csvSourceData = typeof mapSettings.sourceData == "string" ? mapSettings.sourceData : JSON.stringify(mapSettings.sourceData)
         this.updateCSVTable()
       }
