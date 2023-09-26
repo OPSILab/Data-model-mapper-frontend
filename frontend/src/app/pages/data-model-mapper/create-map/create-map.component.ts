@@ -6,9 +6,6 @@ import { Mapper } from '../../../model/adapter/mapper';
 import { AppConfig } from '../../../model/appConfig';
 import { ErrorDialogAdapterService } from '../../error-dialog/error-dialog-adapter.service';
 import { DMMService } from '../dmm.service';
-import { async } from 'rxjs';
-import { DialogComponent } from './dialog/dialog.component';
-import editor from '../mapperEditor';
 
 @Component({
   selector: 'create-map-and-adapter',
@@ -88,7 +85,7 @@ export class CreateMapComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.adapterId = Date.now().toString(); this.name = Date.now().toString(); this.description = Date.now().toString(); this.status = "Under development"
+    //this.adapterId = Date.now().toString(); this.name = Date.now().toString(); this.description = Date.now().toString(); this.status = "Under development"
     this.loaded = false
     if (this.value)
       for (let key in this.value)
