@@ -212,7 +212,7 @@
             </p>
             <br *ngIf="!dialog"> <br *ngIf="!dialog"> <br *ngIf="!dialog">
             <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
-              (click)="updateConfigSettings()">
+              (click)="updateConfigSettings(true)">
               {{ 'general.dmm.update_config' | translate }}
               <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button>
