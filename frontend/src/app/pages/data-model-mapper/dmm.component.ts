@@ -703,7 +703,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       if (!output)
-        if (!error.status)
+        if (!error.status && error.name == "HttpErrorResponse")
           output = { "error": "Service unreachable" }
         else if (error.status == 413)
           output = { "error": "Request too large" }
