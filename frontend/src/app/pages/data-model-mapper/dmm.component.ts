@@ -1036,12 +1036,15 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   handleError(error, modal, message) {
-    if (modal)
-      this.errorService.openErrorDialog(error)
-    if (message)
+    if (message){
       console.error(message)
+      error.message+=". "+message
+      error.error.message+=". "+message
+    }
     else
       console.error(error?.message || error?.error?.message || error?.statusText || error)
+      if (modal)
+      this.errorService.openErrorDialog(error)
     //console.error(error)
   }
 
@@ -1164,7 +1167,7 @@ export class DMMComponent implements OnInit, OnChanges {
           this.savedSchema = await this.dmmService.getSchema($event)
         }
         catch (error) {
-          this.handleError(error, false, false)
+          this.handleError(error, true, "source could not be loaded")
           //this.errorService.openErrorDialog(error)
         }
       }

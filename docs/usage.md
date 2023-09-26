@@ -138,7 +138,7 @@ If you select **View** instead of **Code** you will see the JSON formatted diffe
 
 ![](images/json-input-2.png)
 
-When you finished editing your source, click on **UPDATE SOURCE FIELDS** button and then click on **Select path** to select the path where you want to start analyzing your source field and subfields in order to map them.
+When you finished editing your source, click on **UPDATE SOURCE FIELDS** button and then click on **Select path** to select the path where you want to start analyzing your source field and subfields in order to map them. The value at selected path must be a json array.
 
 ## Mapper
 
