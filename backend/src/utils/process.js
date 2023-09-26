@@ -181,8 +181,12 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
     delete map['idSite'];
     delete map['idService'];
     delete map['idGroup'];
-
-    var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, process.env.idSite, process.env.idService, process.env.idGroup, config.entityNameField);
+    try {
+        var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, process.env.idSite, process.env.idService, process.env.idGroup, config.entityNameField);
+    }
+    catch (error) {
+        log.error(error.message)
+    }
 
     log.debug("Row: " + rowNumber + " - Object mapped correctly ");
     await mappedHandler(rowNumber, result, schema);

@@ -217,7 +217,7 @@ export class DMMComponent implements OnInit, OnChanges {
           sourceDataID: this.selectedSource,
           dataModelURL: this.dataModelURL,
           dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-          sourceData: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText())) || this.rawSource() ? this.setSource(source) : undefined,
+          sourceData: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText())) || this.rawSource() ? this.setSource(source, true) : undefined,
           schemaSaved: this.savedSchema,
           sourceSaved: this.savedSource
         }
@@ -646,13 +646,13 @@ export class DMMComponent implements OnInit, OnChanges {
     this.separatorItem = this.transformSettings.delimiter
   }
 
-  setSource(source) {
-    if (Array.isArray(source))
+  setSource(source, limit) {
+    if (Array.isArray(source) && limit && this.inputType=="json")
       source = source.slice(0, 3)
-    else {
+    else if (limit) {
       this.partialCsv = ""
       this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem);
-
+      console.debug(this.rows)
       if (this.rows)
         this.partialCsv = this.partialCsv
           .concat(this.rows[0])
@@ -662,9 +662,10 @@ export class DMMComponent implements OnInit, OnChanges {
           .concat(this.rows[2] || '')
           .concat(this.rows[3] ? "\r\n" : '')
           .concat(this.rows[3] || '')
+          console.debug(this.partialCsv)
     }
 
-    return this.inputType == "csv" ? this.partialCsv : source
+    return this.inputType == "csv" ? limit ? this.partialCsv : this.csvSourceData : source
   }
 
   async testAdapter() {
@@ -673,7 +674,7 @@ export class DMMComponent implements OnInit, OnChanges {
     try {
       let m = JSON.parse(editor.mapperEditor.getText())
       m["targetDataModel"] = "DataModelTemp"
-      let source = this.setSource(JSON.parse(this.sourceEditor.getText()))
+      let source = this.setSource(JSON.parse(this.sourceEditor.getText()), true)
 
       output = await this.dmmService.test(this.inputType, source, m, this.schemaJson, this.transformSettings)
     }
@@ -694,12 +695,12 @@ export class DMMComponent implements OnInit, OnChanges {
     try {
       let m = JSON.parse(editor.mapperEditor.getText())
       m["targetDataModel"] = "DataModelTemp"
-      let source = JSON.parse(this.sourceEditor.getText())
+      let source = this.setSource(JSON.parse(this.sourceEditor.getText()), false)
 
       if (source[this.selectedPath])
         source = source[this.selectedPath]
 
-      output = await this.dmmService.test(this.inputType, this.inputType == "csv" ? this.csvSourceData : source, m, this.schemaJson, this.transformSettings)
+      output = await this.dmmService.test(this.inputType, source, m, this.schemaJson, this.transformSettings)
     }
     catch (error) {
       if (!output)
@@ -983,7 +984,7 @@ export class DMMComponent implements OnInit, OnChanges {
       body["dataModelURL"] = this.dataModelURL
     }
     if (this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText())) || this.rawSource())
-      body["sourceData"] = this.setSource(source)
+      body["sourceData"] = this.setSource(source, true)
     else {
       body["sourceDataURL"] = this.sourceDataURL
       body["sourceDataID"] = this.selectedSource
@@ -1121,7 +1122,7 @@ export class DMMComponent implements OnInit, OnChanges {
           sourceDataID: this.selectedSource,
           dataModelURL: this.dataModelURL,
           dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-          sourceData: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText())) || this.rawSource() ? this.setSource(source) : undefined,
+          sourceData: this.differences(this.importedSource, JSON.parse(this.sourceEditor.getText())) || this.rawSource() ? this.setSource(source, true) : undefined,
           schemaSaved: false,
           sourceSaved: false
         }
