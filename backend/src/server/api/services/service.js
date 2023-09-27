@@ -135,7 +135,19 @@ module.exports = {
                 //dataModel.data.$id || 
                 config.modelSchemaFolder + '/DataModelTemp.json'
         }
-
+        //let sourceFileTemp2 = false
+        if (!source.data && source.url) {
+            source.download = await axios.get(source.url)
+            source.data = source.download.data
+            /*
+            fs.writeFile(config.sourceDataPath + 'sourceFileTemp2.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
+                if (err) throw err;
+                log.debug('File sourceData temp is created successfully.');
+            })*/
+            //sourceFileTemp2 = true
+            //console.debug(source.data)
+        }
+        
         if (source.data) {
             fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
                 if (err) throw err;
@@ -143,15 +155,10 @@ module.exports = {
             })
         }
 
-        else if (source.url) {
-            source.download = await axios.get(source.url)
-            source.data = source.download.data
-        }
-
         if (source.data && source.path) source.data = source.data[source.path]
 
         if (dataModel.url) {
-            console.debug(dataModel.url)
+            //console.debug(dataModel.url)
             dataModel.download = await axios.get(dataModel.url)
             dataModel.data = dataModel.download.data
         }
@@ -167,6 +174,7 @@ module.exports = {
         }
 
         await cli(
+            //source.name ? config.sourceDataPath + source.name : config.sourceDataPath + sourceFileTemp2 ? 'sourceFileTemp2.' + source.type : 'sourceFileTemp.' + source.type,
             source.name ? config.sourceDataPath + source.name : config.sourceDataPath + 'sourceFileTemp.' + source.type,
             map,
             dataModel.name ? dataModel.name : dataModel.schema_id ? this.getFilename(dataModel.schema_id) : "DataModelTemp"

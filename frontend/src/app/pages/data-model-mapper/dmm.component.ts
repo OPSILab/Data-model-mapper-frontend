@@ -708,8 +708,15 @@ export class DMMComponent implements OnInit, OnChanges {
       if (!output)
         if (!error.status && error.name == "HttpErrorResponse")
           output = { "error": "Service unreachable" }
-        else if (error.status == 413)
-          output = { "error": "Request too large" }
+        else if (error.status == 413) {
+          try {
+            output = await this.dmmService.test(this.inputType, {url:this.sourceDataURL}, JSON.parse(editor.mapperEditor.getText()), this.schemaJson, this.transformSettings)
+          }
+          catch (error) {
+            console.error(error.message)
+          }
+          //output = { "error": "Request too large" }
+        }
         else
           output = error.error
       this.handleError(error, false, false)
@@ -717,7 +724,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
-    else this.outputEditor.update(output)
+    else this.outputEditor.update(output || {error:"some errors occurred"})
   }
 
   getAllNestedProperties(obj) {
@@ -1196,7 +1203,7 @@ export class DMMComponent implements OnInit, OnChanges {
         }
         catch (error) {
           console.log(error, error.status, error.error.status, error.error.code)
-          if (error.status != 400 && error.error.code != 400 && error.error.code!= 404 && error.status!= 404)
+          if (error.status != 400 && error.error.code != 400 && error.error.code != 404 && error.status != 404)
             this.handleError(error, true, false)
           //this.errorService.openErrorDialog(error)
         }

@@ -154,13 +154,15 @@ export class DMMService {
   }
 
 
-  test(type: string, source: string, mapper, schema, config): Promise<any[]> {
+  test(type: string, source, mapper, schema, config): Promise<any[]> {
     if (schema && schema[0] && !schema.properties && !schema.allOf)
       schema = schema[0]
     schema.$id = undefined
+
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_url, {
       "sourceDataType": type,
-      "sourceData": source,
+      "sourceData": source.url ? undefined : source,
+      sourceDataURL: source.url ? source.url : undefined,
       "mapData": mapper,
       "dataModel": schema,
       "config": config
