@@ -120,6 +120,44 @@ export class CreateMapComponent implements OnInit {
       await this.submit()
   }
 
+  async sourceIdAlreadyExists() {
+    /*
+    if (this.saveSource && !this.sourceSaved && this.selectFiltered("sources", this.adapterId))
+      try {
+        return await this.dmmService.getSource(this.adapterId)
+      }
+      catch (error) {
+        if (error.error.code == 404)
+          console.log("You can use this source ID")
+        else
+          console.error(error.message || error.error?.message)
+        return false
+      }
+    else
+      return false
+    */
+    return this.saveSource && !this.sourceSaved && this.selectFiltered("sources", this.adapterId)
+  }
+
+  schemaIdAlreadyExists() {
+    /*
+    if (this.saveSchema && !this.schemaSaved && this.selectFiltered("dataModels", this.adapterId))
+      try {
+        return this.dmmService.getSchema(this.adapterId)
+      }
+      catch (error) {
+        if (error.error.code == 404)
+          console.log("You can use this schema ID")
+        else
+          console.error(error.message || error.error?.message)
+        return false
+      }
+    else
+      return false
+    */
+    return this.saveSchema && !this.schemaSaved && this.selectFiltered("dataModels", this.adapterId)
+  }
+
   async submit() {
     let errors
     let name = this.name,
@@ -130,15 +168,17 @@ export class CreateMapComponent implements OnInit {
     if (adapterId == '' || adapterId == null)
       throw new Error("Adapter ID must be set");
 
-    if (this.saveSource && !this.sourceSaved &&  this.selectFiltered("sources", adapterId)) {
-      errors = true
-      this.errorHandle("source", { error: "id already exists", status: 400 })
+    if (await this.sourceIdAlreadyExists()) {
+      //errors = true
+      //this.errorHandle("source", { error: "id already exists", status: 400 })
+      this.sourceSaved = true
     }
 
     if (!errors)
-      if (this.saveSchema && !this.schemaSaved && this.selectFiltered("dataModels", adapterId)) {
-        errors = true
-        this.errorHandle("schema", { error: "id already exists", status: 400 })
+      if (await this.schemaIdAlreadyExists()) {
+        //errors = true
+        //this.errorHandle("schema", { error: "id already exists", status: 400 })
+        this.schemaSaved = true
       }
 
     if (!errors)

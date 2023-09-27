@@ -42,7 +42,7 @@ module.exports = {
     getSource: async (req, res) => {
         process.res = res;
         try{res.send(await service.getSource(req.query.id))}
-        catch(error){ res.status(400).send(error)}
+        catch(error){ res.status(error.code || 400).send(error)}
     },
 
     getMap: async (req, res) => {
@@ -62,7 +62,7 @@ module.exports = {
     getDataModel: async (req, res) => {
         process.res = res;
         try{res.send(await service.getDataModel(req.query.id))}
-        catch(error){ res.status(400).send(error)}
+        catch(error){ res.status(error.code || 400).send(error)}
     },
 
     insertSource: async (req, res) => {
