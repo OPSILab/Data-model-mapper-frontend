@@ -1195,7 +1195,8 @@ export class DMMComponent implements OnInit, OnChanges {
           this.savedSchema = await this.dmmService.getSchema($event)
         }
         catch (error) {
-          if (error.status != 400)
+          console.log(error, error.status, error.error.status, error.error.code)
+          if (error.status != 400 && error.error.code != 400 && error.error.code!= 404 && error.status!= 404)
             this.handleError(error, true, false)
           //this.errorService.openErrorDialog(error)
         }

@@ -151,6 +151,7 @@ module.exports = {
         if (source.data && source.path) source.data = source.data[source.path]
 
         if (dataModel.url) {
+            console.debug(dataModel.url)
             dataModel.download = await axios.get(dataModel.url)
             dataModel.data = dataModel.download.data
         }

@@ -81,13 +81,13 @@ const encodingHandler = (mapSourceSubField, source) => {
             value = cleanValue(value);
             if (value.startsWith("static"))
                 outputValue = outputValue.concat(value.split("static:")[1])
-            else 
+            else
                 outputValue = outputValue.concat(source[value])
         }
     }
     else if (mapSourceSubField.startsWith("concat:")) {
         mapSourceSubField = mapSourceSubField.split("concat:")[1]
-        for (let sourceSubField in source) 
+        for (let sourceSubField in source)
             outputValue = outputValue.concat(outputValue == "" ? "" : mapSourceSubField).concat(source[sourceSubField])
     }
     return utils.encode(encoding, outputValue)
@@ -145,7 +145,14 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey, source) =>
 };
 
 const extractFromNestedField = (source, field) => {
-    let layers = field.split('.')
+    console.debug(field)
+    let layers
+    try {
+        layers = field.split('.')
+    }
+    catch (error) {
+        console.error(error.message)
+    }
     let value = source
     for (let sublayer in layers) {
         value = value[layers[sublayer]]
@@ -348,16 +355,16 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
         // Append type field, according to the Data Model Schema
         try {
-            result.type = modelSchema?.allOf? modelSchema.allOf[0]?.properties?.type?.enum[0] : "Unknown Type";
+            result.type = modelSchema?.allOf ? modelSchema.allOf[0]?.properties?.type?.enum[0] : "Unknown Type";
             // Generate unique id for the mapped object (according to Id Pattern)
-            result.id = utils.createSynchId(result? result.type : "", site || "", service || "", group || "", result ? result[entityIdField]: "", isIdPrefix || "", rowNumber);
+            result.id = utils.createSynchId(result ? result.type : "", site || "", service || "", group || "", result ? result[entityIdField] : "", isIdPrefix || "", rowNumber);
             delete result[entityIdField];
         } catch (error) {
             console.log(error)
             log.error("UnknownEntity")
         }
     }
-    else 
+    else
         if (result[entityIdField]) result[entityIdField] = result[entityIdField].concat(rowNumber)
 
     /** Once we added only valid mapped single entries, let's do a final validation against the whole final mapped object
