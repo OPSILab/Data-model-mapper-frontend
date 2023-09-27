@@ -21,6 +21,7 @@ export class DialogImportComponent {
   dataUrl: string;
   extension: String;
   map
+  //mapSettings
 
   @Input() type: string;
 
@@ -73,7 +74,10 @@ export class DialogImportComponent {
         console.error(error)
         this.errorService.openErrorDialog(error)
       }
-      this.ref.close({ content: this.file, source: this.dataUrl, format: "url" });
+      if (this.map)
+        this.ref.close({ mapSettings: this.file, source: this.selectedFile?.name, format: "file" })
+      else
+        this.ref.close({ content: this.file, source: this.dataUrl, format: "url" });
     } else if (this.map) {
       this.ref.close({ mapSettings: this.file, source: this.selectedFile.name, format: "file" })
     }
