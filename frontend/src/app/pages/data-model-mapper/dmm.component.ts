@@ -710,7 +710,7 @@ export class DMMComponent implements OnInit, OnChanges {
           output = { "error": "Service unreachable" }
         else if (error.status == 413) {
           try {
-            output = await this.dmmService.test(this.inputType, {url:this.sourceDataURL}, JSON.parse(editor.mapperEditor.getText()), this.schemaJson, this.transformSettings)
+            output = await this.dmmService.test(this.inputType, { url: this.sourceDataURL }, JSON.parse(editor.mapperEditor.getText()), this.schemaJson, this.transformSettings)
           }
           catch (error) {
             console.error(error.message)
@@ -723,8 +723,8 @@ export class DMMComponent implements OnInit, OnChanges {
       //this.errorService.openErrorDialog(error)
     }
     if (!this.outputEditor)
-      this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
-    else this.outputEditor.update(output || {error:"some errors occurred"})
+      this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output.filter(e => e != null && e != undefined));
+    else this.outputEditor.update(output.filter(e => e != null && e != undefined) || { error: "some errors occurred" })
   }
 
   getAllNestedProperties(obj) {

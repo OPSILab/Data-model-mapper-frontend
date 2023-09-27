@@ -107,9 +107,10 @@ module.exports = {
 
         if (configIn)
             for (let configKey in configIn) {
+                console.debug(configKey, " : ", configIn[configKey])
                 if (!config.backup) config.backup = {}
                 config.backup[configKey] = config[configKey]
-                config[configKey] = configIn[configKey]
+                if (configIn[configKey] != "undefined") config[configKey] = configIn[configKey]
             }
 
         process.env.delimiter = configIn ? configIn.delimiter : config.delimiter || ','
@@ -147,7 +148,7 @@ module.exports = {
             //sourceFileTemp2 = true
             //console.debug(source.data)
         }
-        
+
         if (source.data) {
             fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
                 if (err) throw err;

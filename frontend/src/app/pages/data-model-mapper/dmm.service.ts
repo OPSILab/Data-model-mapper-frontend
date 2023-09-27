@@ -67,7 +67,7 @@ export class DMMService {
   }
 
   saveMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, path): any {
-    schema.$id = undefined
+    if (schema?.$id) schema.$id = undefined
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/register", {
       id: adapter.adapterId,
       name: adapter.name,
@@ -87,7 +87,7 @@ export class DMMService {
   }
 
   saveSchema(adapter: Partial<AdapterEntry>, status, description, schema): any {
-    schema.$id = undefined
+    if (schema?.$id) schema.$id = undefined
 
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", {
       id: adapter.adapterId,
@@ -121,7 +121,7 @@ export class DMMService {
 
 
   updateMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, path): any {
-    schema.$id = undefined
+    if (schema?.$id) schema.$id = undefined
 
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map", {
       id: adapter.adapterId,
@@ -142,7 +142,7 @@ export class DMMService {
   }
 
   updateSchema(adapter: Partial<AdapterEntry>, status, description, schema): any {
-    schema.$id = undefined
+    if (schema?.$id) schema.$id = undefined
 
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", {
       id: adapter.adapterId,
@@ -157,7 +157,7 @@ export class DMMService {
   test(type: string, source, mapper, schema, config): Promise<any[]> {
     if (schema && schema[0] && !schema.properties && !schema.allOf)
       schema = schema[0]
-    schema.$id = undefined
+    if (schema?.$id) schema.$id = undefined
 
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_url, {
       "sourceDataType": type,
