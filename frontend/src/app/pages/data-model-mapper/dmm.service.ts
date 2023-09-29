@@ -93,19 +93,6 @@ export class DMMService {
     })).toPromise();
   }
 
-  largeRequest() {
-    const file = "{\"key\":\"value\"}";
-    const formData = new FormData();
-    formData.append('file', file);
-    // Perform the HTTP request
-    this.http.post(this.config.data_model_mapper.default_mapper_base_url + "/file", formData).subscribe((response) => {
-      console.log('File uploaded successfully');
-      console.log(response)
-    }, (error) => {
-      console.error('Error uploading file:', error);
-    });
-  }
-
   formDataBuilder(body) {
     const file = JSON.stringify(body);
     const formData = new FormData();

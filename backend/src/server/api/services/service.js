@@ -49,11 +49,6 @@ module.exports = {
         return configCopy
     },
 
-    file(req) {
-        console.debug(req, req.key)
-        return {ok:"ok"}
-    },
-
     async mapData(source, map, dataModel, configIn) {
 
         const cli = require('../../../cli/setup');

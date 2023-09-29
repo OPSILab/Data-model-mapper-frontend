@@ -24,14 +24,6 @@ module.exports = {
         log.debug("service.mapData end");
     },
 
-    file: async (req, res) => {
-        process.res = res;
-        if (req.body.file)
-            req.body = JSON.parse(req.body.file)
-        try { res.send(await service.file(req.body)) }
-        catch (error) { res.status(400).send(error) }
-    },
-
     getSources: async (req, res) => {
         process.res = res;
         try { res.send(await service.getSources()) }

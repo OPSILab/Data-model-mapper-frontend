@@ -9,7 +9,6 @@ router.post(encodeURI("/map/register"), upload.none(), insertMap)
 router.post(encodeURI("/source"), upload.none(), insertSource)
 router.post(encodeURI("/dataModel"), upload.none(), insertDataModel)
 router.post(encodeURI("/dereferenceSchema"), upload.none(), dereferenceSchema)
-router.post(encodeURI("/file"), upload.none(), file)
 
 router.get(encodeURI("/map"), getMap)
 router.get(encodeURI("/config"), getConfig)
