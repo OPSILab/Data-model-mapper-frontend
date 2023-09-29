@@ -1,9 +1,14 @@
 import { Injectable } from '@angular/core';
 import { NgxConfigureService } from 'ngx-configure';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AppConfig } from '../../model/appConfig';
 import { AdapterEntry } from '../../model/adapter/adapterEntry';
 var urlencode = require('urlencode');
+const multiPartOptions = {
+  headers: new HttpHeaders({
+   "Content-Type": "multipart/form-data" // 👈
+  })
+}
 
 @Injectable({
   providedIn: 'root',
@@ -68,7 +73,9 @@ export class DMMService {
 
   saveMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, path): any {
     if (schema?.$id) schema.$id = undefined
-    return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/register", {
+    return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/register",
+    this.formDataBuilder(
+    {
       id: adapter.adapterId,
       name: adapter.name,
       status: status,
@@ -83,47 +90,67 @@ export class DMMService {
       path,
       dataModelID,
       sourceData
-    }).toPromise();
+    })).toPromise();
+  }
+
+  largeRequest() {
+    const file = "{\"key\":\"value\"}";
+    const formData = new FormData();
+    formData.append('file', file);
+    // Perform the HTTP request
+    this.http.post(this.config.data_model_mapper.default_mapper_base_url + "/file", formData).subscribe((response) => {
+      console.log('File uploaded successfully');
+      console.log(response)
+    }, (error) => {
+      console.error('Error uploading file:', error);
+    });
+  }
+
+  formDataBuilder(body) {
+    const file = JSON.stringify(body);
+    const formData = new FormData();
+    formData.append('file', file);
+    return formData
   }
 
   saveSchema(adapter: Partial<AdapterEntry>, status, description, schema): any {
     if (schema?.$id) schema.$id = undefined
 
-    return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", {
+    return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel",this.formDataBuilder( {
       id: adapter.adapterId,
       name: adapter.name,
       status: status,
       description: description,
       dataModel: schema ? schema[0] ? schema[0] : schema : schema
-    }).toPromise();
+    })).toPromise();
   }
 
   updateSource(adapter, status: any, description: any, sourceData: any, path) {
-    return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source", {
+    return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source", this.formDataBuilder({
       id: adapter.adapterId,
       name: adapter.name,
       status: status,
       description: description,
       path,
       source: sourceData
-    }).toPromise();
+    })).toPromise();
   }
   saveSource(adapter, status: any, description: any, sourceData: any, path) {
-    return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source", {
+    return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source",this.formDataBuilder( {
       id: adapter.adapterId,
       name: adapter.name,
       status: status,
       path,
       description: description,
       source: sourceData
-    }).toPromise();
+    })).toPromise();
   }
 
 
   updateMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, path): any {
     if (schema?.$id) schema.$id = undefined
 
-    return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map", {
+    return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map", this.formDataBuilder({
       id: adapter.adapterId,
       name: adapter.name,
       status: status,
@@ -138,19 +165,19 @@ export class DMMService {
       sourceDataID,
       path,
       sourceData
-    }).toPromise();
+    })).toPromise();
   }
 
   updateSchema(adapter: Partial<AdapterEntry>, status, description, schema): any {
     if (schema?.$id) schema.$id = undefined
 
-    return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", {
+    return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", this.formDataBuilder({
       id: adapter.adapterId,
       name: adapter.name,
       status: status,
       description: description,
       dataModel: schema ? schema[0] ? schema[0] : schema : schema
-    }).toPromise();
+    })).toPromise();
   }
 
 
@@ -159,13 +186,14 @@ export class DMMService {
       schema = schema[0]
     if (schema?.$id) schema.$id = undefined
 
-    return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_url, {
+    return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_url,
+      this.formDataBuilder({
       "sourceDataType": type,
       "sourceData": source.url ? undefined : source,
       sourceDataURL: source.url ? source.url : undefined,
       "mapData": mapper,
       "dataModel": schema,
       "config": config
-    }).toPromise();
+    })).toPromise();
   }
 }

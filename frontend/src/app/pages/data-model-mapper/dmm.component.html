@@ -126,8 +126,9 @@
               <div class="mb-3" id="csveditor">
                 <nb-tabset>
                   <nb-tab tabTitle="CSV text">
-                    <textarea (blur)="updateCSVTable()" id="textarea" nbInput rows="10" fullWidth=true placeholder="Enter CVS text..."
-                      [(ngModel)]="csvSourceData" (ngModelChange)="sourceEditorMode('code')"></textarea>
+                    <textarea (blur)="updateCSVTable()" id="textarea" nbInput rows="10" fullWidth=true
+                      placeholder="Enter CVS text..." [(ngModel)]="csvSourceData"
+                      (ngModelChange)="sourceEditorMode('code')"></textarea>
                   </nb-tab>
                   <nb-tab id="csv-table" tabTitle="CSV Table">
                   </nb-tab>
@@ -158,15 +159,15 @@
                 {{ 'general.editor.upload' | translate }}
                 <i class="mx-1 fas fa-file-import fa-lg"></i>
               </button>
-              <button *ngIf="properties && !tempSchema || canGenerateSchema" nbButton class="mr-2"
-                shape="rectangle" size="small" (click)="generateMapper(getSchema())">
+              <button *ngIf="properties && !tempSchema || canGenerateSchema" nbButton class="mr-2" shape="rectangle"
+                size="small" (click)="generateMapper(getSchema())">
                 {{ 'general.editor.generate_mapper' | translate }}
                 <i class="mx-1 fas fa-lg"></i>
               </button>
 
               <br>
             </div>
-            <div style="height:500px" id="schemaEditor" (keydown)="onKeydownMain($event)" ></div>
+            <div style="height:500px" id="schemaEditor" (keydown)="onKeydownMain($event)"></div>
             <div style="padding-top:50px"></div>
             <div class="mb-2">
               <p>Set your mapper settings.
@@ -195,8 +196,12 @@
               <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button>
             &nbsp;
-            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="download()">
-              {{ 'general.dmm.export' | translate }}
+            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="transform()">
+              {{ 'general.dmm.transform' | translate }}
+              <i class="mx-1 fas fa-file-import fa-lg"></i>
+            </button>
+            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="largeRequest()">
+              Large request
               <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button>
             <br> <br>

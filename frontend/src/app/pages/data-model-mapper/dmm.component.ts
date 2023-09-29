@@ -1333,6 +1333,10 @@ export class DMMComponent implements OnInit, OnChanges {
     return $event == ".root$$$"
   }
 
+  largeRequest(){
+    this.dmmService.largeRequest()
+  }
+
   import(field, typeSource: string): void {
     this.typeSource = typeSource;
     this.dialogService
