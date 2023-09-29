@@ -9,9 +9,9 @@
 
     </nb-card-header>
     <nb-card-body *ngIf="!dialog">
-      <p>Select map record or upload your map record.
+      <p>Select mapper record or upload your mapper record.
       </p>
-      <nb-select placeholder="Select map record" size="small" [(ngModel)]="selectMap"
+      <nb-select placeholder="Select mapper record" size="small" [(ngModel)]="selectMap"
         (ngModelChange)="mapChanged($event)">
         <nb-option *ngFor="let map of maps" value={{map.id}}>{{map.name}}</nb-option>
       </nb-select>

@@ -11,19 +11,19 @@ The section **Home** is where you can see all mapper records
 
 ![](images/home.png)
 
-By clicking the button in the column **Actions** you can see a menu. If the status of the record is *Under development* you can see three options: 
+By clicking the button in the column **Actions** you can see a menu. If the status of the mapper record is *Under development* you can see three options: 
 
 ![](images/home-actions-menu.png)
 
-- *Edit record*. You'll be redirected in the mapper editor section and you can edit the record
-- *Register*. You'll set the status of the record to *Completed*
-- *Delete*. The record will be deleted.
+- *Edit mapper*. You'll be redirected in the mapper editor section and you can edit the record
+- *Register*. You'll set the status of the mapper to *Completed*
+- *Delete*. The mapper will be deleted.
 
- If the status of the record is *Completed* you can see two options:
+ If the status of the mapper is *Completed* you can see two options:
 
  ![](images/home-actions-menu-2.png) 
 
-- *Transform*. You can try the record with an input file
+- *Transform*. You can try the mapper with an input file
 - *Deregister*. You'll change the status to *Under development*
 
 If you click *Transform*, a dialog with two accordion will appear.
@@ -168,7 +168,7 @@ this time, other 2 view features are available :
 
 - *Tree*.  A tree like view, with a button near each field to easily map your subfield
 
-- *Preview*.  A read only JSON map record preview
+- *Preview*.  A read only JSON map mapper preview
 
 **Code** and **View** are the same as source editor.
 
@@ -225,7 +225,7 @@ You can also import a schema from Data model mapper DB by clicking **Select Json
 
 ![](images/select-schema.png)
 
-or import the entire map record by clicking **IMPORT** on the top of the page
+or import the entire mapper record by clicking **IMPORT** on the top of the page
 
 ![](images/editor.png)
 
@@ -249,9 +249,9 @@ If the Output preview is good, you can save the map or export it.
 
 If you want to change something, you can go back to the desired editor and modify the related text. If you want to reset all, click **CREATE NEW** button.
 
-If you want to download map record, just click **EXPORT** button.
+If you want to download mapper record, just click **EXPORT** button.
 
-If you want to save map record into Data model mapper Database , click **SAVE AS NEW**.
+If you want to save mapper record into Data model mapper Database , click **SAVE AS NEW**.
 
 ![](images/editor_top.png)
 
@@ -259,11 +259,11 @@ A save dialog will appear.
 
 ![](images/save-dialog.png)
 
-Chose a univoque Map ID and a name for the map record and then click save.
+Chose a univoque Map ID and a name for the mapper record and then click save.
 
 ## Updating
 
-If you want to update map record, click on **UPDATE**  button
+If you want to update mapper record, click on **UPDATE**  button
 
 ![](images/editor-after-save.png)
 
@@ -276,7 +276,7 @@ After finished, click **UPDATE** button.
 
 ## Config accordion
 
-The config settings can be modified by writing them on the [Config file](../backend/config.js) once you install the Data model mapper, however you can set your transform config template for each record. Go down to the *Config* accordion and click it.
+The config settings can be modified by writing them on the [Config file](../backend/config.js) once you install the Data model mapper, however you can set your transform config template for each mapper record. Go down to the *Config* accordion and click it.
 
 ![](images/config.png)
 
