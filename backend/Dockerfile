@@ -7,6 +7,5 @@ COPY ./config*.js ./
 COPY ./mapper.js ./
 COPY ./LICENSE ./
 COPY ./package*.json ./
-COPY ./README.md ./
 RUN npm install
 CMD ["node", "mapper"]

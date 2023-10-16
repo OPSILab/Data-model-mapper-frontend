@@ -270,6 +270,7 @@ module.exports = {
         if (path == "") path = undefined
         if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
             throw { error: "schema is required" }
+        if (dataModel) dataModel = this.dataModelClean(dataModel)
         if (!await Map.findOne({ id: id }))
             return await Map.insertMany([{
                 name: name,
@@ -295,6 +296,8 @@ module.exports = {
     async insertDataModel(name, id, dataModel) {
         if (!dataModel)
             throw { error: "schema is required" }
+        if (dataModel) dataModel = this.dataModelClean(dataModel)
+
         if (!await DataModel.findOne({ id: id })) return await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel }])
         throw { "error": "id already exists" }
     },//TODO replace with insertOne
