@@ -148,7 +148,8 @@
       "id" : "ID",
       "name" : "Name",
       "dataModel" : "Data model",
-      "view_editor" : "View on editor"
+      "view_editor" : "View on editor",
+      "update": "Update"
     }
   },
   "login": {

@@ -12,7 +12,7 @@
       <p>Select mapper record or upload your mapper record.
       </p>
       <nb-select placeholder="Select mapper record" size="small" [(ngModel)]="selectMap"
-        (ngModelChange)="mapChanged($event)">
+        (ngModelChange)="mapChanged($event, false)">
         <nb-option *ngFor="let map of maps" value={{map._id}}>{{map.name}}</nb-option>
       </nb-select>
       <div style="margin-top: 30px;"></div>
@@ -126,8 +126,9 @@
               <div class="mb-3" id="csveditor">
                 <nb-tabset>
                   <nb-tab tabTitle="CSV text">
-                    <textarea (blur)="updateCSVTable()" id="textarea" nbInput rows="10" fullWidth=true placeholder="Enter CVS text..."
-                      [(ngModel)]="csvSourceData" (ngModelChange)="sourceEditorMode('code')"></textarea>
+                    <textarea (blur)="updateCSVTable()" id="textarea" nbInput rows="10" fullWidth=true
+                      placeholder="Enter CVS text..." [(ngModel)]="csvSourceData"
+                      (ngModelChange)="sourceEditorMode('code')"></textarea>
                   </nb-tab>
                   <nb-tab id="csv-table" tabTitle="CSV Table">
                   </nb-tab>
@@ -158,8 +159,8 @@
                 {{ 'general.editor.upload' | translate }}
                 <i class="mx-1 fas fa-file-import fa-lg"></i>
               </button>
-              <button *ngIf="properties && !tempSchema || canGenerateSchema" nbButton class="mr-2"
-                shape="rectangle" size="small" (click)="generateMapper(getSchema())">
+              <button *ngIf="properties && !tempSchema || canGenerateSchema" nbButton class="mr-2" shape="rectangle"
+                size="small" (click)="generateMapper(getSchema())">
                 {{ 'general.editor.generate_mapper' | translate }}
                 <i class="mx-1 fas fa-lg"></i>
               </button>
@@ -201,6 +202,22 @@
             </button>
             <br> <br>
             <div style="height:500px" id="jsoneditor3"></div>
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+        <nb-accordion-item expanded="true">
+          <nb-accordion-item-header>
+            Request code
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
+            <p>The request body is showed below.
+            </p>
+            <br> <br> <br>
+            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateBody()">
+              {{ 'general.dmm.update' | translate }}
+              <i class="mx-1 fas fa-file-import fa-lg"></i>
+            </button>
+            <br> <br>
+            <div style="height:500px" id="bodyEditor"></div>
           </nb-accordion-item-body>
         </nb-accordion-item>
         <nb-accordion-item expanded="false" [hidden]=dialog>

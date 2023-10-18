@@ -12,7 +12,7 @@
       <p>Select mapper record or upload your mapper record.
       </p>
       <nb-select placeholder="Select mapper record" size="small" [(ngModel)]="selectMap"
-        (ngModelChange)="mapChanged($event)">
+        (ngModelChange)="mapChanged($event, false)">
         <nb-option *ngFor="let map of maps" value={{map._id}}>{{map.name}}</nb-option>
       </nb-select>
       <div style="margin-top: 30px;"></div>

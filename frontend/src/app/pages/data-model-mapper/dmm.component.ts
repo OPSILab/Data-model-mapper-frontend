@@ -148,6 +148,13 @@ export class DMMComponent implements OnInit, OnChanges {
       }
     }
   }
+  bodyEditorContainer: HTMLElement;
+  bodyEditor: any;
+  body: any;
+  bodyEditorOptions: {
+    mode: string; modes: string[]; // allowed modes
+    onModeChange: (newMode: any, oldMode: any) => void;
+  };
 
   constructor(
     @Inject(DOCUMENT) public document: Document,
@@ -485,6 +492,7 @@ export class DMMComponent implements OnInit, OnChanges {
     this.mapperEditorContainer = this.document.getElementById('jsoneditor2');
     this.schemaEditorContainer = this.document.getElementById('schemaEditor');
     this.outputEditorContainer = this.document.getElementById('jsoneditor3');
+    this.bodyEditorContainer = this.document.getElementById('bodyEditor');
     this.selectBox = <HTMLInputElement>this.document.getElementById('input-type');
     this.csvtable = this.document.getElementById('csv-table');
 
@@ -529,6 +537,10 @@ export class DMMComponent implements OnInit, OnChanges {
       "set a field from the output schema field list": "set a field from the source input"
     }
 
+    this.body = {
+
+    }
+
     this.sourceEditor = new JSONEditor(this.sourceEditorContainer, this.sourceOptions, this.sourceJson);
 
     this.schemaEditor = new JSONEditor(this.schemaEditorContainer, this.schemaOptions, this.selectedDataModel)
@@ -539,6 +551,12 @@ export class DMMComponent implements OnInit, OnChanges {
 
     this.outputEditorOptions = {
       mode: 'view',
+      modes: ['view', 'preview'], // allowed modes
+      onModeChange: function (newMode, oldMode) { },
+    };
+
+    this.bodyEditorOptions = {
+      mode: 'preview',
       modes: ['view', 'preview'], // allowed modes
       onModeChange: function (newMode, oldMode) { },
     };
@@ -554,6 +572,8 @@ export class DMMComponent implements OnInit, OnChanges {
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, preview);
     else
       this.outputEditor.update(preview)
+
+    this.bodyEditor = new JSONEditor(this.bodyEditorContainer, this.bodyEditorOptions, this.body);
 
     if (this.route.snapshot.params['inputID'] as string || this.inputID) {
       if (this.route.snapshot.params['inputID'] as string) this.inputID = this.route.snapshot.params['inputID'] as string;
@@ -1414,6 +1434,15 @@ export class DMMComponent implements OnInit, OnChanges {
   onKeydownMain($event) {
 
     this.canGenerateSchema = true
+  }
+
+  updateBody() {
+    this.bodyEditor.update(this.isNew ?
+      {
+        mapID: this.adapter.adapterId
+      }
+      :
+      this.bodyBuilder(JSON.parse(this.sourceEditor.getText())))
   }
 
   onKeydownReactive($event) {
