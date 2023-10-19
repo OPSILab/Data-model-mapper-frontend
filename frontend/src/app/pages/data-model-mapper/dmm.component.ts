@@ -1188,8 +1188,11 @@ export class DMMComponent implements OnInit, OnChanges {
       if (mapSettings.dataModelID && !mapSettings.dataModel) {
         this.selectedSchema = mapSettings.dataModelID
         mapSettings.dataModel = await this.selectFilteredSchema()
-        if (!mapSettings.dataModel)
+        this.importedSchema = o(mapSettings.dataModel)
+        if (!mapSettings.dataModel) {
           mapSettings.dataModel = { error: "schema is empty or could not be loaded" }
+          this.importedSchema = o(mapSettings.dataModel)
+        }
       }
       else if (mapSettings.dataModelURL && !mapSettings.dataModel) {
         this.dataModelURL = mapSettings.dataModelURL
@@ -1226,7 +1229,7 @@ export class DMMComponent implements OnInit, OnChanges {
         else this.onUpdatePathForDataMap("", true)
       }
       else if (mapSettings.sourceDataType == "csv" && !this.emptySource) {
-        this.csvSourceData = typeof mapSettings.sourceData == "string" ? mapSettings.sourceData : JSON.stringify(mapSettings.sourceData)
+        this.importedSource = this.csvSourceData = typeof mapSettings.sourceData == "string" ? mapSettings.sourceData : JSON.stringify(mapSettings.sourceData)
         this.updateCSVTable()
       }
       else if (!this.emptySource)
