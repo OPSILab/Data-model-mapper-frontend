@@ -85,6 +85,8 @@ export class CreateMapComponent implements OnInit {
 
   ngOnInit(): void {
 
+    console.debug(this.unsaved)
+
     //this.adapterId = Date.now().toString(); this.name = Date.now().toString(); this.description = Date.now().toString(); this.status = "Under development"
     this.loaded = false
     if (this.value)
@@ -136,7 +138,7 @@ export class CreateMapComponent implements OnInit {
     else
       return false
     */
-    return this.saveSource && !this.sourceSaved && this.selectFiltered("sources", this.adapterId)
+    return this.saveSource && this.selectFiltered("sources", this.name)
   }
 
   schemaIdAlreadyExists() {
@@ -155,7 +157,7 @@ export class CreateMapComponent implements OnInit {
     else
       return false
     */
-    return this.saveSchema && !this.schemaSaved && this.selectFiltered("dataModels", this.adapterId)
+    return this.saveSchema && this.selectFiltered("dataModels", this.name)
   }
 
   async submit() {

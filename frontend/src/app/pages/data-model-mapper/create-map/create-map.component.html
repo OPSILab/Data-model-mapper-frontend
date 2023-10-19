@@ -35,11 +35,11 @@
         </nb-select>
         <br>
         <br>
-        <nb-checkbox *ngIf="schema" [(ngModel)]="saveSchema" [ngModelOptions]="{standalone: true}">{{ schemaSaved ?
+        <nb-checkbox *ngIf="unsaved.schema" [(ngModel)]="saveSchema" [ngModelOptions]="{standalone: true}">{{ schemaSaved ?
           ('general.dmm.update_schema' | translate) : ('general.dmm.save_schema' | translate) }} </nb-checkbox>
         <br>
         <br>
-        <nb-checkbox *ngIf="sourceData" [(ngModel)]="saveSource" [ngModelOptions]="{standalone: true}">{{ sourceSaved?
+        <nb-checkbox *ngIf="unsaved.source" [(ngModel)]="saveSource" [ngModelOptions]="{standalone: true}">{{ sourceSaved?
           ('general.dmm.update_source' | translate) : ('general.dmm.save_source' | translate) }} </nb-checkbox>
         <br>
         <br>

@@ -127,8 +127,7 @@
                 <nb-tabset>
                   <nb-tab tabTitle="CSV text">
                     <textarea (blur)="updateCSVTable()" id="textarea" nbInput rows="10" fullWidth=true
-                      placeholder="Enter CVS text..." [(ngModel)]="csvSourceData"
-                      (ngModelChange)="sourceEditorMode('code')"></textarea>
+                      placeholder="Enter CVS text..." [(ngModel)]="csvSourceData"></textarea>
                   </nb-tab>
                   <nb-tab id="csv-table" tabTitle="CSV Table">
                   </nb-tab>
@@ -206,10 +205,10 @@
         </nb-accordion-item>
         <nb-accordion-item expanded="true">
           <nb-accordion-item-header>
-            Request code
+            Request body code
           </nb-accordion-item-header>
           <nb-accordion-item-body>
-            <p>The request body is showed below.
+            <p>The request body code is showed below.
             </p>
             <br> <br> <br>
             <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateBody()">
