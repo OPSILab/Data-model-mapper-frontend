@@ -458,13 +458,13 @@ export class DMMComponent implements OnInit, OnChanges {
     this.sourceOptions = {
       mode: 'view',
       modes: ['view', 'code'], // allowed modes
-      onModeChange: function (newMode, oldMode) { sourceEditorMode(newMode) },
+      onModeChange: function (newMode, oldMode) { },
     };
 
     this.schemaOptions = {
       mode: 'view',
       modes: ['view', 'code'], // allowed modes
-      onModeChange: function (newMode, oldMode) { schemaEditorMode(newMode) },
+      onModeChange: function (newMode, oldMode) { },
     };
 
     this.sourceJson = [{
