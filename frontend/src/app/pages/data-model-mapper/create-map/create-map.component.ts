@@ -248,9 +248,9 @@ export class CreateMapComponent implements OnInit {
     if (!errors && this.saveSchema)
       try {
         if (!this.schemaSaved)
-          await this.dmmService.saveSchema({ name, adapterId, status, description }, status, description, this.schema);
+          await this.dmmService.saveSchema({ name, adapterId, status, description }, status, description, this.schema, true);
         else
-          await this.dmmService.updateSchema({ name, adapterId, status, description }, status, description, this.schema);
+          await this.dmmService.updateSchema({ name, adapterId, status, description }, status, description, this.schema, true);
       }
       catch (error) {
         this.errorHandle("schema", error)
@@ -259,9 +259,9 @@ export class CreateMapComponent implements OnInit {
     if (!errors && this.saveSource)
       try {
         if (!this.sourceSaved)
-          await this.dmmService.saveSource({ name, adapterId, status, description }, status, description, this.sourceData, this.path);
+          await this.dmmService.saveSource({ name, adapterId, status, description }, status, description, this.sourceData, this.path, true);
         else
-          await this.dmmService.updateSource({ name, adapterId, status, description }, status, description, this.sourceData, this.path);
+          await this.dmmService.updateSource({ name, adapterId, status, description }, status, description, this.sourceData, this.path, true);
       }
       catch (error) {
         this.errorHandle("source", error)

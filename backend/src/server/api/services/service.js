@@ -96,7 +96,7 @@ module.exports = {
             }
         }
 
-        if (!Array.isArray(source.data) && (source.type == "json" || source.type == ".json" || source.type == "JSON" || source.type == ".JSON")) 
+        if (!Array.isArray(source.data) && (source.type == "json" || source.type == ".json" || source.type == "JSON" || source.type == ".JSON"))
             source.data = [source.data]
 
         if (config.backup) {
@@ -255,11 +255,13 @@ module.exports = {
         return schemaDereferenced
     },
 
-    async insertSource(name, id, source, path) {
+    async insertSource(name, id, source, path, mapRef) {
         if (!source)
             throw { error: "source is required" }
         if (path == "") path = undefined
-        if (!await Source.findOne({ name })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path }])
+        if (mapRef)
+            mapRef = (await Map.findOne({ name }))._id
+        if (mapRef || !await Source.findOne({ name })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path }])
         throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
@@ -292,20 +294,23 @@ module.exports = {
         throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
-    async insertDataModel(name, id, dataModel) {
+    async insertDataModel(name, id, dataModel, mapRef) {
         if (!dataModel)
             throw { error: "schema is required" }
         if (dataModel) dataModel = this.dataModelClean(dataModel)
-
-        if (!await DataModel.findOne({ name })) return await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel }])
+        if (mapRef)
+            mapRef = (await Map.findOne({ name }))._id
+        if (mapRef || !await DataModel.findOne({ name })) return await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel }])
         throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
-    async modifySource(name, id, source, path) {
+    async modifySource(name, id, source, path, mapRef) {
         if (!source)
             throw { error: "source is required" }
         if (path == "") path = undefined
-        return await Source.findOneAndReplace({ name }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path: path })
+        if (mapRef)
+            mapRef = (await Map.findOne({ name }))._id
+        return await Source.findOneAndReplace(mapRef ? { mapRef } : { name }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path: path })
     },
 
     call: 0,
@@ -393,11 +398,13 @@ module.exports = {
             })
     },
 
-    async modifyDataModel(name, id, dataModel) {
+    async modifyDataModel(name, id, dataModel, mapRef) {
         if (!dataModel)
             throw { error: "schema is required" }
         dataModel = this.dataModelClean(dataModel)
-        return await DataModel.findOneAndReplace({ name }, { name: name, id: id, dataModel: dataModel })
+        if (mapRef)
+            mapRef = (await Map.findOne({ name }))._id
+        return await DataModel.findOneAndReplace(mapRef ? { mapRef } : { name }, { name: name, id: id, dataModel: dataModel })
     },
 
     async deleteSource(id, name) {
@@ -405,7 +412,12 @@ module.exports = {
     },
 
     async deleteMap(id, name) {
+        let mapRef
+        if (!id)
+            mapRef = (await Map.findOne({ name }))._id
         let deletion = await Map.deleteOne(id ? { _id: id } : { name })
+        await Source.deleteOne({ _id: id || mapRef })
+        await DataModel.deleteOne({ _id: id || mapRef })
         if (deletion.deletedCount)
             return deletion
         throw { code: 404, message: "NOT FOUND" }

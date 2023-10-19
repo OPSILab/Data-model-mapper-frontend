@@ -75,7 +75,7 @@ module.exports = {
         if (req.body.file)
             req.body = JSON.parse(req.body.file)
         process.res = res;
-        try { res.send(await service.insertSource(req.body.name, req.body.id, req.body.source, req.body.path)) }
+        try { res.send(await service.insertSource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef)) }
         catch (error) { res.status(400).send(error) }
         log.debug("Source inserted");
     },
@@ -97,7 +97,7 @@ module.exports = {
         if (req.body.file)
             req.body = JSON.parse(req.body.file)
         process.res = res;
-        try { res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel)) }
+        try { res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel,req.body.mapRef)) }
         catch (error) { res.status(400).send(error) }
         log.debug("Model inserted");
     },
@@ -107,7 +107,7 @@ module.exports = {
             req.body = JSON.parse(req.body.file)
         process.res = res;
         try {
-            res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path))
+            res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path,req.body.mapRef))
             log.debug("Source modified");
         }
         catch (error) { res.status(400).send(error) }
@@ -131,7 +131,7 @@ module.exports = {
             req.body = JSON.parse(req.body.file)
         process.res = res;
         try {
-            res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel))
+            res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel,req.body.mapRef))
             log.debug("Schema modified");
         }
         catch (error) { res.status(400).send(error) }

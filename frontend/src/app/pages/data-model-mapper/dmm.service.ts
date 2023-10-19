@@ -100,7 +100,7 @@ export class DMMService {
     return formData
   }
 
-  saveSchema(adapter: Partial<AdapterEntry>, status, description, schema): any {
+  saveSchema(adapter: Partial<AdapterEntry>, status, description, schema, mapRef): any {
     if (schema?.$id) schema.$id = undefined
 
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel",this.formDataBuilder( {
@@ -108,28 +108,31 @@ export class DMMService {
       name: adapter.name,
       status: status,
       description: description,
-      dataModel: schema ? schema[0] ? schema[0] : schema : schema
+      dataModel: schema ? schema[0] ? schema[0] : schema : schema,
+      mapRef : mapRef
     })).toPromise();
   }
 
-  updateSource(adapter, status: any, description: any, sourceData: any, path) {
+  updateSource(adapter, status: any, description: any, sourceData: any, path, mapRef) {
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source", this.formDataBuilder({
       id: adapter.adapterId,
       name: adapter.name,
       status: status,
       description: description,
       path,
-      source: sourceData
+      source: sourceData,
+      mapRef : mapRef
     })).toPromise();
   }
-  saveSource(adapter, status: any, description: any, sourceData: any, path) {
+  saveSource(adapter, status: any, description: any, sourceData: any, path, mapRef) {
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source",this.formDataBuilder( {
       id: adapter.adapterId,
       name: adapter.name,
       status: status,
       path,
       description: description,
-      source: sourceData
+      source: sourceData,
+      mapRef : mapRef
     })).toPromise();
   }
 
@@ -155,7 +158,7 @@ export class DMMService {
     })).toPromise();
   }
 
-  updateSchema(adapter: Partial<AdapterEntry>, status, description, schema): any {
+  updateSchema(adapter: Partial<AdapterEntry>, status, description, schema, mapRef): any {
     if (schema?.$id) schema.$id = undefined
 
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", this.formDataBuilder({
@@ -163,7 +166,8 @@ export class DMMService {
       name: adapter.name,
       status: status,
       description: description,
-      dataModel: schema ? schema[0] ? schema[0] : schema : schema
+      dataModel: schema ? schema[0] ? schema[0] : schema : schema,
+      mapRef : mapRef
     })).toPromise();
   }
 

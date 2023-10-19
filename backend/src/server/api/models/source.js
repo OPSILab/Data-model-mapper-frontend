@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const source = mongoose.Schema({
   name: String,
   //id: String,
+  mapRef: {},
   source: {},
   path: String,
   sourceCSV: String
