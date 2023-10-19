@@ -540,7 +540,6 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       this.handleError(error, false, false)
-      //this.errorService.openErrorDialog(error)
       return { error: "Data model is empty or could not be loaded" }
     }
   }
@@ -555,7 +554,6 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       this.handleError(error, false, false)
-      //this.errorService.openErrorDialog(error)
       this.maps = []
       throw error
     }
@@ -567,7 +565,6 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       this.handleError(error, false, false)
-      //this.errorService.openErrorDialog(error)
       this.schemas = []
       throw error
     }
@@ -579,7 +576,6 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       this.handleError(error, false, false)
-      //this.errorService.openErrorDialog(error)
       this.sources = []
       throw error
     }
@@ -597,7 +593,6 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       this.handleError(error, false, false)
-      //this.errorService.openErrorDialog(error)
       this.transformSettings = await this.dmmService.getBackupConfig()
     }
     if (this.transformSettings.backup)
@@ -649,7 +644,6 @@ export class DMMComponent implements OnInit, OnChanges {
       if (!output)
         output = !error.status ? { "error": "Service unreachable" } : error.error
       this.handleError(error, false, false)
-      //this.errorService.openErrorDialog(error)
     }
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
@@ -685,7 +679,6 @@ export class DMMComponent implements OnInit, OnChanges {
         else
           output = error.error
       this.handleError(error, false, false)
-      //this.errorService.openErrorDialog(error)
     }
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output.filter(e => e != null && e != undefined));
