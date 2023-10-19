@@ -72,15 +72,14 @@ module.exports = {
                 //dataModel.data.$id || 
                 config.modelSchemaFolder + '/DataModelTemp.json'
 
-            if (map.sourceData) source.data = map.sourceData
-            if (map.sourceDataID) source.id = map.sourceDataID
-            if (map.sourceDataURL) source.url = map.sourceDataURL
-            if (map.dataModel) {
-                dataModel = {}
-                dataModel.data = map.dataModel
-            }
-            if (map.dataModelID) dataModel.id = map.dataModelID
-            if (map.dataModelURL) dataModel.url = map.dataModelURL
+            if (map.sourceDataIn && !source.name) source.name = map.sourceDataIn
+            if (map.sourceData && !source.data) source.data = map.sourceData
+            if (map.sourceDataID && !source.id) source.id = map.sourceDataID
+            if (map.sourceDataURL && !source.url) source.url = map.sourceDataURL
+            if (map.dataModelIn && !dataModel.name) dataModel.name = map.dataModelIn
+            if (map.dataModel && !dataModel.data) dataModel.data = map.dataModel
+            if (map.dataModelID && !dataModel.id) dataModel.id = map.dataModelID
+            if (map.dataModelURL && !dataModel.url) dataModel.url = map.dataModelURL
             if (map.sourceDataType) source.type = map.sourceDataType
             if (map.config) configIn = map.config
 
@@ -97,7 +96,8 @@ module.exports = {
             }
         }
 
-        if (!Array.isArray(source.data) && source.type == "json" || source.type == ".json" || source.type == "JSON" || source.type == ".JSON") source.data = [source.data]
+        if (!Array.isArray(source.data) && (source.type == "json" || source.type == ".json" || source.type == "JSON" || source.type == ".JSON")) 
+            source.data = [source.data]
 
         if (config.backup) {
             for (let configKey in config.backup)
@@ -107,7 +107,6 @@ module.exports = {
 
         if (configIn)
             for (let configKey in configIn) {
-                console.debug(configKey, " : ", configIn[configKey])
                 if (!config.backup) config.backup = {}
                 config.backup[configKey] = config[configKey]
                 if (configIn[configKey] != "undefined") config[configKey] = configIn[configKey]
@@ -195,19 +194,19 @@ module.exports = {
     },
 
     async getSource(id, name) {
-        let source = await Source.findOne( id ? { _id:id } : {name})
+        let source = await Source.findOne(id ? { _id: id } : { name })
         if (!source) throw { code: 404, message: "NOT FOUND" }
         return source
     },
 
     async getMap(id, name) {
-        let map = await Map.findOne(id ? { _id:id } : {name})
+        let map = await Map.findOne(id ? { _id: id } : { name })
         if (!map) throw { code: 404, message: "NOT FOUND" }
         return map
     },
 
     async getDataModel(id, name) {
-        let dataModel = await DataModel.findOne(id ? { _id:id } : {name})
+        let dataModel = await DataModel.findOne(id ? { _id: id } : { name })
         if (!dataModel) throw { code: 404, message: "NOT FOUND" }
         return dataModel
     },
@@ -271,7 +270,7 @@ module.exports = {
         if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
             throw { error: "schema is required" }
         if (dataModel) dataModel = this.dataModelClean(dataModel)
-        if (!await Map.findOne({ name}))
+        if (!await Map.findOne({ name }))
             return await Map.insertMany([{
                 name: name,
                 id: id,
@@ -402,11 +401,11 @@ module.exports = {
     },
 
     async deleteSource(id, name) {
-        return await Source.deleteOne(id ? { _id:id } : {name})
+        return await Source.deleteOne(id ? { _id: id } : { name })
     },
 
     async deleteMap(id, name) {
-        let deletion = await Map.deleteOne(id ? { _id:id } : {name})
+        let deletion = await Map.deleteOne(id ? { _id: id } : { name })
         if (deletion.deletedCount)
             return deletion
         throw { code: 404, message: "NOT FOUND" }
@@ -414,6 +413,6 @@ module.exports = {
     },
 
     async deleteDataModel(id, name) {
-        return await DataModel.deleteOne(id ? { _id:id } : {name})
+        return await DataModel.deleteOne(id ? { _id: id } : { name })
     },
 }
