@@ -56,7 +56,7 @@ module.exports = {
         if (map?.id) {
 
             try {
-                map = await Map.findOne({ id: map.id })
+                map = await Map.findOne({ _id: map.id })
             }
             catch (error) {
                 console.log(error)
@@ -117,7 +117,7 @@ module.exports = {
         if (config.NGSI_entity != undefined) this.NGSI_entity = config.NGSI_entity
 
         if (source.id) {
-            try { source.data = await Source.findOne({ id: source.id }) }
+            try { source.data = await Source.findOne({ _id: source.id }) }
             catch (error) {
                 console.log(error)
                 process.res.sendStatus(404)
@@ -126,7 +126,7 @@ module.exports = {
         }
 
         if (dataModel.id) {
-            try { dataModel.data = await DataModel.findOne({ id: dataModel.id }) }
+            try { dataModel.data = await DataModel.findOne({ _id: dataModel.id }) }
             catch (error) {
                 console.log(error)
                 process.res.sendStatus(404)
@@ -194,22 +194,22 @@ module.exports = {
         return await DataModel.find()
     },
 
-    async getSource(id) {
-        let source = await Source.findOne({ id: id })
+    async getSource(id, name) {
+        let source = await Source.findOne( id ? { _id:id } : {name})
         if (!source) throw { code: 404, message: "NOT FOUND" }
         return source
     },
 
-    async getMap(id) {
-        let map = await Map.findOne({ id: id })
+    async getMap(id, name) {
+        let map = await Map.findOne(id ? { _id:id } : {name})
         if (!map) throw { code: 404, message: "NOT FOUND" }
         return map
     },
 
-    async getDataModel(id) {
-        let dataModel = await DataModel.findOne({ id: id })
+    async getDataModel(id, name) {
+        let dataModel = await DataModel.findOne(id ? { _id:id } : {name})
         if (!dataModel) throw { code: 404, message: "NOT FOUND" }
-        return await DataModel.findOne({ id: id })
+        return dataModel
     },
 
     async parseDataModelSchema(schemaPath) {
@@ -260,8 +260,8 @@ module.exports = {
         if (!source)
             throw { error: "source is required" }
         if (path == "") path = undefined
-        if (!await Source.findOne({ id: id })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path }])
-        throw { "error": "id already exists" }
+        if (!await Source.findOne({ name })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path }])
+        throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
     async insertMap(name, id, map, dataModel, status, description,
@@ -271,7 +271,7 @@ module.exports = {
         if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
             throw { error: "schema is required" }
         if (dataModel) dataModel = this.dataModelClean(dataModel)
-        if (!await Map.findOne({ id: id }))
+        if (!await Map.findOne({ name}))
             return await Map.insertMany([{
                 name: name,
                 id: id,
@@ -290,7 +290,7 @@ module.exports = {
                 sourceDataType,
                 path
             }])
-        throw { "error": "id already exists" }
+        throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
     async insertDataModel(name, id, dataModel) {
@@ -298,15 +298,15 @@ module.exports = {
             throw { error: "schema is required" }
         if (dataModel) dataModel = this.dataModelClean(dataModel)
 
-        if (!await DataModel.findOne({ id: id })) return await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel }])
-        throw { "error": "id already exists" }
+        if (!await DataModel.findOne({ name })) return await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel }])
+        throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
     async modifySource(name, id, source, path) {
         if (!source)
             throw { error: "source is required" }
         if (path == "") path = undefined
-        return await Source.findOneAndReplace({ id: id }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path: path })
+        return await Source.findOneAndReplace({ name }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path: path })
     },
 
     call: 0,
@@ -371,7 +371,7 @@ module.exports = {
 
         return await Map.findOneAndReplace(
             {
-                id: id
+                name
             },
 
             {
@@ -398,22 +398,22 @@ module.exports = {
         if (!dataModel)
             throw { error: "schema is required" }
         dataModel = this.dataModelClean(dataModel)
-        return await DataModel.findOneAndReplace({ id: id }, { name: name, id: id, dataModel: dataModel })
+        return await DataModel.findOneAndReplace({ name }, { name: name, id: id, dataModel: dataModel })
     },
 
-    async deleteSource(id) {
-        return await Source.deleteOne({ id: id })
+    async deleteSource(id, name) {
+        return await Source.deleteOne(id ? { _id:id } : {name})
     },
 
-    async deleteMap(id) {
-        let deletion = await Map.deleteOne({ id: id })
+    async deleteMap(id, name) {
+        let deletion = await Map.deleteOne(id ? { _id:id } : {name})
         if (deletion.deletedCount)
             return deletion
         throw { code: 404, message: "NOT FOUND" }
 
     },
 
-    async deleteDataModel(id) {
-        return await DataModel.deleteOne({ id: id })
+    async deleteDataModel(id, name) {
+        return await DataModel.deleteOne(id ? { _id:id } : {name})
     },
 }

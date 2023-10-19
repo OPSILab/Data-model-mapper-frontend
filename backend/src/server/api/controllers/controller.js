@@ -43,14 +43,16 @@ module.exports = {
     },
 
     getSource: async (req, res) => {
+        const {id, name} = req.query
         process.res = res;
-        try { res.send(await service.getSource(req.query.id)) }
+        try { res.send(await service.getSource(id,name)) }
         catch (error) { res.status(error.code || 400).send(error) }
     },
 
     getMap: async (req, res) => {
+        const {id, name} = req.query
         process.res = res;
-        try { res.send(await service.getMap(req.query.id)) }
+        try { res.send(await service.getMap(id,name)) }
         catch (error) {
             res.status(error.code || 400).send(error)
         }
@@ -63,8 +65,9 @@ module.exports = {
     },
 
     getDataModel: async (req, res) => {
+        const {id, name} = req.query
         process.res = res;
-        try { res.send(await service.getDataModel(req.query.id)) }
+        try { res.send(await service.getDataModel(id,name)) }
         catch (error) { res.status(error.code || 400).send(error) }
     },
 
@@ -135,20 +138,23 @@ module.exports = {
     },
 
     deleteSource: async (req, res) => {
+        const {id, name} = req.query
         process.res = res;
-        try { res.send(await service.deleteSource(req.query.id)) }
+        try { res.send(await service.deleteSource(id,name)) }
         catch (error) { res.status(400).send(error) }
     },
 
     deleteMap: async (req, res) => {
+        const {id, name} = req.query
         process.res = res;
-        try { res.send(await service.deleteMap(req.query.id || req.params.id)) }
+        try { res.send(await service.deleteMap(id || req.params.id,name)) }
         catch (error) { res.status(400).send(error) }
     },
 
     deleteDataModel: async (req, res) => {
+        const {id, name} = req.query
         process.res = res;
-        try { res.send(await service.deleteDataModel(req.query.id)) }
+        try { res.send(await service.deleteDataModel(id,name)) }
         catch (error) { res.status(400).send(error) }
     },
 
