@@ -536,7 +536,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   selectFilteredSchema() {
     try {
-      return this.schemas.filter(filteredSchema => filteredSchema.id == this.selectedSchema)[0].dataModel
+      return this.schemas.filter(filteredSchema => filteredSchema._id == this.selectedSchema)[0].dataModel
     }
     catch (error) {
       this.handleError(error, false, false)
@@ -545,7 +545,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   source() {
-    return this.sources.filter(filteredSource => filteredSource.id == this.selectedSource)[0].source || this.sources.filter(filteredSource => filteredSource.id == this.selectedSource)[0].sourceCSV
+    return this.sources.filter(filteredSource => filteredSource._id == this.selectedSource)[0].source || this.sources.filter(filteredSource => filteredSource._id == this.selectedSource)[0].sourceCSV
   }
 
   async loadMapperList() {
@@ -674,7 +674,6 @@ export class DMMComponent implements OnInit, OnChanges {
           catch (error) {
             console.error(error.message)
           }
-          //output = { "error": "Request too large" }
         }
         else
           output = error.error
@@ -693,20 +692,6 @@ export class DMMComponent implements OnInit, OnChanges {
       for (let oneOf of obj.allOf)
         if (oneOf.properties)
           obj.properties = { ...obj.properties, ...oneOf.properties }
-    /*
-        if (obj.required)
-          for (let key of obj.required)
-            if (!obj.properties[key])
-              obj.properties[key] = true
-
-        if (obj.anyOf)
-          for (let oneOf of obj.anyOf)
-            if (oneOf.required)
-              for (let key of oneOf.required)
-                if (!obj.properties[key])
-                  obj.properties[key] = true
-
-       */
 
     if (obj.properties)
       for (let key in obj.properties)
@@ -729,6 +714,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   differences(object1, object2) {
+    console.debug(object1, object2)
     return JSON.stringify(object1) != JSON.stringify(object2)
   }
 
@@ -916,7 +902,6 @@ export class DMMComponent implements OnInit, OnChanges {
       console.error("Error during map setting set")
     }
 
-    //if (!editor.mapperEditor && !justOptions) editor.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
     if (!editor.mapperEditor && !justOptions) editor.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
     else if (!justOptions) editor.mapperEditor.update(this.map)
     if (editor.mapperEditor) this.map = JSON.parse(editor.mapperEditor.getText())
@@ -968,18 +953,18 @@ export class DMMComponent implements OnInit, OnChanges {
 
     this.dialogService.open(ExportFileComponent).onClose.subscribe((content) => {
       if (content == "file")
-        this.saveFile(JSON.stringify(this.bodyBuilder(source)));
+        this.saveFile(JSON.stringify(this.bodyBuilder(source)), "json");
       else if (content == "snippet")
-        this.saveFile(this.buildSnippet());
+        this.saveFile(this.buildSnippet(), "bash");
     })
   }
 
   download() {
-    this.saveFile(this.outputEditor.getText())
+    this.saveFile(this.outputEditor.getText(), "json")
   }
 
-  async saveFile(model): Promise<void> {
-    const filename = "exportedFile.json",
+  async saveFile(model, type): Promise<void> {
+    const filename = (this.name || this.adapter.name || "exportedFile") + "." + type,
       blob = new Blob([model], {
         type: 'application/json;charset=utf-8',
       });
@@ -1083,13 +1068,13 @@ export class DMMComponent implements OnInit, OnChanges {
           path: this.selectedPath,
           sourceDataType: this.inputType,
           jsonMap: map,
-          schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())) || this.rawSchema() ? JSON.parse(this.schemaEditor.getText()) : undefined,
+          schema: unsaved.schema || this.rawSchema() ? JSON.parse(this.schemaEditor.getText()) : undefined,
           config: this.transformSettings,
           sourceDataURL: this.sourceDataURL,
           sourceDataID: this.selectedSource,
           dataModelURL: this.dataModelURL,
           dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-          sourceData: this.differences(this.importedSource, this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData) || this.rawSource() ? this.setSource(source, true) : undefined,
+          sourceData: unsaved.source || this.rawSource() ? this.setSource(source, true) : undefined,
           schemaSaved: false,
           sourceSaved: false
         }
@@ -1152,20 +1137,8 @@ export class DMMComponent implements OnInit, OnChanges {
     if (settingsFromFile || ($event && $event != "---select map---")) {
       let mapSettings
 
-      if ($event && $event != "---select map---") {
-        mapSettings = this.maps.filter(filteredMap => filteredMap.id == $event)[0]
-
-        try {
-          this.savedSource = await this.dmmService.getSource($event)
-          this.savedSchema = await this.dmmService.getSchema($event)
-        }
-        catch (error) {
-          console.log(error, error.status, error.error.status, error.error.code)
-          if (error.status != 400 && error.error.code != 400 && error.error.code != 404 && error.status != 404)
-            this.handleError(error, true, false)
-          //this.errorService.openErrorDialog(error)
-        }
-      }
+      if ($event && $event != "---select map---")
+        mapSettings = this.maps.filter(filteredMap => filteredMap._id == $event)[0]
       else mapSettings = JSON.parse(settingsFromFile)
 
       this.onUpdateInputType(mapSettings?.sourceDataType)
@@ -1174,17 +1147,18 @@ export class DMMComponent implements OnInit, OnChanges {
         this.newConfig(mapSettings?.config)
       else this.resetConfigSettings()
 
-      //try {
       if (mapSettings.sourceDataID && !mapSettings.sourceData && !this.emptySource) {
         this.selectedSource = mapSettings.sourceDataID
         try {
           mapSettings.sourceData = await this.source()
+          this.importedSource = o(mapSettings.sourceData)
         }
         catch (error) {
           if (error.message == "Cannot read properties of undefined (reading 'source')")
             error.message = "Source could not be loaded"
           this.handleError(error, false, false)
           mapSettings.sourceData = { error: "source is empty or could not be loaded" }
+          this.importedSource = o(mapSettings.sourceData)
         }
       }
       else if (mapSettings.sourceDataURL && !mapSettings.sourceData && !this.emptySource) {
@@ -1192,18 +1166,23 @@ export class DMMComponent implements OnInit, OnChanges {
         if (this.selectedSource) this.selectedSource = undefined
         try {
           mapSettings.sourceData = await this.dmmService.getRemoteSource(mapSettings.sourceDataURL, mapSettings.sourceDataType);
+          this.importedSource = o(mapSettings.sourceData)
         }
         catch (error) {
           this.handleError(error, false, false)
-          //this.errorService.openErrorDialog(error)
           mapSettings.sourceData = { error: "some errors occurred when downloading remote source" }
+          this.importedSource = o(mapSettings.sourceData)
         }
       }
       else if (!mapSettings.sourceData) {
         mapSettings.sourceData = this.exampleSource
-        this.csvSourceData = ""
+        this.importedSource = o(mapSettings.sourceData)
+        this.csvSourceData = "" //TODO verify if this is sufficient
         this.updateCSVTable()
         this.sourceEditor.update(mapSettings.sourceData)
+      }
+      else {
+        this.importedSource = o(mapSettings.sourceData)
       }
 
       if (mapSettings.dataModelID && !mapSettings.dataModel) {
@@ -1217,16 +1196,17 @@ export class DMMComponent implements OnInit, OnChanges {
         if (this.selectedDataModel) this.selectedDataModel = undefined
         try {
           mapSettings.dataModel = await this.dmmService.getRemoteSource(mapSettings.dataModelURL, "json");
+          this.importedSchema = o(mapSettings.dataModel)
         }
         catch (error) {
           this.handleError(error, false, false)
-          //this.errorService.openErrorDialog(error)
           mapSettings.dataModel = { error: "Some errors occurred when downloading remote schema" }
+          this.importedSchema = o(mapSettings.dataModel)
         }
       }
-      this.schemaJson =
-        mapSettings.dataModel // this was strangely an array
-        ;
+
+      this.schemaJson = mapSettings.dataModel
+      this.importedSchema = o(mapSettings.dataModel)
 
       if (mapSettings.sourceDataType == "json" && !this.emptySource) {
         //this.sourceJson = this.source();
@@ -1255,7 +1235,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.map = mapSettings.map || mapSettings.mapData
       mapGl = this.map
       this.adapter = {}
-      if (mapSettings.id) this.adapter.adapterId = mapSettings.id
+      if (mapSettings._id) this.adapter.adapterId = mapSettings._id
       if (mapSettings.name) this.name = mapSettings.name
       if (mapSettings.description) this.adapter.description = mapSettings.description
       if (mapSettings.status) this.adapter.status = mapSettings.status
