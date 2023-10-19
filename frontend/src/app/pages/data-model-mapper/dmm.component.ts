@@ -1111,7 +1111,7 @@ export class DMMComponent implements OnInit, OnChanges {
               name: adapter.name,
               description: adapter.description,
             })
-            this.importedSource = JSON.parse(this.sourceEditor.getText())
+            this.importedSource = this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData
             this.selectedSource = undefined
             this.sourceDataURL = undefined
           }
