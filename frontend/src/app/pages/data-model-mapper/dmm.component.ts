@@ -326,12 +326,9 @@ export class DMMComponent implements OnInit, OnChanges {
         this.schemaJson = this.exampleSchema
 
       }
-      if (typeof $event == 'string' && !errors) {
-        this.importedSchema = JSON.parse(this.schemaEditor.getText())
-        this.onKeydownMain($event)
-      }
-      else if (!errors) {
-        this.importedSchema = JSON.parse(this.schemaEditor.getText())
+      if (!errors) {
+        if (typeof $event == 'string' && !errors)
+          this.importedSchema = JSON.parse(this.schemaEditor.getText())
         this.onKeydownMain($event)
       }
       this.tempSchema = undefined
@@ -1362,16 +1359,16 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   onKeydownReactive($event) {
-
     try {
+      let schema = JSON.parse(this.schemaEditor?.getText())
       if //( &&!this.schemaJson?.properties
         (
-        JSON.parse(this.schemaEditor?.getText())?.properties ||
-        JSON.parse(this.schemaEditor?.getText())?.allOf?.filter(o => o.properties)[0] ||
-        JSON.parse(this.schemaEditor?.getText())?.anyOf?.filter(o => o?.properties)[0]
+        schema?.properties ||
+        schema?.allOf?.filter(o => o?.properties)[0] ||
+        schema?.anyOf?.filter(o => o?.properties)[0]
         //)
       ) {
-        this.schemaJson = JSON.parse(this.schemaEditor?.getText())
+        this.schemaJson = schema
         //if (!this.schemaJson.properties) {
         this.properties = true
         //this.schemaEditor.update(this.schemaJson)
@@ -1383,7 +1380,6 @@ export class DMMComponent implements OnInit, OnChanges {
       if (!error.message.startsWith("Expected") &&
         !error.message.startsWith("Unexpected"))
         this.handleError(error, false, false)
-      //console.log(JSON.stringify(error))
     }
   }
 
