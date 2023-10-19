@@ -437,6 +437,7 @@ export class DMMComponent implements OnInit, OnChanges {
     this.mapperEditorContainer = this.document.getElementById('jsoneditor2');
     this.schemaEditorContainer = this.document.getElementById('schemaEditor');
     this.outputEditorContainer = this.document.getElementById('jsoneditor3');
+    this.bodyEditorContainer = this.document.getElementById('bodyEditor');
     this.selectBox = <HTMLInputElement>this.document.getElementById('input-type');
     this.csvtable = this.document.getElementById('csv-table');
 
@@ -481,6 +482,10 @@ export class DMMComponent implements OnInit, OnChanges {
       "set a field from the output schema field list": "set a field from the source input"
     }
 
+    this.body = {
+
+    }
+
     this.sourceEditor = new JSONEditor(this.sourceEditorContainer, this.sourceOptions, this.sourceJson);
 
     this.schemaEditor = new JSONEditor(this.schemaEditorContainer, this.schemaOptions, this.selectedDataModel)
@@ -495,10 +500,14 @@ export class DMMComponent implements OnInit, OnChanges {
       onModeChange: function (newMode, oldMode) { },
     };
 
+    this.bodyEditorOptions = {
+      mode: 'preview',
+      modes: ['view', 'preview'], // allowed modes
+      onModeChange: function (newMode, oldMode) { },
+    };
+
     if (this.selectedSchema)
-      this.schemaJson =
-        this.selectFilteredSchema()
-        ;
+      this.schemaJson = this.selectFilteredSchema()
 
     this.setMapEditor(false);
 
@@ -507,18 +516,22 @@ export class DMMComponent implements OnInit, OnChanges {
     else
       this.outputEditor.update(preview)
 
+    this.bodyEditor = new JSONEditor(this.bodyEditorContainer, this.bodyEditorOptions, this.body);
+
     if (this.route.snapshot.params['inputID'] as string || this.inputID) {
-      if (this.route.snapshot.params['inputID'] as string) this.inputID = this.route.snapshot.params['inputID'] as string;
+      if (this.route.snapshot.params['inputID'] as string)
+        this.inputID = this.route.snapshot.params['inputID'] as string;
       this.selectMap = this.inputID
       await this.mapChanged(this.inputID, false)
-      if (this.inputType == "csv" && !this.emptySource) this.updateCSVTable()
+      if (this.inputType == "csv" && !this.emptySource)
+        this.updateCSVTable()
+      this.updateBody()
     }
     else {
       this.importedSchema = this.exampleSchema
-      this.importedSource = [{
-        "info": "set your source json here"
-      }]
+      this.importedSource = o(this.sourceJson)
     }
+    console.debug(this.importedSource)
   }
 
   selectFilteredSchema() {
