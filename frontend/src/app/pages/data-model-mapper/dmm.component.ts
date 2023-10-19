@@ -246,19 +246,6 @@ export class DMMComponent implements OnInit, OnChanges {
     return this.schemaJson
   }
 
-  delay(t) {
-    return new Promise(resolve => setTimeout(resolve, t));
-  }
-
-  /*
-  async schemaTemporized() : Promise<any>{
-    await this.delay(200)//.then(
-      //() => {
-        return this.getSchema();
-      //}
-    //)
-  }*/
-
   parsed = false
 
   async refParse(subObj) {
@@ -314,7 +301,6 @@ export class DMMComponent implements OnInit, OnChanges {
     if ($event && $event != "---select schema---") {
       if (this.dataModelURL && from != "url") {
         this.dataModelURL = undefined
-        schemaEditorCodeMode = false
       }
       if (this.selectedSchema)
         this.schemaJson = this.selectFilteredSchema();
@@ -341,7 +327,6 @@ export class DMMComponent implements OnInit, OnChanges {
 
       }
       if (typeof $event == 'string' && !errors) {
-        schemaEditorCodeMode = false
         this.importedSchema = JSON.parse(this.schemaEditor.getText())
         this.onKeydownMain($event)
       }
@@ -372,7 +357,6 @@ export class DMMComponent implements OnInit, OnChanges {
           this.csvSourceData = this.source()
           this.importedSource = this.csvSourceData
         }
-        sourceEditorCodeMode = false
       }
     }
     catch (error) {
@@ -383,8 +367,6 @@ export class DMMComponent implements OnInit, OnChanges {
   async reset() {
     this.importedSchema = undefined
     this.importedSource = undefined
-    schemaEditorCodeMode = false
-    sourceEditorCodeMode = false
     this.adapterId = undefined
     this.dataModelURL = undefined
     this.inputID = undefined
@@ -447,8 +429,6 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async ngOnInit(): Promise<void> {
-
-    schemaEditorCodeMode = false
 
     editor.mapperEditor = undefined
 
@@ -1278,11 +1258,9 @@ export class DMMComponent implements OnInit, OnChanges {
       this.selectedSchema = "---select schema---"
       this.selectedSource = undefined
       if (mapSettings.dataModel) this.schemaEditor.update(mapSettings.dataModel)
-      sourceEditorCodeMode = schemaEditorCodeMode = false
-      //}
-
     }
   }
+
   newConfig(config: any) {
     this.transformSettings = config
     this.configEditor.update(config)
