@@ -1416,6 +1416,15 @@ export class DMMComponent implements OnInit, OnChanges {
     this.canGenerateSchema = true
   }
 
+  updateBody() {
+    this.bodyEditor.update(this.isNew ?
+      {
+        mapID: this.adapter.adapterId
+      }
+      :
+      this.bodyBuilder(JSON.parse(this.sourceEditor.getText())))
+  }
+
   onKeydownReactive($event) {
 
     try {
