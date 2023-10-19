@@ -66,6 +66,7 @@ export class CreateMapComponent implements OnInit {
   }
 
   cancel(): void {
+    this.fixBrokenPageBug()
     this.ref.close();
   }
 
@@ -96,6 +97,7 @@ export class CreateMapComponent implements OnInit {
 
   confirm() {
     try {
+      this.fixBrokenPageBug()
       this.onSubmit()
     }
     catch (error) {
@@ -104,6 +106,7 @@ export class CreateMapComponent implements OnInit {
   }
 
   confirmSubmit() {
+    this.fixBrokenPageBug()
     this.ref.close(true)
   }
 
