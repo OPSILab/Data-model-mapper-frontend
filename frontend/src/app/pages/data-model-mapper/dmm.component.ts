@@ -19,38 +19,8 @@ import editor from './mapperEditor'
 
 let mapOptionsGl, mapGl = "Set your mapping fields here"//, mapperEditor
 
-function schemaEditorMode(newMode) {
-  if (newMode == "code") schemaEditorCodeMode = true
-  //editor.toggleSchemaMode = false
-}
-
-let schemaEditorCodeMode = false
-
-function sourceEditorMode(newMode) {
-  if (newMode == "code") sourceEditorCodeMode = true
-  //editor.toggleSourceMode = false
-}
-
-function debug(property) {
-  console.debug(property)
-}
-
-function log(property) {
-  console.log(property)
-}
-
-let alwaysCode = false
-
-let sourceEditorCodeMode = false
-
-function getEditorCodeMode(editor) {//TODO delete if unused
-  if (alwaysCode)
-    return true
-  else if (editor == "source")
-    return sourceEditorCodeMode
-  else if (editor == "schema")
-    return schemaEditorCodeMode
-  else throw new Error("No editor provided")
+function o(obj) {
+  return JSON.parse(JSON.stringify(obj))
 }
 
 @Component({
@@ -64,7 +34,6 @@ export class DMMComponent implements OnInit, OnChanges {
   inputID
   map
   backendDown
-  //mapperEditor
   mapOptions
   sourceEditor: any;
   sourceEditorContainer: any;
@@ -148,6 +117,13 @@ export class DMMComponent implements OnInit, OnChanges {
       }
     }
   }
+  bodyEditorContainer: HTMLElement;
+  bodyEditor: any;
+  body: any;
+  bodyEditorOptions: {
+    mode: string; modes: string[]; // allowed modes
+    onModeChange: (newMode: any, oldMode: any) => void;
+  };
 
   constructor(
     @Inject(DOCUMENT) public document: Document,
@@ -163,12 +139,6 @@ export class DMMComponent implements OnInit, OnChanges {
     this.config = configService.config as AppConfig;
   }
 
-  toggleView() {
-    this.flipped = !this.flipped;
-  }
-
-  sourceEditorMode = sourceEditorMode
-
   updateMap() {
     mapGl = this.map
   }
@@ -178,7 +148,8 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   rawSchema() {
-    if (this.dataModelURL || (this.selectedSchema && this.selectedSchema != "---select schema---" && typeof this.selectedSchema == "string")) return false
+    if (this.dataModelURL || (this.selectedSchema && this.selectedSchema != "---select schema---" && typeof this.selectedSchema == "string"))
+      return false
     return true
   }
 
@@ -192,6 +163,7 @@ export class DMMComponent implements OnInit, OnChanges {
     try {
       source = JSON.parse(this.sourceEditor.getText())
       map = JSON.parse(editor.mapperEditor.getText())
+      console.debug(this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())), this.rawSchema())
       unsaved = {
         schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())),
         source: this.differences(this.importedSource, this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData)
@@ -1338,7 +1310,6 @@ export class DMMComponent implements OnInit, OnChanges {
     this.dialogService
       .open(DialogImportComponent, field == "map" ? { context: { map: true } } : { context: { type: typeSource } })
       .onClose.subscribe(async (result: { content: string; source: string; format: string; mapSettings }) => {
-        debug(result)
         if (result?.mapSettings)
           this.mapChanged(false, result.mapSettings)
         else if (result && result?.content) {
@@ -1351,7 +1322,6 @@ export class DMMComponent implements OnInit, OnChanges {
             this.displayCSV(this.csvSourceData, this.csvtable, this.separatorItem);
             mapOptionsGl = this.csvSourceData.slice(0, this.csvSourceData.indexOf("\n")).split(this.separatorItem);
             if (this.selectedSource) this.selectedSource = undefined
-            sourceEditorCodeMode = true
             this.importedSource = this.csvSourceData
           }
           else if (field == 'source') {
@@ -1369,7 +1339,6 @@ export class DMMComponent implements OnInit, OnChanges {
               try {
                 this.sourceEditor.setText(result.content);
                 if (this.selectedSource) this.selectedSource = undefined
-                sourceEditorCodeMode = true
                 this.importedSource = JSON.parse(result.content)
               }
               catch (error) {
