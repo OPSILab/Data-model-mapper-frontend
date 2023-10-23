@@ -45,22 +45,7 @@ const buildRequestHeaders = () => {
 
 const writeObject = async (objNumber, obj, modelSchema) => {
 
-    //let orionUrl = config.mode == "server" ? config.orionUrl : config.orionUrl
-    let orionUrl
-    console.debug("MODE--------------------------------------------------------")
-    console.debug(config.mode)
-    console.debug("--------------------------------------------------------MODE")
-
-    if (config.mode == "server") {
-        console.debug("-----------------------server--------------------")
-        orionUrl = config.orionWriter.orionUrl
-        console.debug(orionUrl)
-    }
-    else {
-        console.debug("-----------------------not server--------------------")
-        orionUrl = config.orionUrl
-        console.debug(orionUrl)
-    }
+    let orionUrl = config.mode == "server" ? config.orionUrl : config.orionUrl
 
     if (obj) {
         log.debug('Sending to Orion CB object number: ' + objNumber + ' , id: ' + obj.id);
@@ -79,10 +64,6 @@ const writeObject = async (objNumber, obj, modelSchema) => {
             proxy: proxyConf,
             rejectUnauthorized: false
         };
-
-        console.debug("-----------------------OPTIONS--------------------")
-
-        console.debug("OPTIONS", options, "OPTIONS")
 
         try {
             // Wait for Create Response
@@ -105,10 +86,8 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                     delete orionedObj.id;
                     delete orionedObj.type;
 
-                    console.debug(config.orionWriter.orionUrl, "--------------------E-------------------", config.orionUrl)
                     // Replace request URI and Method with the onse for updating entities attribute
                     options.uri = config.orionWriter.orionUrl + '/v2/entities/' + existingId + '/attrs';
-                    console.debug(options.uri, "-------------------------------------OPTIONS URI----------------------------------------")
                     options.method = config.updateMode == 'REPLACE' ? 'PUT' : 'POST';
 
                     try {

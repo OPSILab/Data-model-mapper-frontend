@@ -145,7 +145,6 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey, source) =>
 };
 
 const extractFromNestedField = (source, field) => {
-    console.debug(field)
     let layers
     try {
         layers = field.split('.')

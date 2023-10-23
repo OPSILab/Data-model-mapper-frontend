@@ -295,8 +295,6 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
     config.idGroup = nconf.get('group');
     config.NGSI_entity = nconf.get('NGSI_entity');
 
-    console.debug("ID SITE---------------------------------------------------", config.idSite)
-
     /** Global variables for Source Data, Map and Target Data Model are set in the specific setup.js **/
 
     return true;

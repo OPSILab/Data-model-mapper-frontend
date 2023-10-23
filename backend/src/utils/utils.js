@@ -222,16 +222,12 @@ const bodyMapper = (body) => {
         map = {
             id: body.mapID
         }
-        console.debug("body.mapID")
-        console.debug(body.mapID)
     }
     else if (body.mapData){
         map = [
             body.mapData,
             "mapData"
         ]
-        console.debug("body.mapData")
-        console.debug(body.mapData)
     }
 
     let dataModel = {
@@ -241,8 +237,6 @@ const bodyMapper = (body) => {
         url: body.dataModelURL,
         schema_id: body.dataModel?.$id
     }
-
-    console.debug(map)
 
     return {
         sourceData,

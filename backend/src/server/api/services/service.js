@@ -147,7 +147,6 @@ module.exports = {
                 log.debug('File sourceData temp is created successfully.');
             })*/
             //sourceFileTemp2 = true
-            //console.debug(source.data)
         }
 
         if (source.data) {
@@ -160,7 +159,6 @@ module.exports = {
         if (source.data && source.path) source.data = source.data[source.path]
 
         if (dataModel.url) {
-            //console.debug(dataModel.url)
             dataModel.download = await axios.get(dataModel.url)
             dataModel.data = dataModel.download.data
         }
@@ -335,10 +333,8 @@ module.exports = {
         for (let key in dataModel) {
             if (Array.isArray(dataModel[key]) || typeof dataModel[key] == "object")
                 dataModel[key] = this.dataModelRefFix(dataModel[key])
-            else if (key.startsWith("$")) {
-                if (!dataModel[key].startsWith("http")) dataModel[key] = config.modelSchemaFolder + "//" + JSON.parse(JSON.stringify(dataModel[key]))
-                console.debug(dataModel[key])
-            }
+            else if (key.startsWith("$") && !dataModel[key].startsWith("http"))
+                dataModel[key] = config.modelSchemaFolder + "//" + JSON.parse(JSON.stringify(dataModel[key]))
         }
         return dataModel
     },
@@ -351,7 +347,6 @@ module.exports = {
             else if (key.startsWith("dollar")) {
                 dataModel["$" + key.substring(6)] = dataModel[key]
                 dataModel[key] = undefined
-                console.debug(dataModel["$" + key.substring(6)])
             }
         }
         return dataModel
