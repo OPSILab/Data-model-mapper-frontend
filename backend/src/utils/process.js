@@ -200,7 +200,13 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
             switch (writer) {
 
                 case 'orionWriter':
-                    promises.push(await orionWriter.writeObject(objNumber, obj, modelSchema));
+                    try {
+                        promises.push(await orionWriter.writeObject(objNumber, obj, modelSchema));
+                    }
+                    catch (error) {
+                        console.log(error)
+                        console.log(208)
+                    }
                     break;
                 case 'fileWriter':
                     promises.push(await fileWriter.writeObject(objNumber, obj, config.fileWriter.addBlankLine));
@@ -221,9 +227,10 @@ const finalizeProcess = async () => {
     try {
         await Promise.all(promises);
 
+        //WARNING: this indeed restore global env but brokes the orion request
         /* If server mode, restore current per request configuration to the default ones */
-        if (config.mode.toLowerCase() === 'server')
-            utils.restoreDefaultConfs();
+        //if (config.mode.toLowerCase() === 'server')
+        //utils.restoreDefaultConfs();
 
         // Wait until all promises resolve (defined and pushed in processMappedObject handler)
         if (utils.isFileWriterActive()) {

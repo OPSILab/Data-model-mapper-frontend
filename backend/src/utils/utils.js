@@ -359,6 +359,8 @@ const promiseTimeout = (ms, promise) => {
 /*
  * Restore the default configurations, if any was ovverriden by the request ones
  */
+
+
 const restoreDefaultConfs = () => {
     global.process.env.rowStart = global.process.env.old_rowStart;
     global.process.env.rowEnd = global.process.env.old_rowEnd;

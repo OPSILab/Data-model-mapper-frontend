@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
+try{
 const config = require('./config');
 
 process.env.NODE_ENV = config.env; // 'debug' or 'production' for the logger
@@ -41,3 +41,7 @@ module.exports = (sourceDataIn, mapPathIn, dataModelIn) => {
         return server();
     }
 };
+}
+catch(error){
+    console.error(error)
+}
