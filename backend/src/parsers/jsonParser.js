@@ -56,9 +56,9 @@ async function sourceDataToRowStream(sourceData, map, schema, rowHandler, mapped
 
 async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
-    var rowNumber = Number(process.env.rowNumber);
-    var rowStart = Number(process.env.rowStart);
-    var rowEnd = Number(process.env.rowEnd);
+    var rowNumber = Number(config.rowNumber);
+    var rowStart = Number(config.rowStart);
+    var rowEnd = Number(config.rowEnd);
 
     request(url).pipe(JSONStream.parse('.*'))
         .on('error', function (err) {
@@ -70,7 +70,7 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
         .on('data', function (data) {
 
             rowNumber++;
-            process.env.rowNumber = rowNumber;
+            config.rowNumber = rowNumber;
             // outputs an object containing a set of key/value pair representing a line found in the csv file.
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {
 
@@ -100,9 +100,9 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
 
 async function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
-    var rowNumber = Number(process.env.rowNumber);
-    var rowStart = Number(process.env.rowStart);
-    var rowEnd = Number(process.env.rowEnd);
+    var rowNumber = Number(config.rowNumber);
+    var rowStart = Number(config.rowStart);
+    var rowEnd = Number(config.rowEnd);
 
     await inputData.pipe(JSONStream.parse('.*'))
         .on('error', function (err) {
@@ -112,8 +112,8 @@ async function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler
             // console.log(columns);
         })
         .on('data', function (row) {
-            rowNumber = Number(process.env.rowNumber) + 1;
-            process.env.rowNumber = rowNumber;
+            rowNumber = Number(config.rowNumber) + 1;
+            config.rowNumber = rowNumber;
 
             // outputs an object containing a set of key/value pair representing a line found in the csv file.
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {

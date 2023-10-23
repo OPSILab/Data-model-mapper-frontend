@@ -51,6 +51,8 @@ module.exports = {
 
     async mapData(source, map, dataModel, configIn) {
 
+        //this.restoreDefaultConfs()
+
         const cli = require('../../../cli/setup');
 
         if (map?.id) {
@@ -112,7 +114,7 @@ module.exports = {
                 if (configIn[configKey] != "undefined") config[configKey] = configIn[configKey]
             }
 
-        process.env.delimiter = configIn ? configIn.delimiter : config.delimiter || ','
+        config.delimiter = configIn ? configIn.delimiter : config.delimiter || ','
         if (config.NGSI_entity != undefined) this.NGSI_entity = config.NGSI_entity
 
         if (source.id) {

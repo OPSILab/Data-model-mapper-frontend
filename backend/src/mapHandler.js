@@ -351,7 +351,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
         }
     }
 
-    if (((NGSI_entity() == undefined) && global.process.env.NGSI_entity || NGSI_entity()).toString() === 'true') {
+    if (((NGSI_entity() == undefined) && config.NGSI_entity || NGSI_entity()).toString() === 'true') {
 
         // Append type field, according to the Data Model Schema
         try {
@@ -373,7 +373,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
     if (checkResultWithDestModelSchema(result, mapDestKey, modelSchema, rowNumber)) {
         log.debug('Mapped object, number: ' + rowNumber + ' is compliant with target Data Model');
         report.info('Mapped object, number: ' + rowNumber + ' is compliant with target Data Model');
-        process.env.validCount++;
+        config.validCount++;
         return result;
 
     } else {
@@ -384,7 +384,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             '\n--------------------------------------------------------------------------------\n');
 
         log.debug('Mapped object, number: ' + rowNumber + ', id: ' + result.id + ' is not compliant the target Data Model! Skipping!');
-        process.env.unvalidCount++;
+        config.unvalidCount++;
         return undefined;
     }
 

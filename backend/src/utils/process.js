@@ -31,14 +31,14 @@ const config = require("../../config.js");
 const service = require("../server/api/services/service");
 
 
-process.env.validCount = 0;
-process.env.unvalidCount = 0;
-process.env.orionWrittenCount = 0;
-process.env.orionUnWrittenCount = 0;
-process.env.orionSkippedCount = 0;
-process.env.fileWrittenCount = 0;
-process.env.fileUnWrittenCount = 0;
-process.env.rowNumber = 0;
+config.validCount = 0;
+config.unvalidCount = 0;
+config.orionWrittenCount = 0;
+config.orionUnWrittenCount = 0;
+config.orionSkippedCount = 0;
+config.fileWrittenCount = 0;
+config.fileUnWrittenCount = 0;
+config.rowNumber = 0;
 
 var promises = [];
 
@@ -175,14 +175,14 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
      * set globally for each row of this mapping, otherwise use the ones initialized in the Global Vars 
      **/
 
-    process.env.idSite = map['idSite'] || process.env.idSite;
-    process.env.idService = map['idService'] || process.env.idService;
-    process.env.idGroup = map['idGroup'] || process.env.idGroup;
+    config.idSite = map['idSite'] || config.idSite;
+    config.idService = map['idService'] || config.idService;
+    config.idGroup = map['idGroup'] || config.idGroup;
     delete map['idSite'];
     delete map['idService'];
     delete map['idGroup'];
     try {
-        var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, process.env.idSite, process.env.idService, process.env.idGroup, config.entityNameField);
+        var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, config.idSite, config.idService, config.idGroup, config.entityNameField);
     }
     catch (error) {
         log.error(error.message)
@@ -200,7 +200,13 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
             switch (writer) {
 
                 case 'orionWriter':
-                    promises.push(await orionWriter.writeObject(objNumber, obj, modelSchema));
+                    try {
+                        promises.push(await orionWriter.writeObject(objNumber, obj, modelSchema));
+                    }
+                    catch (error) {
+                        log.error(error.toString())
+                        log.debug(JSON.stringify(error))
+                    }
                     break;
                 case 'fileWriter':
                     promises.push(await fileWriter.writeObject(objNumber, obj, config.fileWriter.addBlankLine));
@@ -212,7 +218,8 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
         });
     }
     catch (error) {
-        console.error(error)
+        log.error(error.toString())
+        log.debug(JSON.stringify(error))
     }
 };
 
@@ -221,9 +228,10 @@ const finalizeProcess = async () => {
     try {
         await Promise.all(promises);
 
+        //WARNING: this indeed restore global env but brokes the orion request
         /* If server mode, restore current per request configuration to the default ones */
-        if (config.mode.toLowerCase() === 'server')
-            utils.restoreDefaultConfs();
+        //if (config.mode.toLowerCase() === 'server')
+        //utils.restoreDefaultConfs();
 
         // Wait until all promises resolve (defined and pushed in processMappedObject handler)
         if (utils.isFileWriterActive()) {
@@ -251,14 +259,14 @@ const finalizeProcess = async () => {
  **/
 const reinitializeProcessStatus = () => {
 
-    process.env.validCount = 0;
-    process.env.unvalidCount = 0;
-    process.env.orionWrittenCount = 0;
-    process.env.orionUnWrittenCount = 0;
-    process.env.orionSkippedCount = 0;
-    process.env.fileWrittenCount = 0;
-    process.env.fileUnWrittenCount = 0;
-    process.env.rowNumber = 0;
+    config.validCount = 0;
+    config.unvalidCount = 0;
+    config.orionWrittenCount = 0;
+    config.orionUnWrittenCount = 0;
+    config.orionSkippedCount = 0;
+    config.fileWrittenCount = 0;
+    config.fileUnWrittenCount = 0;
+    config.rowNumber = 0;
     promises = [];
 
 };

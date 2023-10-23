@@ -31,12 +31,12 @@ const writeObject = async (objNumber, obj, addBRLine) => {
     /** Initialize File Stream and its first content ***/
     if (utils.isFileWriterActive && !outFileStream) {
 
-        outFileStream = fs.createWriteStream(process.env.outFilePath || utils.parseFilePath(config.filePath).absolute);
+        outFileStream = fs.createWriteStream(config.outFilePath || utils.parseFilePath(config.filePath).absolute);
         outFileStream.write("[");
 
     }
 
-    if (obj && process.env.outFilePath && outFileStream) {
+    if (obj && config.outFilePath && outFileStream) {
 
         return new Promise(async (resolve, reject) => {
 
@@ -52,7 +52,7 @@ const writeObject = async (objNumber, obj, addBRLine) => {
 
                 outFileStream.write(JSON.stringify(obj));
                 isFirstObject = false;
-                process.env.fileWrittenCount++;
+                config.fileWrittenCount++;
 
                 // Add a blank return line if enabled
                 if (addBRLine)
@@ -62,7 +62,7 @@ const writeObject = async (objNumber, obj, addBRLine) => {
                 return resolve();
 
             } catch (err) {
-                process.env.fileUnWrittenCount++;
+                config.fileUnWrittenCount++;
                 log.error('Error while writing mapped object to file');
                 log.error('----------------------------------------------------------\n' +
                     'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT written to file');
@@ -96,15 +96,15 @@ const finalizeFile = async () => {
 const printFileFinalReport = async (logger) => {
 
     await logger.info('\t\n--------FILE WRITER REPORT----------\n' +
-        '\t Object written to File: ' + process.env.fileWrittenCount + '/' + process.env.validCount + '\n' +
-        '\t Object NOT written to File: ' + process.env.fileUnWrittenCount + '/' + process.env.validCount + '\n' +
+        '\t Object written to File: ' + config.fileWrittenCount + '/' + config.validCount + '\n' +
+        '\t Object NOT written to File: ' + config.fileUnWrittenCount + '/' + config.validCount + '\n' +
         '\t-----------------------------------------');
 
 };
 
 /// Use Events?
 async function checkAndPrintFinalReport() {
-    if (parseInt(process.env.fileWrittenCount) + parseInt(process.env.fileUnWrittenCount) == parseInt(process.env.validCount)) {
+    if (parseInt(config.fileWrittenCount) + parseInt(config.fileUnWrittenCount) == parseInt(config.validCount)) {
         await printFileFinalReport(log);
     }
 }

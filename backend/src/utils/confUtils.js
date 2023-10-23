@@ -281,19 +281,21 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
 
     /******* Set initialized confs as Global variables ***************/
 
-    global.process.env.orionUrl = nconf.get('orionUrl');
-    global.process.env.updateMode = nconf.get('updateMode');
-    global.process.env.fiwareService = nconf.get('fiwareService');
-    global.process.env.fiwareServicePath = nconf.get('fiwareServicePath');
-    global.process.env.orionAuthHeaderName = nconf.get('orionAuthHeaderName');
-    global.process.env.orionAuthToken = nconf.get('orionAuthToken');
-    global.process.env.outFilePath = nconf.get('outFilePath');
-    global.process.env.rowStart = nconf.get('rowStart');
-    global.process.env.rowEnd = nconf.get('rowEnd');
-    global.process.env.idSite = nconf.get('site');
-    global.process.env.idService = nconf.get('service');
-    global.process.env.idGroup = nconf.get('group');
-    global.process.env.NGSI_entity = nconf.get('NGSI_entity');
+    config.orionUrl = nconf.get('orionUrl');
+    config.updateMode = nconf.get('updateMode');
+    config.fiwareService = nconf.get('fiwareService');
+    config.fiwareServicePath = nconf.get('fiwareServicePath');
+    config.orionAuthHeaderName = nconf.get('orionAuthHeaderName');
+    config.orionAuthToken = nconf.get('orionAuthToken');
+    config.outFilePath = nconf.get('outFilePath');
+    config.rowStart = nconf.get('rowStart');
+    config.rowEnd = nconf.get('rowEnd');
+    config.idSite = nconf.get('site');
+    config.idService = nconf.get('service');
+    config.idGroup = nconf.get('group');
+    config.NGSI_entity = nconf.get('NGSI_entity');
+
+    console.debug("ID SITE---------------------------------------------------", config.idSite)
 
     /** Global variables for Source Data, Map and Target Data Model are set in the specific setup.js **/
 

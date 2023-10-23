@@ -18,10 +18,10 @@
 
 const config = require('./config');
 
-process.env.NODE_ENV = config.env; // 'debug' or 'production' for the logger
-process.env.LOG = config.logLevel;
-process.env.MODE = config.mode; // 'commandLine' or 'server'
-process.env.SUPPRESS_NO_CONFIG_WARNING = 'y';
+config.NODE_ENV = config.env; // 'debug' or 'production' for the logger
+config.LOG = config.logLevel;
+config.MODE = config.mode; // 'commandLine' or 'server'
+config.SUPPRESS_NO_CONFIG_WARNING = 'y';
 
 if (config.mode === 'commandLine') {
     const cli = require('./src/cli/setup');

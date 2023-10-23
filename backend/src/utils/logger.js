@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
+const config = require('../../config')
 const winston = require('winston');
 const path = require('path');
 const DailyRotateFile = require('winston-daily-rotate-file');
@@ -55,7 +55,7 @@ const logFormat = (callingModule) => {
 const transport = () => {
     return new winston.transports.DailyRotateFile({
         dirname: './logs',
-        level: process.env.LOG || 'info',
+        level: config.LOG || 'info',
         filename: 'out.log',
         datePattern: 'YYYY-MM-DD',
         maxsize: '50mb', //5MB,
@@ -123,10 +123,10 @@ const createAppLogger = (module) => {
         });
 
     // Add console transport in case we are not in production
-    if (process.env.NODE_ENV !== 'production') {
+    if (config.NODE_ENV !== 'production') {
         logger.add(new winston.transports.Console({
             format: logFormat(module),
-            level: process.env.LOG || 'info'
+            level: config.LOG || 'info'
         }));
     }
     return logger;

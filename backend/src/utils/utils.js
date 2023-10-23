@@ -33,7 +33,7 @@ function sleep(ms) {
 }
 
 function ngsi() {
-    return (((apiOutput.NGSI_entity == undefined) && global.process.env.NGSI_entity || apiOutput.NGSI_entity).toString() === 'true')
+    return (((apiOutput.NGSI_entity == undefined) && config.NGSI_entity || apiOutput.NGSI_entity).toString() === 'true')
 }
 
 
@@ -262,9 +262,9 @@ const sendOutput = () => {
 const printFinalReportAndSendResponse = async (logger) => {
 
     await logger.info('\n--------  MAPPING REPORT ----------\n' +
-        '\t Processed objects: ' + process.env.rowNumber + '\n' +
-        '\t Mapped and Validated Objects: ' + process.env.validCount + '/' + process.env.rowNumber + '\n' +
-        '\t Mapped and NOT Validated Objects: ' + process.env.unvalidCount + '/' + process.env.rowNumber + '\n' +
+        '\t Processed objects: ' + config.rowNumber + '\n' +
+        '\t Mapped and Validated Objects: ' + config.validCount + '/' + config.rowNumber + '\n' +
+        '\t Mapped and NOT Validated Objects: ' + config.unvalidCount + '/' + config.rowNumber + '\n' +
         '-----------------------------------------');
 
     if (config.mode == 'server') {
@@ -272,9 +272,9 @@ const printFinalReportAndSendResponse = async (logger) => {
 
         apiOutput.outputFile[apiOutput.outputFile.length] = {
             MAPPING_REPORT: {
-                Processed_objects: process.env.rowNumber,
-                Mapped_and_Validated_Objects: process.env.validCount + '-' + process.env.rowNumber,
-                Mapped_and_NOT_Validated_Objects: process.env.unvalidCount + '-' + process.env.rowNumber
+                Processed_objects: config.rowNumber,
+                Mapped_and_Validated_Objects: config.validCount + '-' + config.rowNumber,
+                Mapped_and_NOT_Validated_Objects: config.unvalidCount + '-' + config.rowNumber
             }
         }
 
@@ -289,11 +289,11 @@ const printFinalReportAndSendResponse = async (logger) => {
 };
 
 const addAuthenticationHeader = (headers) => {
-    if (process.env.OAUTH_TOKEN) {
-        headers.Authorization = ('Bearer ' + process.env.OAUTH_TOKEN);
+    if (config.OAUTH_TOKEN) {
+        headers.Authorization = ('Bearer ' + config.OAUTH_TOKEN);
     }
-    if (process.env.PAUTH_TOKEN) {
-        headers['x-auth-token'] = process.env.PAUTH_TOKEN;
+    if (config.PAUTH_TOKEN) {
+        headers['x-auth-token'] = config.PAUTH_TOKEN;
     }
 };
 
@@ -360,16 +360,16 @@ const promiseTimeout = (ms, promise) => {
  * Restore the default configurations, if any was ovverriden by the request ones
  */
 const restoreDefaultConfs = () => {
-    global.process.env.rowStart = global.process.env.old_rowStart;
-    global.process.env.rowEnd = global.process.env.old_rowEnd;
-    global.process.env.orionUrl = global.process.env.old_orionUrl;
-    global.process.env.updateMode = global.process.env.old_updateMode;
-    global.process.env.fiwareService = global.process.env.old_fiwareService;
-    global.process.env.fiwareServicePath = global.process.env.old_fiwareServicePath;
-    global.process.env.outFilePath = global.process.env.old_outFilePath;
-    global.process.env.idSite = global.process.env.old_idSite;
-    global.process.env.idService = global.process.env.old_idService;
-    global.process.env.idGroup = global.process.env.old_idGroup;
+    config.rowStart = config.old_rowStart;
+    config.rowEnd = config.old_rowEnd;
+    config.orionUrl = config.old_orionUrl;
+    config.updateMode = config.old_updateMode;
+    config.fiwareService = config.old_fiwareService;
+    config.fiwareServicePath = config.old_fiwareServicePath;
+    config.outFilePath = config.old_outFilePath;
+    config.idSite = config.old_idSite;
+    config.idService = config.old_idService;
+    config.idGroup = config.old_idGroup;
 };
 
 const encode = (encoding, value) => {

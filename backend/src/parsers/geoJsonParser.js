@@ -54,9 +54,9 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
 
 function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
-    var rowNumber = Number(process.env.rowNumber);
-    var rowStart = Number(process.env.rowStart);
-    var rowEnd = Number(process.env.rowEnd);
+    var rowNumber = Number(config.rowNumber);
+    var rowStart = Number(config.rowStart);
+    var rowEnd = Number(config.rowEnd);
 
     request(url).pipe(geo.parse())
         .on('error', function (err) {
@@ -67,8 +67,8 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
         })
         .on('data', function (data) {
 
-            rowNumber = Number(process.env.rowNumber) + 1;
-            process.env.rowNumber = rowNumber;
+            rowNumber = Number(config.rowNumber) + 1;
+            config.rowNumber = rowNumber;
             // outputs an object containing a set of key/value pair representing a line found in the csv file.
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {
 
@@ -97,9 +97,9 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
 
 function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
 
-    var rowNumber = Number(process.env.rowNumber);
-    var rowStart = Number(process.env.rowStart);
-    var rowEnd = Number(process.env.rowEnd);
+    var rowNumber = Number(config.rowNumber);
+    var rowStart = Number(config.rowStart);
+    var rowEnd = Number(config.rowEnd);
 
     inputData.pipe(geo.parse())
         .on('error', function (err) {
@@ -111,7 +111,7 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
         .on('data', function (row) {
 
             rowNumber++;
-            process.env.rowNumber = rowNumber;
+            config.rowNumber = rowNumber;
             // outputs an object containing a set of key/value pair representing a line found in the csv file.
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {
 

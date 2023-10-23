@@ -18,10 +18,11 @@
 
 const rp = require('promise-request-retry');
 
-const config = require('../../config').orionWriter;
+const config = require('../../config')
+//const orionConfig = config.orionWriter;
 const report = require('../utils/logger').orionReport;
 const log = require('../utils/logger').app(module);
-const proxyConf = config.enableProxy ? config.proxy : undefined;
+const proxyConf = config.orionWriter.enableProxy ? config.orionWriter.proxy : undefined;
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -30,12 +31,12 @@ const sleep = (ms) => {
 const buildRequestHeaders = () => {
 
     var headerObject = {
-        'Fiware-Service': process.env.fiwareService,
-        'Fiware-ServicePath': process.env.fiwareServicePath
+        'Fiware-Service': config.fiwareService,
+        'Fiware-ServicePath': config.fiwareServicePath
     };
 
-    if (process.env.orionAuthHeaderName && process.env.orionAuthToken)
-        headerObject[process.env.orionAuthHeaderName] = process.env.orionAuthToken;
+    if (config.orionAuthHeaderName && config.orionAuthToken)
+        headerObject[config.orionAuthHeaderName] = config.orionAuthToken;
 
     return headerObject;
 
@@ -43,6 +44,23 @@ const buildRequestHeaders = () => {
 
 
 const writeObject = async (objNumber, obj, modelSchema) => {
+
+    //let orionUrl = config.mode == "server" ? config.orionUrl : config.orionUrl
+    let orionUrl
+    console.debug("MODE--------------------------------------------------------")
+    console.debug(config.mode)
+    console.debug("--------------------------------------------------------MODE")
+
+    if (config.mode == "server") {
+        console.debug("-----------------------server--------------------")
+        orionUrl = config.orionWriter.orionUrl
+        console.debug(orionUrl)
+    }
+    else {
+        console.debug("-----------------------not server--------------------")
+        orionUrl = config.orionUrl
+        console.debug(orionUrl)
+    }
 
     if (obj) {
         log.debug('Sending to Orion CB object number: ' + objNumber + ' , id: ' + obj.id);
@@ -52,15 +70,19 @@ const writeObject = async (objNumber, obj, modelSchema) => {
         var options = {
             method: 'POST',
             headers: buildRequestHeaders(),
-            uri: process.env.orionUrl + '/v2/entities',
+            uri: orionUrl + '/v2/entities',
             body: orionedObj,
             json: true,
             simple: false,
             resolveWithFullResponse: true,
-            retry: config.maxRetry,
+            retry: config.orionWriter.maxRetry,
             proxy: proxyConf,
             rejectUnauthorized: false
         };
+
+        console.debug("-----------------------OPTIONS--------------------")
+
+        console.debug("OPTIONS", options, "OPTIONS")
 
         try {
             // Wait for Create Response
@@ -71,21 +93,23 @@ const writeObject = async (objNumber, obj, modelSchema) => {
 
                 report.info('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly CREATED in the Context Broker');
                 log.debug('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly CREATED in the Context Broker');
-                return Promise.resolve(process.env.orionWrittenCount++);
+                return Promise.resolve(config.orionWrittenCount++);
 
             } else if (createResponse.statusCode == 422 && createResponse.body && createResponse.body.description == 'Already Exists') {
 
                 // Update existing entity
-                if (!config.skipExisting) {
+                if (!config.orionWriter.skipExisting) {
 
                     // If entity already exists, try to update it
                     var existingId = orionedObj.id;
                     delete orionedObj.id;
                     delete orionedObj.type;
 
+                    console.debug(config.orionWriter.orionUrl, "--------------------E-------------------", config.orionUrl)
                     // Replace request URI and Method with the onse for updating entities attribute
-                    options.uri = process.env.orionUrl + '/v2/entities/' + existingId + '/attrs';
-                    options.method = process.env.updateMode == 'REPLACE' ? 'PUT' : 'POST';
+                    options.uri = config.orionWriter.orionUrl + '/v2/entities/' + existingId + '/attrs';
+                    console.debug(options.uri, "-------------------------------------OPTIONS URI----------------------------------------")
+                    options.method = config.updateMode == 'REPLACE' ? 'PUT' : 'POST';
 
                     try {
                         // Wait for update response
@@ -95,7 +119,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
 
                             report.info('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
                             log.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
-                            return Promise.resolve(process.env.orionWrittenCount++);
+                            return Promise.resolve(config.orionWrittenCount++);
 
                         } else {
                             return Promise.reject('Update Error').catch((error) => {
@@ -118,7 +142,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                         report.info('body: ' + JSON.stringify(error));
                         report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
                         log.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-                        process.env.orionUnWrittenCount++;
+                        config.orionUnWrittenCount++;
                         return Promise.reject(error).catch((error) => {
                             log.error('There was an error while writing Mapped Object: ')
                             console.log(error)
@@ -131,12 +155,12 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                     // Skip existing entity
                     report.info('Entity Number: ' + objNumber + ' with Id: ' + orionedObj.id + ' SKIPPED');
                     log.debug('Entity Number: ' + objNumber + ' with Id: ' + orionedObj.id + ' SKIPPED');
-                    return Promise.resolve(process.env.orionSkippedCount++);
+                    return Promise.resolve(config.orionSkippedCount++);
 
                 }
 
             } else {
-                process.env.orionUnWrittenCount++;
+                config.orionUnWrittenCount++;
                 return Promise.reject('Error returned from Context Broker: ' + JSON.stringify(createResponse) + '\n').catch((error) => {
                     log.error('There was an error while writing Mapped Object: ')
                     console.log(error)
@@ -158,7 +182,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
             report.info('body: ' + JSON.stringify(error));
             report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
             log.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-            process.env.orionUnWrittenCount++;
+            config.orionUnWrittenCount++;
             return Promise.reject(error);
 
         }
@@ -194,7 +218,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
 
 //        request.post({
 //            headers: { 'content-type': 'application/json' },
-//            url: process.env.orionUrl + '/v2/entities',
+//            url: config.orionUrl + '/v2/entities',
 //            body: orionedObj,
 //            json: true
 //        }, function (error, response, body) {
@@ -203,7 +227,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
 //            if (response && response.statusCode == 201) {
 //                report.info('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly CREATED in the Context Broker');
 //                log.debug('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly CREATED in the Context Broker');
-//                process.env.orionWrittenCount++;
+//                config.orionWrittenCount++;
 //                checkAndPrintFinalReport();
 //            } else if (response && response.statusCode == 422 && response.body && response.body.description == 'Already Exists') {
 
@@ -216,7 +240,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
 //                    delete orionedObj.type;
 //                    request.post({
 //                        headers: { 'content-type': 'application/json' },
-//                        url: process.env.orionUrl + '/v2/entities/' + existingId + '/attrs',
+//                        url: config.orionUrl + '/v2/entities/' + existingId + '/attrs',
 //                        body: orionedObj,
 //                        json: true
 //                    }, function (error, response, body) {
@@ -224,7 +248,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
 
 //                            report.info('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
 //                            log.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
-//                            process.env.orionWrittenCount++;
+//                            config.orionWrittenCount++;
 //                            checkAndPrintFinalReport();
 //                        } else {
 
@@ -251,7 +275,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
 
 //                                report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
 //                                log.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-//                                process.env.orionUnWrittenCount++;
+//                                config.orionUnWrittenCount++;
 //                                checkAndPrintFinalReport();
 
 //                            }
@@ -265,7 +289,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
 //                    // SKIP EXISTING ENTITIES
 //                    report.info('Entity Number: ' + objNumber + ' with Id: ' + orionedObj.id + ' SKIPPED');
 //                    log.debug('Entity Number: ' + objNumber + ' with Id: ' + orionedObj.id + ' SKIPPED');
-//                    process.env.orionSkippedCount++;
+//                    config.orionSkippedCount++;
 //                    checkAndPrintFinalReport();
 
 //                }
@@ -296,7 +320,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
 //                    report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
 //                    log.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
 //                    log.debug("PRE ORION OBJECT:\n" + JSON.stringify(obj) + '\n ------------------------------\n');
-//                    process.env.orionUnWrittenCount++;
+//                    config.orionUnWrittenCount++;
 //                    checkAndPrintFinalReport();
 //                }
 //            }
@@ -391,16 +415,16 @@ function toOrionObject(obj, schema) {
 async function printOrionFinalReport(logger) {
 
     await logger.info('\t\n--------ORION REPORT----------\n' +
-        '\t Object written to Orion Context Broker: ' + process.env.orionWrittenCount + '/' + process.env.validCount + '\n' +
-        '\t Object NOT written to Orion Context Broker: ' + process.env.orionUnWrittenCount + '/' + process.env.validCount + '\n' +
-        '\t Object SKIPPED: ' + process.env.orionSkippedCount + '/' + process.env.validCount + '\n' +
+        '\t Object written to Orion Context Broker: ' + config.orionWrittenCount + '/' + config.validCount + '\n' +
+        '\t Object NOT written to Orion Context Broker: ' + config.orionUnWrittenCount + '/' + config.validCount + '\n' +
+        '\t Object SKIPPED: ' + config.orionSkippedCount + '/' + config.validCount + '\n' +
         '\t-----------------------------------------');
 
 }
 
 /// Use Events?
 async function checkAndPrintFinalReport() {
-    if ((parseInt(process.env.orionWrittenCount) + parseInt(process.env.orionSkippedCount) + parseInt(process.env.orionUnWrittenCount)) == parseInt(process.env.validCount)) {
+    if ((parseInt(config.orionWrittenCount) + parseInt(config.orionSkippedCount) + parseInt(config.orionUnWrittenCount)) == parseInt(config.validCount)) {
         await printOrionFinalReport(log);
         await printOrionFinalReport(report);
     }
