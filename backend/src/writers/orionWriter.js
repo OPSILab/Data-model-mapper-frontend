@@ -45,8 +45,8 @@ const buildRequestHeaders = () => {
 
 const writeObject = async (objNumber, obj, modelSchema) => {
 
-    let orionUrl = config.mode == "server" ? config.orionUrl : config.orionUrl
-
+    let orionUrl = config.mode == "server" ? config.orionWriter.orionUrl : config.orionUrl
+    
     if (obj) {
         log.debug('Sending to Orion CB object number: ' + objNumber + ' , id: ' + obj.id);
 
