@@ -260,8 +260,8 @@ module.exports = {
             throw { error: "source is required" }
         if (path == "") path = undefined
         if (mapRef)
-            mapRef = (await Map.findOne({ name }))._id
-        if (mapRef || !await Source.findOne({ name })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path }])
+            mapRef = (await Map.findOne({ name }))?._id
+        if (mapRef || !await Source.findOne({ name })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source, mapRef: mapRef.toString() } : { name: name, id: id, source: source, path, mapRef: mapRef.toString() }])
         throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
@@ -299,8 +299,8 @@ module.exports = {
             throw { error: "schema is required" }
         if (dataModel) dataModel = this.dataModelClean(dataModel)
         if (mapRef)
-            mapRef = (await Map.findOne({ name }))._id
-        if (mapRef || !await DataModel.findOne({ name })) return await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel }])
+            mapRef = (await Map.findOne({ name }))?._id
+        if (mapRef || !await DataModel.findOne({ name })) return await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel, mapRef: mapRef.toString() }])
         throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
@@ -309,8 +309,8 @@ module.exports = {
             throw { error: "source is required" }
         if (path == "") path = undefined
         if (mapRef)
-            mapRef = (await Map.findOne({ name }))._id
-        return await Source.findOneAndReplace(mapRef ? { mapRef } : { name }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source } : { name: name, id: id, source: source, path: path })
+            mapRef = (await Map.findOne({ name }))?._id
+        return await Source.findOneAndReplace(mapRef ? { mapRef } : { name }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source, mapRef: mapRef.toString() } : { name: name, id: id, source: source, path: path, mapRef: mapRef.toString() })
     },
 
     call: 0,
@@ -400,8 +400,8 @@ module.exports = {
             throw { error: "schema is required" }
         dataModel = this.dataModelClean(dataModel)
         if (mapRef)
-            mapRef = (await Map.findOne({ name }))._id
-        return await DataModel.findOneAndReplace(mapRef ? { mapRef } : { name }, { name: name, id: id, dataModel: dataModel })
+            mapRef = (await Map.findOne({ name }))?._id
+        return await DataModel.findOneAndReplace(mapRef ? { mapRef } : { name }, { name: name, id: id, dataModel: dataModel, mapRef: mapRef.toString() })
     },
 
     async deleteSource(id, name) {
@@ -409,12 +409,13 @@ module.exports = {
     },
 
     async deleteMap(id, name) {
+
         let mapRef
         if (!id)
             mapRef = (await Map.findOne({ name }))._id
         let deletion = await Map.deleteOne(id ? { _id: id } : { name })
-        await Source.deleteOne({ _id: id || mapRef })
-        await DataModel.deleteOne({ _id: id || mapRef })
+        await Source.deleteOne({ mapRef: id || mapRef })
+        await DataModel.deleteOne({ mapRef: id || mapRef })
         if (deletion.deletedCount)
             return deletion
         throw { code: 404, message: "NOT FOUND" }

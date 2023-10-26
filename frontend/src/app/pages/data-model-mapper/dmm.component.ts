@@ -163,7 +163,6 @@ export class DMMComponent implements OnInit, OnChanges {
     try {
       source = JSON.parse(this.sourceEditor.getText())
       map = JSON.parse(editor.mapperEditor.getText())
-      console.debug(this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())), this.rawSchema())
       unsaved = {
         schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())),
         source: this.differences(this.importedSource, this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData)
@@ -528,7 +527,6 @@ export class DMMComponent implements OnInit, OnChanges {
       this.importedSchema = this.exampleSchema
       this.importedSource = o(this.sourceJson)
     }
-    console.debug(this.importedSource)
   }
 
   selectFilteredSchema() {
@@ -711,7 +709,6 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   differences(object1, object2) {
-    console.debug(object1, object2)
     return JSON.stringify(object1) != JSON.stringify(object2)
   }
 

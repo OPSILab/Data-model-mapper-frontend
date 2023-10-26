@@ -74,9 +74,9 @@ export class CreateMapComponent implements OnInit {
     document.getElementsByTagName('html')[0].className = ""
   }
 
-  selectFiltered(property, id) {
+  selectFiltered(property, key, value) {
     try {
-      return this[property].filter(filteredProperty => filteredProperty._id == id)[0]
+      return this[property].filter(filteredProperty => filteredProperty[key] == value && filteredProperty.mapRef)[0]
     }
     catch (error) {
       console.error(error)
@@ -86,7 +86,6 @@ export class CreateMapComponent implements OnInit {
 
   ngOnInit(): void {
 
-    console.debug(this.unsaved)
 
     //this.adapterId = Date.now().toString(); this.name = Date.now().toString(); this.description = Date.now().toString(); this.status = "Under development"
     this.loaded = false
@@ -142,7 +141,7 @@ export class CreateMapComponent implements OnInit {
       return false
     */
     //return this.saveSource && !this.sourceSaved && this.selectFiltered("sources", this.name)
-    return this.saveSource && this.selectFiltered("sources", this.name)
+    return this.saveSource && this.selectFiltered("sources", "name", this.name)
   }
 
   schemaIdAlreadyExists() {
@@ -162,7 +161,7 @@ export class CreateMapComponent implements OnInit {
       return false
     */
     //return this.saveSchema && !this.schemaSaved && this.selectFiltered("dataModels", this.name)
-    return this.saveSchema && this.selectFiltered("dataModels", this.name)
+    return this.saveSchema && this.selectFiltered("dataModels", "name", this.name)
   }
 
   async submit() {
