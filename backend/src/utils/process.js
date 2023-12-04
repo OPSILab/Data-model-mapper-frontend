@@ -188,6 +188,7 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
     }
 
     log.debug("Row: " + rowNumber + " - Object mapped correctly ");
+    log.debug("Result: "+ JSON.stringify(result))
     await mappedHandler(rowNumber, result, schema);
 
 };
@@ -200,6 +201,7 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
 
                 case 'orionWriter':
                     try {
+                        log.debug("obj : " + JSON.stringify(obj))
                         promises.push(await orionWriter.writeObject(objNumber, obj, modelSchema));
                     }
                     catch (error) {
