@@ -31,12 +31,12 @@ const sleep = (ms) => {
 const buildRequestHeaders = () => {
 
     var headerObject = {
-        'Fiware-Service': config.fiwareService,
-        'Fiware-ServicePath': config.fiwareServicePath
+        'Fiware-Service': config.fiwareService || config.orionWriter.fiwareService,
+        'Fiware-ServicePath': config.fiwareServicePath || config.orionWriter.fiwareServicePath
     };
 
-    if (config.orionAuthHeaderName && config.orionAuthToken)
-        headerObject[config.orionAuthHeaderName] = config.orionAuthToken;
+    if ((config.orionAuthHeaderName || config.orionWriter.orionAuthHeaderName) && (config.orionAuthToken || config.orionWriter.orionAuthToken))
+        headerObject[config.orionAuthHeaderName || config.orionWriter.orionAuthHeaderName] = config.orionAuthToken || config.orionWriter.orionAuthToken;
 
     return headerObject;
 
@@ -50,12 +50,12 @@ const writeObject = async (objNumber, obj, modelSchema) => {
     if (obj) {
         log.debug('Sending to Orion CB object number: ' + objNumber + ' , id: ' + obj.id);
 
-        var orionedObj = toOrionObject(obj, modelSchema);
+        var orionedObj = !config.orionWriter.keyValues && toOrionObject(obj, modelSchema) || obj ;
 
         var options = {
             method: 'POST',
             headers: buildRequestHeaders(),
-            uri: orionUrl + '/v2/entities',
+            uri: !config.orionWriter.keyValues ? orionUrl + '/v2/entities' : orionUrl + '/v2/entities?options=keyValues',
             body: orionedObj,
             json: true,
             simple: false,
@@ -64,6 +64,11 @@ const writeObject = async (objNumber, obj, modelSchema) => {
             proxy: proxyConf,
             rejectUnauthorized: false
         };
+
+        log.debug("Options")
+        log.debug(JSON.stringify(options))
+        log.debug("Orioned obj")
+        log.debug(JSON.stringify(orionedObj))
 
         try {
             // Wait for Create Response
@@ -87,11 +92,16 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                     delete orionedObj.type;
 
                     // Replace request URI and Method with the onse for updating entities attribute
-                    options.uri = config.orionWriter.orionUrl + '/v2/entities/' + existingId + '/attrs';
-                    options.method = config.updateMode == 'REPLACE' ? 'PUT' : 'POST';
+                    options.uri = config.orionWriter.orionUrl + '/v2/entities/' + existingId + (!config.orionWriter.keyValues ? '/attrs' : '/attrs?options=keyValues');
+                    options.method = config.updateMode == 'REPLACE' || config.orionWriter.updateMode == 'REPLACE' ? 'PUT' : 'POST';
 
                     try {
                         // Wait for update response
+                        if (config.orionWriter.keyValues)
+                            options.body.id = undefined
+
+                        log.debug(JSON.stringify(options))
+
                         var updateResponse = await rp(options);
 
                         if (updateResponse.statusCode == 204) {
