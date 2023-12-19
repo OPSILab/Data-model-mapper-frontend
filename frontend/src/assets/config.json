@@ -3,11 +3,11 @@
     "checkConsentAtOperator": false,
     "dmmGuiUrl": "http://localhost:12345/data-model-mapper-gui",
     "auth": {
-      "idmHost": "https://idm.cape-suite.eu/auth",
-      "clientId": "cape-service-sdk",
+      "idmHost": "https://platform.beopen-dep.it/auth",
+      "clientId": "beopen-dashboard",
       "disableAuth": "false",
       "authProfile": "oidc",
-      "authRealm": "Cape"
+      "authRealm": "master"
     },
     "mailTo":"support@dmm.eu",
     "detailedErrors" : true
