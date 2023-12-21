@@ -59,9 +59,9 @@ export class AppComponent implements OnInit, OnDestroy {
     oauthStrategy.setOptions({
       name: 'oidc',
       clientId: this.appConfig.system.auth.clientId,
-      clientSecret: 'RnCcw1zlgcMRNQmYFZ2F6odUsAHkWhDL',
+      clientSecret: '',
       baseEndpoint: this.appConfig.system.auth.idmHost,
-      clientAuthMethod: NbOAuth2ClientAuthMethod.BASIC,
+      clientAuthMethod: NbOAuth2ClientAuthMethod.NONE,
       token: {
         endpoint: `/realms/${this.appConfig.system.auth.authRealm}/protocol/openid-connect/token`,
         redirectUri: `${this.appConfig.system.dmmGuiUrl}/login/loginPopup`,
