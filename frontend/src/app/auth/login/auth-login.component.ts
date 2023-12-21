@@ -3,6 +3,8 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { NbAuthResult, NbAuthService, NbAuthOAuth2Token, NbAuthOAuth2JWTToken } from '@nebular/auth';
 import { ConfigService } from '@ngx-config/core';
+import { NgxConfigureService } from 'ngx-configure';
+import { AppConfig } from '../../model/appConfig';
 
 
 @Component({
@@ -12,8 +14,11 @@ import { ConfigService } from '@ngx-config/core';
 export class AuthLoginComponent implements OnDestroy {
   token: NbAuthOAuth2JWTToken;
   private destroy$ = new Subject<void>();
+  config: AppConfig;
 
-  constructor(private authService: NbAuthService, private configService: ConfigService) {
+  constructor(private authService: NbAuthService, private configService: NgxConfigureService) {
+    this.config = this.configService.config as AppConfig;
+
     this.login();
     this.authService.onTokenChange()
       .pipe(takeUntil(this.destroy$))
@@ -26,7 +31,7 @@ export class AuthLoginComponent implements OnDestroy {
   }
 
   login() {
-    this.authService.authenticate(this.configService.getSettings("keycloak.authProfile"))
+    this.authService.authenticate(this.config.system.auth.authProfile)
       .pipe(takeUntil(this.destroy$))
       .subscribe((authResult: NbAuthResult) => {
         console.log(authResult)
@@ -34,7 +39,7 @@ export class AuthLoginComponent implements OnDestroy {
   }
 
   logout() {
-    this.authService.logout(this.configService.getSettings("keycloak.authProfile"))
+    this.authService.authenticate(this.config.system.auth.authProfile)
       .pipe(takeUntil(this.destroy$))
       .subscribe((authResult: NbAuthResult) => {
       });

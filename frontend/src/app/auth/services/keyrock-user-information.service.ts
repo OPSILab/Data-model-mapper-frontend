@@ -11,14 +11,15 @@ import { map } from 'rxjs/operators';
 })
 export class KeyrockUserInformationService {
   apiURL: string;
-  userApiURL: string;
+  //userApiURL: string;
   client_id: string;
 
-  constructor(configService: ConfigService, private http: HttpClient) {
+  constructor(//configService: ConfigService,
+    private http: HttpClient) {
     //this.apiURL = configService.getSettings("idmBaseURL");
     //this.client_id = configService.getSettings("client_id");
 
-    this.userApiURL = configService.getSettings("keycloak.userURL");
+   // this.userApiURL = configService.getSettings("keycloak.userURL");
   }
 
   getRole(): Observable<string[]> {
@@ -42,7 +43,8 @@ export class KeyrockUserInformationService {
     return `${this.apiURL}/auth/external_logout?_method=DELETE&client_id=${this.client_id}`;
   }
 
-  getUserInfo(): Observable<any> {
-    return this.http.get<any>(`${this.userApiURL}`);
+  getUserInfo(): any {
+    return ""
+    //return this.http.get<any>(`${this.userApiURL}`);
   }
 }

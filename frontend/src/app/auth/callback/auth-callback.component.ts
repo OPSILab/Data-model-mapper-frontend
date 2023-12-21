@@ -3,8 +3,8 @@ import { Subject } from 'rxjs';
 import { NbAuthService, NbAuthResult } from '@nebular/auth';
 import { Router } from '@angular/router';
 import { takeUntil } from 'rxjs/operators';
-import { ConfigService } from '@ngx-config/core';
-import { EvitaAPIService } from '../../pages/services/evita-api.service';
+import { NgxConfigureService } from 'ngx-configure';
+import { AppConfig } from '../../model/appConfig';
 
 @Component({
   selector: 'nb-playground-oauth2-callback',
@@ -13,30 +13,18 @@ import { EvitaAPIService } from '../../pages/services/evita-api.service';
 export class AuthCallbackComponent implements OnDestroy {
 
   private destroy$ = new Subject<void>();
+  config: AppConfig;
 
-  constructor(private authService: NbAuthService, private router: Router, private configService: ConfigService,
-    private evitaAPIService: EvitaAPIService) {
-    this.authService.authenticate(this.configService.getSettings("keycloak.authProfile"))
+  constructor(private authService: NbAuthService, private router: Router, private configService: NgxConfigureService
+
+  ) {
+    this.config = this.configService.config as AppConfig;
+
+    this.authService.authenticate(this.config.system.auth.authProfile)
       .pipe(takeUntil(this.destroy$))
       .subscribe((authResult: NbAuthResult) => {
         if (authResult.isSuccess()) {
-          this.evitaAPIService.getUser().subscribe(evitaUser => {
-            console.log('Succes, Evita User:', evitaUser);
-            //inserisco il filtro per il tablet
-            const isTabletDevice = /iPad|Android/i.test(navigator.userAgent);
-            //const isTabletDevice = /Chrome/.test(window.navigator.userAgent);
-            console.log('Non so se sto utilizzando Chrome  :', window.navigator.userAgent);
-
-            if (isTabletDevice) {
-              this.router.navigateByUrl('/pages/dialogue-manager');
-              console.log('Sto utilizzando Chrome!  :');
-            } else {
-              this.router.navigateByUrl('/pages/homepage')
-            }
-          }, err => {
-            console.log(err);
-            this.router.navigateByUrl('/user')
-          })
+          this.router.navigateByUrl('/pages/home')
         } else {
           this.router.navigateByUrl('');
         }

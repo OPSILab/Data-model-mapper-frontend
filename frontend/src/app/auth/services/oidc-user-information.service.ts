@@ -14,7 +14,9 @@ export class OidcUserInformationService {
   user: UserClaims;
   protected user$: BehaviorSubject<any> = new BehaviorSubject(null);
 
-  constructor(configService: ConfigService, private http: HttpClient,
+  constructor(
+    //configService: ConfigService,
+    private http: HttpClient,
     private authService: NbAuthService,) {
     this.authService.onTokenChange()
       .subscribe((token: OidcJWTToken) => {

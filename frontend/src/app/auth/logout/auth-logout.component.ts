@@ -6,6 +6,8 @@ import { takeUntil } from 'rxjs/operators';
 import { ConfigService } from '@ngx-config/core';
 import { HttpClient } from '@angular/common/http';
 import { NB_WINDOW } from '@nebular/theme';
+import { NgxConfigureService } from 'ngx-configure';
+import { AppConfig } from '../../model/appConfig';
 
 
 @Component({
@@ -15,13 +17,16 @@ import { NB_WINDOW } from '@nebular/theme';
 export class AuthLogoutComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
+  config: AppConfig;
 
   constructor(private authService: NbAuthService,
     private tokenService: NbTokenService,
     private router: Router,
-    private configService: ConfigService,
+    private configService: NgxConfigureService,
     private http: HttpClient,
     @Inject(NB_WINDOW) private window) {
+      this.config = this.configService.config as AppConfig;
+
   }
 
 
@@ -30,13 +35,13 @@ export class AuthLogoutComponent implements OnInit, OnDestroy {
     try {
       let token = await this.authService.getToken().toPromise() as NbAuthOAuth2JWTToken;
 
-      this.authService.logout(this.configService.getSettings("keycloak.authProfile"))
+      this.authService.logout(this.config.system.auth.authProfile)
         .pipe(takeUntil(this.destroy$))
         .subscribe((authResult: NbAuthResult) => {
           if (authResult.isSuccess()) {
-            
+
             this.window.location.href =
-              `${this.configService.getSettings("keycloak.baseURL")}/logout?id_token_hint=${token.getPayload().id_token}&post_logout_redirect_uri=${this.configService.getSettings('dashboardBaseURL')}/auth`;
+              `${this.config.system.auth.idmHost}/logout?id_token_hint=${token.getPayload().id_token}&post_logout_redirect_uri=${this.config.system.dmmGuiUrl}/login`;
 
           } else {
             this.router.navigateByUrl('');

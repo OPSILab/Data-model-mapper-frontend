@@ -10,23 +10,22 @@ import { tap } from 'rxjs/operators';
 })
 export class AuthGuard implements CanActivate {
 
-  constructor(private authService: NbAuthService, private router: Router, private configService: ConfigService) {
+  constructor(private authService: NbAuthService, private router: Router) {
   }
+
 
   canActivate() {
 
-    if (!this.configService.getSettings('enableAuthentication')) {
-      return true;
-    } else {
+
       return this.authService.isAuthenticated()
         .pipe(
           tap(authenticated => {
             if (!authenticated) {
-              this.router.navigate(['auth/']);
+              this.router.navigate(['login/']);
             }
           }),
         );
     }
-  }
+
 
 }
