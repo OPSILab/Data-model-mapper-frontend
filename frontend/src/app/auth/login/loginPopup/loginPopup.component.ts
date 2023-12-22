@@ -93,9 +93,9 @@ export class LoginPopupComponent implements AfterViewInit, OnDestroy {
     if (redirectAfterLogin) {
       const queryString = this.printQueryParamsString(queryParamsBeforeLogin);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      window.opener.document.location.href = this.serviceEditorUrl + redirectAfterLogin + (queryString ? queryString : '');
+      window.parent.document.location.href = this.serviceEditorUrl + redirectAfterLogin + (queryString ? queryString : '');
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    } else window.opener.document.location.href = this.serviceEditorUrl;
+    } else window.parent.document.location.href = this.serviceEditorUrl;
 
     window.close();
   };
