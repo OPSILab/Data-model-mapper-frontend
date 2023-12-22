@@ -7,6 +7,7 @@
     "cancel": "Cancel",
     "edit": "Edit",
     "errors": "Some errors occurred.",
+    "welcome": "Welcome to Data model mapper",
     "menu": {
       "home": "Home",
       "editor": "Mapper editor",
@@ -157,7 +158,7 @@
     "logout_button": "Logout",
     "logout_error": "There was an error while perfoming logout",
     "select_login": "Select your Digital Identity Provider",
-    "login_with_local_idm": "Login with DMM",
+    "login_with_local_idm": "Login with Data model mapper",
     "login_with_local_idm_description": "DMM uses natively the Keycloak IdM",
     "keycloak_idm_link": "Sign in with Keycloak IdM",
     "login_with_eidas": "Login with eIDAS",
