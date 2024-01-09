@@ -3,7 +3,8 @@ import { NgxConfigureService } from 'ngx-configure';
 import { NbDialogService } from '@nebular/theme';
 import { AppConfig, System } from '../../model/appConfig';
 import { TranslateService } from '@ngx-translate/core';
-import { NbAuthService } from '@nebular/auth';
+import { NbAuthOAuth2JWTToken, NbAuthService } from '@nebular/auth';
+import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
@@ -17,7 +18,8 @@ export class LoginService {
     private configService: NgxConfigureService,
     private dialogService: NbDialogService,
     private authService: NbAuthService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private router: Router
   ) {
     this.environment = (this.configService.config as AppConfig).system;
     this.idmHost = this.environment.auth.idmHost;
@@ -29,12 +31,14 @@ export class LoginService {
   logout = async (): Promise<void> => {
     localStorage.removeItem('accountId');
     localStorage.removeItem('accountEmail');
+    let token = await this.authService.getToken().toPromise() as NbAuthOAuth2JWTToken;
 
     const authResult = await this.authService.logout(this.authProfile).toPromise();
     if (authResult.isSuccess()) {
-      window.location.href = `${this.idmHost}/realms/${this.authRealm}/protocol/openid-connect/logout?redirect_uri=${this.serviceEditorUrl}/login`;
+      window.location.href = `${this.idmHost}/realms/${this.authRealm}/protocol/openid-connect/logout?id_token_hint=${token.getPayload().id_token}&post_logout_redirect_uri=${this.serviceEditorUrl}/login`;
     } else {
       window.alert(this.translateService.instant('login.logout_error'));
+      this.router.navigateByUrl('');
     }
   };
 

@@ -25,7 +25,7 @@ export class AuthLogoutComponent implements OnInit, OnDestroy {
     private configService: NgxConfigureService,
     private http: HttpClient,
     @Inject(NB_WINDOW) private window) {
-      this.config = this.configService.config as AppConfig;
+    this.config = this.configService.config as AppConfig;
 
   }
 
@@ -40,18 +40,27 @@ export class AuthLogoutComponent implements OnInit, OnDestroy {
         .subscribe((authResult: NbAuthResult) => {
           if (authResult.isSuccess()) {
 
-            this.window.location.href =
-              `${this.config.system.auth.idmHost}/logout?id_token_hint=${token.getPayload().id_token}&post_logout_redirect_uri=${this.config.system.dmmGuiUrl}/login`;
+            try {
+              this.window.location.href =
+                `${this.config.system.auth.idmHost}/logout?id_token_hint=${token.getPayload().id_token}&post_logout_redirect_uri=${this.config.system.dmmGuiUrl}/login`;
+            }
+            catch (error) {
+              console.log("Error during logout")
+              console.log(error);
+              this.router.navigateByUrl('');
+            }
 
           } else {
             this.router.navigateByUrl('');
           }
         }, (error) => {
           console.log(error)
+          this.router.navigateByUrl('');
         });
 
     } catch (error) {
       console.log(error);
+      this.router.navigateByUrl('');
     }
   }
 
