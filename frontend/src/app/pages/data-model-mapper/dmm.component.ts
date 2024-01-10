@@ -916,6 +916,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
     let body = this.isNew ?
       {
+        sourceData: JSON.parse(this.sourceEditor.getText()),
         mapID: this.adapter.adapterId
       }
       :
@@ -1356,6 +1357,7 @@ export class DMMComponent implements OnInit, OnChanges {
   updateBody() {
     this.bodyEditor.update(this.isNew ?
       {
+        sourceData: JSON.parse(this.sourceEditor.getText()),
         mapID: this.adapter.adapterId
       }
       :

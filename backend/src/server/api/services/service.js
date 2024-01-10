@@ -45,6 +45,10 @@ module.exports = {
             configCopy.httpPort =
             configCopy.logLevel =
             configCopy.mode =
+            configCopy.NODE_ENV =
+            configCopy.LOG =
+            configCopy.MODE =
+            configCopy.SUPPRESS_NO_CONFIG_WARNING =
             configCopy.env = undefined
         return configCopy
     },
