@@ -47,20 +47,21 @@ export class AuthLogoutComponent implements OnInit, OnDestroy {
             catch (error) {
               console.log("Error during logout")
               console.log(error);
-              this.router.navigateByUrl('');
+              //this.router.navigateByUrl('login/loginPopup');
             }
 
           } else {
-            this.router.navigateByUrl('');
+            console.debug(authResult)
+            //this.router.navigateByUrl('login/loginPopup');
           }
         }, (error) => {
           console.log(error)
-          this.router.navigateByUrl('');
+          //this.router.navigateByUrl('login/loginPopup');
         });
 
     } catch (error) {
       console.log(error);
-      this.router.navigateByUrl('');
+      //this.router.navigateByUrl('login/loginPopup');
     }
   }
 

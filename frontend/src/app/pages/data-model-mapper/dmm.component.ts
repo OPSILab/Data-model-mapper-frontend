@@ -16,6 +16,7 @@ import { ErrorDialogAdapterService } from '../error-dialog/error-dialog-adapter.
 import { ActivatedRoute } from '@angular/router';
 import { NgxConfigureService } from 'ngx-configure';
 import editor from './mapperEditor'
+import { inspect } from 'util';
 
 let mapOptionsGl, mapGl = "Set your mapping fields here"//, mapperEditor
 
@@ -124,6 +125,9 @@ export class DMMComponent implements OnInit, OnChanges {
     mode: string; modes: string[]; // allowed modes
     onModeChange: (newMode: any, oldMode: any) => void;
   };
+  curlEditorContainer: HTMLElement;
+  curlEditor: any;
+  curl: string;
 
   constructor(
     @Inject(DOCUMENT) public document: Document,
@@ -434,6 +438,7 @@ export class DMMComponent implements OnInit, OnChanges {
     this.schemaEditorContainer = this.document.getElementById('schemaEditor');
     this.outputEditorContainer = this.document.getElementById('jsoneditor3');
     this.bodyEditorContainer = this.document.getElementById('bodyEditor');
+    this.curlEditorContainer = this.document.getElementById('curlEditor');
     this.selectBox = <HTMLInputElement>this.document.getElementById('input-type');
     this.csvtable = this.document.getElementById('csv-table');
 
@@ -513,6 +518,8 @@ export class DMMComponent implements OnInit, OnChanges {
       this.outputEditor.update(preview)
 
     this.bodyEditor = new JSONEditor(this.bodyEditorContainer, this.bodyEditorOptions, this.body);
+
+    //this.curlEditor = new JSONEditor(this.curlEditorContainer, this.bodyEditorOptions, "");
 
     if (this.route.snapshot.params['inputID'] as string || this.inputID) {
       if (this.route.snapshot.params['inputID'] as string)
@@ -958,7 +965,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async saveFile(model, type): Promise<void> {
-    const filename = (this.name || this.adapter.name || "exportedFile") + "." + type,
+    const filename = (this?.name || this?.adapter?.name || "exportedFile") + "." + type,
       blob = new Blob([model], {
         type: 'application/json;charset=utf-8',
       });
@@ -1353,6 +1360,13 @@ export class DMMComponent implements OnInit, OnChanges {
       }
       :
       this.bodyBuilder(JSON.parse(this.sourceEditor.getText())))
+  }
+
+  updateCurl() {
+    //while (curl != this.buildSnippet().replace("\\", " "))
+    //curl = this.buildSnippet().replace("\\", " ")
+    this.curl = this.buildSnippet()
+    //this.curlEditor.update(this.buildSnippet())
   }
 
   onKeydownReactive($event) {

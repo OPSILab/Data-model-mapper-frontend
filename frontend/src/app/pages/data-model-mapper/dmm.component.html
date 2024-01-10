@@ -205,10 +205,27 @@
         </nb-accordion-item>
         <nb-accordion-item expanded="true">
           <nb-accordion-item-header>
-            Request body code
+            Server endpoint
           </nb-accordion-item-header>
           <nb-accordion-item-body>
-            <p>The request body code is showed below.
+            <p>Example curl.
+            </p>
+            <br> <br> <br>
+            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateCurl()">
+              {{ 'general.dmm.update' | translate }}
+              <i class="mx-1 fas fa-file-import fa-lg"></i>
+            </button>
+            <br> <br>
+            <pre><code>{{curl}}</code></pre>
+            <!--<div style="height:500px" id="curlEditor"></div>-->
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+        <nb-accordion-item expanded="true">
+          <nb-accordion-item-header>
+            Example payload
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
+            <p>The Example payload is showed below.
             </p>
             <br> <br> <br>
             <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateBody()">

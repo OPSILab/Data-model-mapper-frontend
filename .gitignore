@@ -46,3 +46,4 @@ logs/
 reports/
 frontend/src/assets/bikeCiclabili.json
 backend/examples/
+backend/src/validation.log

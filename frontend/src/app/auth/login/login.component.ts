@@ -1,22 +1,123 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { NgxConfigureService } from 'ngx-configure';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { AppConfig, System } from '../../model/appConfig';
+import { Subject } from 'rxjs';
+import { NbAuthOAuth2JWTToken, NbAuthService } from '@nebular/auth';
+import { NbDialogService } from '@nebular/theme';
+import { ErrorResponse } from '../../model/errorResponse';
+import { OidcJWTToken } from '../oidc/oidc';
 
 @Component({
   selector: 'login',
   styleUrls: ['./login.component.scss'],
   templateUrl: './login.component.html',
 })
-export class LoginComponent {
+export class LoginComponent {//implements AfterViewInit, OnDestroy {
   private environment: System;
+  serviceEditorUrl: string;
+  locale: string;
 
-  constructor(private configService: NgxConfigureService, private route: ActivatedRoute, private router: Router,
+  @ViewChild('errorDialog', { static: false })
+  private errorDialogTemplateRef: TemplateRef<unknown>;
+
+  private destroy$ = new Subject<void>();
+  token: NbAuthOAuth2JWTToken;
+
+  private queryParams: Params;
+
+  constructor(
+    private configService: NgxConfigureService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private authService: NbAuthService,
+    private activatedRoute: ActivatedRoute,
+    private dialogService: NbDialogService
   ) {
+    this.serviceEditorUrl = (this.configService.config as AppConfig).system.dmmGuiUrl;
+    this.locale = (this.configService.config as AppConfig).i18n.locale;
+    this.queryParams = this.activatedRoute.snapshot.queryParams;
     this.environment = (this.configService.config as AppConfig).system;
   }
 
-  public login = (): void => {
+  async ngAfterViewInit(): Promise<void> {
+    if (!(await this.authService.isAuthenticatedOrRefresh().toPromise())) {
+      if (!(await this.authService.getToken().toPromise()).isValid() && !this.queryParams['code'])
+        sessionStorage.setItem('queryParamsBeforeLogin', JSON.stringify(this.queryParams));
+      const authResult = await this.authService.authenticate((this.configService.config as AppConfig).system.auth.authProfile).toPromise();
+
+      if (authResult.isSuccess() && authResult.getToken()?.isValid()) {
+        this.completeLogin(authResult.getToken() as OidcJWTToken);
+      } else if (authResult.getErrors().length > 0)
+        this.openDialog(this.errorDialogTemplateRef, { error: { message: authResult.getErrors().toString() } });
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  completeLogin = (token: OidcJWTToken): void => {
+    try {
+      // Get Idm User Details to create the associated Account
+      const tokenPayload = token.getAccessTokenPayload();
+
+      localStorage.setItem('accountId', tokenPayload.preferred_username);
+      localStorage.setItem('accountEmail', tokenPayload.email);
+
+      /*
+       * Close Login Popup and propagates query Params saved before Login, and eventually append redirectAfterLogin to the Base path
+       */
+      this.closeLoginPopup();
+    } catch (err) {
+      console.error(err.message);
+      this.openDialog(this.errorDialogTemplateRef, {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        error: err as ErrorResponse,
+      });
+    }
+  };
+
+  cancel = (): void => {
+    window.close();
+  };
+
+  closeLoginPopup = (): void => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const queryParamsBeforeLogin = JSON.parse(sessionStorage.getItem('queryParamsBeforeLogin')) as Record<string, string>;
+    const redirectAfterLogin = queryParamsBeforeLogin?.redirectAfterLogin;
+    sessionStorage.removeItem('queryParamsBeforeLogin');
+    delete queryParamsBeforeLogin?.redirectAfterLogin;
+
+    if (redirectAfterLogin) {
+      const queryString = this.printQueryParamsString(queryParamsBeforeLogin);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      window.parent.document.location.href = this.serviceEditorUrl + redirectAfterLogin + (queryString ? queryString : '');
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    } else window.parent.document.location.href = this.serviceEditorUrl;
+
+    window.close();
+  };
+
+  openDialog = (dialogTemplate: TemplateRef<unknown>, ctx: unknown): void => {
+    this.dialogService.open(dialogTemplate, {
+      context: ctx,
+      hasScroll: false,
+      closeOnBackdropClick: false,
+      closeOnEsc: false,
+    });
+  };
+
+  printQueryParamsString = (queryParams: Record<string, string>): string => {
+    if (Object.keys(queryParams).length > 0)
+      return Object.entries<string>(queryParams).reduce((acc, entry) => {
+        return `${acc}&${entry[0]}=${entry[1]}`;
+      }, '?');
+    else return undefined;
+  };
+
+  public login = async (): Promise<void> => {
     // Propagates (if any) queryParams, in order to be propagated also in the redirected URL after authentication
     const queryParams = this.route.snapshot.queryParams;
     let queryString = '';
@@ -28,21 +129,11 @@ export class LoginComponent {
     console.debug(queryString)
     console.debug(queryParams)
 
-    let popupRoute = '..//loginPopup'+'?'+queryString
-    this.router.navigate(['../loginPopup', { relativeTo: this.route}])//, queryParams: { parametro1: 'valore1', parametro2: 'valore2' } }]);
+    await this.ngAfterViewInit();
+
+    //let popupRoute = '..//loginPopup' + '?' + queryString
+    //this.router.navigate(['../loginPopup', { relativeTo: this.route }])//, queryParams: { parametro1: 'valore1', parametro2: 'valore2' } }]);
     //this.router.navigate['loginPopup']
-    /*
-        this.popupCenter({
-          //url:"http://localhost:8080/realms/myrealm/protocol/openid-connect/auth?client_id=client&redirect_uri=http%3A%2F%2Flocalhost%3A12345&state=6a06fb97-faf5-459b-b5d1-dcd190631725&response_mode=fragment&response_type=code&scope=openid&nonce=b91b0bba-dff8-4f13-8943-3737af127893&code_challenge=jzCIFkAPJOPB5abo8up7snknW2CqKfmX-z_7JOEWlQg&code_challenge_method=S256",//
-          //url: "http://localhost:8080/realms/myrealm/protocol/openid-connect/auth?response_type=code&client_id=client&redirect_uri=http://localhost:12345&scope=openid&state=30a2315f-56ba-43b1-b625-eab0d0b49cc0",
-
-          //url:this.environment.auth.idmHost + "/realms/"+this.environment.auth.authRealm+"/protocol/openid-connect/auth?response_type=code&client_id="+this.environment.auth.clientId+"&redirect_uri=http://localhost:12345/data-model-mapper-gui/login/loginPopup&scope=openid&state=b9fabbc4-1b5a-4c22-a5bc-f6c655bbf174",
-
-          url:`${this.environment.dmmGuiUrl}/login/loginPopup?${queryString}`,
-          title: 'AuthPopup',
-          w: 780,
-          h: 650,
-        });*/
   };
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
