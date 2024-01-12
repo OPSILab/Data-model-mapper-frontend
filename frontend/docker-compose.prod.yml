@@ -14,6 +14,7 @@ services:
       - ./src/assets/config.prod.json:/app/data-model-mapper-gui/assets/config.json
       - ./src/assets/config.prod.json:/app/data-model-mapper-gui/pages/assets/config.json
       - ./src/assets/config.prod.json:/app/data-model-mapper-gui/pages/home/assets/config.json
+      - ./src/assets/config.prod.json:/app/data-model-mapper-gui/pages/account/assets/config.json
       - ./src/assets/config.prod.json:/app/data-model-mapper-gui/pages/dmm-editor/assets/config.json
       - ./src/assets/config.prod.json:/app/data-model-mapper-gui/login/assets/config.json
       - ./src/assets/config.prod.json:/app/data-model-mapper-gui/login/loginPopup/assets/config.json

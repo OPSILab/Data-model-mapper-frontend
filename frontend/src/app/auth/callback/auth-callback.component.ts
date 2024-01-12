@@ -26,7 +26,6 @@ export class AuthCallbackComponent implements OnDestroy {
         if (authResult.isSuccess()) {
           this.router.navigateByUrl('/pages/home')
         } else {
-          console.debug(authResult)
           //this.router.navigateByUrl('/login/loginPopup');
         }
       }, (error) => {

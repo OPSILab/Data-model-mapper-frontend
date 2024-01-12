@@ -20,6 +20,7 @@ COPY --from=builder /app/dist /app/data-model-mapper-gui/pages
 COPY --from=builder /app/dist /app/data-model-mapper-gui/pages/home
 COPY --from=builder /app/dist /app/data-model-mapper-gui/pages/dmm-editor
 COPY --from=builder /app/dist /app/data-model-mapper-gui/login
+COPY --from=builder /app/dist /app/data-model-mapper-gui/pages/account
 COPY --from=builder /app/dist /app/data-model-mapper-gui/login/loginPopup
 WORKDIR /app/node_modules/http-server
 RUN npm install

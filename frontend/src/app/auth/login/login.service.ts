@@ -38,7 +38,6 @@ export class LoginService {
       window.location.href = `${this.idmHost}/realms/${this.authRealm}/protocol/openid-connect/logout?id_token_hint=${token.getPayload().id_token}&post_logout_redirect_uri=${this.serviceEditorUrl}/login`;
     } else {
       window.alert(this.translateService.instant('login.logout_error'));
-      console.debug(authResult)
       //this.router.navigateByUrl('/login/loginPopup');
     }
   };

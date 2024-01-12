@@ -280,7 +280,7 @@ module.exports = {
         if (path == "") path = undefined
         if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
             throw { error: "schema is required" }
-        if (dataModel) dataModel = this.dataModelClean(dataModel)
+        if (dataModel) dataModel = this.dataModelClean(dataModel, {})
         if (!await Map.findOne({ name }))
             return await Map.insertMany([{
                 name: name,
@@ -306,7 +306,7 @@ module.exports = {
     async insertDataModel(name, id, dataModel, mapRef) {
         if (!dataModel)
             throw { error: "schema is required" }
-        if (dataModel) dataModel = this.dataModelClean(dataModel)
+        if (dataModel) dataModel = this.dataModelClean(dataModel, {})
         if (mapRef)
             mapRef = (await Map.findOne({ name }))?._id
         if (mapRef || !await DataModel.findOne({ name })) return await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel, mapRef: mapRef.toString() }])
@@ -319,22 +319,23 @@ module.exports = {
         if (path == "") path = undefined
         if (mapRef)
             mapRef = (await Map.findOne({ name }))?._id
-        return await Source.findOneAndReplace(mapRef ? { mapRef } : { name }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source, mapRef: mapRef.toString() } : { name: name, id: id, source: source, path: path, mapRef: mapRef.toString() })
+        mapRef = mapRef.toString()
+        let result = await Source.findOneAndReplace(mapRef ? { mapRef } : { name }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source, mapRef: mapRef.toString() } : { name: name, id: id, source: source, path: path, mapRef: mapRef.toString() })
+        return result
     },
 
     call: 0,
 
-    dataModelClean(dataModel) {
+    dataModelClean(dataModel, dataModelCleaned) {
         this.call++;
-        for (let key in dataModel) {
+        for (let key in dataModel)
             if (Array.isArray(dataModel[key]) || typeof dataModel[key] == "object")
-                dataModel[key] = this.dataModelClean(dataModel[key])
-            else if (key.startsWith("$")) {
-                dataModel["dollar" + key.substring(1)] = dataModel[key]
-                dataModel[key] = undefined
-            }
-        }
-        return dataModel
+                dataModelCleaned[key] = this.dataModelClean(dataModel[key], dataModelCleaned[key] || {})
+            else if (key.startsWith("$"))
+                dataModelCleaned["dollar" + key.substring(1)] = dataModel[key] //dataModel[key] = undefined
+            else
+                dataModelCleaned[key] = dataModel[key]
+        return dataModelCleaned
     },
 
     dataModelRefFix(dataModel) {
@@ -377,7 +378,7 @@ module.exports = {
 
         if (path == "") path = undefined
 
-        if (dataModel) dataModel = this.dataModelClean(dataModel)
+        if (dataModel) dataModel = this.dataModelClean(dataModel, {})
 
         return await Map.findOneAndReplace(
             {
@@ -407,9 +408,10 @@ module.exports = {
     async modifyDataModel(name, id, dataModel, mapRef) {
         if (!dataModel)
             throw { error: "schema is required" }
-        dataModel = this.dataModelClean(dataModel)
+        dataModel = this.dataModelClean(dataModel, {})
         if (mapRef)
             mapRef = (await Map.findOne({ name }))?._id
+        mapRef = mapRef.toString()
         return await DataModel.findOneAndReplace(mapRef ? { mapRef } : { name }, { name: name, id: id, dataModel: dataModel, mapRef: mapRef.toString() })
     },
 

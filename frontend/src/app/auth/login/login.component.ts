@@ -126,8 +126,8 @@ export class LoginComponent {//implements AfterViewInit, OnDestroy {
         return `${acc}&${entry[0]}=${entry[1]}`;
       }, '');
 
-    console.debug(queryString)
-    console.debug(queryParams)
+    //console.debug(queryString)
+    //console.debug(queryParams)
 
     await this.ngAfterViewInit();
 
