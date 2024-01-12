@@ -274,6 +274,18 @@ and an update dialog will appear.
 The Map ID is can't be touched, but you can edit the other fields. 
 After finished, click **UPDATE** button.
 
+## Server endpoint
+
+If you want to use call the API endpoint with CURL, you can go to *Server endpoint* accordion and click the *UPDATE* button. You'll see the CURL snippet in a code view.
+
+![](images/curl.png)
+
+## Example payload
+
+If you just need an example payload, you can go to *example payload* accordion and click the *UPDATE* button. You'll see the body example in a read-only json editor.
+
+![](images/body.png)
+
 ## Config accordion
 
 The config settings can be modified by writing them on the [Config file](../backend/config.js) once you install the Data model mapper, however you can set your transform config template for each mapper record. Go down to the *Config* accordion and click it.
