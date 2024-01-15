@@ -46,6 +46,8 @@ In the *Output* accordion, you can transform your source input file by clicking 
 
 ![](images/transform-2.png)
 
+If in your config.js file you have enabled the *mappingReport*, your last element of the array output will contain a report of your mapping, such as skipping files and object written to orion if enabled in *witers*
+
 ## Mapper editor
 
 The section **Map editor** is where you can save or edit mapper settings.
@@ -240,6 +242,8 @@ In this section you can see an ouptut preview (max 3 rows).
 ![](images/output.png)
 
 Click **PREVIEW** and you'll see the output preview in an JSON editor similar to the ones mentioned for the *Source* and *Mapper* accordion, but this time the available view options are **View** and **Preview**.
+
+If in your config.js file you have enabled the *mappingReport*, your last element of the array output will contain a report of your mapping, such as skipping files and object written to orion if enabled in *witers*
 
 ![](images/output-2.png)
 
