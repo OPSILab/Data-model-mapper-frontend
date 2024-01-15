@@ -909,14 +909,15 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   buildSnippet() {
-    let source = JSON.parse(this.sourceEditor.getText())
+    let source = this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData
+
 
     //if (source[this.selectedPath])
     //source = source[this.selectedPath]
 
     let body = this.isNew ?
       {
-        sourceData: JSON.parse(this.sourceEditor.getText()),
+        sourceData: source,
         mapID: this.adapter.adapterId
       }
       :
@@ -1357,11 +1358,11 @@ export class DMMComponent implements OnInit, OnChanges {
   updateBody() {
     this.bodyEditor.update(this.isNew ?
       {
-        sourceData: JSON.parse(this.sourceEditor.getText()),
+        sourceData: this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData,
         mapID: this.adapter.adapterId
       }
       :
-      this.bodyBuilder(JSON.parse(this.sourceEditor.getText())))
+      this.bodyBuilder(this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()): this.csvSourceData))
   }
 
   updateCurl() {
