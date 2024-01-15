@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 const apiOutput = require('../server/api/services/service')
+const orionWriter = require('../writers/orionWriter')
 const config = require('../../config');
 const base64 = require('./encoders/base64');
 const path = require('path');
@@ -144,7 +145,7 @@ const uuid = () => {
  */
 const createSynchId = (type, site, service, group, entityName, isIdPrefix, rowNumber) => {
     if (type === undefined)
-         type = "SomeType"
+        type = "SomeType"
     if (entityName) {
         if (isIdPrefix)
             entityName = ('' + entityName).replace(/\s/g, "") + "-" + rowNumber;
@@ -223,7 +224,7 @@ const bodyMapper = (body) => {
             id: body.mapID
         }
     }
-    else if (body.mapData){
+    else if (body.mapData) {
         map = [
             body.mapData,
             "mapData"
@@ -261,15 +262,27 @@ const printFinalReportAndSendResponse = async (logger) => {
         '\t Mapped and NOT Validated Objects: ' + config.unvalidCount + '/' + config.rowNumber + '\n' +
         '-----------------------------------------');
 
+    if (config.validCount + config.unvalidCount < config.rowNumber)
+        config.unvalidCount = config.rowNumber - config.validCount
+
     if (config.mode == 'server') {
         //Mapping report in output file
+
+        while (config.orionWrittenCount + config.orionUnWrittenCount < config.validCount){
+            await sleep(1000)
+        }
 
         apiOutput.outputFile[apiOutput.outputFile.length] = {
             MAPPING_REPORT: {
                 Processed_objects: config.rowNumber,
                 Mapped_and_Validated_Objects: config.validCount + '-' + config.rowNumber,
-                Mapped_and_NOT_Validated_Objects: config.unvalidCount + '-' + config.rowNumber
-            }
+                Mapped_and_NOT_Validated_Objects: config.unvalidCount + '-' + config.rowNumber,
+            },
+            ORION_REPORT: {
+                "Object written to Orion Context Broker": config.orionWrittenCount.toString() + '/' + config.validCount.toString(),
+                "Object NOT written to Orion Context Broker": config.orionUnWrittenCount.toString() + '/' + config.validCount.toString(),
+                "Object SKIPPED": config.orionSkippedCount.toString() + '/' + config.validCount.toString()
+            }//await orionWriter.checkAndPrintFinalReport()
         }
 
         try {

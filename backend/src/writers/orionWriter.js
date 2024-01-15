@@ -18,6 +18,7 @@
 
 const rp = require('promise-request-retry');
 
+//let orionReport = {}
 const config = require('../../config')
 //const orionConfig = config.orionWriter;
 const report = require('../utils/logger').orionReport;
@@ -46,11 +47,11 @@ const buildRequestHeaders = () => {
 const writeObject = async (objNumber, obj, modelSchema) => {
 
     let orionUrl = config.mode == "server" ? config.orionWriter.orionUrl : config.orionUrl
-    
+
     if (obj) {
         log.debug('Sending to Orion CB object number: ' + objNumber + ' , id: ' + obj.id);
 
-        var orionedObj = !config.orionWriter.keyValues && toOrionObject(obj, modelSchema) || obj ;
+        var orionedObj = !config.orionWriter.keyValues && toOrionObject(obj, modelSchema) || obj;
 
         var options = {
             method: 'POST',
@@ -108,6 +109,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
 
                             report.info('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
                             log.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
+
                             return Promise.resolve(config.orionWrittenCount++);
 
                         } else {
@@ -417,6 +419,14 @@ async function checkAndPrintFinalReport() {
         await printOrionFinalReport(log);
         await printOrionFinalReport(report);
     }
+
+    let orionReport = {
+        "Object written to Orion Context Broker": config.orionWrittenCount.toString() + '/' + config.validCount.toString(),
+        "Object NOT written to Orion Context Broker": config.orionUnWrittenCount.toString() + '/' + config.validCount.toString(),
+        "Object SKIPPED": config.orionSkippedCount.toString() + '/' + config.validCount.toString()
+    }
+
+    return orionReport
 }
 
 module.exports = {
