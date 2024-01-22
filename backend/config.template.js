@@ -51,9 +51,9 @@ var config = {
     * The regex to delete from the output string fields
     * **/
 
-    regexClean:{
-        custom : /\0/g, // the regex provided from the request in server mode
-        default : /\n|'|<|>|"|'|=|;|\(|\)/g // DO NOT TOUCH this is the default value for ngsi entity 
+    regexClean: {
+        custom: /\0/g, // the regex provided from the request in server mode
+        default: /\n|'|<|>|"|'|=|;|\(|\)/g // DO NOT TOUCH this is the default value for ngsi entity 
     },
 
     /************************* CSV Parser configuration *******************
@@ -124,5 +124,16 @@ config.fileWriter = {
     filePath: "./result.json",
     addBlankLine: true
 };
+
+/*************** Auth config CONFIGURATION *******************************/
+config.authConfig = {
+    idmHost: "https://hostDomain/auth",
+    clientId: "",
+    disableAuth: "false",
+    authProfile: "oidc",
+    authRealm: "",
+    introspect: false, 
+    secret: "" // don't push it
+}
 
 module.exports = config;
