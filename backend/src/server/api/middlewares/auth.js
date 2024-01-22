@@ -13,46 +13,51 @@ function parseJwt(token) {
 
 module.exports = {
     auth: async (req, res, next) => {
-        const authHeader = req.headers.authorization;
 
-        if (authHeader) {
-            const jwtToken = authHeader.split(' ')[1];
+        if (authConfig.disableAuth)
+            next()
+        else {
+            const authHeader = req.headers.authorization;
 
-            if (authConfig.introspect) {
-                const introspectionEndpoint = `${keycloakServerURL}/realms/${realm}/protocol/openid-connect/token/introspect`;
+            if (authHeader) {
+                const jwtToken = authHeader.split(' ')[1];
 
-                const data = new URLSearchParams();
-                data.append('token', jwtToken);
-                data.append('client_id', clientID);
-                data.append('client_secret', clientSecret);
+                if (authConfig.introspect) {
+                    const introspectionEndpoint = `${keycloakServerURL}/realms/${realm}/protocol/openid-connect/token/introspect`;
 
-                axios.post(introspectionEndpoint, data)
-                    .then(response => {
-                        if (response.data.active) {
-                            console.log('Token valid:', response.data);
-                            next();
-                        } else {
-                            console.log('Token not valid.');
-                            res.sendStatus(403);
-                        }
-                    })
-                    .catch(error => {
-                        console.log(error.response.data)
-                        console.error('Errore during token verify:', error.message);
-                        res.sendStatus(500);
-                    });
+                    const data = new URLSearchParams();
+                    data.append('token', jwtToken);
+                    data.append('client_id', clientID);
+                    data.append('client_secret', clientSecret);
+
+                    axios.post(introspectionEndpoint, data)
+                        .then(response => {
+                            if (response.data.active) {
+                                console.log('Token valid:', response.data);
+                                next();
+                            } else {
+                                console.log('Token not valid.');
+                                res.sendStatus(403);
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error.response.data)
+                            console.error('Errore during token verify:', error.message);
+                            res.sendStatus(500);
+                        });
+                }
+                else {
+
+                    const decodedToken = parseJwt(jwtToken)
+
+                    if ((decodedToken.azp == authConfig.clientId) && ((decodedToken.exp * 1000) > Date.now()))
+                        next()
+                    else
+                        res.sendStatus(403);
+                }
             }
-            else {
-
-                const decodedToken = parseJwt(jwtToken)
-
-                if ((decodedToken.azp == authConfig.clientId) && ((decodedToken.exp * 1000) > Date.now()))
-                    next()
-                else
-                    res.sendStatus(403);
-            }
+            else
+                res.sendStatus(401);
         }
-        else
-            res.sendStatus(401);
     }
 };
