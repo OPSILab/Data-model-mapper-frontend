@@ -27,11 +27,14 @@ import { CreateMapComponent } from './create-map/create-map.component';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { ExportFileComponent } from './export-file/export-file.component';
 import { DialogComponent } from './create-map/dialog/dialog.component';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpConfigInterceptor } from '../../http.interceptor';
 
 @NgModule({
   imports: [
     Ng2SmartTableModule,
     CommonModule,
+    HttpClientModule,
     DMMRoutingModule,
     NbAccordionModule,
     NbButtonModule,
@@ -53,12 +56,18 @@ import { DialogComponent } from './create-map/dialog/dialog.component';
     TranslateModule.forChild({}),
     NbAutocompleteModule
   ],
-  declarations: [DialogImportComponent,DialogDataMapComponent, CreateMapComponent, ExportFileComponent, DMMComponent, DialogComponent],
-  providers: [DMMService],
+  declarations: [DialogImportComponent, DialogDataMapComponent, CreateMapComponent, ExportFileComponent, DMMComponent, DialogComponent],
+  providers: [
+    DMMService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpConfigInterceptor,
+      multi: true,
+    }],
   entryComponents: [
     DialogImportComponent,
     DialogDataMapComponent
 
   ]
 })
-export class DMMModule {}
+export class DMMModule { }
