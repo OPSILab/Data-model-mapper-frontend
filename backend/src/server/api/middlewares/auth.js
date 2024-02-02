@@ -1,5 +1,6 @@
 const config = require('../../../../config')
 const axios = require('axios');
+const jwt = require('jsonwebtoken');
 //const authConfig = (await axios.get("http://localhost:12345/data-model-mapper-gui/assets/config.json")).data
 const authConfig = config.authConfig
 const keycloakServerURL = authConfig.idmHost;
@@ -21,6 +22,26 @@ module.exports = {
 
             if (authHeader) {
                 const jwtToken = authHeader.split(' ')[1];
+
+
+
+                let verifiedToken
+                try {
+                    verifiedToken = jwt.verify(jwtToken, //Buffer.from(
+                      authConfig.publicKey
+                        //, 'base64').toString()
+                        //-------//
+                        , { algorithms: ['RS256'] })
+                }
+                catch (error) {
+
+                    console.error(error)
+                    if (error.message == "invalid token" || error.message == "jwt expired")
+                        return res.sendStatus(403);
+                    else
+                        return res.sendStatus(500);
+                }
+
 
                 if (authConfig.introspect) {
                     const introspectionEndpoint = `${keycloakServerURL}/realms/${realm}/protocol/openid-connect/token/introspect`;
@@ -48,7 +69,7 @@ module.exports = {
                 }
                 else {
 
-                    const decodedToken = parseJwt(jwtToken)
+                    const decodedToken = verifiedToken || parseJwt(jwtToken)
 
                     if ((decodedToken.azp == authConfig.clientId) && ((decodedToken.exp * 1000) > Date.now()))
                         next()
