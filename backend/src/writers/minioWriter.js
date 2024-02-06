@@ -10,24 +10,15 @@ module.exports = {
   bucketName: "datamodelmapper",
   objectName: "test",
 
-  // Instantiate the minio client with the endpoint
-  // and access keys as shown below.
   createClient() {
     minioClient = new Minio.Client({
-      endPoint: "localhost",//.split("/")[0],
-      //endPoint: minioConfig.endPoint,//.split("/")[0],
-      //path: "/minio/",//minioConfig.endPoint.split("/")[1] + "/",
-      //pathStyle: true,
-      port: 5502,//,80,
-      useSSL: false, //minioConfig.useSSL,
+      endPoint: minioConfig.endPoint,
+      port: minioConfig.port,
+      useSSL: minioConfig.useSSL,
       accessKey: minioConfig.accessKey,
       secretKey: minioConfig.secretKey,
     })
   },
-
-  // File that needs to be uploaded.
-
-  // Make a bucket called europetrip.
 
   creteBucket(name) {
 
@@ -52,7 +43,6 @@ module.exports = {
     }
 
     try {
-      // Using fPutObject API upload your file to the bucket europetrip.
       minioClient.fPutObject(this.bucketName, this.objectName, this.file, metaData, function (err, etag) {
         console.log(etag?.response?.data || JSON.stringify(etag) || etag)
         if (err) return e(err)
@@ -85,7 +75,6 @@ module.exports = {
         return e(err)
       }
 
-      // Manipola i dati del flusso come necessario
       let objectData = '';
       dataStream.on('data', function (chunk) {
         objectData += chunk;
@@ -127,7 +116,6 @@ catch (error) {
   console.log("error")
   e(error)
 }
-//minioWriter.getObject("photos-europe.tar")
 try {
   minioWriter.getObject("test")
 }
@@ -136,4 +124,3 @@ catch (error) {
   e(error)
 
 }
-//minioWriter.fileUpload()

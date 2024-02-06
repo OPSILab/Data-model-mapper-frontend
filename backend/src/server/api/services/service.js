@@ -35,7 +35,7 @@ module.exports = {
     },
 
     async minio(body, headers, query) {
-        let res = await axios.post("https://" + config.minioWriter.endPoint, body, { httpsAgent: agent, /*params: query,*/ headers: headers })
+        let res = await axios.post("https://" + config.minioWriter.endPoint2, body, { httpsAgent: agent, /*params: query,*/ headers: headers })
         console.debug("---------------RES-------------------")
         console.debug(res.data)
         return res.data

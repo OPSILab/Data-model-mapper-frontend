@@ -40,26 +40,27 @@ function ngsi() {
 let logIndex = 0
 
 function e(error) {
-  let str = ""
-  var util = require('util')
-  for (let key in error) {
-    try {
-      str = str.concat("{\n", '"', key, '"', " : ", JSON.stringify(error[key]), "\n},\n")
+    console.error(error)
+    let str = ""
+    var util = require('util')
+    for (let key in error) {
+        try {
+            str = str.concat("{\n", '"', key, '"', " : ", JSON.stringify(error[key]), "\n},\n")
+        }
+        catch (error) {
+            str = str.concat("{\n", '"', key, '"', " : ", util.inspect(error[key]), "\n},\n")
+            console.debug("corrected")
+        }
     }
-    catch (error) {
-      str = str.concat("{\n", '"', key, '"', " : ", util.inspect(error[key]), "\n},\n")
-      console.debug("corrected")
-    }
-  }
 
-  var fs = require('fs');
+    var fs = require('fs');
 
-  fs.writeFile("./log" + JSON.stringify(logIndex) + ".json", "[" + str.substring(0, str.length - 1) + "]", function (err) {
-    if (err) throw err;
-    console.debug('Log is created successfully.');
-  })
+    fs.writeFile("./log" + JSON.stringify(logIndex) + ".json", "[" + str.substring(0, str.length - 1) + "]", function (err) {
+        if (err) throw err;
+        console.debug('Log is created successfully.');
+    })
 
-  logIndex++
+    logIndex++
 }
 
 
@@ -293,7 +294,7 @@ const printFinalReportAndSendResponse = async (logger) => {
     if (config.mode == 'server') {
         //Mapping report in output file
 
-        while (config.orionWrittenCount + config.orionUnWrittenCount < config.validCount){
+        while (config.orionWrittenCount + config.orionUnWrittenCount < config.validCount) {
             await sleep(1000)
         }
 
@@ -439,5 +440,5 @@ module.exports = {
     restoreDefaultConfs: restoreDefaultConfs,
     encode: encode,
     bodyMapper: bodyMapper,
-    e:e
+    e: e
 };
