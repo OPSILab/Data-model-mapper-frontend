@@ -6,6 +6,38 @@ const DataModel = require("../models/dataModel.js")
 const log = require('../../../utils/logger').app(module);
 const axios = require('axios')
 const RefParser = require('json-schema-ref-parser');
+let a = 5
+
+const https = require('https');
+
+const agent = new https.Agent({
+    rejectUnauthorized: false
+});
+
+function e(error) {
+    let str = ""
+    var util = require('util')
+    for (let key in error) {
+        //console.debug("{\n", key, " : ", response[key], "\n},\n")
+        try {
+            str = str.concat("{\n", '"', key, '"', " : ", JSON.stringify(error[key]), "\n},\n")
+        }
+        catch (error) {
+            //console.error(error.message)
+            str = str.concat("{\n", '"', key, '"', " : ", util.inspect(error[key]), "\n},\n")
+            console.debug("corrected")
+        }
+    }
+
+    var fs = require('fs');
+
+    fs.writeFile("D:\\log" + JSON.stringify(a) + ".json", "[" + str.substring(0, str.length - 1) + "]", function (err) {
+        if (err) throw err;
+        console.debug('Log is created successfully.');
+    })
+
+    a++
+}
 
 module.exports = {
 
@@ -28,6 +60,31 @@ module.exports = {
             }
         }
         return id;
+    },
+
+    async minio(body, headers, query) {
+        console.debug("service , call to ", config.minioWriter.endPoint)
+        let res = await axios.post("https://" + config.minioWriter.endPoint, body, { httpsAgent: agent, /*params: query,*/ headers: headers })
+        console.debug("---------------RES-------------------")
+        console.debug(res.data)
+        return res.data
+        //console.debug(body, "\n", headers,  "\n", query)
+
+        //let res
+        //try {
+        //res = 
+        //return (
+        /*{...header, cookie : 
+        let res = (await axios.post("http://" + "localhost:5502/minio/datamodelmapper", { ok: "ok" }, { params: query, headers: headers/*{...header, cookie : "token=AEhj4cX4Uw12UU3p0sMSLPUYE80bkEL+O1Kohe9YvDVhNI+yFCt7o9wRwh2bu1t9irvmBCQ1puOFevbotG7IcdcX1EftDqK4H25fQJpWGxyxP1r1mP6gso0nzP7RvBiY/qKAzAmXN8s87BZL4qZ48/aNIG8nE0VyOF3HmWvmMXfWxCBKOPIXWiuJyEpnJKbDWZ3oznMBRGZJEum/uaWHhfaw7uEmVWA3GXEndx8GNWwcBqaJG6UJjAnHq6HEdjvRorBHWyHRX9oFf9APjxbZTokAhCjy4sODGgwi46lb7GLIvBTqi4gjiSC6btZgpUDaYhXbp3vAKyvRpv330S08MSyjQsYwW7lxprJIL1IPQKWoAWtE5gUWZwP2t0NMPzBYy8h/8I/eG67VhGVNcy2wBX2kN0PP15Q2Yjo3UaMpMQ+Wulqeo+EUh2w3ZelrxamCFQi1X90jhESHS32gLUeVIs+jGmwIkymA2tOTtmP7XvuPE1lCpqJso3Wx9iXcfuw97gktDN8pTiG5uhHAaKGPKd3Ok8t6gKgltVVL0dGrWl44BEWP5gxvAd4s+X0lRv4ebzKPqmbtO7ikccBxUvfhtdptmO7BXapqR8kQk0OgpXSONWJjfaVk8fE3YITwGusy9QFdBfB2o90IWucAHhAEN33gkVViLhyYPC07eHTT8u8iq75IQyqR15WFcl9ltYBnieeMQoWc/sMh0EJChA3fZk6xr2FWVhEmlkMNXNSYnnjiumdfJo6IcvEgIek3+5GhCKfOov05/RytRG+jE0aqzdJTur7BH6vDMa14pzqOJsdxlltXXn63M5+h9N7A3g+oPHfwSCNUIxrNDJzOqnNVd4J+J0FRf2YeUoS9UX4P9nUGv1Bbjpj0f+51Y4oooSDMChktWubmbQbWQxIOeoBCZz0hAHfhgNPdqXQdN4FL8A28MZhv/cVzkksdtbBtW9JfTWBQ7cbtz6Yd16w1sPio50+JoPj0BOm9aKJG6qLPB6IbAT/WCt37kUVhDehfvf1tH14sLD5wW9qm6fnqU67DCmncbWVR74eMCxvtKoRzfq42p5OIS8Y30xFt2juAcmvv/yCKADqIlhLBeFBxp8XQkqYNlP0C0ROXA2dqybcx0d83Z2Mt6CJ29uTcqG3pjEFZKDANUT0GTytvg3RmhkgHSp8DAsNIvSLmehUDmlfEOK8DE7iWTb8EN3gDeUZRaLZbQ0LMaOMzGLT8q2jyTtKior3FwLLZFQ5Iyr7dQnT2QbNytQx5aO2p1mEdL4u6; idp-refresh-token=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJmNTI1YWE0NS1mNWNiLTRkNDUtOGExZC1mYTMzOGY3YWJlNmMifQ.eyJleHAiOjE3MDcyMTYyOTYsImlhdCI6MTcwNzIxNDQ5NiwianRpIjoiMTMwYTgzZWYtNDc4NC00ZGQ2LWE4YjEtMWRhMTQyZTA2NmEyIiwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5iZW9wZW4tZGVwLml0L2F1dGgvcmVhbG1zL21hc3RlciIsImF1ZCI6Imh0dHBzOi8vcGxhdGZvcm0uYmVvcGVuLWRlcC5pdC9hdXRoL3JlYWxtcy9tYXN0ZXIiLCJzdWIiOiI3M2QyNDY5Yi05YTNmLTQ1NDAtYjQyYy05YmI4YTNkZGRiYTIiLCJ0eXAiOiJSZWZyZXNoIiwiYXpwIjoibWluaW8tYXBwIiwic2Vzc2lvbl9zdGF0ZSI6ImM1YmE5YzY3LWZjOTQtNDI2OC1iMWFhLTA3OGFiY2M0NzNjMSIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJzaWQiOiJjNWJhOWM2Ny1mYzk0LTQyNjgtYjFhYS0wNzhhYmNjNDczYzEifQ.fjl2UiHVb9Xd9XpQa1xNJ-r7goqM6mX0_00Z047hxyw" }*/
+
+        //console.debug()
+        //}
+        //catch (error) {
+        //    console.error(error?.response?.data || error)
+        //e(error)
+        //    throw error
+        //}
+        //.data// || JSON.stringify(res)
     },
 
     getConfig() {

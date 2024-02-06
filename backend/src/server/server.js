@@ -9,6 +9,7 @@ module.exports = () => {
   const log = require('../utils/logger').app(module)
 
   const app = express();
+  const app2 = express();
 
   swaggerDocument.host = swaggerDocument.host + (config.httpPort || 5000)
 
@@ -22,15 +23,30 @@ module.exports = () => {
     swaggerUi.setup(swaggerDocument)
   );
 
+  app2.use(cors());
+  app2.use(express.json());
+  app2.use(express.urlencoded({ extended: false }));
+  app2.use("", routes);
+
   function init() {
     mongoose
       .connect(config.mongo, { useNewUrlParser: true })
       .then(() => {
-        app.listen(config.httpPort || 5000, () => {
+        app2.listen(5502, () => {
           log.info("Server has started!");
-          log.info("listening on port: " + config.httpPort || 5000);
+          log.info("listening on port: " + 5502);
+         // console.debug("MINIO")
+          //const minioWriter = require('../writers/minioWriter')
 
         });
+        app.listen(config.httpPort || 5500, () => {
+          log.info("Server has started!");
+          log.info("listening on port: " + config.httpPort || 5500);
+          console.debug("MINIO")
+          const minioWriter = require('../writers/minioWriter')
+
+        });
+       
       })
   }
 

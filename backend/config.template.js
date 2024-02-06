@@ -125,15 +125,26 @@ config.fileWriter = {
     addBlankLine: true
 };
 
-/*************** Auth config CONFIGURATION *******************************/
+/*************** Auth CONFIGURATION **************************************/
 config.authConfig = {
     idmHost: "https://hostDomain/auth",
     clientId: "",
     disableAuth: "false",
     authProfile: "oidc",
     authRealm: "",
-    introspect: false, 
+    introspect: false, // validate jwt with keycloak
+    publicKey: "", // keycloak public key if you want to validate jwt without keycloak call
     secret: "" // don't push it
+}
+
+/*************** Minio writer CONFIGURATION *****************************/
+
+config.minioWriter = {
+    endPoint: '',
+    port: 9000,
+    useSSL: true,
+    accessKey: '',
+    secretKey: '',
 }
 
 module.exports = config;
