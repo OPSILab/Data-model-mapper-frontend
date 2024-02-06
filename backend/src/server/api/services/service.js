@@ -6,6 +6,10 @@ const DataModel = require("../models/dataModel.js")
 const log = require('../../../utils/logger').app(module);
 const axios = require('axios')
 const RefParser = require('json-schema-ref-parser');
+const https = require('https');
+const agent = new https.Agent({
+    rejectUnauthorized: false
+});
 
 module.exports = {
 
@@ -28,6 +32,13 @@ module.exports = {
             }
         }
         return id;
+    },
+
+    async minio(body, headers, query) {
+        let res = await axios.post("https://" + config.minioWriter.endPoint, body, { httpsAgent: agent, /*params: query,*/ headers: headers })
+        console.debug("---------------RES-------------------")
+        console.debug(res.data)
+        return res.data
     },
 
     getConfig() {

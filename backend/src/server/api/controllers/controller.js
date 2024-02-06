@@ -13,7 +13,7 @@ module.exports = {
         let { sourceData, map, dataModel } = utils.bodyMapper(req.body)
 
         try {
-            await service.mapData(sourceData, map, dataModel, req.body.config) 
+            await service.mapData(sourceData, map, dataModel, req.body.config)
             if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")
         }
         catch (error) {
@@ -43,16 +43,16 @@ module.exports = {
     },
 
     getSource: async (req, res) => {
-        const {id, name} = req.query
+        const { id, name } = req.query
         process.res = res;
-        try { res.send(await service.getSource(id,name)) }
+        try { res.send(await service.getSource(id, name)) }
         catch (error) { res.status(error.code || 400).send(error) }
     },
 
     getMap: async (req, res) => {
-        const {id, name} = req.query
+        const { id, name } = req.query
         process.res = res;
-        try { res.send(await service.getMap(id,name)) }
+        try { res.send(await service.getMap(id, name)) }
         catch (error) {
             res.status(error.code || 400).send(error)
         }
@@ -65,9 +65,9 @@ module.exports = {
     },
 
     getDataModel: async (req, res) => {
-        const {id, name} = req.query
+        const { id, name } = req.query
         process.res = res;
-        try { res.send(await service.getDataModel(id,name)) }
+        try { res.send(await service.getDataModel(id, name)) }
         catch (error) { res.status(error.code || 400).send(error) }
     },
 
@@ -97,7 +97,7 @@ module.exports = {
         if (req.body.file)
             req.body = JSON.parse(req.body.file)
         process.res = res;
-        try { res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel,req.body.mapRef)) }
+        try { res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef)) }
         catch (error) { res.status(400).send(error) }
         log.debug("Model inserted");
     },
@@ -107,7 +107,7 @@ module.exports = {
             req.body = JSON.parse(req.body.file)
         process.res = res;
         try {
-            res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path,req.body.mapRef))
+            res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef))
             log.debug("Source modified");
         }
         catch (error) { res.status(400).send(error) }
@@ -131,30 +131,30 @@ module.exports = {
             req.body = JSON.parse(req.body.file)
         process.res = res;
         try {
-            res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel,req.body.mapRef))
+            res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef))
             log.debug("Schema modified");
         }
         catch (error) { res.status(400).send(error) }
     },
 
     deleteSource: async (req, res) => {
-        const {id, name} = req.query
+        const { id, name } = req.query
         process.res = res;
-        try { res.send(await service.deleteSource(id,name)) }
+        try { res.send(await service.deleteSource(id, name)) }
         catch (error) { res.status(400).send(error) }
     },
 
     deleteMap: async (req, res) => {
-        const {id, name} = req.query
+        const { id, name } = req.query
         process.res = res;
-        try { res.send(await service.deleteMap(id || req.params.id,name)) }
+        try { res.send(await service.deleteMap(id || req.params.id, name)) }
         catch (error) { res.status(400).send(error) }
     },
 
     deleteDataModel: async (req, res) => {
-        const {id, name} = req.query
+        const { id, name } = req.query
         process.res = res;
-        try { res.send(await service.deleteDataModel(id,name)) }
+        try { res.send(await service.deleteDataModel(id, name)) }
         catch (error) { res.status(400).send(error) }
     },
 
@@ -162,5 +162,18 @@ module.exports = {
         process.res = res;
         try { res.send(await service.dereferenceSchema(req.body)) }
         catch (error) { res.status(400).send(error) }
-    }
+    },
+
+
+    minio: async (req, res) => {
+        req.headers.host = 'platform.beopen-dep.it'
+        process.res = res;
+        try {
+            res.send(await service.minio(req.body, req.headers, req.query))
+        }
+        catch (error) {
+            console.error(error?.response?.data || error)
+            res.status(400).send(error)
+        }
+    },
 };
