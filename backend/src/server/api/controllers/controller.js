@@ -165,15 +165,53 @@ module.exports = {
     },
 
 
-    minio: async (req, res) => {
-        req.headers.host = 'platform.beopen-dep.it'
+    minioCreateBucket: async (req, res) => {
         process.res = res;
         try {
-            res.send(await service.minio(req.body, req.headers, req.query))
+            res.send(await service.minioCreateBucket(req.params.bucketName))
         }
         catch (error) {
-            console.error(error?.response?.data || error)
-            res.status(400).send(error)
+            let errorStatusCode
+            console.error(error)
+            if (error.code == "BucketAlreadyOwnedByYou" || error.name == "InvalidBucketNameError")
+                errorStatusCode = 400
+            else
+                errorStatusCode = 500
+            if (error.name == "InvalidBucketNameError")
+                error.details = "Use lower a case bucket name"
+            res.status(errorStatusCode).send(error)
         }
     },
+
+    minioGetObject: async (req, res) => {
+        process.res = res;
+        try {
+            res.send(await service.minioGetObject(req.params.bucketName, req.params.objectName))
+        }
+        catch (error) {
+            let errorStatusCode
+            console.error(error)
+            if (error.code == "NoSuchKey")
+                errorStatusCode = 400
+            else
+                errorStatusCode = 500
+            res.status(errorStatusCode).send(error)
+        }
+    },
+    minioInsertObject: async (req, res) => {
+        process.res = res;
+        try {
+            res.send(await service.minioInsertObject(req.params.bucketName, req.params.objectName, req.body))
+        }
+        catch (error) {
+            let errorStatusCode
+            console.error(error)
+            if (error.message == 'third argument should be of type "stream.Readable" or "Buffer" or "string"')
+                errorStatusCode = 400
+            else
+                errorStatusCode = 500
+            //error = {name:error.name, message: error.message}
+            res.status(errorStatusCode).send(error.toString())
+        }
+    }
 };

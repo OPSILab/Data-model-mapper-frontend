@@ -9,9 +9,8 @@ module.exports = () => {
   const log = require('../utils/logger').app(module)
 
   const dmmServer = express();
-  const proxy = express();
 
-  swaggerDocument.host = swaggerDocument.host + (config.httpPort || 5000)
+  swaggerDocument.host = swaggerDocument.host + (config.httpPort || 5500)
 
   dmmServer.use(cors());
   dmmServer.use(express.json());
@@ -23,27 +22,20 @@ module.exports = () => {
     swaggerUi.setup(swaggerDocument)
   );
 
-  proxy.use(cors());
-  proxy.use(express.json());
-  proxy.use(express.urlencoded({ extended: false }));
-  proxy.use("", routes);
-
   function init() {
     mongoose
       .connect(config.mongo, { useNewUrlParser: true })
       .then(() => {
-        proxy.listen(5502, () => {
-          log.info("Server has started!");
-          log.info("listening on port: " + 5502);
-
-        });
         dmmServer.listen(config.httpPort || 5500, () => {
           log.info("Server has started!");
           log.info("listening on port: " + config.httpPort || 5500);
-          console.debug("MINIO")
-          const minioWriter = require('../writers/minioWriter')
+
+          /*if (config.writers.filter(writer => writer == "minioWriter")[0]) {
+            const minioWriter = require('../writers/minioWriter')
+            log.info("Minio connection enabled")
+          }*/
         });
-       
+
       })
   }
 

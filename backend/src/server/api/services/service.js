@@ -6,10 +6,7 @@ const DataModel = require("../models/dataModel.js")
 const log = require('../../../utils/logger').app(module);
 const axios = require('axios')
 const RefParser = require('json-schema-ref-parser');
-const https = require('https');
-const agent = new https.Agent({
-    rejectUnauthorized: false
-});
+const minioWriter = require ('../../../writers/minioWriter')
 
 module.exports = {
 
@@ -34,11 +31,18 @@ module.exports = {
         return id;
     },
 
-    async minio(body, headers, query) {
-        let res = await axios.post("https://" + config.minioWriter.endPoint2, body, { httpsAgent: agent, /*params: query,*/ headers: headers })
-        console.debug("---------------RES-------------------")
-        console.debug(res.data)
-        return res.data
+    async minioCreateBucket(bucketName) {
+        let createdResult = await minioWriter.creteBucket(bucketName, config.minioWriter.location)
+        console.debug("created result\n",createdResult)
+        return createdResult
+    },
+
+    async minioInsertObject(bucketName, objectName, object) {
+        return await minioWriter.stringUpload(bucketName, objectName, object)
+    },
+
+    async minioGetObject(bucketName, objectName) {
+        return await minioWriter.getObject(bucketName, objectName)
     },
 
     getConfig() {

@@ -64,9 +64,9 @@ var config = {
     deleteEmptySpaceAtBeginning: true, // If set as true, the empty space at the beginning of the string will be deleted
 
     /********************** OUTPUT/WRITERS CONFIGURATION ****************** 
-    * Following is related to writers which will handle mapped objects. Possible values: fileWriter, orionWriter
+    * Following is related to writers which will handle mapped objects. Possible values: fileWriter, orionWriter, minioWriter
     **/
-    writers: ["orionWriter", "fileWriter"],
+    writers: ["orionWriter", "fileWriter", "minioWriter"],
 
     /********************* OUTPUT ID PATTERN CONFIGURATION ****************
     * Following used for id pattern creation
@@ -145,6 +145,9 @@ config.minioWriter = {
     useSSL: true,
     accessKey: '',
     secretKey: '',
+    location: 'eu',
+    defaultFileInput: '',
+    defaultBucketName: ''
 }
 
 module.exports = config;

@@ -55,12 +55,14 @@ function e(error) {
 
     var fs = require('fs');
 
-    fs.writeFile("./log" + JSON.stringify(logIndex) + ".json", "[" + str.substring(0, str.length - 1) + "]", function (err) {
+    fs.writeFile("./logs/errorLog" + JSON.stringify(logIndex) + ".json", "[" + str.substring(0, str.length - 1) + "]", function (err) {
         if (err) throw err;
         console.debug('Log is created successfully.');
     })
 
     logIndex++
+
+    return error
 }
 
 
