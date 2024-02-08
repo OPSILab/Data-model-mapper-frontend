@@ -128,6 +128,10 @@ export class DMMComponent implements OnInit, OnChanges {
   curlEditorContainer: HTMLElement;
   curlEditor: any;
   curl: string;
+  dbSources: any[];
+  minioSources: any;
+  buckets: any;
+  minioObjectList: any;
 
   constructor(
     @Inject(DOCUMENT) public document: Document,
@@ -580,6 +584,54 @@ export class DMMComponent implements OnInit, OnChanges {
       this.handleError(error, false, false)
       this.sources = []
       throw error
+    }
+  }
+
+  async loadSourceFromDBList() {
+    try {
+      this.sources = await this.dmmService.getDBSources();
+    }
+    catch (error) {
+      this.handleError(error, false, false)
+      this.dbSources = []
+      throw error
+    }
+  }
+
+  async loadRawSourcesFromMinio() {
+    try {
+      this.minioSources = await this.dmmService.getMinioSources();
+    }
+    catch (error) {
+      this.handleError(error, false, false)
+    }
+  }
+
+  async loadBucketsFromMinio() {
+    try {
+      this.buckets = await this.dmmService.getMinioBucketsList();
+    }
+    catch (error) {
+      this.handleError(error, false, false)
+
+    }
+  }
+
+  async loadSourceFromMinioList(bucketName) {
+    try {
+      this.minioObjectList = await this.dmmService.getMinioSourcesList(bucketName);
+    }
+    catch (error) {
+      this.handleError(error, false, false)
+    }
+  }
+
+  async loadObjectFromMinio(bucketName) {
+    try {
+      this.selectedSource = await this.dmmService.getMinioObject(bucketName);
+    }
+    catch (error) {
+      this.handleError(error, false, false)
     }
   }
 

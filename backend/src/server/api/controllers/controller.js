@@ -291,6 +291,18 @@ module.exports = {
             res.status(500).send(error)
         }
     },
+
+    minioSubscribe: async (req, res) => {
+        process.res = res;
+        try {
+            res.send(await service.minioSubscribe(req.params.bucketName))
+        }
+        catch (error) {
+            console.error(error)
+            res.status(500).send(error)
+        }
+    },
+
     minioInsertObject: async (req, res) => {
         process.res = res;
         try {

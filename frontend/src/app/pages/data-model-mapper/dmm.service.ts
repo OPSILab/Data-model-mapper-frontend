@@ -6,7 +6,7 @@ import { AdapterEntry } from '../../model/adapter/adapterEntry';
 var urlencode = require('urlencode');
 const multiPartOptions = {
   headers: new HttpHeaders({
-   "Content-Type": "multipart/form-data" // 👈
+    "Content-Type": "multipart/form-data" // 👈
   })
 }
 
@@ -33,6 +33,26 @@ export class DMMService {
 
   getSources(): any {
     return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/sources").toPromise();
+  }
+
+  getDBSources(): any {
+    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/sources/db").toPromise();
+  }
+
+  getMinioSources(): any {
+    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/getObjects?format=json&bucketName=dmm10&bucketName=dmm1&bucketName=dmm2&bucketName=dmm3&bucketName=dmm4&bucketName=dmm5&bucketName=dmm6&bucketName=dmm7&bucketName=dmm8&bucketName=dmm9").toPromise();
+  }
+
+  getMinioBucketsList(): any {
+    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/getBuckets").toPromise();
+  }
+
+  getMinioSourcesList(bucketName): any {
+    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/listObjects/"+bucketName).toPromise();
+
+  }
+  getMinioObject(bucketName: any) {
+    throw new Error('Method not implemented.');
   }
 
   getConfig(): any {
@@ -74,23 +94,23 @@ export class DMMService {
   saveMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, path): any {
     if (schema?.$id) schema.$id = undefined
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/register",
-    this.formDataBuilder(
-    {
-      id: adapter.adapterId,
-      name: adapter.name,
-      status: status,
-      description: description,
-      map: map,
-      dataModel: schema ? schema[0] ? schema[0] : schema : schema,
-      sourceDataType: sourceDataType,
-      config: config,
-      sourceDataURL,
-      sourceDataID,
-      dataModelURL,
-      path,
-      dataModelID,
-      sourceData
-    })).toPromise();
+      this.formDataBuilder(
+        {
+          id: adapter.adapterId,
+          name: adapter.name,
+          status: status,
+          description: description,
+          map: map,
+          dataModel: schema ? schema[0] ? schema[0] : schema : schema,
+          sourceDataType: sourceDataType,
+          config: config,
+          sourceDataURL,
+          sourceDataID,
+          dataModelURL,
+          path,
+          dataModelID,
+          sourceData
+        })).toPromise();
   }
 
   formDataBuilder(body) {
@@ -103,13 +123,13 @@ export class DMMService {
   saveSchema(adapter: Partial<AdapterEntry>, status, description, schema, mapRef): any {
     if (schema?.$id) schema.$id = undefined
 
-    return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel",this.formDataBuilder( {
+    return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", this.formDataBuilder({
       id: adapter.adapterId,
       name: adapter.name,
       status: status,
       description: description,
       dataModel: schema ? schema[0] ? schema[0] : schema : schema,
-      mapRef : mapRef
+      mapRef: mapRef
     })).toPromise();
   }
 
@@ -121,18 +141,18 @@ export class DMMService {
       description: description,
       path,
       source: sourceData,
-      mapRef : mapRef
+      mapRef: mapRef
     })).toPromise();
   }
   saveSource(adapter, status: any, description: any, sourceData: any, path, mapRef) {
-    return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source",this.formDataBuilder( {
+    return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source", this.formDataBuilder({
       id: adapter.adapterId,
       name: adapter.name,
       status: status,
       path,
       description: description,
       source: sourceData,
-      mapRef : mapRef
+      mapRef: mapRef
     })).toPromise();
   }
 
@@ -167,7 +187,7 @@ export class DMMService {
       status: status,
       description: description,
       dataModel: schema ? schema[0] ? schema[0] : schema : schema,
-      mapRef : mapRef
+      mapRef: mapRef
     })).toPromise();
   }
 
@@ -179,12 +199,12 @@ export class DMMService {
 
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_url,
       this.formDataBuilder({
-      "sourceDataType": type,
-      "sourceData": source.url ? undefined : source,
-      sourceDataURL: source.url ? source.url : undefined,
-      "mapData": mapper,
-      "dataModel": schema,
-      "config": config
-    })).toPromise();
+        "sourceDataType": type,
+        "sourceData": source.url ? undefined : source,
+        sourceDataURL: source.url ? source.url : undefined,
+        "mapData": mapper,
+        "dataModel": schema,
+        "config": config
+      })).toPromise();
   }
 }

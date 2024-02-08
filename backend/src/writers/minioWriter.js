@@ -2,8 +2,15 @@ var Minio = require('minio')
 let minioConfig = require('../../config').minioWriter
 const e = require('../utils/utils').e
 const utils = require('../utils/utils')
+const Source = require("../server/api/models/source.js")
 const log = require('../utils/logger').app(module);
 //const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
+//test with await sleep(1), 10 buckets each one with 10 objects like this {
+//        "name": "test0",
+//        "data": {
+//            "test2": "07-02-2024"
+//        }
+//    } : 0,65 s/object
 
 let minioClient = new Minio.Client({
   endPoint: minioConfig.endPoint,
@@ -38,6 +45,42 @@ module.exports = {
       return resultMessage
     //})
 
+  },
+
+  subscribe(bucket) {
+    minioClient.getBucketNotification(bucket, function (err, bucketNotificationConfig) {
+      if (err) return console.log(err)
+      console.log(bucketNotificationConfig)
+    })
+  },
+
+  setNotifications(bucket) {
+    // Create a new notification object
+    var bucketNotification = new Minio.NotificationConfig()
+
+    // Setup a new Queue configuration
+    var arn = Minio.buildARN('aws', 'sqs', 'us-east-1', '1', 'webhook')
+    var queue = new Minio.QueueConfig(arn)
+    //queue.addFilterSuffix('.jpg')
+    //queue.addFilterPrefix('myphotos/')
+    queue.addEvent(Minio.ObjectReducedRedundancyLostObject)
+    queue.addEvent(Minio.ObjectCreatedAll)
+
+    // Add the queue to the overall notification object
+    bucketNotification.add(queue)
+
+    minioClient.setBucketNotification(bucket, bucketNotification, function (err) {
+      if (err) return console.log(err)
+      console.log('Success')
+    })
+  },
+
+  getNotifications(bucketName) {
+    const poller = minioClient.listenBucketNotification(bucketName, '', '', ['s3:ObjectCreated:*'])
+    poller.on('notification', (record) => {
+      console.log('New object: %s/%s (size: %d)', record.s3.bucket.name, record.s3.object.key, record.s3.object.size)
+      //TODOSource.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source, mapRef: mapRef.toString() } : { name: name, id: id, source: source, path, mapRef: mapRef.toString() }])
+    })
   },
 
   async listObjects(bucketName, prefix, recursive) {
@@ -172,7 +215,7 @@ module.exports = {
         return e(err)
       }
       log.info("Result : ")
-      log.info(res)
+      log.info(JSON.stringify(res))
       resultMessage = res
     })
 

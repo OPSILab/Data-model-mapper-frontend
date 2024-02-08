@@ -8,6 +8,16 @@ const axios = require('axios')
 const RefParser = require('json-schema-ref-parser');
 const minioWriter = require('../../../writers/minioWriter')
 
+if (config.writers.filter(writer => writer == "minioWriter")[0])
+    minioWriter.listBuckets().then((buckets) => {
+        let a = 0
+        for (let bucket of buckets) {
+            console.debug(bucket.name)
+            minioWriter.getNotifications(bucket.name)
+            console.log(a++, " ", buckets.length)
+        }
+    })
+
 module.exports = {
 
     outputFile: [],
@@ -39,6 +49,13 @@ module.exports = {
 
     async minioGetBuckets() {
         return await minioWriter.listBuckets()
+    },
+
+    async minioSubscribe(bucketName) {
+        minioWriter.setNotifications(bucketName)
+        minioWriter.subscribe(bucketName)
+        minioWriter.getNotifications(bucketName)
+        return 'ok'
     },
 
     async minioInsertObject(bucketName, objectName, object) {
@@ -239,7 +256,7 @@ module.exports = {
             let totalBuckets = buckets.length
             let index = 0
             for (let bucket of buckets) {
-                await this.getMinioObjectsFromBucket(bucket.name, format, sources)// postMessage)
+                await this.getMinioObjectsFromBucket(bucket.name || bucket, format, sources)// postMessage)
                 console.debug(index++, " - ", totalBuckets)
             }
         }

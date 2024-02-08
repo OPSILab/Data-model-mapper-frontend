@@ -23,6 +23,7 @@ router.get(encodeURI("/minio/listObjects"), auth, controller.minioListObjects)
 router.get(encodeURI("/minio/getObjects/:bucketName"), auth, controller.getSourcesFromMinio)
 router.get(encodeURI("/minio/getObjects"), auth, controller.getSourcesFromMinio)
 router.get(encodeURI("/minio/getBuckets"), auth, controller.minioGetBuckets)
+router.get(encodeURI("/minio/subscribe/:bucketName"), auth, controller.minioSubscribe)
 
 router.get(encodeURI("/maps"), auth, controller.getMaps)
 router.get(encodeURI("/sources"), auth, controller.getSources)
