@@ -224,7 +224,7 @@ module.exports = {
         let sources = await Source.find()
         //await minioWriter.listBuckets()
         //sources.push(...await minioWriter.listObjects(bucketName, undefined, undefined))
-        await this.getMinioObjects(bucketName, sources)
+        if (config.writers.filter(writer => writer == "minioWriter")[0]) await this.getMinioObjects(bucketName, sources)
         return sources
     },
 
