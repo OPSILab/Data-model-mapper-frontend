@@ -1,6 +1,17 @@
 const service = require("../services/service.js")
 const utils = require("../../../utils/utils.js")
 const log = require('../../../utils/logger').app(module);
+//const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
+//var Minio = require('minio')
+//let minioConfig = require('../../../../config').minioWriter
+
+/*let minioClient = new Minio.Client({
+    endPoint: minioConfig.endPoint,
+    port: minioConfig.port,
+    useSSL: minioConfig.useSSL,
+    accessKey: minioConfig.accessKey,
+    secretKey: minioConfig.secretKey,
+  })*/
 
 module.exports = {
 
@@ -26,8 +37,63 @@ module.exports = {
 
     getSources: async (req, res) => {
         process.res = res;
-        try { res.send(await service.getSources()) }
-        catch (error) { res.status(400).send(error) }
+        try {
+            res.send(await service.getAllSources(req.query.bucketName))
+            //res.send(
+            //await service.getSources(req.query.bucketName)
+            //    ) 
+            /*
+                        if (isMainThread) {
+                            const worker = new Worker(__filename, {
+                                workerData: { input: req.query.bucketName }
+                            });
+                            worker.on('message', (message) => {
+                                console.log('Il worker ha inviato:', message);
+                                worker.terminate();
+                                res.send(message)
+                            });
+                            worker.on('error', (error) => {
+                                console.error('Errore nel worker:', error);
+                                throw error
+                            });
+                            worker.on('exit', (code) => {
+                                if (code !== 0) {
+                                    console.error('Il worker si è chiuso con il codice di uscita:', code);
+                                }
+                                res.send(code)
+                            });
+                        } else {
+                            await service.getSources(req.query.bucketName, parentPort.postMessage)
+                        }
+                        */
+
+        }
+        catch (error) {
+            console.error(error)
+            res.status(400).send(error)
+        }
+    },
+
+    getSourcesFromDB: async (req, res) => {
+        process.res = res;
+        try {
+            res.send(await service.getSourcesFromDB())
+        }
+        catch (error) {
+            console.error(error)
+            res.status(500).send(error)
+        }
+    },
+
+    getSourcesFromMinio: async (req, res) => {
+        process.res = res;
+        try {
+            res.send(await service.getMinioObjects(req.params.bucketName || req.query.bucketName, req.query.format, []))
+        }
+        catch (error) {
+            console.error(error)
+            res.status(400).send(error)
+        }
     },
 
     getMaps: async (req, res) => {
@@ -186,7 +252,7 @@ module.exports = {
     minioGetObject: async (req, res) => {
         process.res = res;
         try {
-            res.send(await service.minioGetObject(req.params.bucketName, req.params.objectName))
+            res.send(await service.minioGetObject(req.params.bucketName, req.params.objectName, req.query.format))
         }
         catch (error) {
             let errorStatusCode
@@ -196,6 +262,33 @@ module.exports = {
             else
                 errorStatusCode = 500
             res.status(errorStatusCode).send(error)
+        }
+    },
+
+    minioListObjects: async (req, res) => {
+        process.res = res;
+        try {
+            res.send(await service.minioListObjects(req.params.bucketName || req.query.bucketName))
+        }
+        catch (error) {
+            let errorStatusCode
+            console.error(error)
+            //if (error.code == "NoSuchKey")
+            //    errorStatusCode = 400
+            //else
+                errorStatusCode = 500
+            res.status(errorStatusCode).send(error)
+        }
+    },
+
+    minioGetBuckets: async (req, res) => {
+        process.res = res;
+        try {
+            res.send(await service.minioGetBuckets())
+        }
+        catch (error) {
+            console.error(error)
+            res.status(500).send(error)
         }
     },
     minioInsertObject: async (req, res) => {

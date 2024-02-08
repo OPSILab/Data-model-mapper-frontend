@@ -6,7 +6,7 @@ const DataModel = require("../models/dataModel.js")
 const log = require('../../../utils/logger').app(module);
 const axios = require('axios')
 const RefParser = require('json-schema-ref-parser');
-const minioWriter = require ('../../../writers/minioWriter')
+const minioWriter = require('../../../writers/minioWriter')
 
 module.exports = {
 
@@ -33,16 +33,24 @@ module.exports = {
 
     async minioCreateBucket(bucketName) {
         let createdResult = await minioWriter.creteBucket(bucketName, config.minioWriter.location)
-        console.debug("created result\n",createdResult)
+        console.debug("created result\n", createdResult)
         return createdResult
+    },
+
+    async minioGetBuckets() {
+        return await minioWriter.listBuckets()
     },
 
     async minioInsertObject(bucketName, objectName, object) {
         return await minioWriter.stringUpload(bucketName, objectName, object)
     },
 
-    async minioGetObject(bucketName, objectName) {
-        return await minioWriter.getObject(bucketName, objectName)
+    async minioGetObject(bucketName, objectName, format) {
+        return await minioWriter.getObject(bucketName, objectName, format)
+    },
+
+    async minioListObjects(bucketName) {
+        return await minioWriter.listObjects(bucketName)
     },
 
     getConfig() {
@@ -205,8 +213,39 @@ module.exports = {
         }
     },
 
-    async getSources() {
+    async getMinioObjectsFromBucket(bucket, format, sources) {//, postMessage) {
+        let minioObjectList = await minioWriter.listObjects(bucket, undefined, undefined)//, postMessage)
+        //sources.push(...minioObjectList)
+        for (let obj of minioObjectList)
+            sources.push({ name: obj.name, data: (await this.minioGetObject(bucket, obj.name, format)) })//, postMessage)) })
+    },
+
+    async getAllSources(bucketName) {//, postMessage) {
+        let sources = await Source.find()
+        //await minioWriter.listBuckets()
+        //sources.push(...await minioWriter.listObjects(bucketName, undefined, undefined))
+        await this.getMinioObjects(bucketName, sources)
+        return sources
+    },
+
+    async getSourcesFromDB() {
         return await Source.find()
+    },
+
+    async getMinioObjects(bucketName, format, sources) {
+        if (!bucketName || Array.isArray(bucketName)) {
+            let buckets = Array.isArray(bucketName) ? bucketName : await minioWriter.listBuckets()
+            //console.debug(buckets.length)
+            let totalBuckets = buckets.length
+            let index = 0
+            for (let bucket of buckets) {
+                await this.getMinioObjectsFromBucket(bucket.name, format, sources)// postMessage)
+                console.debug(index++, " - ", totalBuckets)
+            }
+        }
+        else
+            await this.getMinioObjectsFromBucket(bucketName, format, sources)
+        return sources
     },
 
     async getMaps() {
