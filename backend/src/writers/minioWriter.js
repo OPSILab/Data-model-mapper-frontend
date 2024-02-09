@@ -77,9 +77,42 @@ module.exports = {
 
   getNotifications(bucketName) {
     const poller = minioClient.listenBucketNotification(bucketName, '', '', ['s3:ObjectCreated:*'])
-    poller.on('notification', (record) => {
+    poller.on('notification', async (record) => {
       console.log('New object: %s/%s (size: %d)', record.s3.bucket.name, record.s3.object.key, record.s3.object.size)
-      //TODOSource.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source, mapRef: mapRef.toString() } : { name: name, id: id, source: source, path, mapRef: mapRef.toString() }])
+      const newObject = await this.getObject(record.s3.bucket.name, record.s3.object.key)
+      let jsonParsed
+      try {
+        jsonParsed = JSON.parse(newObject)
+      }
+      catch (error) {
+        console.error(error)
+      }
+
+      let foundObject = (await Source.find({ name: record.s3.object.key }))[0]
+      if (foundObject)
+        await Source.findOneAndReplace({ name: record.s3.object.key },
+          //format ? 
+          {
+            name: record.s3.object.key,
+            source: jsonParsed ? jsonParsed : newObject,
+            bucket: record.s3.bucket.name,
+            from: "minio",
+            timestamp: Date.now()
+          }
+          //: { name: record.s3.object.key, sourceCSV: newObject, bucket: record.s3.bucket.name, from: "minio", timestamp: new Number(Date.now()) }
+        )
+      else
+        await Source.insertMany([
+          //format ? 
+          {
+            name: record.s3.object.key,
+            source: jsonParsed ? jsonParsed : newObject,
+            bucket: record.s3.bucket.name,
+            from: "minio",
+            timestamp: Date.now()
+          }
+          //: { name: record.s3.object.key, sourceCSV: newObject, bucket: record.s3.bucket.name, from: "minio", timestamp: new Number(Date.now()) }
+        ])
     })
   },
 

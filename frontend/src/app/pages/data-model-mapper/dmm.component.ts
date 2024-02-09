@@ -578,7 +578,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   async loadSourceList() {
     try {
-      this.sources = await this.dmmService.getSources();
+      this.sources = await this.dmmService.getDBSources();
     }
     catch (error) {
       this.handleError(error, false, false)
