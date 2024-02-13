@@ -147,7 +147,12 @@ config.minioWriter = {
     secretKey: '',
     location: 'eu',
     defaultFileInput: '',
-    defaultBucketName: ''
+    defaultBucketName: '',
+    defaultOutputBucketName: '',
+    subscribe: {
+        all: false,
+        buckets: []
+    }
 }
 
 module.exports = config;

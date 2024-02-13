@@ -578,7 +578,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   async loadSourceList() {
     try {
-      this.sources = await this.dmmService.getDBSources();
+      this.sources = this.config.data_model_mapper.minioCache? await this.dmmService.getDBSources() : await this.dmmService.getSources();
     }
     catch (error) {
       this.handleError(error, false, false)

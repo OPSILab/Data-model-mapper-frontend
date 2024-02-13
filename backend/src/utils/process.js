@@ -29,7 +29,6 @@ const report = require('../utils/logger').report;
 const utils = require('../utils/utils.js');
 const common = require('../utils/common.js');
 const config = require("../../config.js");
-const service = require("../server/api/services/service");
 
 
 config.validCount = 0;

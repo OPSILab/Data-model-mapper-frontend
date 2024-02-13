@@ -7,15 +7,16 @@ const log = require('../../../utils/logger').app(module);
 const axios = require('axios')
 const RefParser = require('json-schema-ref-parser');
 const minioWriter = require('../../../writers/minioWriter')
+const common = require('../../../utils/common')
 
-if (config.writers.filter(writer => writer == "minioWriter")[0])
+if (common.isMinioWriterActive())
     if (config.minioWriter.subscribe.all)
         minioWriter.listBuckets().then((buckets) => {
             let a = 0
             for (let bucket of buckets) {
                 log.debug(bucket.name)
                 minioWriter.getNotifications(bucket.name)
-                log-debug((a++) + " " + buckets.length)
+                log.debug((a++) + " " + buckets.length)
             }
         })
     else for (let bucket of config.minioWriter.subscribe.buckets)
@@ -78,6 +79,16 @@ module.exports = {
 
         configCopy.mongo =
             configCopy.writers =
+            configCopy.minioWriter.accessKey =
+            configCopy.minioWriter.secretKey =
+            configCopy.minioWriter.endPoint =
+            configCopy.minioWriter.port =
+            configCopy.minioWriter.useSSL =
+            configCopy.minioWriter.location =
+            configCopy.minioWriter.defaultFileInput =
+            configCopy.minioWriter.endPoint =
+            configCopy.minioWriter.endPoint =
+
             configCopy.fileWriter =
             configCopy.debugger =
             configCopy.orionWriter =
@@ -244,7 +255,7 @@ module.exports = {
         let sources = await Source.find()
         //await minioWriter.listBuckets()
         //sources.push(...await minioWriter.listObjects(bucketName, undefined, undefined))
-        if (config.writers.filter(writer => writer == "minioWriter")[0]) await this.getMinioObjects(bucketName, undefined, sources)
+        if (common.isMinioWriterActive()) await this.getMinioObjects(bucketName, undefined, sources)
         return sources
     },
 

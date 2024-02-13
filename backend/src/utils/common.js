@@ -1,4 +1,5 @@
-﻿const minioWriter = require('../writers/minioWriter')
+﻿const config = require ('../../config')
+let logIndex = 0
 module.exports = {
     e(error) {
         console.error(error)
@@ -27,5 +28,8 @@ module.exports = {
     },
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
+    },
+    isMinioWriterActive () {
+        return config.writers.includes('minioWriter');
     }
 }

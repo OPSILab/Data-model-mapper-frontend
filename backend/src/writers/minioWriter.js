@@ -1,6 +1,6 @@
 var Minio = require('minio')
 let minioConfig = require('../../config').minioWriter
-const {e, sleep} = require('../utils/common')
+const { e, sleep } = require('../utils/common')
 const Source = require("../server/api/models/source.js")
 const log = require('../utils/logger').app(module);
 
@@ -63,7 +63,7 @@ module.exports = {
   getNotifications(bucketName) {
     const poller = minioClient.listenBucketNotification(bucketName, '', '', ['s3:ObjectCreated:*'])
     poller.on('notification', async (record) => {
-      log.debug('New object: %s/%s (size: %d)' + "\t"+ record.s3.bucket.name + "\t"+ record.s3.object.key + "\t"+ record.s3.object.size)
+      console.log('New object: %s/%s (size: %d)',record.s3.bucket.name, record.s3.object.key, record.s3.object.size)
       const newObject = await this.getObject(record.s3.bucket.name, record.s3.object.key)
       let jsonParsed
       try {
@@ -98,6 +98,15 @@ module.exports = {
           }
           //: { name: record.s3.object.key, sourceCSV: newObject, bucket: record.s3.bucket.name, from: "minio", timestamp: new Number(Date.now()) }
         ])
+    })
+    poller.on('error', (error) => {
+      console.error(error)
+      log.debug("Creating bucket")
+      this.creteBucket(bucketName, minioConfig.location).then(message => {
+        log.debug(message)
+        this.getNotifications(bucketName)
+      }
+      )
     })
   },
 

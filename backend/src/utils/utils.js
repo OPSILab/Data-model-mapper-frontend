@@ -17,7 +17,6 @@
  ******************************************************************************/
 
 const apiOutput = require('../server/api/services/service')
-const orionWriter = require('../writers/orionWriter')
 const config = require('../../config');
 const base64 = require('./encoders/base64');
 const path = require('path');
@@ -27,9 +26,9 @@ const isFileStream = require('is-file-stream');
 const extensionPattern = /\.[0-9a-z]+$/i;
 const httpPattern = /http:\/\//g;
 const filenameFromPathPattern = /^(.:)?\\(.+\\)*(.+)\.(.+)$/;
-const base64Encode = require('js-base64')
 const minioWriter = require("../writers/minioWriter")
-const {e, sleep} = require('./common')
+const { isMinioWriterActive, sleep } = require('./common')
+const log = require('./logger')
 
 function ngsi() {
     return (((apiOutput.NGSI_entity == undefined) && config.NGSI_entity || apiOutput.NGSI_entity).toString() === 'true')
@@ -244,13 +243,10 @@ const bodyMapper = (body) => {
 };
 
 const sendOutput = async () => {
-    console.debug("sendOutput")
     if (config.deleteEmptySpaceAtBeginning) apiOutput.outputFile = spaceCleaner(apiOutput.outputFile)
     if (parseInt((apiOutput.outputFile[apiOutput.outputFile.length - 1].MAPPING_REPORT.Mapped_and_NOT_Validated_Objects)[0].charAt(0))) process.res.status(400).send({ errors: apiOutput.outputFile.errors || "Validation errors", report: apiOutput.outputFile[apiOutput.outputFile.length - 1] })
     else if (!config.mappingReport) process.res.send(apiOutput.outputFile.slice(0, apiOutput.outputFile.length - 1));
     else process.res.send(apiOutput.outputFile);
-
-    console.debug("---------------------written to minio--------------------------")
     apiOutput.outputFile = [];
 };
 
@@ -268,7 +264,7 @@ const printFinalReportAndSendResponse = async (logger) => {
     if (config.mode == 'server') {
         //Mapping report in output file
 
-        while (config.orionWrittenCount + config.orionUnWrittenCount < config.validCount) {
+        while (isOrionWriterActive() && (config.orionWrittenCount + config.orionUnWrittenCount < config.validCount)) {
             await sleep(1)
         }
 
@@ -278,39 +274,36 @@ const printFinalReportAndSendResponse = async (logger) => {
                 Mapped_and_Validated_Objects: config.validCount + '-' + config.rowNumber,
                 Mapped_and_NOT_Validated_Objects: config.unvalidCount + '-' + config.rowNumber,
             },
-            ORION_REPORT: {
+            ORION_REPORT: isOrionWriterActive() ? {
                 "Object written to Orion Context Broker": config.orionWrittenCount.toString() + '/' + config.validCount.toString(),
                 "Object NOT written to Orion Context Broker": config.orionUnWrittenCount.toString() + '/' + config.validCount.toString(),
                 "Object SKIPPED": config.orionSkippedCount.toString() + '/' + config.validCount.toString()
-            }//await orionWriter.checkAndPrintFinalReport()
+            } : "Orion writer not enabled"
         }
 
         try {
-            if (config.writers.filter(writer => writer == "minioWriter")[0]) {
-                console.debug("minio is enabled")
+            if (isMinioWriterActive()) {
+                logger.debug("minio is enabled")
                 for (let obj of apiOutput.outputFile) {
-                    console.debug("minio writing")
+                    logger.debug("minio writing")
                     try {
-                        if (!obj.MAPPING_REPORT && !obj.MAPPING_REPORT)
-                            await minioWriter.stringUpload(config.minioWriter.defaultBucketName, obj[config.entityNameField] || config.minioWriter.defaultBucketName + Date.now().toString(), obj)
+                        if (!obj.MAPPING_REPORT && !obj.ORION_REPORT)
+                            await minioWriter.stringUpload(config.minioWriter.defaultOutputBucketName || "output", obj[config.entityNameField] || config.minioWriter.defaultBucketName + Date.now().toString(), obj)
                     }
                     catch (error) {
-                        console.error(error)
+                        logger.error(error)
                     }
-                    console.debug("minio writing done")
+                    logger.debug("minio writing done")
                 }
             }
-            console.debug("---------------------written to minio--------------------------")
+            logger.debug("written to minio")
             await sendOutput();
         }
         catch (error) {
-            console.log(error.message)
+            logger.error(error.message)
             apiOutput.outputFile = [];
         }
     }
-    //else if (config.writers.filter(writer => writer == "minioWriter")[0])
-    //    await minioWriter.stringUpload()
-
 };
 
 const addAuthenticationHeader = (headers) => {
@@ -398,10 +391,8 @@ const restoreDefaultConfs = () => {
 };
 
 const encode = (encoding, value) => {
-    console.log("------------------------------------------------")
-    console.log(value)
     if (encoding == "base64")
-        return base64.encode(value)//base64Encode.encode(value)//base64.encode(value)
+        return base64.encode(value)
     return value
 };
 
@@ -425,11 +416,11 @@ module.exports = {
     isFileWriterActive: isFileWriterActive,
     isOrionWriterActive: isOrionWriterActive,
     isWriterActive: isWriterActive,
+    isMinioWriterActive: isMinioWriterActive,
     isReadableFileStream: isReadableFileStream,
     isReadableStream: isReadableStream,
     promiseTimeout: promiseTimeout,
     restoreDefaultConfs: restoreDefaultConfs,
     encode: encode,
     bodyMapper: bodyMapper,
-    e: e
 };

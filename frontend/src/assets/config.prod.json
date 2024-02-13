@@ -14,7 +14,8 @@
   },
   "data_model_mapper" : {
     "default_mapper_url":"https://platform.beopen-dep.it/api/map/transform",
-    "default_mapper_base_url":"https://platform.beopen-dep.it/api"
+    "default_mapper_base_url":"https://platform.beopen-dep.it/api",
+    "minioCache" : false
   },
   "i18n": {
     "locale": "en",
