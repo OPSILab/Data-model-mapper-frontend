@@ -29,43 +29,11 @@ const httpPattern = /http:\/\//g;
 const filenameFromPathPattern = /^(.:)?\\(.+\\)*(.+)\.(.+)$/;
 const base64Encode = require('js-base64')
 const minioWriter = require("../writers/minioWriter")
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+const {e, sleep} = require('./common')
 
 function ngsi() {
     return (((apiOutput.NGSI_entity == undefined) && config.NGSI_entity || apiOutput.NGSI_entity).toString() === 'true')
 }
-
-let logIndex = 0
-
-function e(error) {
-    console.error(error)
-    let str = ""
-    var util = require('util')
-    for (let key in error) {
-        try {
-            str = str.concat("{\n", '"', key, '"', " : ", JSON.stringify(error[key]), "\n},\n")
-        }
-        catch (error) {
-            str = str.concat("{\n", '"', key, '"', " : ", util.inspect(error[key]), "\n},\n")
-            console.debug("corrected")
-        }
-    }
-
-    var fs = require('fs');
-
-    fs.writeFile("./logs/errorLog" + JSON.stringify(logIndex) + ".json", "[" + str.substring(0, str.length - 1) + "]", function (err) {
-        if (err) throw err;
-        console.debug('Log is created successfully.');
-    })
-
-    logIndex++
-
-    return error
-}
-
 
 const cleanString = (string) => {
     var result = '';
@@ -438,7 +406,6 @@ const encode = (encoding, value) => {
 };
 
 module.exports = {
-    sleep: sleep,
     cleanString: cleanString,
     cleanPair: cleanPair,
     cleanRow: cleanRow,

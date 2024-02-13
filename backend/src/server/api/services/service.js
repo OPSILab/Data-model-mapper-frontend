@@ -13,9 +13,9 @@ if (config.writers.filter(writer => writer == "minioWriter")[0])
         minioWriter.listBuckets().then((buckets) => {
             let a = 0
             for (let bucket of buckets) {
-                console.debug(bucket.name)
+                log.debug(bucket.name)
                 minioWriter.getNotifications(bucket.name)
-                console.log(a++, " ", buckets.length)
+                log-debug((a++) + " " + buckets.length)
             }
         })
     else for (let bucket of config.minioWriter.subscribe.buckets)
@@ -46,7 +46,7 @@ module.exports = {
 
     async minioCreateBucket(bucketName) {
         let createdResult = await minioWriter.creteBucket(bucketName, config.minioWriter.location)
-        console.debug("created result\n", createdResult)
+        log.debug("created result:\t" + createdResult)
         return createdResult
     },
 
@@ -58,7 +58,7 @@ module.exports = {
         minioWriter.setNotifications(bucketName)
         minioWriter.subscribe(bucketName)
         minioWriter.getNotifications(bucketName)
-        return 'ok'
+        return 'subscribed'
     },
 
     async minioInsertObject(bucketName, objectName, object) {
@@ -260,7 +260,7 @@ module.exports = {
             let index = 0
             for (let bucket of buckets) {
                 await this.getMinioObjectsFromBucket(bucket.name || bucket, format, sources)// postMessage)
-                console.debug(index++, " - ", totalBuckets)
+                log.debug((index++) + " - " + totalBuckets)
             }
         }
         else

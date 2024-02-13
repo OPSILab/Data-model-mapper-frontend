@@ -27,6 +27,7 @@ const fileWriter = require("../writers/fileWriter");
 const log = require('../utils/logger').app(module);
 const report = require('../utils/logger').report;
 const utils = require('../utils/utils.js');
+const common = require('../utils/common.js');
 const config = require("../../config.js");
 const service = require("../server/api/services/service");
 
@@ -213,7 +214,7 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
                     promises.push(await fileWriter.writeObject(objNumber, obj, config.fileWriter.addBlankLine));
                     break;
                 default:
-                    promises.push(await utils.sleep(0));
+                    promises.push(await common.sleep(0));
                     break;
             }
         });
