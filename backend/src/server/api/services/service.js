@@ -9,14 +9,17 @@ const RefParser = require('json-schema-ref-parser');
 const minioWriter = require('../../../writers/minioWriter')
 
 if (config.writers.filter(writer => writer == "minioWriter")[0])
-    minioWriter.listBuckets().then((buckets) => {
-        let a = 0
-        for (let bucket of buckets) {
-            console.debug(bucket.name)
-            minioWriter.getNotifications(bucket.name)
-            console.log(a++, " ", buckets.length)
-        }
-    })
+    if (config.minioWriter.subscribe.all)
+        minioWriter.listBuckets().then((buckets) => {
+            let a = 0
+            for (let bucket of buckets) {
+                console.debug(bucket.name)
+                minioWriter.getNotifications(bucket.name)
+                console.log(a++, " ", buckets.length)
+            }
+        })
+    else for (let bucket of config.minioWriter.subscribe.buckets)
+        minioWriter.getNotifications(bucket)
 
 module.exports = {
 
@@ -241,7 +244,7 @@ module.exports = {
         let sources = await Source.find()
         //await minioWriter.listBuckets()
         //sources.push(...await minioWriter.listObjects(bucketName, undefined, undefined))
-        if (config.writers.filter(writer => writer == "minioWriter")[0]) await this.getMinioObjects(bucketName, undefined , sources)
+        if (config.writers.filter(writer => writer == "minioWriter")[0]) await this.getMinioObjects(bucketName, undefined, sources)
         return sources
     },
 

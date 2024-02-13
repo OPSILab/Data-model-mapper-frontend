@@ -28,6 +28,7 @@ const extensionPattern = /\.[0-9a-z]+$/i;
 const httpPattern = /http:\/\//g;
 const filenameFromPathPattern = /^(.:)?\\(.+\\)*(.+)\.(.+)$/;
 const base64Encode = require('js-base64')
+const minioWriter = require("../writers/minioWriter")
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -274,11 +275,14 @@ const bodyMapper = (body) => {
     }
 };
 
-const sendOutput = () => {
+const sendOutput = async () => {
+    console.debug("sendOutput")
     if (config.deleteEmptySpaceAtBeginning) apiOutput.outputFile = spaceCleaner(apiOutput.outputFile)
     if (parseInt((apiOutput.outputFile[apiOutput.outputFile.length - 1].MAPPING_REPORT.Mapped_and_NOT_Validated_Objects)[0].charAt(0))) process.res.status(400).send({ errors: apiOutput.outputFile.errors || "Validation errors", report: apiOutput.outputFile[apiOutput.outputFile.length - 1] })
     else if (!config.mappingReport) process.res.send(apiOutput.outputFile.slice(0, apiOutput.outputFile.length - 1));
     else process.res.send(apiOutput.outputFile);
+
+    console.debug("---------------------written to minio--------------------------")
     apiOutput.outputFile = [];
 };
 
@@ -297,7 +301,7 @@ const printFinalReportAndSendResponse = async (logger) => {
         //Mapping report in output file
 
         while (config.orionWrittenCount + config.orionUnWrittenCount < config.validCount) {
-            await sleep(1000)
+            await sleep(1)
         }
 
         apiOutput.outputFile[apiOutput.outputFile.length] = {
@@ -314,13 +318,31 @@ const printFinalReportAndSendResponse = async (logger) => {
         }
 
         try {
-            sendOutput();
+            if (config.writers.filter(writer => writer == "minioWriter")[0]) {
+                console.debug("minio is enabled")
+                for (let obj of apiOutput.outputFile) {
+                    console.debug("minio writing")
+                    try {
+                        if (!obj.MAPPING_REPORT && !obj.MAPPING_REPORT)
+                            await minioWriter.stringUpload(config.minioWriter.defaultBucketName, obj[config.entityNameField] || config.minioWriter.defaultBucketName + Date.now().toString(), obj)
+                    }
+                    catch (error) {
+                        console.error(error)
+                    }
+                    console.debug("minio writing done")
+                }
+            }
+            console.debug("---------------------written to minio--------------------------")
+            await sendOutput();
         }
         catch (error) {
             console.log(error.message)
             apiOutput.outputFile = [];
         }
     }
+    //else if (config.writers.filter(writer => writer == "minioWriter")[0])
+    //    await minioWriter.stringUpload()
+
 };
 
 const addAuthenticationHeader = (headers) => {

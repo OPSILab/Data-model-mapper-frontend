@@ -1,7 +1,7 @@
 var Minio = require('minio')
 let minioConfig = require('../../config').minioWriter
-const e = require('../utils/utils').e
-const utils = require('../utils/utils')
+const e = require('../utils/common').e
+const common = require('../utils/common')
 const Source = require("../server/api/models/source.js")
 const log = require('../utils/logger').app(module);
 //const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
@@ -38,7 +38,7 @@ module.exports = {
     })
 
     while (!errorMessage && !resultMessage)
-      await utils.sleep(1)
+      await common.sleep(1)
     if (errorMessage)
       throw errorMessage
     if (resultMessage)
@@ -140,7 +140,7 @@ module.exports = {
     })
 
     while (!errorMessage && !resultMessage)
-      await utils.sleep(1)
+      await common.sleep(1)
     if (errorMessage)
       throw errorMessage
     if (resultMessage)
@@ -253,7 +253,7 @@ module.exports = {
     })
 
     while (!errorMessage && !resultMessage)
-      await utils.sleep(1)
+      await common.sleep(1)
     if (errorMessage)
       throw errorMessage
     if (resultMessage)
@@ -298,7 +298,7 @@ module.exports = {
     });
 
     while (!errorMessage && !resultMessage)
-      await utils.sleep(1)
+      await common.sleep(1)
     if (errorMessage)
       throw errorMessage
     if (resultMessage)
