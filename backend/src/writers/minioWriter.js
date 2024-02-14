@@ -32,7 +32,7 @@ module.exports = {
     let logCounterFlag
     while (!errorMessage && !resultMessage) {
       await sleep(1)
-      if (!logCounter) {
+      if (!logCounterFlag) {
         logCounterFlag = true
         sleep(1000).then(resolve => {
           log.debug("waiting for creating bucket")
@@ -145,7 +145,7 @@ module.exports = {
     let logCounterFlag
     while (!errorMessage && !resultMessage) {
       await sleep(1)
-      if (!logCounter) {
+      if (!logCounterFlag) {
         logCounterFlag = true
         sleep(1000).then(resolve => {
           log.debug("waiting for list")
@@ -200,7 +200,7 @@ module.exports = {
     let logCounterFlag
     while (!errorMessage && !resultMessage) {
       await sleep(1)
-      if (!logCounter) {
+      if (!logCounterFlag) {
         logCounterFlag = true
         sleep(1000).then(resolve => {
           log.debug("waiting for upload")
@@ -254,7 +254,7 @@ module.exports = {
     let logCounterFlag
     while (!errorMessage && !resultMessage) {
       await sleep(1)
-      if (!logCounter) {
+      if (!logCounterFlag) {
         logCounterFlag = true
         sleep(1000).then(resolve => {
           log.debug("waiting for object")
