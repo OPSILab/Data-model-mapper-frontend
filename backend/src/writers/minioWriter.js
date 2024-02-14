@@ -29,8 +29,17 @@ module.exports = {
       return resultMessage
     })
 
-    while (!errorMessage && !resultMessage)
+    let logCounterFlag
+    while (!errorMessage && !resultMessage) {
       await sleep(1)
+      if (!logCounter) {
+        logCounterFlag = true
+        sleep(1000).then(resolve => {
+          log.debug("waiting for creating bucket")
+          logCounterFlag = false
+        })
+      }
+    }
     if (errorMessage)
       throw errorMessage
     if (resultMessage)
@@ -63,7 +72,7 @@ module.exports = {
   getNotifications(bucketName) {
     const poller = minioClient.listenBucketNotification(bucketName, '', '', ['s3:ObjectCreated:*'])
     poller.on('notification', async (record) => {
-      console.log('New object: %s/%s (size: %d)',record.s3.bucket.name, record.s3.object.key, record.s3.object.size)
+      console.log('New object: %s/%s (size: %d)', record.s3.bucket.name, record.s3.object.key, record.s3.object.size)
       const newObject = await this.getObject(record.s3.bucket.name, record.s3.object.key)
       let jsonParsed
       try {
@@ -123,8 +132,8 @@ module.exports = {
       data.push(obj)
     })
     stream.on('end', function (obj) {
-      log.info(obj)
-      log.info(data)
+      log.info(JSON.stringify(obj))
+      log.info(JSON.stringify(data))
       resultMessage = data
       //process.res.send(data)
     })
@@ -133,8 +142,17 @@ module.exports = {
       errorMessage = err
     })
 
-    while (!errorMessage && !resultMessage)
+    let logCounterFlag
+    while (!errorMessage && !resultMessage) {
       await sleep(1)
+      if (!logCounter) {
+        logCounterFlag = true
+        sleep(1000).then(resolve => {
+          log.debug("waiting for list")
+          logCounterFlag = false
+        })
+      }
+    }
     if (errorMessage)
       throw errorMessage
     if (resultMessage)
@@ -179,8 +197,17 @@ module.exports = {
       resultMessage = res
     })
 
-    while (!errorMessage && !resultMessage)
+    let logCounterFlag
+    while (!errorMessage && !resultMessage) {
       await sleep(1)
+      if (!logCounter) {
+        logCounterFlag = true
+        sleep(1000).then(resolve => {
+          log.debug("waiting for upload")
+          logCounterFlag = false
+        })
+      }
+    }
     if (errorMessage)
       throw errorMessage
     if (resultMessage)
@@ -224,8 +251,17 @@ module.exports = {
 
     });
 
-    while (!errorMessage && !resultMessage)
+    let logCounterFlag
+    while (!errorMessage && !resultMessage) {
       await sleep(1)
+      if (!logCounter) {
+        logCounterFlag = true
+        sleep(1000).then(resolve => {
+          log.debug("waiting for object")
+          logCounterFlag = false
+        })
+      }
+    }
     if (errorMessage)
       throw errorMessage
     if (resultMessage)

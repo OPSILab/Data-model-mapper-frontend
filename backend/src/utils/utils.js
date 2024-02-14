@@ -295,8 +295,8 @@ const printFinalReportAndSendResponse = async (logger) => {
                     }
                     logger.debug("minio writing done")
                 }
+                logger.debug("written to minio")
             }
-            logger.debug("written to minio")
             await sendOutput();
         }
         catch (error) {

@@ -266,7 +266,7 @@ module.exports = {
     async getMinioObjects(bucketName, format, sources) {
         if (!bucketName || Array.isArray(bucketName)) {
             let buckets = Array.isArray(bucketName) ? bucketName : await minioWriter.listBuckets()
-            //console.debug(buckets.length)
+            log.debug(JSON.stringify(buckets))
             let totalBuckets = buckets.length
             let index = 0
             for (let bucket of buckets) {
