@@ -27,7 +27,7 @@ module.exports = {
     getSources: async (req, res) => {
         process.res = res;
         try {
-            res.send(await service.getAllSources(req.query.bucketName))
+            res.send(await service.getAllSources(req.query.bucketName, req.query.format))
         }
         catch (error) {
             console.error(error)

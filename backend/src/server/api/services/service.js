@@ -248,14 +248,14 @@ module.exports = {
         let minioObjectList = await minioWriter.listObjects(bucket, undefined, undefined)//, postMessage)
         //sources.push(...minioObjectList)
         for (let obj of minioObjectList)
-            sources.push({ name: obj.name, data: (await this.minioGetObject(bucket, obj.name, format)) })//, postMessage)) })
+            sources.push({ name: obj.name, source: (await this.minioGetObject(bucket, obj.name, format)) })//, postMessage)) })
     },
 
-    async getAllSources(bucketName) {//, postMessage) {
+    async getAllSources(bucketName, format) {//, postMessage) {
         let sources = await Source.find()
         //await minioWriter.listBuckets()
         //sources.push(...await minioWriter.listObjects(bucketName, undefined, undefined))
-        if (common.isMinioWriterActive()) await this.getMinioObjects(bucketName, undefined, sources)
+        if (common.isMinioWriterActive()) await this.getMinioObjects(bucketName, format, sources)
         return sources
     },
 
