@@ -247,6 +247,7 @@ module.exports = {
     async getMinioObjectsFromBucket(bucket, format, sources) {//, postMessage) {
         let minioObjectList = await minioWriter.listObjects(bucket, undefined, undefined)//, postMessage)
         //sources.push(...minioObjectList)
+        log.debug(JSON.stringify(minioObjectList))
         for (let obj of minioObjectList)
             sources.push({ _id : obj.etag, name: obj.name, source: (await this.minioGetObject(bucket, obj.name, format)) })//, postMessage)) })
     },

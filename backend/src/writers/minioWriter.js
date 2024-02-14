@@ -248,7 +248,7 @@ module.exports = {
         }
         catch (error) {
           console.error(error)
-          resultMessage = format == 'json' ? { data: objectData } : objectData
+          resultMessage = format == 'json' ? [{ data: objectData }] : objectData
         }
       });
 
