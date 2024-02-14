@@ -99,6 +99,7 @@ export class DMMComponent implements OnInit, OnChanges {
   schemaOptions: any;
   importedSchema: any;
   importedSource: any;
+  sourceFrom
   openDialog = editor.openDialog
   exampleSource = [{
     "info": "set your source json here"
@@ -132,6 +133,7 @@ export class DMMComponent implements OnInit, OnChanges {
   minioSources: any;
   buckets: any;
   minioObjectList: any;
+  minioObjName: any;
 
   constructor(
     @Inject(DOCUMENT) public document: Document,
@@ -368,6 +370,13 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
+  sourceFromChanged($event) {
+    if ($event == "minio")
+      this.minioSources = this.sources.filter(source => source.from == "minio")
+    else
+      this.dbSources = this.sources.filter(source => source.from != "minio")
+  }
+
   async reset() {
     this.importedSchema = undefined
     this.importedSource = undefined
@@ -551,7 +560,12 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   source() {
-    return this.sources.filter(filteredSource => filteredSource._id == this.selectedSource)[0].source || this.sources.filter(filteredSource => filteredSource._id == this.selectedSource)[0].sourceCSV
+    let filteredSource = this.sources.filter(filteredSource => filteredSource._id == this.selectedSource)[0] || this.sources.filter(filteredSource => filteredSource._id == this.selectedSource)[0]
+    if (this.sourceFrom == "minio")
+      this.minioObjName = filteredSource.name
+    else
+      this.minioObjName = undefined
+    return filteredSource.source || filteredSource.sourceCSV
   }
 
   async loadMapperList() {
@@ -578,7 +592,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   async loadSourceList() {
     try {
-      this.sources = this.config.data_model_mapper.minioCache? await this.dmmService.getDBSources() : await this.dmmService.getSources();
+      this.sources = this.config.data_model_mapper.minioCache ? await this.dmmService.getDBSources() : await this.dmmService.getSources();
     }
     catch (error) {
       this.handleError(error, false, false)
@@ -692,7 +706,7 @@ export class DMMComponent implements OnInit, OnChanges {
       let source = this.setSource(JSON.parse(this.sourceEditor.getText()), true)
       if (source[this.selectedPath])
         source = source[this.selectedPath]
-      output = await this.dmmService.test(this.inputType, source, m, this.schemaJson, this.transformSettings)
+      output = await this.dmmService.test(this.inputType, this.minioObjName ,source, m, this.schemaJson, this.transformSettings)
     }
     catch (error) {
       if (!output)
@@ -715,7 +729,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (source[this.selectedPath])
         source = source[this.selectedPath]
 
-      output = await this.dmmService.test(this.inputType, source, m, this.schemaJson, this.transformSettings)
+      output = await this.dmmService.test(this.inputType,this.minioObjName , source, m, this.schemaJson, this.transformSettings)
     }
     catch (error) {
       if (!output)
@@ -723,7 +737,7 @@ export class DMMComponent implements OnInit, OnChanges {
           output = { "error": "Service unreachable" }
         else if (error.status == 413) {
           try {
-            output = await this.dmmService.test(this.inputType, { url: this.sourceDataURL }, JSON.parse(editor.mapperEditor.getText()), this.schemaJson, this.transformSettings)
+            output = await this.dmmService.test(this.inputType, this.minioObjName, { url: this.sourceDataURL }, JSON.parse(editor.mapperEditor.getText()), this.schemaJson, this.transformSettings)
           }
           catch (error) {
             console.error(error.message)
@@ -1414,7 +1428,7 @@ export class DMMComponent implements OnInit, OnChanges {
         mapID: this.adapter.adapterId
       }
       :
-      this.bodyBuilder(this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()): this.csvSourceData))
+      this.bodyBuilder(this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData))
   }
 
   updateCurl() {

@@ -194,7 +194,7 @@ export class DMMService {
   }
 
 
-  test(type: string, source, mapper, schema, config): Promise<any[]> {
+  test(type: string, minioObjName, source, mapper, schema, config): Promise<any[]> {
     if (schema && schema[0] && !schema.properties && !schema.allOf)
       schema = schema[0]
     if (schema?.$id) schema.$id = undefined
@@ -202,6 +202,7 @@ export class DMMService {
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_url,
       this.formDataBuilder({
         "sourceDataType": type,
+        "sourceDataMinio": minioObjName,
         "sourceData": source.url ? undefined : source,
         sourceDataURL: source.url ? source.url : undefined,
         "mapData": mapper,

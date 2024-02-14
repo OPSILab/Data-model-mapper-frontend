@@ -72,10 +72,22 @@
             <div class="mb-1" style="display:none;" id="json-input">
               <div class="mb-2">
                 <br><br>
-                <nb-select placeholder="Select source file" size="small" [(ngModel)]="selectedSource"
-                  (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
+                <nb-select *ngIf="sourceFrom=='minio'" placeholder="Select source file" size="small"
+                  [(ngModel)]="selectedSource" (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
                   <!--<nb-option value="">---select source---</nb-option>-->
-                  <nb-option *ngFor="let source of sources" value={{source._id}}>{{source.name}}</nb-option>
+                  <nb-option *ngFor="let source of minioSources" value={{source._id}}>{{source.name}}</nb-option>
+                </nb-select>
+                <nb-select *ngIf="sourceFrom=='db'" placeholder="Select source file" size="small"
+                  [(ngModel)]="selectedSource" (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
+                  <!--<nb-option value="">---select source---</nb-option>-->
+                  <nb-option *ngFor="let source of dbSources" value={{source._id}}>{{source.name}}</nb-option>
+                </nb-select>
+                &nbsp;
+                <nb-select placeholder="From" size="small" [(ngModel)]="sourceFrom"
+                  (ngModelChange)="sourceFromChanged($event)" (click)="fixBrokenPageBug()">
+                  <!--<nb-option value="">---select source---</nb-option>-->
+                  <nb-option value=minio>minio</nb-option>
+                  <nb-option value=db>db</nb-option>
                 </nb-select>
                 &nbsp;
                 <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('source','json')">
@@ -127,7 +139,8 @@
                 <nb-tabset>
                   <nb-tab tabTitle="CSV text">
                     <textarea (blur)="updateCSVTable()" id="textarea" nbInput rows="10" fullWidth=true
-                      placeholder="Enter CVS text..." [(ngModel)]="csvSourceData"></textarea><!--(ngModelChange)=sourceEditorMode('code')-->
+                      placeholder="Enter CVS text..."
+                      [(ngModel)]="csvSourceData"></textarea><!--(ngModelChange)=sourceEditorMode('code')-->
                   </nb-tab>
                   <nb-tab id="csv-table" tabTitle="CSV Table">
                   </nb-tab>

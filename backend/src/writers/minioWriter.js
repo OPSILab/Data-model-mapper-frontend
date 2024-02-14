@@ -190,15 +190,18 @@ module.exports = {
 
   async stringUpload(bucketName, objectName, object) {
 
+    log.debug(bucketName + " " + " " + objectName + " " +  JSON.stringify(object))
+
     let resultMessage
     let errorMessage
 
     minioClient.putObject(bucketName, objectName, JSON.stringify(object), function (err, res) {
       if (err) {
+        log.error("An error occurred while writing object")
         errorMessage = err
         return e(err)
       }
-      log.info("Result : ")
+      log.info("Object Writter.\n Result : ")
       log.info(JSON.stringify(res))
       resultMessage = res
     })

@@ -26,6 +26,8 @@ module.exports = {
 
     outputFile: [],
 
+    minioObjName: undefined,
+
     error: null,
 
     NGSI_entity: undefined,
@@ -230,6 +232,18 @@ module.exports = {
                     log.debug('File dataModel temp is created successfully.');
                 })
         }
+
+        if (common.isMinioWriterActive())
+            if (!process.env.minioObjName)
+                this.minioObjName = source.minioObjName = process.env.minioObjName = { name: source.minioObjName }
+            else
+                this.minioObjName = process.env.minioObjName.name = source.minioObjName
+
+        log.debug(JSON.stringify(this.minioObjName))
+        log.debug(process.env.minioObjName.name)
+
+        //this.minioObjName = source.minioObjName
+
         try {
             await cli(
                 //source.name ? config.sourceDataPath + source.name : config.sourceDataPath + sourceFileTemp2 ? 'sourceFileTemp2.' + source.type : 'sourceFileTemp.' + source.type,
@@ -249,7 +263,7 @@ module.exports = {
         //sources.push(...minioObjectList)
         log.debug(JSON.stringify(minioObjectList))
         for (let obj of minioObjectList)
-            sources.push({ _id : obj.etag, name: obj.name, source: (await this.minioGetObject(bucket, obj.name, format)) })//, postMessage)) })
+            sources.push({ _id: obj.etag, from: "minio", name: obj.name, source: (await this.minioGetObject(bucket, obj.name, format)) })//, postMessage)) })
     },
 
     async getAllSources(bucketName, format) {//, postMessage) {

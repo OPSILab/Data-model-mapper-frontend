@@ -205,6 +205,7 @@ const bodyMapper = (body) => {
 
     let sourceData = {
         name: body.sourceDataIn,
+        minioObjName: body.sourceDataMinio,//TODO body.sourceDataEtag
         id: body.sourceDataID,
         type: body.sourceDataType,
         url: body.sourceDataURL,
@@ -287,8 +288,10 @@ const printFinalReportAndSendResponse = async (logger) => {
                 for (let obj of apiOutput.outputFile) {
                     logger.debug("minio writing")
                     try {
+                        logger.debug(apiOutput.minioObjName.name)
+                        logger.debug(process.env.minioObjName.name)
                         if (!obj.MAPPING_REPORT && !obj.ORION_REPORT)
-                            await minioWriter.stringUpload(config.minioWriter.defaultOutputBucketName || "output", obj[config.entityNameField] || config.minioWriter.defaultBucketName + Date.now().toString(), obj)
+                            await minioWriter.stringUpload(config.minioWriter.defaultOutputBucketName || "output", obj[apiOutput.minioObjName.name || process.env.minioObjName.name]?.concat(obj[config.entityNameField] || obj.id || Date.now().toString()) || apiOutput.minioObjName.name.concat("_processed_").concat(Date.now().toString()) || Date.now().toString(), obj)
                     }
                     catch (error) {
                         logger.error(error)
