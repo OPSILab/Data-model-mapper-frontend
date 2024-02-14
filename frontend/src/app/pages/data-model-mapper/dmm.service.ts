@@ -16,10 +16,12 @@ const multiPartOptions = {
 export class DMMService {
 
   private config: AppConfig;
+  buckets: string = ""
 
   constructor(configService: NgxConfigureService, private http: HttpClient) {
     this.config = configService.config as AppConfig;
-
+    for (let bucket of this.config.data_model_mapper.minioBuckets)
+      this.buckets = this.buckets.concat("&bucketName=" + bucket)
   }
 
   getSchemas(): any {
@@ -32,7 +34,7 @@ export class DMMService {
   }
 
   getSources(): any {
-    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/sources").toPromise();
+    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/sources?format=json" + this.buckets).toPromise();
   }
 
   getDBSources(): any {
@@ -40,7 +42,7 @@ export class DMMService {
   }
 
   getMinioSources(): any {
-    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/getObjects?format=json&bucketName=dmm10&bucketName=dmm1&bucketName=dmm2&bucketName=dmm3&bucketName=dmm4&bucketName=dmm5&bucketName=dmm6&bucketName=dmm7&bucketName=dmm8&bucketName=dmm9").toPromise();
+    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/getObjects?format=json" + this.buckets).toPromise();
   }
 
   getMinioBucketsList(): any {
@@ -48,7 +50,7 @@ export class DMMService {
   }
 
   getMinioSourcesList(bucketName): any {
-    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/listObjects/"+bucketName).toPromise();
+    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/listObjects/" + bucketName).toPromise();
 
   }
   getMinioObject(bucketName: any) {

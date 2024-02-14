@@ -35,7 +35,8 @@ module.exports = {
       if (!logCounterFlag) {
         logCounterFlag = true
         sleep(1000).then(resolve => {
-          log.debug("waiting for creating bucket")
+          if (!errorMessage && !resultMessage)
+            log.debug("waiting for creating bucket")
           logCounterFlag = false
         })
       }
@@ -132,8 +133,12 @@ module.exports = {
       data.push(obj)
     })
     stream.on('end', function (obj) {
-      log.info(JSON.stringify(obj))
-      log.info(JSON.stringify(data))
+      if (!obj)
+        log.info("ListObjects ended returning an empty object")
+      else
+        log.info("Found object " + JSON.stringify(obj))
+      if (data[0])
+        log.info(JSON.stringify(data))
       resultMessage = data
       //process.res.send(data)
     })
@@ -148,7 +153,8 @@ module.exports = {
       if (!logCounterFlag) {
         logCounterFlag = true
         sleep(1000).then(resolve => {
-          log.debug("waiting for list")
+          if (!errorMessage && !resultMessage)
+            log.debug("waiting for list")
           logCounterFlag = false
         })
       }
@@ -203,7 +209,8 @@ module.exports = {
       if (!logCounterFlag) {
         logCounterFlag = true
         sleep(1000).then(resolve => {
-          log.debug("waiting for upload")
+          if (!errorMessage && !resultMessage)
+            log.debug("waiting for upload")
           logCounterFlag = false
         })
       }
@@ -217,6 +224,8 @@ module.exports = {
   },
 
   async getObject(bucketName, objectName, format) {
+
+    log.debug("Now getting object " + objectName + " in bucket " + bucketName)
 
     let resultMessage
     let errorMessage
@@ -257,7 +266,8 @@ module.exports = {
       if (!logCounterFlag) {
         logCounterFlag = true
         sleep(1000).then(resolve => {
-          log.debug("waiting for object")
+          if (!errorMessage && !resultMessage)
+            log.debug("waiting for object " + objectName + " in bucket " + bucketName)
           logCounterFlag = false
         })
       }
