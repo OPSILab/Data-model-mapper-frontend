@@ -90,7 +90,7 @@ module.exports = {
             configCopy.minioWriter.defaultFileInput =
             configCopy.minioWriter.endPoint =
             configCopy.minioWriter.endPoint =
-
+            configCopy.authConfig =
             configCopy.fileWriter =
             configCopy.debugger =
             configCopy.orionWriter =
