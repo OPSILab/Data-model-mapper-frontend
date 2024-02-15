@@ -102,9 +102,14 @@ module.exports = {
         if (req.body.file)
             req.body = JSON.parse(req.body.file)
         process.res = res;
-        try { res.send(await service.insertSource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef)) }
-        catch (error) { res.status(400).send(error) }
-        log.debug("Source inserted");
+        try { 
+            res.send(await service.insertSource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef)) 
+            log.debug("Source inserted");
+        }
+        catch (error) { 
+            console.error(error)
+            res.status(400).send(error.toString()) 
+        }
     },
 
     insertMap: async (req, res) => {

@@ -10,7 +10,7 @@ module.exports = () => {
 
   const dmmServer = express();
 
-  swaggerDocument.host = swaggerDocument.host + (config.httpPort || 5500)
+  swaggerDocument.host = config.host + (config.externalPort? ":" + (config.externalPort || 5500) : "")
 
   dmmServer.use(cors());
   dmmServer.use(express.json());

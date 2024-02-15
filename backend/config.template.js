@@ -26,6 +26,8 @@ var config = {
     mode: 'commandLine', // commandLine or server 
     logLevel: 'debug', // error, warn, info, verbose, debug or silly
     httpPort: 8081, // PORT where the application will listen if ran in server mode
+    host: "",
+    externalPort: undefined, //use undefined if, in prod, you are exposing the data model mapper server with domain instead of IP:port
     modelSchemaFolder: path.join(__dirname, "dataModels"), // DO NOT TOUCH - Data Model schemas folder
     NGSI_entity: true, // enable or disable ngsi entity source 
     ignoreValidation: false, // ignore validation errors

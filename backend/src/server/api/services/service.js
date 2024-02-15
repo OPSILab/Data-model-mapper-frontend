@@ -370,7 +370,7 @@ module.exports = {
         if (path == "") path = undefined
         if (mapRef)
             mapRef = (await Map.findOne({ name }))?._id
-        if (mapRef || !await Source.findOne({ name })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source, mapRef: mapRef.toString() } : { name: name, id: id, source: source, path, mapRef: mapRef.toString() }])
+        if (mapRef || !await Source.findOne({ name })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source, mapRef: mapRef.toString() } : { name: name, id: id, source: source, path, mapRef: mapRef?.toString() }])
         throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
