@@ -130,6 +130,7 @@ config.fileWriter = {
 /*************** Auth CONFIGURATION **************************************/
 config.authConfig = {
     idmHost: "https://hostDomain/auth",
+    userInfoEndpoint : "",
     clientId: "",
     disableAuth: "false",
     authProfile: "oidc",

@@ -11,7 +11,6 @@ module.exports = {
             }
             catch (error) {
                 str = str.concat("{\n", '"', key, '"', " : ", util.inspect(error[key]), "\n},\n")
-                console.debug("corrected")
             }
         }
     
@@ -19,7 +18,6 @@ module.exports = {
     
         fs.writeFile("./logs/errorLog" + JSON.stringify(logIndex) + ".json", "[" + str.substring(0, str.length - 1) + "]", function (err) {
             if (err) throw err;
-            console.debug('Log is created successfully.');
         })
     
         logIndex++

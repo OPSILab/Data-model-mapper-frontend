@@ -15,7 +15,7 @@ import { DialogDataMapComponent } from '../../data-model-mapper/dialog-dataMap/d
 import { DialogImportComponent } from '../../data-model-mapper/dialog-import/dialog-import.component';
 import { DMMService } from '../../data-model-mapper/dmm.service';
 import { ExportFileComponent } from '../../data-model-mapper/export-file/export-file.component';
-import { ErrorDialogAdapterService } from '../../error-dialog/error-dialog-adapter.service';
+import { ErrorDialogMapperRecordService } from '../../error-dialog/error-dialog-mapperRecord.service';
 import * as JSONEditor from '../../../../../node_modules/jsoneditor/dist/jsoneditor.js';
 import { ImportComponent } from '../import/import.component';
 
@@ -36,7 +36,7 @@ export class TransformComponent extends DMMComponent implements OnInit, OnChange
     @Inject(DOCUMENT) public document: Document,
     public dialogService: NbDialogService,
     public windowService: NbWindowService,
-    public errorService: ErrorDialogAdapterService,
+    public errorService: ErrorDialogMapperRecordService,
     public dmmService: DMMService,
     public route: ActivatedRoute,
     public configService: NgxConfigureService,

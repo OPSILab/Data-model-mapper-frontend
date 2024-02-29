@@ -97,9 +97,9 @@
       "update_field_list" : "Update field list",
       "generate_mapper" : "Generate mapper"
     },
-    "adapters": {
+    "mapperRecords": {
       "name": "Name",
-      "adapterId": "Adapter ID",
+      "mapperRecordId": "MapperRecord ID",
       "status" : "Status",
       "description" : "Description",
       "validationErrors": "There are validation errors in the mapper description."

@@ -21,7 +21,6 @@ export class AuthGuard implements CanActivate {
         .pipe(
           tap(authenticated => {
             if (!authenticated) {
-              console.debug("not authenticated")
               this.router.navigateByUrl('/login/loginPopup');
               //this.router.navigate(['login/loginPopup']);
             }

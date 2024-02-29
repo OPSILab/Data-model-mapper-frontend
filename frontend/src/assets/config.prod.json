@@ -16,7 +16,7 @@
     "default_mapper_url":"https://platform.beopen-dep.it/api/map/transform",
     "default_mapper_base_url":"https://platform.beopen-dep.it/api",
     "minioCache" : false,
-    "minioBuckets" : ["datamodelmapper"]
+    "minioBuckets" : []
   },
   "i18n": {
     "locale": "en",

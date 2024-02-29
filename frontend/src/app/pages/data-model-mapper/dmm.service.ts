@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NgxConfigureService } from 'ngx-configure';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AppConfig } from '../../model/appConfig';
-import { AdapterEntry } from '../../model/adapter/adapterEntry';
+import { MapperRecordEntry } from '../../model/mapperRecord/mapperRecordEntry';
 var urlencode = require('urlencode');
 const multiPartOptions = {
   headers: new HttpHeaders({
@@ -33,6 +33,10 @@ export class DMMService {
     return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/maps").toPromise();
   }
 
+  getToken(): any {
+    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/token").toPromise();
+  }
+
   getSources(): any {
     return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/sources?format=json" + this.buckets).toPromise();
   }
@@ -50,11 +54,11 @@ export class DMMService {
   }
 
   getMinioSourcesList(bucketName): any {
-    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/listObjects/" + bucketName).toPromise();
+    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/listObjects/" +  urlencode(bucketName)).toPromise();
 
   }
-  getMinioObject(bucketName: any) {
-    throw new Error('Method not implemented.');
+  getMinioObject(bucketName: string, objectName: string) {
+    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/getObject"+"/"+ urlencode(bucketName)+"/" +  urlencode(objectName)).toPromise();
   }
 
   getConfig(): any {
@@ -66,15 +70,15 @@ export class DMMService {
   }
 
   getSource(id): any {
-    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/source?id=" + id).toPromise();
+    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/source?id=" +  urlencode(id)).toPromise();
   }
 
   getMap(id): any {
-    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/map?id=" + id).toPromise();
+    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/map?id=" +  urlencode(id)).toPromise();
   }
 
   getSchema(id): any {
-    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel?id=" + id).toPromise();
+    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel?id=" +  urlencode(id)).toPromise();
   }
 
   deleteMap(id: any) {
@@ -93,13 +97,13 @@ export class DMMService {
       this.http.get<any>(url).toPromise()
   }
 
-  saveMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, path): any {
+  saveMap(id, name, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, minioObjName, bucket, etag, path): any {
     if (schema?.$id) schema.$id = undefined
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map/register",
       this.formDataBuilder(
         {
-          id: adapter.adapterId,
-          name: adapter.name,
+          id,
+          name,
           status: status,
           description: description,
           map: map,
@@ -111,7 +115,12 @@ export class DMMService {
           dataModelURL,
           path,
           dataModelID,
-          sourceData
+          sourceData,
+          sourceDataMinio: {
+            name : minioObjName,
+            bucket,
+            etag
+          }
         })).toPromise();
   }
 
@@ -122,51 +131,58 @@ export class DMMService {
     return formData
   }
 
-  saveSchema(adapter: Partial<AdapterEntry>, status, description, schema, mapRef): any {
+  saveSchema(name, mapRef , status, description, schema): any {
     if (schema?.$id) schema.$id = undefined
 
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", this.formDataBuilder({
-      id: adapter.adapterId,
-      name: adapter.name,
+      mapRef,
+      name,
       status: status,
       description: description,
       dataModel: schema ? schema[0] ? schema[0] : schema : schema,
-      mapRef: mapRef
     })).toPromise();
   }
 
-  updateSource(adapter, status: any, description: any, sourceData: any, path, mapRef) {
+  updateSource(name, mapRef, status: any, description: any, sourceData: any, minioObjName, bucket, etag, path) {
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source", this.formDataBuilder({
-      id: adapter.adapterId,
-      name: adapter.name,
+      mapRef ,
+      name,
+      sourceDataMinio: {
+        name : minioObjName,
+        bucket,
+        etag
+      },
       status: status,
       description: description,
       path,
       source: sourceData,
-      mapRef: mapRef
     })).toPromise();
   }
-  saveSource(adapter, status: any, description: any, sourceData: any, path, mapRef) {
+  saveSource(name, mapRef, status: any, description: any, sourceData: any, minioObjName, bucket, etag, path) {
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source", this.formDataBuilder({
-      id: adapter.adapterId,
-      name: adapter.name,
+      name,
+      sourceDataMinio: {
+        name : minioObjName,
+        bucket,
+        etag
+      },
       status: status,
       path,
       description: description,
       source: sourceData,
-      mapRef: mapRef
+      mapRef
     })).toPromise();
   }
 
 
-  updateMap(adapter: Partial<AdapterEntry>, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, path): any {
+  updateMap(id, name, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, minioObjName, bucket, etag, path): any {
     if (schema?.$id) schema.$id = undefined
 
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map", this.formDataBuilder({
-      id: adapter.adapterId,
-      name: adapter.name,
-      status: status,
-      description: description,
+      id,
+      name,
+      status,
+      description,
       map: map,
       dataModel: schema ? schema[0] ? schema[0] : schema : schema,
       sourceDataType,
@@ -176,38 +192,47 @@ export class DMMService {
       dataModelID,
       sourceDataID,
       path,
-      sourceData
+      sourceData,
+      sourceDataMinio: {
+        name : minioObjName,
+        bucket,
+        etag
+      }
     })).toPromise();
   }
 
-  updateSchema(adapter: Partial<AdapterEntry>, status, description, schema, mapRef): any {
+  updateSchema(name, mapRef, status, description, schema): any {
     if (schema?.$id) schema.$id = undefined
 
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", this.formDataBuilder({
-      id: adapter.adapterId,
-      name: adapter.name,
+      name,
       status: status,
       description: description,
       dataModel: schema ? schema[0] ? schema[0] : schema : schema,
-      mapRef: mapRef
+      mapRef
     })).toPromise();
   }
 
 
-  test(type: string, minioObjName, source, mapper, schema, config): Promise<any[]> {
-    if (schema && schema[0] && !schema.properties && !schema.allOf)
-      schema = schema[0]
-    if (schema?.$id) schema.$id = undefined
+  transform(sourceDataType: string, minioObjName, bucket, etag, source, mapData, dataModel, config): Promise<any[]> {
+
+    if (dataModel && dataModel[0] && !dataModel.properties && !dataModel.allOf)//TODO dataModel must not be an array. Once you are sure of that, remove this
+      dataModel = dataModel[0] //TODO dataModel must not be an array. Once you are sure of that, remove this
+    if (dataModel?.$id) dataModel.$id = undefined
 
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_url,
       this.formDataBuilder({
-        "sourceDataType": type,
-        "sourceDataMinio": minioObjName,
-        "sourceData": source.url ? undefined : source,
+        sourceDataType,
+        sourceDataMinio: {
+          name: minioObjName,
+          bucket : bucket,
+          etag : etag,
+        },
+        sourceData: source.url ? undefined : source,
         sourceDataURL: source.url ? source.url : undefined,
-        "mapData": mapper,
-        "dataModel": schema,
-        "config": config
+        mapData,
+        dataModel,
+        config
       })).toPromise();
   }
 }

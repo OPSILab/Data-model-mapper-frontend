@@ -201,11 +201,13 @@ function spaceCleaner(object) {
 
 const bodyMapper = (body) => {
 
-    if (body.adapterID) body.mapID = body.adapterID
+    if (body.mapperRecordID || body.adapterID) body.mapID = body.mapperRecordID || body.adapterID
 
     let sourceData = {
         name: body.sourceDataIn,
-        minioObjName: body.sourceDataMinio,//TODO body.sourceDataEtag
+        minioObjName: body.sourceDataMinio?.name,
+        minioBucketName:body.sourceDataMinio?.bucket,
+        //minioObjEtag: body.sourceDataMinio.etag,
         id: body.sourceDataID,
         type: body.sourceDataType,
         url: body.sourceDataURL,
@@ -288,10 +290,16 @@ const printFinalReportAndSendResponse = async (logger) => {
                 for (let obj of apiOutput.outputFile) {
                     logger.debug("minio writing")
                     try {
-                        logger.debug(apiOutput.minioObjName.name)
-                        logger.debug(process.env.minioObjName.name)
+                        logger.debug("apiOutput.minioObj.name")
+                        logger.debug(apiOutput.minioObj.name)
+                        let bucketName = apiOutput.minioObj.bucket || config.minioWriter.defaultOutputBucketName || "output"
+                        let objectName = (obj[apiOutput.minioObj.name]?.concat(obj[config.entityNameField] || obj.id || Date.now().toString()) || apiOutput.minioObj.name.concat("_processed_").concat(Date.now().toString()) || Date.now().toString()).toLowerCase()
+                        logger.debug("bucket name")
+                        logger.debug(bucketName)
+                        logger.debug("object name")
+                        logger.debug(objectName)
                         if (!obj.MAPPING_REPORT && !obj.ORION_REPORT)
-                            await minioWriter.stringUpload(config.minioWriter.defaultOutputBucketName || "output", obj[apiOutput.minioObjName.name || process.env.minioObjName.name]?.concat(obj[config.entityNameField] || obj.id || Date.now().toString()) || apiOutput.minioObjName.name.concat("_processed_").concat(Date.now().toString()) || Date.now().toString(), obj)
+                            await minioWriter.stringUpload(bucketName, objectName, obj)
                     }
                     catch (error) {
                         logger.error(error)

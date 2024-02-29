@@ -23,12 +23,10 @@ module.exports = {
             if (authHeader) {
                 const jwtToken = authHeader.split(' ')[1];
 
-
-
                 let verifiedToken
                 try {
                     verifiedToken = jwt.verify(jwtToken, //Buffer.from(
-                      authConfig.publicKey
+                        authConfig.publicKey
                         //, 'base64').toString()
                         //-------//
                         , { algorithms: ['RS256'] })
@@ -71,8 +69,20 @@ module.exports = {
 
                     const decodedToken = verifiedToken || parseJwt(jwtToken)
 
-                    if ((decodedToken.azp == authConfig.clientId) && ((decodedToken.exp * 1000) > Date.now()))
+                    if ((decodedToken.azp == authConfig.clientId) && ((decodedToken.exp * 1000) > Date.now())) {
+
+                        try {
+                            let data = (await axios.get(config.authConfig.userInfoEndpoint, { headers: {"Authorization" : req.headers.authorization} })).data
+                            let {pilot, username} = data
+                            req.body.bucketName = pilot.toLowerCase() //+ "/" + email + "/" + config.minioWriter.defaultBucketName//{pilot, email}
+                            req.body.prefix = username + "/" + config.minioWriter.defaultBucketName
+                        }
+                        catch (error) {
+                            console.error(error?.toString())
+                            console.error(error?.response?.data)
+                        }
                         next()
+                    }
                     else
                         res.sendStatus(403);
                 }

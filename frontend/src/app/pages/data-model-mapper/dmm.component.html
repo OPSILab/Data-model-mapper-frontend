@@ -75,7 +75,7 @@
                 <nb-select *ngIf="sourceFrom=='minio'" placeholder="Select source file" size="small"
                   [(ngModel)]="selectedSource" (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
                   <!--<nb-option value="">---select source---</nb-option>-->
-                  <nb-option *ngFor="let source of minioSources" value={{source._id}}>{{source.name}}</nb-option>
+                  <nb-option *ngFor="let source of minioSources" value={{source.etag}}>{{source.name}}</nb-option>
                 </nb-select>
                 <nb-select *ngIf="sourceFrom=='db'" placeholder="Select source file" size="small"
                   [(ngModel)]="selectedSource" (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
@@ -199,7 +199,7 @@
             <p *ngIf="dialog">Tranform.
             </p>
             <br> <br> <br>
-            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small" (click)="testAdapter()">
+            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small" (click)="testMapperRecord()">
               {{ 'general.dmm.preview' | translate }}
               <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button> &nbsp;

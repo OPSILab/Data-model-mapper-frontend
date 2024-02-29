@@ -18,7 +18,7 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(400).send(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         service.error = null
         log.debug("service.mapData end");
@@ -27,11 +27,11 @@ module.exports = {
     getSources: async (req, res) => {
         process.res = res;
         try {
-            res.send(await service.getAllSources(req.query.bucketName, req.query.format))
+            res.send(await service.getAllSources(req.query.bucketName || req.body.bucketName, req.body.prefix, req.query.format))
         }
         catch (error) {
             console.error(error)
-            res.status(400).send(error)
+            res.status(400).send(error.toString())
         }
     },
 
@@ -42,7 +42,7 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(500).send(error)
+            res.status(500).send(error.toString())
         }
     },
 
@@ -53,27 +53,27 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(400).send(error)
+            res.status(400).send(error.toString())
         }
     },
 
     getMaps: async (req, res) => {
         process.res = res;
         try { res.send(await service.getMaps()) }
-        catch (error) { res.status(400).send(error) }
+        catch (error) { res.status(400).send(error.toString()) }
     },
 
     getDataModels: async (req, res) => {
         process.res = res;
         try { res.send(await service.getDataModels()) }
-        catch (error) { res.status(400).send(error) }
+        catch (error) { res.status(400).send(error.toString()) }
     },
 
     getSource: async (req, res) => {
         const { id, name } = req.query
         process.res = res;
         try { res.send(await service.getSource(id, name)) }
-        catch (error) { res.status(error.code || 400).send(error) }
+        catch (error) { res.status(error.code || 400).send(error.toString()) }
     },
 
     getMap: async (req, res) => {
@@ -81,34 +81,34 @@ module.exports = {
         process.res = res;
         try { res.send(await service.getMap(id, name)) }
         catch (error) {
-            res.status(error.code || 400).send(error)
+            res.status(error.code || 400).send(error.toString())
         }
     },
 
     getConfig: async (req, res) => {
         process.res = res;
         try { res.send(await service.getConfig()) }
-        catch (error) { res.status(400).send(error) }
+        catch (error) { res.status(400).send(error.toString()) }
     },
 
     getDataModel: async (req, res) => {
         const { id, name } = req.query
         process.res = res;
         try { res.send(await service.getDataModel(id, name)) }
-        catch (error) { res.status(error.code || 400).send(error) }
+        catch (error) { res.status(error.code || 400).send(error.toString()) }
     },
 
     insertSource: async (req, res) => {
         if (req.body.file)
             req.body = JSON.parse(req.body.file)
         process.res = res;
-        try { 
-            res.send(await service.insertSource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef)) 
+        try {
+            res.send(await service.insertSource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef))
             log.debug("Source inserted");
         }
-        catch (error) { 
+        catch (error) {
             console.error(error)
-            res.status(400).send(error.toString()) 
+            res.status(400).send(error.toString())
         }
     },
 
@@ -118,20 +118,26 @@ module.exports = {
         process.res = res;
         try {
             res.send(await service.insertMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
-                req.body.sourceData, req.body.sourceDataID, req.body.sourceDataIn, req.body.sourceDataURL, req.body.dataModelIn, req.body.dataModelID, req.body.dataModelURL,
+                req.body.sourceData, req.body.sourceDataMinio, req.body.sourceDataID, req.body.sourceDataIn, req.body.sourceDataURL, req.body.dataModelIn, req.body.dataModelID, req.body.dataModelURL,
                 req.body.config, req.body.sourceDataType, req.body.path))
             log.debug("Map inserted");
         }
-        catch (error) { res.status(400).send(error) }
+        catch (error) { res.status(400).send(error.toString()) }
     },
 
     insertDataModel: async (req, res) => {
         if (req.body.file)
             req.body = JSON.parse(req.body.file)
         process.res = res;
-        try { res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef)) }
-        catch (error) { res.status(400).send(error) }
-        log.debug("Model inserted");
+        try {
+            res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef))
+            log.debug("Model inserted");
+        }
+        catch (error) {
+            res.status(400).send(error.toString())
+            log.error(error.toString())
+        }
+
     },
 
     modifySource: async (req, res) => {
@@ -142,7 +148,7 @@ module.exports = {
             res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef))
             log.debug("Source modified");
         }
-        catch (error) { res.status(400).send(error) }
+        catch (error) { res.status(400).send(error.toString()) }
     },
 
     modifyMap: async (req, res) => {
@@ -151,11 +157,11 @@ module.exports = {
         process.res = res;
         try {
             res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
-                req.body.sourceData, req.body.sourceDataID, req.body.sourceDataIn, req.body.sourceDataURL, req.body.dataModelIn, req.body.dataModelID, req.body.dataModelURL,
+                req.body.sourceData, req.body.sourceDataMinio, req.body.sourceDataID, req.body.sourceDataIn, req.body.sourceDataURL, req.body.dataModelIn, req.body.dataModelID, req.body.dataModelURL,
                 req.body.config, req.body.sourceDataType, req.body.path))
             log.debug("Map modified");
         }
-        catch (error) { res.status(400).send(error) }
+        catch (error) { res.status(400).send(error.toString()) }
     },
 
     modifyDataModel: async (req, res) => {
@@ -166,34 +172,37 @@ module.exports = {
             res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef))
             log.debug("Schema modified");
         }
-        catch (error) { res.status(400).send(error) }
+        catch (error) { res.status(400).send(error.toString()) }
     },
 
     deleteSource: async (req, res) => {
         const { id, name } = req.query
         process.res = res;
         try { res.send(await service.deleteSource(id, name)) }
-        catch (error) { res.status(400).send(error) }
+        catch (error) { res.status(400).send(error.toString()) }
     },
 
     deleteMap: async (req, res) => {
         const { id, name } = req.query
         process.res = res;
         try { res.send(await service.deleteMap(id || req.params.id, name)) }
-        catch (error) { res.status(400).send(error) }
+        catch (error) { res.status(400).send(error.toString()) }
     },
 
     deleteDataModel: async (req, res) => {
         const { id, name } = req.query
         process.res = res;
         try { res.send(await service.deleteDataModel(id, name)) }
-        catch (error) { res.status(400).send(error) }
+        catch (error) { res.status(400).send(error.toString()) }
     },
 
     dereferenceSchema: async (req, res) => {
+        if (req.body.file)
+            req.body = JSON.parse(req.body.file)
         process.res = res;
+        if (req.body.bucketName) req.body.bucketName = undefined
         try { res.send(await service.dereferenceSchema(req.body)) }
-        catch (error) { res.status(400).send(error) }
+        catch (error) { res.status(400).send(error.toString()) }
     },
 
 
@@ -211,7 +220,7 @@ module.exports = {
                 errorStatusCode = 500
             if (error.name == "InvalidBucketNameError")
                 error.details = "Use lower a case bucket name"
-            res.status(errorStatusCode).send(error)
+            res.status(errorStatusCode).send(error.toString())
         }
     },
 
@@ -227,7 +236,7 @@ module.exports = {
                 errorStatusCode = 400
             else
                 errorStatusCode = 500
-            res.status(errorStatusCode).send(error)
+            res.status(errorStatusCode).send(error.toString())
         }
     },
 
@@ -238,7 +247,7 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(500).send(error)
+            res.status(500).send(error.toString())
         }
     },
 
@@ -249,7 +258,7 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(500).send(error)
+            res.status(500).send(error.toString())
         }
     },
 
@@ -260,7 +269,7 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(500).send(error)
+            res.status(500).send(error.toString())
         }
     },
 
@@ -278,5 +287,25 @@ module.exports = {
                 errorStatusCode = 500
             res.status(errorStatusCode).send(error.toString())
         }
-    }
+    },
+
+    mockGetUser: async (req, res) => {
+        try {
+            res.send({ pilot: "cartagena", email: "test@hotmail.it" })
+        }
+        catch (error) {
+            console.error(error)
+            res.status(500).send(error.toString())
+        }
+    },
+
+    getToken: async (req, res) => {
+        try {
+            res.send(req.headers.authorization.split(' ')[1])
+        }
+        catch (error) {
+            console.error(error)
+            res.status(500).send(error.toString())
+        }
+    },
 };

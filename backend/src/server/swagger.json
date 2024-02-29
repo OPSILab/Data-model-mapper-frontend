@@ -9,12 +9,31 @@
       "url": "http://fsf.org/"
     }
   },
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
   "host": "localhost:",
   "basePath": "/api",
   "tags": [
     {
-      "name": "Map",
+      "name": "Mapper",
       "description": "API for retrieving converted and mapped json"
+    },
+    {
+      "name": "Map",
+      "description": "CRUD for mappping object"
+    },
+    {
+      "name": "DataModel",
+      "description": "CRUD for source object"
+    },
+    {
+      "name": "Source",
+      "description": "CRUD for data model (schema) object"
     }
   ],
   "schemes": [
@@ -30,6 +49,11 @@
   "paths": {
     "/map/transform": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": [
           "Mapper"
         ],
@@ -66,7 +90,12 @@
     "/map/register": {
       "post": {
         "tags": [
-          "Insert map"
+          "Map"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Insert map in Mongo DB",
         "parameters": [
@@ -101,7 +130,12 @@
     "/map": {
       "get": {
         "tags": [
-          "Get map"
+          "Map"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Get map",
         "parameters": [
@@ -134,7 +168,12 @@
       },
       "put": {
         "tags": [
-          "Modify map"
+          "Map"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Modify map in Mongo DB",
         "parameters": [
@@ -172,7 +211,12 @@
       },
       "delete": {
         "tags": [
-          "Delete map"
+          "Map"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Delete map in Mongo DB",
         "parameters": [
@@ -225,7 +269,12 @@
     "/dataModel": {
       "get": {
         "tags": [
-          "Get dataModel"
+          "DataModel"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Get dataModel",
         "parameters": [
@@ -258,7 +307,12 @@
       },
       "post": {
         "tags": [
-          "Insert Data model"
+          "DataModel"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Insert data model",
         "parameters": [
@@ -291,7 +345,12 @@
       },
       "put": {
         "tags": [
-          "Modify dataModel"
+          "DataModel"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Modify dataModel in Mongo DB",
         "parameters": [
@@ -329,7 +388,12 @@
       },
       "delete": {
         "tags": [
-          "Delete dataModel"
+          "DataModel"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Delete dataModel in Mongo DB",
         "parameters": [
@@ -379,10 +443,53 @@
         }
       }
     },
+    "/dereferenceSchema": {
+      "post": {
+        "tags": [
+          "DataModel"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Insert data model",
+        "parameters": [
+          {
+            "name": "Schema",
+            "in": "body",
+            "description": "The schema you want to dereferenciate",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {}
+          },
+          "400": {
+            "description": "BAD REQUEST",
+            "schema": {
+              "$ref": "#/definitions/BAD_REQUEST_2"
+            }
+          }
+        }
+      }
+    },
     "/source": {
       "get": {
         "tags": [
-          "Get source"
+          "Source"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Get source",
         "parameters": [
@@ -415,7 +522,12 @@
       },
       "post": {
         "tags": [
-          "source"
+          "Source"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Insert source",
         "parameters": [
@@ -448,7 +560,12 @@
       },
       "put": {
         "tags": [
-          "Modify source"
+          "Source"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Modify source in Mongo DB",
         "parameters": [
@@ -486,7 +603,12 @@
       },
       "delete": {
         "tags": [
-          "Delete sourcee"
+          "Source"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Delete source in Mongo DB",
         "parameters": [
@@ -536,7 +658,12 @@
     "/maps": {
       "get": {
         "tags": [
-          "Get mappers"
+          "Map"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Get all mappers",
         "parameters": [],
@@ -556,7 +683,12 @@
     "/dataModels": {
       "get": {
         "tags": [
-          "Get dataModels"
+          "DataModel"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Get all data models",
         "parameters": [],
@@ -576,7 +708,12 @@
     "/sources": {
       "get": {
         "tags": [
-          "Get sources"
+          "Source"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "description": "Get all sources",
         "parameters": [],
@@ -593,6 +730,424 @@
                   "string": "string"
                 }
               ]
+            }
+          }
+        }
+      }
+    },
+    "/config": {
+      "get": {
+        "tags": [
+          "Config"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Get data model mapper configuration",
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "$ref": "#/definitions/config"
+            }
+          }
+        }
+      }
+    },
+    "/minio/getObject/{bucketName}/{objectName}": {
+      "get": {
+        "tags": [
+          "Minio"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Get minio object",
+        "parameters": [
+          {
+            "name": "bucketName",
+            "in": "path",
+            "description": "Bucket name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "objectName",
+            "in": "path",
+            "description": "Object name",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "properties": {
+                "key": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "$ref": "#/definitions/404"
+            }
+          }
+        }
+      }
+    },
+    "/minio/insertObject/{bucketName}/{objectName}": {
+      "post": {
+        "tags": [
+          "Minio"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Insert minio object",
+        "parameters": [
+          {
+            "name": "bucketName",
+            "in": "path",
+            "description": "Bucket name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "objectName",
+            "in": "path",
+            "description": "Object name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "object",
+            "in": "body",
+            "description": "Object you want to insert",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "properties": {
+                "key": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "$ref": "#/definitions/404"
+            }
+          }
+        }
+      }
+    },
+    "/minio/listObjects/{bucketName}": {
+      "get": {
+        "tags": [
+          "Minio"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Get minio object list of the selected bucket",
+        "parameters": [
+          {
+            "name": "bucketName",
+            "in": "path",
+            "description": "Bucket name",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "properties": {
+                "key": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "$ref": "#/definitions/404"
+            }
+          }
+        }
+      }
+    },
+    "/minio/listObjects": {
+      "get": {
+        "tags": [
+          "Minio"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Get minio object list of all buckets",
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "properties": {
+                "key": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "$ref": "#/definitions/404"
+            }
+          }
+        }
+      }
+    },
+    "/minio/getObjects/{bucketName}": {
+      "get": {
+        "tags": [
+          "Minio"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Get minio objects of the selected bucket",
+        "parameters": [
+          {
+            "name": "bucketName",
+            "in": "path",
+            "description": "Bucket name",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "properties": {
+                "key": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "$ref": "#/definitions/404"
+            }
+          }
+        }
+      }
+    },
+    "/minio/getObjects": {
+      "get": {
+        "tags": [
+          "Minio"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Get minio objects all buckets",
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "properties": {
+                "key": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "$ref": "#/definitions/404"
+            }
+          }
+        }
+      }
+    },
+    "/minio/getBuckets": {
+      "get": {
+        "tags": [
+          "Minio"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Get minio bucket list",
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "properties": {
+                "key": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "$ref": "#/definitions/404"
+            }
+          }
+        }
+      }
+    },
+    "/minio/createBucket/{bucketName}": {
+      "post": {
+        "tags": [
+          "Minio"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Create a bucket in Minio with the name specified",
+        "parameters": [
+          {
+            "name": "bucketName",
+            "in": "path",
+            "description": "Bucket name",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "properties": {
+                "key": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "$ref": "#/definitions/404"
+            }
+          }
+        }
+      }
+    },
+    "/minio/subscribe/{bucketName}": {
+      "get": {
+        "tags": [
+          "Minio"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Subscribe for notification of the selected bucket and insert in DB every new object inserted in that bucket",
+        "parameters": [
+          {
+            "name": "bucketName",
+            "in": "path",
+            "description": "Bucket name",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {
+              "properties": {
+                "key": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "$ref": "#/definitions/404"
             }
           }
         }

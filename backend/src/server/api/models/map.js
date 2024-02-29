@@ -17,6 +17,7 @@ const map = mongoose.Schema({
   sourceDataURL : String,
   sourceDataID : String,
   config : {},
+  sourceDataMinio : {},
   path: String
 }, { versionKey: false });
 

@@ -68,8 +68,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    console.debug(this.route)
-    console.debug(this.route.snapshot)
 
     try {
       this.mapRecords = await this.dmmService.getMaps();

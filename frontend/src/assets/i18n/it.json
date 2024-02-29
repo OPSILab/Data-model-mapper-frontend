@@ -97,12 +97,12 @@
       "update_field_list" : "Aggiorna lista campi",
       "generate_mapper" : "Genera mapper"
     },
-    "adapters": {
+    "mapperRecords": {
       "name": "Nome",
-      "adapterId": "ID adattatore",
+      "mapperRecordId": "ID adattatore",
       "status" : "Stato",
       "description" : "Descrizione",
-      "validationErrors": "Ci sono degli errori di validazione nella descrizione dell'adapter inserito."
+      "validationErrors": "Ci sono degli errori di validazione nella descrizione dell'mapperRecord inserito."
     },
     "dmm": {
       "reset_config" : "Reset configurazione",

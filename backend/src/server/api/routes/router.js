@@ -24,12 +24,13 @@ router.get(encodeURI("/minio/getObjects/:bucketName"), auth, controller.getSourc
 router.get(encodeURI("/minio/getObjects"), auth, controller.getSourcesFromMinio)
 router.get(encodeURI("/minio/getBuckets"), auth, controller.minioGetBuckets)
 router.get(encodeURI("/minio/subscribe/:bucketName"), auth, controller.minioSubscribe)
-
 router.get(encodeURI("/maps"), auth, controller.getMaps)
 router.get(encodeURI("/sources"), auth, controller.getSources)
 router.get(encodeURI("/sources/db"), auth, controller.getSourcesFromDB)
 router.get(encodeURI("/sources/minio"), auth, controller.getSourcesFromMinio)
 router.get(encodeURI("/dataModels"), auth, controller.getDataModels)
+router.get(encodeURI("/mockGetUser"), controller.mockGetUser)
+router.get(encodeURI("/token"), controller.getToken)
 
 router.put(encodeURI("/map"), auth, upload.none(), controller.modifyMap)
 router.put(encodeURI("/source"), auth, upload.none(), controller.modifySource)

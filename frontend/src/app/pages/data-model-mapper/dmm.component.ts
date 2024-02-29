@@ -12,11 +12,11 @@ import { DialogImportComponent } from './dialog-import/dialog-import.component';
 import { DialogDataMapComponent } from './dialog-dataMap/dialog-dataMap.component';
 import { CreateMapComponent } from './create-map/create-map.component';
 import { ExportFileComponent } from './export-file/export-file.component';
-import { ErrorDialogAdapterService } from '../error-dialog/error-dialog-adapter.service';
+import { ErrorDialogMapperRecordService } from '../error-dialog/error-dialog-mapperRecord.service';
 import { ActivatedRoute } from '@angular/router';
 import { NgxConfigureService } from 'ngx-configure';
 import editor from './mapperEditor'
-import { inspect } from 'util';
+import { LoginComponent } from '../../auth/login/login.component';
 
 let mapOptionsGl, mapGl = "Set your mapping fields here"//, mapperEditor
 
@@ -32,6 +32,7 @@ function o(obj) {
 
 export class DMMComponent implements OnInit, OnChanges {
 
+  //TODO check if properties cleaning is required
   inputID
   map
   backendDown
@@ -48,7 +49,7 @@ export class DMMComponent implements OnInit, OnChanges {
   csvSourceData: any;
   sourceRef: string = '';
   typeSource: string;
-  adapter
+  mapperRecord
   emptySource
   mapObject
   flipped = false;
@@ -70,7 +71,7 @@ export class DMMComponent implements OnInit, OnChanges {
   schemaOrMap = "schema"
   name
   dialog = false
-  adapterId
+  mapperRecordId
   partialCsv: any;
   rows: string[];
   schemaEditor: any;
@@ -121,7 +122,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
   bodyEditorContainer: HTMLElement;
   bodyEditor: any;
-  body: any;
+  body: object;
   bodyEditorOptions: {
     mode: string; modes: string[]; // allowed modes
     onModeChange: (newMode: any, oldMode: any) => void;
@@ -129,17 +130,19 @@ export class DMMComponent implements OnInit, OnChanges {
   curlEditorContainer: HTMLElement;
   curlEditor: any;
   curl: string;
-  dbSources: any[];
-  minioSources: any;
-  buckets: any;
-  minioObjectList: any;
-  minioObjName: any;
+  dbSources: object[];
+  minioSources: object[];
+  buckets: string[];
+  minioObjectList: object[];
+  minioObjName: string;
+  bucket: string;
+  etag: string;
 
   constructor(
     @Inject(DOCUMENT) public document: Document,
     protected dialogService: NbDialogService,
     public windowService: NbWindowService,
-    public errorService: ErrorDialogAdapterService,
+    public errorService: ErrorDialogMapperRecordService,
     public dmmService: DMMService,
     public route: ActivatedRoute,
     public configService: NgxConfigureService,
@@ -149,23 +152,214 @@ export class DMMComponent implements OnInit, OnChanges {
     this.config = configService.config as AppConfig;
   }
 
-  updateMap() {
-    mapGl = this.map
+  updateMap() { mapGl = this.map }
+  fixBrokenPageBug() { document.getElementsByTagName('html')[0].className = "" }
+  rawSchema() { return !(this.dataModelURL || (this.selectedSchema && this.selectedSchema != "---select schema---" && typeof this.selectedSchema == "string")) }
+  rawSource() { return !(this.sourceDataURL || this.selectedSource) }
+  differences(object1, object2) { return JSON.stringify(object1) != JSON.stringify(object2) }
+  ngOnChanges(changes: SimpleChanges): void { console.log(changes); }
+
+  async ngOnInit(): Promise<void> {
+
+    editor.mapperEditor = undefined
+
+    this.sourceEditorContainer = this.document.getElementById('jsoneditor');
+    this.configEditorContainer = this.document.getElementById('configEditor');
+    this.mapperEditorContainer = this.document.getElementById('jsoneditor2');
+    this.schemaEditorContainer = this.document.getElementById('schemaEditor');
+    this.outputEditorContainer = this.document.getElementById('jsoneditor3');
+    this.bodyEditorContainer = this.document.getElementById('bodyEditor');
+    this.curlEditorContainer = this.document.getElementById('curlEditor');
+    this.selectBox = <HTMLInputElement>this.document.getElementById('input-type');
+    this.csvtable = this.document.getElementById('csv-table');
+
+    try {
+      await this.loadMapperList()
+      await this.loadSchemaList()
+      await this.loadSourceList()
+    }
+    catch (error) {
+      this.handleError(error, false, false)
+      if (error.status == 0 || error.error.status == 0) {
+        error.statusText = undefined
+        error.message = error.error.message = "Unable to reach server"
+        this.backendDown = true
+      }
+      this.errorService.openErrorDialog(error)
+    }
+
+    this.sourceOptions = {
+      mode: 'view',
+      modes: ['view', 'code'], // allowed modes
+      onModeChange: function (newMode, oldMode) { },
+    };
+
+    this.schemaOptions = {
+      mode: 'view',
+      modes: ['view', 'code'], // allowed modes
+      onModeChange: function (newMode, oldMode) { },
+    };
+
+    this.sourceJson = [{
+      "info": "set your source json here"
+    }]
+
+    this.selectedDataModel = this.exampleSchema
+
+    let preview = {
+      "preview": "set the source, set the json map and click preview to see the output json preview"
+    }
+
+    this.map = {
+      "set a field from the output schema field list": "set a field from the source input"
+    }
+
+    this.body = {
+
+    }
+
+    this.sourceEditor = new JSONEditor(this.sourceEditorContainer, this.sourceOptions, this.sourceJson);
+
+    this.schemaEditor = new JSONEditor(this.schemaEditorContainer, this.schemaOptions, this.selectedDataModel)
+
+    this.schemaEditor.update(this.exampleSchema)
+
+    await this.resetConfigSettings()
+
+    this.outputEditorOptions = {
+      mode: 'view',
+      modes: ['view', 'preview'], // allowed modes
+      onModeChange: function (newMode, oldMode) { },
+    };
+
+    this.bodyEditorOptions = {
+      mode: 'preview',
+      modes: ['view', 'preview'], // allowed modes
+      onModeChange: function (newMode, oldMode) { },
+    };
+
+    if (this.selectedSchema)
+      this.schemaJson = this.selectFilteredSchema()
+
+    this.setMapEditor(false);
+
+    if (!this.outputEditor)
+      this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, preview);
+    else
+      this.outputEditor.update(preview)
+
+    this.bodyEditor = new JSONEditor(this.bodyEditorContainer, this.bodyEditorOptions, this.body);
+
+    //this.curlEditor = new JSONEditor(this.curlEditorContainer, this.bodyEditorOptions, "");
+
+    if (this.route.snapshot.params['inputID'] as string || this.inputID) {
+      if (this.route.snapshot.params['inputID'] as string)
+        this.inputID = this.route.snapshot.params['inputID'] as string;
+      this.selectMap = this.inputID
+      await this.mapChanged(this.inputID, false)
+      if (this.inputType == "csv" && !this.emptySource)
+        this.updateCSVTable()
+      this.updateBody()
+    }
+    else {
+      this.importedSchema = this.exampleSchema
+      this.importedSource = o(this.sourceJson)
+    }
   }
 
-  fixBrokenPageBug() {
-    document.getElementsByTagName('html')[0].className = ""
+  setContext(unsaved, map, source) {
+    return {
+      unsaved,
+      sources: this.sources,
+      dataModels: this.schemas,
+      save: true,
+      path: this.selectedPath,
+      sourceDataType: this.inputType,
+      jsonMap: map,
+      schema: unsaved.schema || this.rawSchema() ? JSON.parse(this.schemaEditor.getText()) : undefined,
+      config: this.transformSettings,
+      sourceDataURL: this.sourceDataURL,
+      sourceDataID: this.minioObjName ? undefined : this.selectedSource,
+      dataModelURL: this.dataModelURL,
+      dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
+      sourceData: unsaved.source || this.rawSource() ? this.setSource(source, true) : undefined,
+      schemaSaved: false,
+      sourceSaved: false,
+      minioObjName: this.minioObjName,
+      etag: this.etag,
+      bucket: this.bucket
+    }
   }
 
-  rawSchema() {
-    if (this.dataModelURL || (this.selectedSchema && this.selectedSchema != "---select schema---" && typeof this.selectedSchema == "string"))
-      return false
-    return true
+  unsaved() {
+    return {
+      schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())),
+      source: this.differences(this.importedSource, this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData)
+    }
   }
 
-  rawSource() {
-    if (this.sourceDataURL || this.selectedSource) return false
-    return true
+  saveRecord() {
+    let source, map, unsaved
+    try {
+      source = JSON.parse(this.sourceEditor.getText())
+      map = JSON.parse(editor.mapperEditor.getText())
+      unsaved = this.unsaved()
+
+      this.dialogService.open(CreateMapComponent, {
+        context: this.setContext(unsaved, map, source)
+      }).onClose.subscribe(async (mapperRecord) => {
+        if (mapperRecord) {
+          this.mapperRecord = mapperRecord;
+          this.isNew = true
+          this.maps.push({
+            id: mapperRecord.mapperRecordId,
+            name: mapperRecord.name,
+            description: mapperRecord.description,
+            status: mapperRecord.status,
+            map: JSON.parse(editor.mapperEditor.getText()),
+            dataModel: this.schemaJson
+          })
+          this.selectMap = mapperRecord.mapperRecordId
+          this.savedSchema = mapperRecord.saveSchema
+          this.savedSource = mapperRecord.saveSource
+          if (mapperRecord.saveSchema) {
+            this.schemas.push({
+              dataModel: JSON.parse(this.schemaEditor.getText()),
+              id: mapperRecord.mapperRecordId,
+              name: mapperRecord.name,
+              description: mapperRecord.description,
+            })
+            this.importedSchema = JSON.parse(this.schemaEditor.getText())
+            this.selectedDataModel = undefined
+            this.dataModelURL = undefined
+          }
+          else if (this.importedSchema)
+            this.schemaEditor.update(this.importedSchema)
+          if (mapperRecord.saveSource) {
+            this.sources.push({
+              sourceData: this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : undefined,
+              sourceCSV: this.inputType == "json" ? undefined : this.csvSourceData,
+              id: mapperRecord.mapperRecordId,
+              name: mapperRecord.name,
+              description: mapperRecord.description,
+            })
+            this.importedSource = this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData
+            this.selectedSource = undefined
+            this.sourceDataURL = undefined
+          }
+          else if (this.importedSource)
+            this.sourceEditor.update(this.importedSource)
+        }
+      });
+    }
+    catch (error) {
+      console.log(error)
+      this.handleError(error, true,
+        this.sourceEditor.getText() == "" ? "Empty source" :
+          editor.mapperEditor.getText() == "" ? "Empty mapper" :
+            this.schemaEditor.getText() == "" ? "Empty schema" :
+              "Error loading JSON")
+    }
   }
 
   updateRecord() {
@@ -173,58 +367,37 @@ export class DMMComponent implements OnInit, OnChanges {
     try {
       source = JSON.parse(this.sourceEditor.getText())
       map = JSON.parse(editor.mapperEditor.getText())
-      unsaved = {
-        schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())),
-        source: this.differences(this.importedSource, this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData)
-      }
-
-      //if (source[this.selectedPath])
-      //source = source[this.selectedPath]
+      unsaved = this.unsaved()
 
       this.dialogService.open(CreateMapComponent, {
         context: {
-          unsaved,
-          sources: this.sources,
-          dataModels: this.schemas,
-          value: this.adapter,
+          ...this.setContext(unsaved, map, source),
+          value: this.mapperRecord,
           name: this.name,
-          update: true,
-          path: this.selectedPath,
-          sourceDataType: this.inputType,
-          jsonMap: map,
-          schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())) || this.rawSchema() ? JSON.parse(this.schemaEditor.getText()) : undefined,
-          config: this.transformSettings,
-          sourceDataURL: this.sourceDataURL,
-          sourceDataID: this.selectedSource,
-          dataModelURL: this.dataModelURL,
-          dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-          sourceData: this.differences(this.importedSource, this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData) || this.rawSource() ? this.setSource(source, true) : undefined,
-          schemaSaved: this.savedSchema,
-          sourceSaved: this.savedSource
         }
-      }).onClose.subscribe(async (adapter) => {
-        if (adapter) {
-          this.adapter = adapter;
-          if (!this.savedSchema) this.savedSchema = adapter.saveSchema
-          if (!this.savedSource) this.savedSource = adapter.saveSource
-          if (adapter.saveSchema) {
+      }).onClose.subscribe(async (mapperRecord) => {
+        if (mapperRecord) {
+          this.mapperRecord = mapperRecord;
+          if (!this.savedSchema) this.savedSchema = mapperRecord.saveSchema
+          if (!this.savedSource) this.savedSource = mapperRecord.saveSource
+          if (mapperRecord.saveSchema) {
             this.schemas.push({
               dataModel: JSON.parse(this.schemaEditor.getText()),
-              id: adapter.adapterId,
-              name: adapter.name,
-              description: adapter.description,
+              id: mapperRecord.mapperRecordId,
+              name: mapperRecord.name,
+              description: mapperRecord.description,
             })
             this.importedSchema = JSON.parse(this.schemaEditor.getText())
             this.selectedDataModel = undefined
             this.dataModelURL = undefined
           }
-          if (adapter.saveSource) {
+          if (mapperRecord.saveSource) {
             this.sources.push({
               sourceData: this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : undefined,
               sourceCSV: this.inputType == "json" ? undefined : this.csvSourceData,
-              id: adapter.adapterId,
-              name: adapter.name,
-              description: adapter.description,
+              id: mapperRecord.mapperRecordId,
+              name: mapperRecord.name,
+              description: mapperRecord.description,
             }
             )
             this.importedSource = JSON.parse(this.sourceEditor.getText())
@@ -380,12 +553,12 @@ export class DMMComponent implements OnInit, OnChanges {
   async reset() {
     this.importedSchema = undefined
     this.importedSource = undefined
-    this.adapterId = undefined
+    this.mapperRecordId = undefined
     this.dataModelURL = undefined
     this.inputID = undefined
     this.name = undefined
     this.onUpdateInputType("")
-    this.adapter = {}
+    this.mapperRecord = {}
     this.parsed = false
     this.partialCsv = undefined
     this.paths = []
@@ -427,10 +600,6 @@ export class DMMComponent implements OnInit, OnChanges {
     this.onUpdatePathForDataMap("", true)
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
-  }
-
   async setSchemaFromFile($event) {
     this.schemaFromFile = $event
     this.schemaJson =
@@ -439,114 +608,6 @@ export class DMMComponent implements OnInit, OnChanges {
     this.map = this.getAllNestedProperties(await this.dmmService.refParse(this.schemaJson));
     mapGl = this.map
     editor.mapperEditor.update(this.map)
-  }
-
-  async ngOnInit(): Promise<void> {
-
-    editor.mapperEditor = undefined
-
-    this.sourceEditorContainer = this.document.getElementById('jsoneditor');
-    this.configEditorContainer = this.document.getElementById('configEditor');
-    this.mapperEditorContainer = this.document.getElementById('jsoneditor2');
-    this.schemaEditorContainer = this.document.getElementById('schemaEditor');
-    this.outputEditorContainer = this.document.getElementById('jsoneditor3');
-    this.bodyEditorContainer = this.document.getElementById('bodyEditor');
-    this.curlEditorContainer = this.document.getElementById('curlEditor');
-    this.selectBox = <HTMLInputElement>this.document.getElementById('input-type');
-    this.csvtable = this.document.getElementById('csv-table');
-
-    try {
-      await this.loadMapperList()
-      await this.loadSchemaList()
-      await this.loadSourceList()
-    }
-    catch (error) {
-      this.handleError(error, false, false)
-      if (error.status == 0 || error.error.status == 0) {
-        error.statusText = undefined
-        error.message = error.error.message = "Unable to reach server"
-        this.backendDown = true
-      }
-      this.errorService.openErrorDialog(error)
-    }
-
-    this.sourceOptions = {
-      mode: 'view',
-      modes: ['view', 'code'], // allowed modes
-      onModeChange: function (newMode, oldMode) { },
-    };
-
-    this.schemaOptions = {
-      mode: 'view',
-      modes: ['view', 'code'], // allowed modes
-      onModeChange: function (newMode, oldMode) { },
-    };
-
-    this.sourceJson = [{
-      "info": "set your source json here"
-    }]
-
-    this.selectedDataModel = this.exampleSchema
-
-    let preview = {
-      "preview": "set the source, set the json map and click preview to see the output json preview"
-    }
-
-    this.map = {
-      "set a field from the output schema field list": "set a field from the source input"
-    }
-
-    this.body = {
-
-    }
-
-    this.sourceEditor = new JSONEditor(this.sourceEditorContainer, this.sourceOptions, this.sourceJson);
-
-    this.schemaEditor = new JSONEditor(this.schemaEditorContainer, this.schemaOptions, this.selectedDataModel)
-
-    this.schemaEditor.update(this.exampleSchema)
-
-    await this.resetConfigSettings()
-
-    this.outputEditorOptions = {
-      mode: 'view',
-      modes: ['view', 'preview'], // allowed modes
-      onModeChange: function (newMode, oldMode) { },
-    };
-
-    this.bodyEditorOptions = {
-      mode: 'preview',
-      modes: ['view', 'preview'], // allowed modes
-      onModeChange: function (newMode, oldMode) { },
-    };
-
-    if (this.selectedSchema)
-      this.schemaJson = this.selectFilteredSchema()
-
-    this.setMapEditor(false);
-
-    if (!this.outputEditor)
-      this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, preview);
-    else
-      this.outputEditor.update(preview)
-
-    this.bodyEditor = new JSONEditor(this.bodyEditorContainer, this.bodyEditorOptions, this.body);
-
-    //this.curlEditor = new JSONEditor(this.curlEditorContainer, this.bodyEditorOptions, "");
-
-    if (this.route.snapshot.params['inputID'] as string || this.inputID) {
-      if (this.route.snapshot.params['inputID'] as string)
-        this.inputID = this.route.snapshot.params['inputID'] as string;
-      this.selectMap = this.inputID
-      await this.mapChanged(this.inputID, false)
-      if (this.inputType == "csv" && !this.emptySource)
-        this.updateCSVTable()
-      this.updateBody()
-    }
-    else {
-      this.importedSchema = this.exampleSchema
-      this.importedSource = o(this.sourceJson)
-    }
   }
 
   selectFilteredSchema() {
@@ -560,11 +621,14 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   source() {
-    let filteredSource = this.sources.filter(filteredSource => filteredSource._id == this.selectedSource)[0] || this.sources.filter(filteredSource => filteredSource._id == this.selectedSource)[0]
-    if (this.sourceFrom == "minio")
+    let filteredSource = this.sources.filter(filteredSource => filteredSource._id == this.selectedSource || filteredSource.etag == this.selectedSource)[0]
+    if (this.sourceFrom == "minio") {
       this.minioObjName = filteredSource.name
+      this.bucket = filteredSource.bucket,
+        this.etag = filteredSource.etag
+    }
     else
-      this.minioObjName = undefined
+      this.etag = this.bucket = this.minioObjName = undefined
     return filteredSource.source || filteredSource.sourceCSV
   }
 
@@ -640,9 +704,9 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
-  async loadObjectFromMinio(bucketName) {
+  async loadObjectFromMinio(bucketName, objectName) {
     try {
-      this.selectedSource = await this.dmmService.getMinioObject(bucketName);
+      this.selectedSource = await this.dmmService.getMinioObject(bucketName, objectName);
     }
     catch (error) {
       this.handleError(error, false, false)
@@ -697,7 +761,7 @@ export class DMMComponent implements OnInit, OnChanges {
     return this.inputType == "csv" ? limit ? this.partialCsv : this.csvSourceData : source
   }
 
-  async testAdapter() {
+  async testMapperRecord() {
     this.updateConfigSettings(false)
     let output
     try {
@@ -706,7 +770,7 @@ export class DMMComponent implements OnInit, OnChanges {
       let source = this.setSource(JSON.parse(this.sourceEditor.getText()), true)
       if (source[this.selectedPath])
         source = source[this.selectedPath]
-      output = await this.dmmService.test(this.inputType, this.minioObjName ,source, m, this.schemaJson, this.transformSettings)
+      output = await this.dmmService.transform(this.inputType, this.minioObjName, this.bucket, this.etag, source, m, this.schemaJson, this.transformSettings)
     }
     catch (error) {
       if (!output)
@@ -729,7 +793,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (source[this.selectedPath])
         source = source[this.selectedPath]
 
-      output = await this.dmmService.test(this.inputType,this.minioObjName , source, m, this.schemaJson, this.transformSettings)
+      output = await this.dmmService.transform(this.inputType, this.minioObjName, this.bucket, this.etag, source, m, this.schemaJson, this.transformSettings)
     }
     catch (error) {
       if (!output)
@@ -737,7 +801,7 @@ export class DMMComponent implements OnInit, OnChanges {
           output = { "error": "Service unreachable" }
         else if (error.status == 413) {
           try {
-            output = await this.dmmService.test(this.inputType, this.minioObjName, { url: this.sourceDataURL }, JSON.parse(editor.mapperEditor.getText()), this.schemaJson, this.transformSettings)
+            output = await this.dmmService.transform(this.inputType, this.minioObjName, this.bucket, this.etag, { url: this.sourceDataURL }, JSON.parse(editor.mapperEditor.getText()), this.schemaJson, this.transformSettings)
           }
           catch (error) {
             console.error(error.message)
@@ -779,10 +843,6 @@ export class DMMComponent implements OnInit, OnChanges {
           this.compareMaps(oldMap[key], newMap[key])
         else //if (oldMap[key] && (typeof oldMap[key] == "object" || Array.isArray(typeof oldMap[key])))
           newMap[key] = JSON.parse(JSON.stringify(oldMap[key]))
-  }
-
-  differences(object1, object2) {
-    return JSON.stringify(object1) != JSON.stringify(object2)
   }
 
   //skipArrays:Ignore the array part
@@ -974,21 +1034,31 @@ export class DMMComponent implements OnInit, OnChanges {
     if (editor.mapperEditor) this.map = JSON.parse(editor.mapperEditor.getText())
   }
 
-  buildSnippet() {
+  async buildSnippet() {
     let source = this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData
-
-
-    //if (source[this.selectedPath])
-    //source = source[this.selectedPath]
+    let token
+    try {
+      token = await this.dmmService.getToken()
+    }
+    catch (error) {
+      console.error(error)
+      token = error.error.text
+    }
 
     let body = this.isNew ?
       {
         sourceData: source,
-        mapID: this.adapter.adapterId
+        mapID: this.mapperRecord.mapperRecordId
       }
       :
       this.bodyBuilder(source)
-    return "curl --location '" + this.config.data_model_mapper.default_mapper_url + "' --header 'Content-Type: application/json' --data '" + JSON.stringify(body) + "'"
+
+    return "curl -X POST \\\n'".concat(
+    this.config.data_model_mapper.default_mapper_url) +
+    "' \\\n-H \"Accept:application/json\" \\\n" +
+    "-H \"Authorization:Bearer " + token + "\" \\\n"+
+    "-H 'Content-Type: application/json' \\\n"+
+    "-d '" + JSON.stringify(body) + "'"
   }
 
   bodyBuilder(source) {
@@ -1008,7 +1078,14 @@ export class DMMComponent implements OnInit, OnChanges {
       body["sourceData"] = this.setSource(source, true)
     else {
       body["sourceDataURL"] = this.sourceDataURL
-      body["sourceDataID"] = this.selectedSource
+      if (this.minioObjName)
+        body["sourceDataMinio"] = {
+          name: this.minioObjName,
+          bucket: this.bucket,
+          etag: this.etag
+        }
+      else
+        body["sourceDataID"] = this.selectedSource
     }
     return body
   }
@@ -1016,9 +1093,6 @@ export class DMMComponent implements OnInit, OnChanges {
   saveAsFile(): void {
 
     let source = JSON.parse(this.sourceEditor.getText())
-
-    //if (source[this.selectedPath])
-    //source = source[this.selectedPath]
 
     this.dialogService.open(ExportFileComponent).onClose.subscribe((content) => {
       if (content == "file")
@@ -1033,7 +1107,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async saveFile(model, type): Promise<void> {
-    const filename = (this?.name || this?.adapter?.name || "exportedFile") + "." + type,
+    const filename = (this?.name || this?.mapperRecord?.name || "exportedFile") + "." + type,
       blob = new Blob([model], {
         type: 'application/json;charset=utf-8',
       });
@@ -1115,93 +1189,6 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
-  saveRecord() {
-    let source, map, unsaved
-    try {
-      source = JSON.parse(this.sourceEditor.getText())
-      map = JSON.parse(editor.mapperEditor.getText())
-      unsaved = {
-        schema: this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())),
-        source: this.differences(this.importedSource, this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData)
-      }
-
-      //if (source[this.selectedPath])
-      //source = source[this.selectedPath]
-
-      this.dialogService.open(CreateMapComponent, {
-        context: {
-          unsaved,
-          sources: this.sources,
-          dataModels: this.schemas,
-          save: true,
-          path: this.selectedPath,
-          sourceDataType: this.inputType,
-          jsonMap: map,
-          schema: unsaved.schema || this.rawSchema() ? JSON.parse(this.schemaEditor.getText()) : undefined,
-          config: this.transformSettings,
-          sourceDataURL: this.sourceDataURL,
-          sourceDataID: this.selectedSource,
-          dataModelURL: this.dataModelURL,
-          dataModelID: this.selectedSchema && this.selectedSchema != "---select schema---" ? this.selectedSchema : undefined,
-          sourceData: unsaved.source || this.rawSource() ? this.setSource(source, true) : undefined,
-          schemaSaved: false,
-          sourceSaved: false
-        }
-      }).onClose.subscribe(async (adapter) => {
-        if (adapter) {
-          this.adapter = adapter;
-          this.isNew = true
-          this.maps.push({
-            id: adapter.adapterId,
-            name: adapter.name,
-            description: adapter.description,
-            status: adapter.status,
-            map: JSON.parse(editor.mapperEditor.getText()),
-            dataModel: this.schemaJson
-          })
-          this.selectMap = adapter.adapterId
-          this.savedSchema = adapter.saveSchema
-          this.savedSource = adapter.saveSource
-          if (adapter.saveSchema) {
-            this.schemas.push({
-              dataModel: JSON.parse(this.schemaEditor.getText()),
-              id: adapter.adapterId,
-              name: adapter.name,
-              description: adapter.description,
-            })
-            this.importedSchema = JSON.parse(this.schemaEditor.getText())
-            this.selectedDataModel = undefined
-            this.dataModelURL = undefined
-          }
-          else if (this.importedSchema)
-            this.schemaEditor.update(this.importedSchema)
-          if (adapter.saveSource) {
-            this.sources.push({
-              sourceData: this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : undefined,
-              sourceCSV: this.inputType == "json" ? undefined : this.csvSourceData,
-              id: adapter.adapterId,
-              name: adapter.name,
-              description: adapter.description,
-            })
-            this.importedSource = this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData
-            this.selectedSource = undefined
-            this.sourceDataURL = undefined
-          }
-          else if (this.importedSource)
-            this.sourceEditor.update(this.importedSource)
-        }
-      });
-    }
-    catch (error) {
-      console.log(error)
-      this.handleError(error, true,
-        this.sourceEditor.getText() == "" ? "Empty source" :
-          editor.mapperEditor.getText() == "" ? "Empty mapper" :
-            this.schemaEditor.getText() == "" ? "Empty schema" :
-              "Error loading JSON")
-    }
-  }
-
   async mapChanged($event, settingsFromFile) {
     if (settingsFromFile || ($event && $event != "---select map---")) {
       let mapSettings
@@ -1219,7 +1206,21 @@ export class DMMComponent implements OnInit, OnChanges {
       if (mapSettings.sourceDataID && !mapSettings.sourceData && !this.emptySource) {
         this.selectedSource = mapSettings.sourceDataID
         try {
-          mapSettings.sourceData = await this.source()
+          mapSettings.sourceData = await this.source()//TODO maybe source is already loaded. Check this.sourceEditor.getText()
+          this.importedSource = o(mapSettings.sourceData)
+        }
+        catch (error) {
+          if (error.message == "Cannot read properties of undefined (reading 'source')")
+            error.message = "Source could not be loaded"
+          this.handleError(error, false, false)
+          mapSettings.sourceData = { error: "source is empty or could not be loaded" }
+          this.importedSource = o(mapSettings.sourceData)
+        }
+      }
+      else if (mapSettings.sourceDataMinio && !mapSettings.sourceData && !this.emptySource) {
+        this.selectedSource = mapSettings.sourceDataMinio.etag
+        try {
+          mapSettings.sourceData = await this.dmmService.getMinioObject(mapSettings.sourceDataMinio.bucket, mapSettings.sourceDataMinio.name) //TODO maybe source is already loaded. Check this.sourceEditor.getText()
           this.importedSource = o(mapSettings.sourceData)
         }
         catch (error) {
@@ -1282,7 +1283,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
       if (mapSettings.sourceDataType == "json" && !this.emptySource) {
         //this.sourceJson = this.source();
-        this.sourceEditor.update(mapSettings.sourceData)
+        this.sourceEditor.update(mapSettings.sourceData) //TODO maybe source editor is already updated. Check this.sourceEditor.getText()
         if (mapSettings.path || mapSettings.path == '') {
           this.selectedPath = mapSettings.path
           mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), mapSettings.path);
@@ -1304,14 +1305,13 @@ export class DMMComponent implements OnInit, OnChanges {
       else if (!this.emptySource)
         this.onUpdateInputType("")
 
-      this.map = mapSettings.map || mapSettings.mapData
-      mapGl = this.map
-      this.adapter = {}
-      if (mapSettings._id) this.adapter.adapterId = mapSettings._id
+      mapGl = this.map = mapSettings.map || mapSettings.mapData
+      this.mapperRecord = {}
+      if (mapSettings._id) this.mapperRecord.mapperRecordId = mapSettings._id
       if (mapSettings.name) this.name = mapSettings.name
-      if (mapSettings.description) this.adapter.description = mapSettings.description
-      if (mapSettings.status) this.adapter.status = mapSettings.status
-      if (this.adapter.adapterId) this.isNew = true
+      if (mapSettings.description) this.mapperRecord.description = mapSettings.description
+      if (mapSettings.status) this.mapperRecord.status = mapSettings.status
+      if (this.mapperRecord.mapperRecordId) this.isNew = true
       editor.mapperEditor.update(this.map)
       this.selectedSchema = "---select schema---"
       this.selectedSource = undefined
@@ -1425,16 +1425,16 @@ export class DMMComponent implements OnInit, OnChanges {
     this.bodyEditor.update(this.isNew ?
       {
         sourceData: this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData,
-        mapID: this.adapter.adapterId
+        mapID: this.mapperRecord.mapperRecordId
       }
       :
       this.bodyBuilder(this.inputType == "json" ? JSON.parse(this.sourceEditor.getText()) : this.csvSourceData))
   }
 
-  updateCurl() {
+  async updateCurl() {
     //while (curl != this.buildSnippet().replace("\\", " "))
     //curl = this.buildSnippet().replace("\\", " ")
-    this.curl = this.buildSnippet()
+    this.curl = await this.buildSnippet()
     //this.curlEditor.update(this.buildSnippet())
   }
 
@@ -1527,4 +1527,5 @@ export class DMMComponent implements OnInit, OnChanges {
     element.textContent = ""
     element.appendChild(divElement);
   }
+
 }

@@ -59,6 +59,7 @@ export class LoginPopupComponent implements AfterViewInit, OnDestroy {
   completeLogin = (token: OidcJWTToken): void => {
     try {
       // Get Idm User Details to create the associated Account
+
       const tokenPayload = token.getAccessTokenPayload();
 
       localStorage.setItem('accountId', tokenPayload.preferred_username);
