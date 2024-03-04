@@ -175,7 +175,7 @@ module.exports = {
         config.delimiter = configIn ? configIn.delimiter : config.delimiter || ','
         if (config.NGSI_entity != undefined) this.NGSI_entity = config.NGSI_entity
 
-        if (source.id && !source.data ) {
+        if (source.id && !source.data[0] ) {
             try { source.data = await Source.findOne({ _id: source.id }) }
             catch (error) {
                 console.log(error)
@@ -184,7 +184,7 @@ module.exports = {
             source.data = source.data.source || source.data.sourceCSV
         }
 
-        if (source.minioObjName && !source.data) {
+        if (source.minioObjName && !source.data[0]) {
             try { source.data = await this.minioGetObject(source.minioBucketName, source.minioObjName, source.type) }
             catch (error) {
                 console.log(error)
@@ -204,7 +204,7 @@ module.exports = {
                 config.modelSchemaFolder + '/DataModelTemp.json'
         }
         //let sourceFileTemp2 = false
-        if (!source.data && source.url) {
+        if (!source.data[0] && source.url) {
             source.download = await axios.get(source.url)
             source.data = source.download.data
             /*
