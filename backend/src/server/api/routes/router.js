@@ -5,13 +5,13 @@ const multer = require('multer');
 const upload = multer();
 const {auth} = require("../middlewares/auth.js")
 
-router.post(encodeURI("/map/transform"), auth, upload.none(), controller.mapData)
-router.post(encodeURI("/map/register"), auth, upload.none(), controller.insertMap)
-router.post(encodeURI("/source"), auth, upload.none(), controller.insertSource)
-router.post(encodeURI("/dataModel"), auth, upload.none(), controller.insertDataModel)
-router.post(encodeURI("/dereferenceSchema"), auth, upload.none(), controller.dereferenceSchema)
-router.post(encodeURI("/minio/createBucket/:bucketName"), auth, upload.none(), controller.minioCreateBucket)
-router.post(encodeURI("/minio/insertObject/:bucketName/:objectName"), auth, upload.none(), controller.minioInsertObject)
+router.post(encodeURI("/map/transform"), upload.none(), auth,  controller.mapData)
+router.post(encodeURI("/map/register"), upload.none(), auth, controller.insertMap)
+router.post(encodeURI("/source"), upload.none(), auth, controller.insertSource)
+router.post(encodeURI("/dataModel"), upload.none(), auth, controller.insertDataModel)
+router.post(encodeURI("/dereferenceSchema"), upload.none(), auth, controller.dereferenceSchema)
+router.post(encodeURI("/minio/createBucket/:bucketName"), upload.none(), auth, controller.minioCreateBucket)
+router.post(encodeURI("/minio/insertObject/:bucketName/:objectName"), upload.none(), auth, controller.minioInsertObject)
 
 router.get(encodeURI("/map"), auth, controller.getMap)
 router.get(encodeURI("/config"), auth, controller.getConfig)

@@ -6,9 +6,6 @@ module.exports = {
 
     mapData: async (req, res) => {
 
-        if (req.body.file)
-            req.body = JSON.parse(req.body.file)
-
         process.res = res;
         let { sourceData, map, dataModel } = utils.bodyMapper(req.body)
 
@@ -99,8 +96,7 @@ module.exports = {
     },
 
     insertSource: async (req, res) => {
-        if (req.body.file)
-            req.body = JSON.parse(req.body.file)
+       
         process.res = res;
         try {
             res.send(await service.insertSource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef))
@@ -113,8 +109,7 @@ module.exports = {
     },
 
     insertMap: async (req, res) => {
-        if (req.body.file)
-            req.body = JSON.parse(req.body.file)
+
         process.res = res;
         try {
             res.send(await service.insertMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
@@ -126,8 +121,7 @@ module.exports = {
     },
 
     insertDataModel: async (req, res) => {
-        if (req.body.file)
-            req.body = JSON.parse(req.body.file)
+
         process.res = res;
         try {
             res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef))
@@ -141,8 +135,7 @@ module.exports = {
     },
 
     modifySource: async (req, res) => {
-        if (req.body.file)
-            req.body = JSON.parse(req.body.file)
+
         process.res = res;
         try {
             res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef))
@@ -152,8 +145,7 @@ module.exports = {
     },
 
     modifyMap: async (req, res) => {
-        if (req.body.file)
-            req.body = JSON.parse(req.body.file)
+
         process.res = res;
         try {
             res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
@@ -165,8 +157,7 @@ module.exports = {
     },
 
     modifyDataModel: async (req, res) => {
-        if (req.body.file)
-            req.body = JSON.parse(req.body.file)
+   
         process.res = res;
         try {
             res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef))
@@ -197,8 +188,7 @@ module.exports = {
     },
 
     dereferenceSchema: async (req, res) => {
-        if (req.body.file)
-            req.body = JSON.parse(req.body.file)
+
         process.res = res;
         if (req.body.bucketName) req.body.bucketName = undefined
         try { res.send(await service.dereferenceSchema(req.body)) }

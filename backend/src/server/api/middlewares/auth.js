@@ -15,6 +15,9 @@ function parseJwt(token) {
 module.exports = {
     auth: async (req, res, next) => {
 
+        if (req.body.file)
+            req.body = JSON.parse(req.body.file)
+
         if (authConfig.disableAuth)
             next()
         else {
@@ -72,8 +75,8 @@ module.exports = {
                     if ((decodedToken.azp == authConfig.clientId) && ((decodedToken.exp * 1000) > Date.now())) {
 
                         try {
-                            let data = (await axios.get(config.authConfig.userInfoEndpoint, { headers: {"Authorization" : req.headers.authorization} })).data
-                            let {pilot, username} = data
+                            let data = (await axios.get(config.authConfig.userInfoEndpoint, { headers: { "Authorization": req.headers.authorization } })).data
+                            let { pilot, username } = data
                             req.body.bucketName = pilot.toLowerCase() //+ "/" + email + "/" + config.minioWriter.defaultBucketName//{pilot, email}
                             req.body.prefix = username + "/" + config.minioWriter.defaultBucketName
                         }
