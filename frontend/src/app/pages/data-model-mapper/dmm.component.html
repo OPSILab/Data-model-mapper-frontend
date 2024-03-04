@@ -72,12 +72,12 @@
             <div class="mb-1" style="display:none;" id="json-input">
               <div class="mb-2">
                 <br><br>
-                <nb-select *ngIf="sourceFrom=='minio'" placeholder="Select source file" size="small"
+                <nb-select id="selectSource" *ngIf="sourceFrom=='minio'" placeholder="Select source file" size="small"
                   [(ngModel)]="selectedSource" (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
                   <!--<nb-option value="">---select source---</nb-option>-->
                   <nb-option *ngFor="let source of minioSources" value={{source.etag}}>{{source.name}}</nb-option>
                 </nb-select>
-                <nb-select *ngIf="sourceFrom=='db'" placeholder="Select source file" size="small"
+                <nb-select id="selectSource" *ngIf="sourceFrom=='db'" placeholder="Select source file" size="small"
                   [(ngModel)]="selectedSource" (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
                   <!--<nb-option value="">---select source---</nb-option>-->
                   <nb-option *ngFor="let source of dbSources" value={{source._id}}>{{source.name}}</nb-option>

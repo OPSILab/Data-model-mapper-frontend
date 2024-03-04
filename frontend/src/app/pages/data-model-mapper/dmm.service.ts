@@ -34,7 +34,7 @@ export class DMMService {
   }
 
   getToken(): any {
-    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/token").toPromise();
+    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/bearer").toPromise();
   }
 
   getSources(): any {

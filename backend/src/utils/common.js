@@ -17,7 +17,7 @@ module.exports = {
         var fs = require('fs');
     
         fs.writeFile("./logs/errorLog" + JSON.stringify(logIndex) + ".json", "[" + str.substring(0, str.length - 1) + "]", function (err) {
-            if (err) throw err;
+            if (err) console.error(err);
         })
     
         logIndex++

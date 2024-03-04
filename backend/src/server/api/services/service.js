@@ -260,7 +260,12 @@ module.exports = {
         log.debug(JSON.stringify(minioObjectList))
         for (let obj of minioObjectList) {
             if (obj.name.toLowerCase().includes(prefix))
-                sources.push({ etag: obj.etag, from: "minio", bucket, name: obj.name, source: (await this.minioGetObject(bucket, obj.name, format)) })//, postMessage)) })
+                try {
+                    sources.push({ etag: obj.etag, from: "minio", bucket, name: obj.name, source: (await this.minioGetObject(bucket, obj.name, format)) })//, postMessage)) })
+                }
+                catch (error) {
+                    console.error(error)
+                }
         }
     },
 
