@@ -82,6 +82,8 @@ module.exports = {
         let configCopy = JSON.parse(JSON.stringify(config))
 
         configCopy.mongo =
+        configCopy.host =
+        configCopy.externalPort =
             configCopy.writers =
             configCopy.minioWriter.accessKey =
             configCopy.minioWriter.secretKey =
@@ -173,7 +175,7 @@ module.exports = {
         config.delimiter = configIn ? configIn.delimiter : config.delimiter || ','
         if (config.NGSI_entity != undefined) this.NGSI_entity = config.NGSI_entity
 
-        if (source.id) {
+        if (source.id && !source.data ) {
             try { source.data = await Source.findOne({ _id: source.id }) }
             catch (error) {
                 console.log(error)
@@ -182,7 +184,7 @@ module.exports = {
             source.data = source.data.source || source.data.sourceCSV
         }
 
-        if (source.minioObjName) {
+        if (source.minioObjName && !source.data) {
             try { source.data = await this.minioGetObject(source.minioBucketName, source.minioObjName, source.type) }
             catch (error) {
                 console.log(error)
@@ -190,7 +192,7 @@ module.exports = {
             }
         }
 
-        if (dataModel.id) {
+        if (dataModel.id  && !dataModel.data) {
             try { dataModel.data = await DataModel.findOne({ _id: dataModel.id }) }
             catch (error) {
                 console.log(error)
