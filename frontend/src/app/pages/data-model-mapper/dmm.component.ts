@@ -902,8 +902,8 @@ export class DMMComponent implements OnInit, OnChanges {
     this.confirmMapping()
     this.paths = this.selectMapJsonOptions(this.sourceEditor.getText(), "")
     mapOptionsGl = this.selectMapJsonOptions(this.sourceEditor.getText(), $event);
-    if (!$event && !root)
-      mapOptionsGl[0] = "---no keys for selected path---"
+    //if (!$event && !root)
+    //  mapOptionsGl[0] = "---no keys for selected path---"
     if (!mapOptionsGl[0])
       mapOptionsGl[0] = "---no keys for selected path---"
     this.setMapEditor(true);
