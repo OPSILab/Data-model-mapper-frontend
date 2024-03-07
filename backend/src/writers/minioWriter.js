@@ -22,7 +22,7 @@ module.exports = {
     minioClient.makeBucket(name, location, function (err) {
       if (err) {
         errorMessage = err;
-        log.error(err)
+        console.error(err)
         return err
         //return e(err)
       }
@@ -182,7 +182,7 @@ module.exports = {
       minioClient.fPutObject(bucketName, objectName, minioConfig.defaultFileInput, metaData, function (err, etag) {
         log.info(etag)
         if (err) {
-          log.error(err)
+          console.error(err)
           return err
           //return e(err)
         }
@@ -190,7 +190,7 @@ module.exports = {
       })
     }
     catch (error) {
-      log.error(error)
+      console.error(error)
       //e(error)
     }
   },
@@ -204,9 +204,9 @@ module.exports = {
 
     minioClient.putObject(bucketName, objectName, JSON.stringify(object), function (err, res) {
       if (err) {
-        log.error("An error occurred while writing object")
+        console.error("An error occurred while writing object")
         errorMessage = err
-        log.error(err)
+        console.error(err)
         return err
         //return e(err)
       }
@@ -245,7 +245,7 @@ module.exports = {
     minioClient.getObject(bucketName, objectName, function (err, dataStream) {
       if (err) {
         errorMessage = err
-        log.error(err)
+        console.error(err)
         return err
         //return e(err)
       }
@@ -269,7 +269,7 @@ module.exports = {
       dataStream.on('error', function (err) {
         log.info('Error reading object:')
         errorMessage = err
-        log.error(err)
+        console.error(err)
         //e(err);
       });
 

@@ -129,7 +129,7 @@ module.exports = {
         }
         catch (error) {
             res.status(400).send(error.toString())
-            log.error(error.toString())
+            console.error(error.toString())
         }
 
     },

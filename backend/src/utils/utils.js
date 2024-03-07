@@ -302,7 +302,7 @@ const printFinalReportAndSendResponse = async (logger) => {
                             await minioWriter.stringUpload(bucketName, objectName, obj)
                     }
                     catch (error) {
-                        logger.error(error)
+                        console.error(error)
                     }
                     logger.debug("minio writing done")
                 }
@@ -311,7 +311,7 @@ const printFinalReportAndSendResponse = async (logger) => {
             await sendOutput();
         }
         catch (error) {
-            logger.error(error.message)
+            console.error(error.message)
             apiOutput.outputFile = [];
         }
     }

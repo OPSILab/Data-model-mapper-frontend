@@ -63,8 +63,8 @@ const writeObject = async (objNumber, obj, addBRLine) => {
 
             } catch (err) {
                 config.fileUnWrittenCount++;
-                log.error('Error while writing mapped object to file');
-                log.error('----------------------------------------------------------\n' +
+                console.error('Error while writing mapped object to file');
+                console.error('----------------------------------------------------------\n' +
                     'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT written to file');
                 console.log(err)
                 return reject(err);

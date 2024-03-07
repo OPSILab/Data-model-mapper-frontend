@@ -114,7 +114,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
 
                         } else {
                             return Promise.reject('Update Error').catch((error) => {
-                                log.error('There was an error while writing Mapped Object: ')
+                                console.error('There was an error while writing Mapped Object: ')
                                 console.log(error)
                             });
                         }
@@ -135,7 +135,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                         log.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
                         config.orionUnWrittenCount++;
                         return Promise.reject(error).catch((error) => {
-                            log.error('There was an error while writing Mapped Object: ')
+                            console.error('There was an error while writing Mapped Object: ')
                             console.log(error)
                         });
 
@@ -153,7 +153,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
             } else {
                 config.orionUnWrittenCount++;
                 return Promise.reject('Error returned from Context Broker: ' + JSON.stringify(createResponse) + '\n').catch((error) => {
-                    log.error('There was an error while writing Mapped Object: ')
+                    console.error('There was an error while writing Mapped Object: ')
                     console.log(error)
                 });
             }

@@ -235,7 +235,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         if (!isSingleField) {
             report.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
         }
-        log.error("Field is not valid")
+        console.error("Field is not valid")
         return false
     }
 }

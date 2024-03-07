@@ -70,13 +70,13 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 var extension = sourceData.ext;
                 if (!extension) {
                     // No file path provided nor dataType
-                    log.error('The provided url/file path does not have file extension');
+                    console.error('The provided url/file path does not have file extension');
                     return Promise.reject('The provided url / file path does not have file extension');
                 }
 
             } else if (!sourceDataType) {
                 // No file path provided nor dataType
-                log.error('No file path provided nor dataType');
+                console.error('No file path provided nor dataType');
                 return Promise.reject('No file path provided nor dataType');
             }
 
@@ -90,7 +90,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 var map = await mapHandler.loadMap(mapData[1] == "mapData" ? mapData[0] : mapData); // map is the file map loaded
                 log.debug("map is the file map loaded")
             } catch (error) {
-                log.error('There was an error while loading Map: ');
+                console.error('There was an error while loading Map: ');
                 console.log(error)
                 return Promise.reject('There was an error while loading Map: ' + error);
             }
@@ -106,7 +106,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                     if ((targetDataModel = map['targetDataModel']) !== undefined) {
                         /* Check if provided TargetDataModel is valid, otherwise return error */
                         if ((dataModelSchemaPath = utils.getDataModelPath(targetDataModel)) === undefined) {
-                            log.error("Incorrect target Data Model name: " + targetDataModel);
+                            console.error("Incorrect target Data Model name: " + targetDataModel);
                             process.res?.status(400).json({ "error": "Incorrect target Data Model name: " + targetDataModel })
                             return Promise.reject("Incorrect target Data Model name");
                         }
@@ -116,7 +116,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                     log.info('Data Model Schema loaded and dereferenced');
 
                 } catch (error) {
-                    log.error('There was an error while processing Data Model schema: ');
+                    console.error('There was an error while processing Data Model schema: ');
                     console.log(error)
                     return Promise.reject(error);
                 }
@@ -147,20 +147,20 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 return await Promise.resolve("OK");
 
             } else {
-                log.error('There was an error while loading Map File');
+                console.error('There was an error while loading Map File');
                 return await Promise.reject('There was an error while loading Map File');
             }
 
         } else {
-            log.error('The source Data is not a valid file nor a valid path/url: ');
+            console.error('The source Data is not a valid file nor a valid path/url: ');
             return await Promise.reject('The source Data is not a valid file nor a valid path/url');
         }
 
     } else if (!dataModelSchemaPath) {
-        log.error('Data Model Schema path not specified');
+        console.error('Data Model Schema path not specified');
         return await Promise.reject('Data Model Schema path not specified');
     } else {
-        log.error('Map path not specified');
+        console.error('Map path not specified');
         return await Promise.reject('Map path not specified');
     }
 
@@ -184,7 +184,7 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
         var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, config.idSite, config.idService, config.idGroup, config.entityNameField);
     }
     catch (error) {
-        log.error(error.message)
+        console.error(error.message)
     }
 
     log.debug("Row: " + rowNumber + " - Object mapped correctly ");
@@ -205,7 +205,7 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
                         promises.push(await orionWriter.writeObject(objNumber, obj, modelSchema));
                     }
                     catch (error) {
-                        log.error(error.toString())
+                        console.error(error.toString())
                         log.debug(JSON.stringify(error))
                     }
                     break;
@@ -219,7 +219,7 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
         });
     }
     catch (error) {
-        log.error(error.toString())
+        console.error(error.toString())
         log.debug(JSON.stringify(error))
     }
 };

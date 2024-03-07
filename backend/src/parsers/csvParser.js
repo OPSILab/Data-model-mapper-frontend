@@ -48,7 +48,7 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
             fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
-            log.error('There was an error while getting buffer from source data: ');
+            console.error('There was an error while getting buffer from source data: ');
             console.log(err)
         }
     }
@@ -73,7 +73,7 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
             console.log(err)
         }
     else
-        log.error("No valid Source Data was provided");
+        console.error("No valid Source Data was provided");
 }
 
 function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizeProcess) {
@@ -109,7 +109,7 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
                 await finalizeProcess();
 
             } catch (error) {
-                log.error("Error While finalizing the streaming process: ");
+                console.error("Error While finalizing the streaming process: ");
                 console.log(error)
             }
         });
@@ -150,7 +150,7 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
                 await finalizeProcess();
 
             } catch (error) {
-                log.error("Error While finalizing the streaming process: ");
+                console.error("Error While finalizing the streaming process: ");
                 console.log(error)
             }
         });

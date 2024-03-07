@@ -163,17 +163,17 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
     /************ MAPPING CONFIGURATION PARAMETERS ************/
     var mapPath = mapPathIn || nconf.get('mapPath');
     if (!mapPath) {
-        log.error('You need to specify the mapping file path');
+        console.error('You need to specify the mapping file path');
         return false;
     }
     if (!mapPath[1] && mapPath && !mapPath.match(pathPattern)) {//TODO verify this
-        log.error('Incorrect mapping file path');
+        console.error('Incorrect mapping file path');
         return false;
     }
 
     var sourcePath = sourceDataIn || nconf.get('sourceDataPath');
     if (!sourcePath) {
-        log.error('You need to specify the source file path');
+        console.error('You need to specify the source file path');
         return false;
     }
     //if (sourcePath && !sourcePath.match(pathPattern)) {
@@ -183,95 +183,95 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
         try {
             sourcePath = path.normalize(sourcePath);
         } catch (error) {
-            log.error("There was an error while normalizing Source Path: ");
+            console.error("There was an error while normalizing Source Path: ");
             console.log(error)
             return false;
         }
     } else {
-        log.error('Incorrect source file path');
+        console.error('Incorrect source file path');
         log.info(sourcePath)
         return false;
     }
 
     var dataModel = dataModelPath || nconf.get('targetDataModel');
     if (!utils.checkInputDataModel(config.modelSchemaFolder, dataModel)) {
-        log.error('Incorrect target Data Model name: '+ dataModel);
+        console.error('Incorrect target Data Model name: '+ dataModel);
         return false;
     } else
         nconf.set('targetDataModel', path.join(config.modelSchemaFolder, dataModel + '.json'));
 
 
     //if (!nconf.get('site')) {
-    //    log.error('You need to specify the site part of ID Pattern');
+    //    console.error('You need to specify the site part of ID Pattern');
     //    return false;
     //}
 
 
     //if (!nconf.get('service')) {
-    //    log.error('You need to specify the service part of ID Pattern');
+    //    console.error('You need to specify the service part of ID Pattern');
     //    return false;
     //}
 
 
     //if (!nconf.get('group')) {
-    //    log.error('You need to specify the group part of ID Pattern');
+    //    console.error('You need to specify the group part of ID Pattern');
     //    return false;
     //}
 
     /*********************** ORION WRITER CONFIGURATION PARAMETERS *********/
     nconf.set('orionUrl', nconf.get('orionUrl') || config.orionWriter.orionUrl);
     if (!nconf.get('orionUrl')) {
-        log.error('You need to specify the remote URL of Orion Context Broker');
+        console.error('You need to specify the remote URL of Orion Context Broker');
         return false;
     }
 
     nconf.set('skipExisting', nconf.get('skipExisting') || config.orionWriter.skipExisting);
     if (nconf.get('skipExisting') !== true && nconf.get('skipExisting') !== false) {
-        log.error('You need to specify the Skip Existing parameter of Orion Context Broker, allowed values: true, false');
+        console.error('You need to specify the Skip Existing parameter of Orion Context Broker, allowed values: true, false');
         return false;
     }
 
     nconf.set('updateMode', nconf.get('updateMode') || config.orionWriter.updateMode);
     if (!nconf.get('updateMode') || (nconf.get('updateMode') !== 'APPEND' && nconf.get('updateMode') !== 'REPLACE')) {
-        log.error('You need to specify the update Mode of Orion Context Broker, allowed values: APPEND, REPLACE');
+        console.error('You need to specify the update Mode of Orion Context Broker, allowed values: APPEND, REPLACE');
         return false;
     }
     //} else if (nconf.get('skipExisting') !== true) {
-    //    log.error('You need also to set true the Skip Existing parameter');
+    //    console.error('You need also to set true the Skip Existing parameter');
     //    return false;
     //}
 
     nconf.set('fiwareService', nconf.get('fiwareService') || config.orionWriter.fiwareService);
     //if (!nconf.get('fiwareService')) {
-    //    log.error('You need to specify the Fiware-Service header of Orion Context Broker');
+    //    console.error('You need to specify the Fiware-Service header of Orion Context Broker');
     //    return false;
     //}
 
     nconf.set('fiwareServicePath', nconf.get('fiwareServicePath') || config.orionWriter.fiwareServicePath);
     //if (!nconf.get('fiwareServicePath')) {
-    //    log.error('You need to specify the Fiware-ServicePath header of Orion Context Broker');
+    //    console.error('You need to specify the Fiware-ServicePath header of Orion Context Broker');
     //    return false;
     //}
 
     nconf.set('orionAuthHeaderName', nconf.get('orionAuthHeaderName') || config.orionWriter.orionAuthHeaderName);
     //if (!nconf.get('orionAuthHeaderName')) {
-    //    log.error('You need to specify the Authorization Header Name of Orion Context Broker');
+    //    console.error('You need to specify the Authorization Header Name of Orion Context Broker');
     //    return false;
     //}
 
     nconf.set('orionAuthToken', nconf.get('orionAuthToken') || config.orionWriter.orionAuthToken);
     if (nconf.get('orionAuthHeaderName') && !nconf.get('orionAuthToken')) {
-        log.error('You need to specify the Authorization Token of Orion Context Broker');
+        console.error('You need to specify the Authorization Token of Orion Context Broker');
         return false;
     }
     if (!nconf.get('orionAuthHeaderName') && nconf.get('orionAuthToken')) {
-        log.error('You need also to set the Authorization Header Name parameter');
+        console.error('You need also to set the Authorization Header Name parameter');
         return false;
     }
 
     /*********************** FILE WRITER CONFIGURATION PARAMETERS *********/
     if (!nconf.get('outFilePath') && !config.fileWriter.filePath) {
-        log.error('You need to specify the output File Path');
+        console.error('You need to specify the output File Path');
         return false;
     } else {
         nconf.set('outFilePath', nconf.get('outFilePath') || config.fileWriter.filePath);
