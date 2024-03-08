@@ -56,7 +56,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
         var options = {
             method: 'POST',
             headers: buildRequestHeaders(),
-            uri: !config.orionWriter.keyValues ? orionUrl + '/v2/entities' : orionUrl + '/v2/entities?options=keyValues',
+            uri: !config.orionWriter.keyValues ? orionUrl + config.orionWriter.relativeUrl : orionUrl + config.orionWriter.relativeUrl + '?options=keyValues',
             body: orionedObj,
             json: true,
             simple: false,
@@ -93,7 +93,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                     delete orionedObj.type;
 
                     // Replace request URI and Method with the onse for updating entities attribute
-                    options.uri = config.orionWriter.orionUrl + '/v2/entities/' + existingId + (!config.orionWriter.keyValues ? '/attrs' : '/attrs?options=keyValues');
+                    options.uri = config.orionWriter.orionUrl + config.orionWriter.relativeUrl + existingId + (!config.orionWriter.keyValues ? '/attrs' : '/attrs?options=keyValues');
                     options.method = config.updateMode == 'REPLACE' || config.orionWriter.updateMode == 'REPLACE' ? 'PUT' : 'POST';
 
                     try {
