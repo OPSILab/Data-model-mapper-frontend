@@ -267,12 +267,13 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
-  setContext(unsaved, map, source) {
+  setContext(unsaved, map, source, save){//, schemaSaved, sourceSaved) {
+    console.debug(unsaved.schema || this.rawSchema())
     return {
       unsaved,
       sources: this.sources,
       dataModels: this.schemas,
-      save: true,
+      save: save,
       path: this.selectedPath,
       sourceDataType: this.inputType,
       jsonMap: map,
@@ -306,7 +307,7 @@ export class DMMComponent implements OnInit, OnChanges {
       unsaved = this.unsaved()
 
       this.dialogService.open(CreateMapComponent, {
-        context: this.setContext(unsaved, map, source)
+        context: this.setContext(unsaved, map, source, true)
       }).onClose.subscribe(async (mapperRecord) => {
         if (mapperRecord) {
           this.mapperRecord = mapperRecord;
@@ -371,7 +372,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
       this.dialogService.open(CreateMapComponent, {
         context: {
-          ...this.setContext(unsaved, map, source),
+          ...this.setContext(unsaved, map, source, false),
           value: this.mapperRecord,
           name: this.name,
         }

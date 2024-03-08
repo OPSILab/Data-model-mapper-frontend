@@ -54,11 +54,11 @@ export class DMMService {
   }
 
   getMinioSourcesList(bucketName): any {
-    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/listObjects/" +  urlencode(bucketName)).toPromise();
+    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/listObjects/" + urlencode(bucketName)).toPromise();
 
   }
   getMinioObject(bucketName: string, objectName: string) {
-    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/getObject"+"/"+ urlencode(bucketName)+"/" +  urlencode(objectName)).toPromise();
+    return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/getObject" + "/" + urlencode(bucketName) + "/" + urlencode(objectName)).toPromise();
   }
 
   getConfig(): any {
@@ -70,15 +70,15 @@ export class DMMService {
   }
 
   getSource(id): any {
-    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/source?id=" +  urlencode(id)).toPromise();
+    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/source?id=" + urlencode(id)).toPromise();
   }
 
   getMap(id): any {
-    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/map?id=" +  urlencode(id)).toPromise();
+    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/map?id=" + urlencode(id)).toPromise();
   }
 
   getSchema(id): any {
-    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel?id=" +  urlencode(id)).toPromise();
+    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel?id=" + urlencode(id)).toPromise();
   }
 
   deleteMap(id: any) {
@@ -117,7 +117,7 @@ export class DMMService {
           dataModelID,
           sourceData,
           sourceDataMinio: {
-            name : minioObjName,
+            name: minioObjName,
             bucket,
             etag
           }
@@ -131,7 +131,7 @@ export class DMMService {
     return formData
   }
 
-  saveSchema(name, mapRef , status, description, schema): any {
+  saveSchema(name, mapRef, status, description, schema): any {
     if (schema?.$id) schema.$id = undefined
 
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel", this.formDataBuilder({
@@ -145,10 +145,10 @@ export class DMMService {
 
   updateSource(name, mapRef, status: any, description: any, sourceData: any, minioObjName, bucket, etag, path) {
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source", this.formDataBuilder({
-      mapRef ,
+      mapRef,
       name,
       sourceDataMinio: {
-        name : minioObjName,
+        name: minioObjName,
         bucket,
         etag
       },
@@ -162,7 +162,7 @@ export class DMMService {
     return this.http.post<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/source", this.formDataBuilder({
       name,
       sourceDataMinio: {
-        name : minioObjName,
+        name: minioObjName,
         bucket,
         etag
       },
@@ -178,13 +178,16 @@ export class DMMService {
   updateMap(id, name, status, description, map, schema, sourceDataType, config, sourceDataURL, dataModelURL, dataModelID, sourceData, sourceDataID, minioObjName, bucket, etag, path): any {
     if (schema?.$id) schema.$id = undefined
 
+    if (Array.isArray(schema))
+      schema = schema[0]
+
     return this.http.put<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/map", this.formDataBuilder({
       id,
       name,
       status,
       description,
       map: map,
-      dataModel: schema ? schema[0] ? schema[0] : schema : schema,
+      dataModel: schema,
       sourceDataType,
       config,
       sourceDataURL,
@@ -194,7 +197,7 @@ export class DMMService {
       path,
       sourceData,
       sourceDataMinio: {
-        name : minioObjName,
+        name: minioObjName,
         bucket,
         etag
       }
@@ -225,8 +228,8 @@ export class DMMService {
         sourceDataType,
         sourceDataMinio: {
           name: minioObjName,
-          bucket : bucket,
-          etag : etag,
+          bucket: bucket,
+          etag: etag,
         },
         sourceData: source.url ? undefined : source,
         sourceDataURL: source.url ? source.url : undefined,

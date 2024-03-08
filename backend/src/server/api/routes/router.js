@@ -32,9 +32,9 @@ router.get(encodeURI("/dataModels"), auth, controller.getDataModels)
 router.get(encodeURI("/mockGetUser"), controller.mockGetUser)
 router.get(encodeURI("/bearer"), controller.getToken)
 
-router.put(encodeURI("/map"), auth, upload.none(), controller.modifyMap)
-router.put(encodeURI("/source"), auth, upload.none(), controller.modifySource)
-router.put(encodeURI("/dataModel"), auth, upload.none(), controller.modifyDataModel)
+router.put(encodeURI("/map"), upload.none(), auth, controller.modifyMap)
+router.put(encodeURI("/source"), upload.none(), auth, controller.modifySource)
+router.put(encodeURI("/dataModel"), upload.none(), auth, controller.modifyDataModel)
 
 router.delete(encodeURI("/map"), auth, controller.deleteMap)
 router.delete(encodeURI("/source"), auth, controller.deleteSource)
