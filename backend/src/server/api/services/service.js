@@ -82,8 +82,8 @@ module.exports = {
         let configCopy = JSON.parse(JSON.stringify(config))
 
         configCopy.mongo =
-        configCopy.host =
-        configCopy.externalPort =
+            configCopy.host =
+            configCopy.externalPort =
             configCopy.writers =
             configCopy.minioWriter.accessKey =
             configCopy.minioWriter.secretKey =
@@ -175,7 +175,7 @@ module.exports = {
         config.delimiter = configIn ? configIn.delimiter : config.delimiter || ','
         if (config.NGSI_entity != undefined) this.NGSI_entity = config.NGSI_entity
 
-        if (source.id && !source.data[0] ) {
+        if (source.id && !source.data[0]) {
             try { source.data = await Source.findOne({ _id: source.id }) }
             catch (error) {
                 console.log(error)
@@ -192,7 +192,7 @@ module.exports = {
             }
         }
 
-        if (dataModel.id  && !dataModel.data) {
+        if (dataModel.id && !dataModel.data) {
             try { dataModel.data = await DataModel.findOne({ _id: dataModel.id }) }
             catch (error) {
                 console.log(error)
@@ -439,7 +439,9 @@ module.exports = {
     dataModelClean(dataModel, dataModelCleaned) {
         this.call++;
         for (let key in dataModel)
-            if (Array.isArray(dataModel[key]) || typeof dataModel[key] == "object")
+            if (Array.isArray(dataModel[key]))
+                dataModelCleaned[key] = this.dataModelClean(dataModel[key], dataModelCleaned[key] || [])
+            else if (typeof dataModel[key] == "object")
                 dataModelCleaned[key] = this.dataModelClean(dataModel[key], dataModelCleaned[key] || {})
             else if (key.startsWith("$"))
                 dataModelCleaned["dollar" + key.substring(1)] = dataModel[key] //dataModel[key] = undefined
