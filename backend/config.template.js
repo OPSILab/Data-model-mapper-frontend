@@ -118,7 +118,9 @@ config.orionWriter = {
     updateMode: "APPEND", // Possible values: APPEND, REPLACE. If to append or replace attributes in the existing entities. Used only if skipExisting = false
     maxRetry: 5, // Max retry number per entity POST, until the entity is skipped and marked as NOT WRITTEN
     parallelRequests: 30, // DO NOT TOUCH - Internal configuration for concurrent request parallelization
-    keyValues: false //If false, transforms Mapped object to an Orion Entity (explicit types in attributes)
+    keyValues: false, //If false, transforms Mapped object to an Orion Entity (explicit types in attributes)
+    keyValuesOption : '?options=keyValues',
+    relativeUrl : "/v2/entities"
 };
 
 /*************** File Wirter CONFIGURATION *******************************/
