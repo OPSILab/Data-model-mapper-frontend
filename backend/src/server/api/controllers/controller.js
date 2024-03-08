@@ -28,7 +28,7 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(400).send(error.toString())
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
 
@@ -39,7 +39,7 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(500).send(error.toString())
+            res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
 
@@ -50,27 +50,27 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(400).send(error.toString())
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
 
     getMaps: async (req, res) => {
         process.res = res;
         try { res.send(await service.getMaps()) }
-        catch (error) { res.status(400).send(error.toString()) }
+        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
     getDataModels: async (req, res) => {
         process.res = res;
         try { res.send(await service.getDataModels()) }
-        catch (error) { res.status(400).send(error.toString()) }
+        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
     getSource: async (req, res) => {
         const { id, name } = req.query
         process.res = res;
         try { res.send(await service.getSource(id, name)) }
-        catch (error) { res.status(error.code || 400).send(error.toString()) }
+        catch (error) { res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
     getMap: async (req, res) => {
@@ -78,21 +78,21 @@ module.exports = {
         process.res = res;
         try { res.send(await service.getMap(id, name)) }
         catch (error) {
-            res.status(error.code || 400).send(error.toString())
+            res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
 
     getConfig: async (req, res) => {
         process.res = res;
         try { res.send(await service.getConfig()) }
-        catch (error) { res.status(400).send(error.toString()) }
+        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
     getDataModel: async (req, res) => {
         const { id, name } = req.query
         process.res = res;
         try { res.send(await service.getDataModel(id, name)) }
-        catch (error) { res.status(error.code || 400).send(error.toString()) }
+        catch (error) { res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
     insertSource: async (req, res) => {
@@ -104,7 +104,7 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(400).send(error.toString())
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
 
@@ -117,7 +117,7 @@ module.exports = {
                 req.body.config, req.body.sourceDataType, req.body.path))
             log.debug("Map inserted");
         }
-        catch (error) { res.status(400).send(error.toString()) }
+        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
     insertDataModel: async (req, res) => {
@@ -128,8 +128,8 @@ module.exports = {
             log.debug("Model inserted");
         }
         catch (error) {
-            res.status(400).send(error.toString())
-            console.error(error.toString())
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+            console.error(error.toString() == "[object Object]" ? error : error.toString())
         }
 
     },
@@ -141,7 +141,7 @@ module.exports = {
             res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef))
             log.debug("Source modified");
         }
-        catch (error) { res.status(400).send(error.toString()) }
+        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
     modifyMap: async (req, res) => {
@@ -153,7 +153,7 @@ module.exports = {
                 req.body.config, req.body.sourceDataType, req.body.path))
             log.debug("Map modified");
         }
-        catch (error) { res.status(400).send(error.toString()) }
+        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
     modifyDataModel: async (req, res) => {
@@ -163,28 +163,28 @@ module.exports = {
             res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef))
             log.debug("Schema modified");
         }
-        catch (error) { res.status(400).send(error.toString()) }
+        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
     deleteSource: async (req, res) => {
         const { id, name } = req.query
         process.res = res;
         try { res.send(await service.deleteSource(id, name)) }
-        catch (error) { res.status(400).send(error.toString()) }
+        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
     deleteMap: async (req, res) => {
         const { id, name } = req.query
         process.res = res;
         try { res.send(await service.deleteMap(id || req.params.id, name)) }
-        catch (error) { res.status(400).send(error.toString()) }
+        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
     deleteDataModel: async (req, res) => {
         const { id, name } = req.query
         process.res = res;
         try { res.send(await service.deleteDataModel(id, name)) }
-        catch (error) { res.status(400).send(error.toString()) }
+        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
     dereferenceSchema: async (req, res) => {
@@ -192,7 +192,7 @@ module.exports = {
         process.res = res;
         if (req.body.bucketName) req.body.bucketName = undefined
         try { res.send(await service.dereferenceSchema(req.body)) }
-        catch (error) { res.status(400).send(error.toString()) }
+        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
 
@@ -210,7 +210,7 @@ module.exports = {
                 errorStatusCode = 500
             if (error.name == "InvalidBucketNameError")
                 error.details = "Use lower a case bucket name"
-            res.status(errorStatusCode).send(error.toString())
+            res.status(errorStatusCode).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
 
@@ -226,7 +226,7 @@ module.exports = {
                 errorStatusCode = 400
             else
                 errorStatusCode = 500
-            res.status(errorStatusCode).send(error.toString())
+            res.status(errorStatusCode).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
 
@@ -237,7 +237,7 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(500).send(error.toString())
+            res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
 
@@ -248,7 +248,7 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(500).send(error.toString())
+            res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
 
@@ -259,7 +259,7 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(500).send(error.toString())
+            res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
 
@@ -275,7 +275,7 @@ module.exports = {
                 errorStatusCode = 400
             else
                 errorStatusCode = 500
-            res.status(errorStatusCode).send(error.toString())
+            res.status(errorStatusCode).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
 
@@ -285,7 +285,7 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(500).send(error.toString())
+            res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
 
@@ -295,7 +295,7 @@ module.exports = {
         }
         catch (error) {
             console.error(error)
-            res.status(500).send(error.toString())
+            res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
 };
