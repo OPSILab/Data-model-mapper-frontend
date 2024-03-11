@@ -82,7 +82,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                 log.debug('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly CREATED in the Context Broker');
                 return Promise.resolve(config.orionWrittenCount++);
 
-            } else if (createResponse.statusCode == 422 && createResponse.body && createResponse.body.description == 'Already Exists') {
+            } else if (createResponse.statusCode == 409 || (createResponse.statusCode == 422 && createResponse.body && createResponse.body.description == 'Already Exists')) {
 
                 // Update existing entity
                 if (!config.orionWriter.skipExisting) {
@@ -90,22 +90,30 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                     // If entity already exists, try to update it
                     var existingId = orionedObj.id;
                     delete orionedObj.id;
-                    delete orionedObj.type;
+                    if (config.orionWriter.protocol == "v2")
+                        delete orionedObj.type;
 
                     // Replace request URI and Method with the onse for updating entities attribute
-                    options.uri = config.orionWriter.orionUrl + config.orionWriter.relativeUrl + existingId + (!config.orionWriter.keyValues ? '/attrs' : '/attrs' + config.orionWriter.keyValuesOption);
-                    options.method = config.updateMode == 'REPLACE' || config.orionWriter.updateMode == 'REPLACE' ? 'PUT' : 'POST';
+                    if (config.orionWriter.protocol == "v2") {
+                        options.uri = config.orionWriter.orionUrl + config.orionWriter.relativeUrl || "/v2/entities" + "/" + existingId + (!config.orionWriter.keyValues ? '/attrs' : '/attrs' + config.orionWriter.keyValuesOption);
+                        options.method = config.updateMode == 'REPLACE' || config.orionWriter.updateMode == 'REPLACE' ? 'PUT' : 'POST';
+                    }
+                    else if (config.orionWriter.protocol == "v1") {
+                        options.uri = config.orionWriter.orionUrl + config.orionWriter.relativeUrl
+                        options.method = 'POST';
+                        options.body.id = existingId + Date.now().toString()
+                    }
 
                     try {
                         // Wait for update response
-                        if (config.orionWriter.keyValues)
+                        if (config.orionWriter.keyValues && config.orionWriter.protocol == "v2")
                             options.body.id = undefined
 
                         log.debug(JSON.stringify(options))
 
                         var updateResponse = await rp(options);
 
-                        if (updateResponse.statusCode == 204) {
+                        if (199 < updateResponse.statusCode < 300) {
 
                             report.info('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
                             log.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');

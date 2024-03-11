@@ -1,8 +1,12 @@
 import { AppConfig } from './../../model/appConfig';
-import { Component, OnInit, Inject, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Inject, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { DMMService } from './dmm.service';
 import {
+  NbComponentStatus,
   NbDialogService,
+  NbGlobalPhysicalPosition,
+  NbToastrConfig,
+  NbToastrService,
   NbWindowService,
 } from '@nebular/theme';
 import * as _ from "lodash"
@@ -16,7 +20,6 @@ import { ErrorDialogMapperRecordService } from '../error-dialog/error-dialog-map
 import { ActivatedRoute } from '@angular/router';
 import { NgxConfigureService } from 'ngx-configure';
 import editor from './mapperEditor'
-import { LoginComponent } from '../../auth/login/login.component';
 
 let mapOptionsGl, mapGl = "Set your mapping fields here"//, mapperEditor
 
@@ -28,23 +31,25 @@ function o(obj) {
   selector: 'app-root',
   templateUrl: './dmm.component.html',
   styleUrls: ['./dmm.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class DMMComponent implements OnInit, OnChanges {
 
   //TODO check if properties cleaning is required
-  inputID
-  map
+
   backendDown
+  inputID
+  isNew = false;
+  map
   mapOptions
+  outputEditorContainer: any;
   sourceEditor: any;
   sourceEditorContainer: any;
   mapperEditorContainer: any;
   schemaEditorContainer
-  outputEditorContainer: any;
   selectBox: any;
   inputType: any;
-  isNew = false;
   separatorItem = ';';
   csvSourceData: any;
   sourceRef: string = '';
@@ -137,6 +142,8 @@ export class DMMComponent implements OnInit, OnChanges {
   minioObjName: string;
   bucket: string;
   etag: string;
+  loading: boolean = false;
+  loaded: boolean = true;
 
   constructor(
     @Inject(DOCUMENT) public document: Document,
@@ -144,6 +151,7 @@ export class DMMComponent implements OnInit, OnChanges {
     public windowService: NbWindowService,
     public errorService: ErrorDialogMapperRecordService,
     public dmmService: DMMService,
+    public toastrService: NbToastrService,
     public route: ActivatedRoute,
     public configService: NgxConfigureService,
     //public ref : any
@@ -267,7 +275,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
-  setContext(unsaved, map, source, save){//, schemaSaved, sourceSaved) {
+  setContext(unsaved, map, source, save) {//, schemaSaved, sourceSaved) {
     console.debug(unsaved.schema || this.rawSchema())
     return {
       unsaved,
@@ -762,8 +770,18 @@ export class DMMComponent implements OnInit, OnChanges {
     return this.inputType == "csv" ? limit ? this.partialCsv : this.csvSourceData : source
   }
 
+  setLoadingMessage() {
+    //while (this.loading && this.sleep(3000))
+    if (!this.outputEditor)
+      this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, {Loading:"..."});
+    else this.outputEditor.update( {Loading:"..."})
+  }
+
   async testMapperRecord() {
     this.updateConfigSettings(false)
+    this.loading = true
+    this.loaded = false
+    this.setLoadingMessage()
     let output
     try {
       let m = JSON.parse(editor.mapperEditor.getText())
@@ -778,14 +796,49 @@ export class DMMComponent implements OnInit, OnChanges {
         output = !error.status ? { "error": "Service unreachable" } : error.error
       this.handleError(error, false, false)
     }
+
+    this.loading = false
+    this.loaded = true
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
     else this.outputEditor.update(output)
+    this.showToast('primary', "Transformed", '');
+  }
+
+  sleep(delay) {
+    return new Promise(resolve => setTimeout(resolve, delay));
+    //var start = new Date().getTime();
+    //while (new Date().getTime() < start + delay)
+    //  console.debug("waiting")
+  }
+
+  /*async toggle() {
+    await this.sleep(3)
+    console.log("Now waiting")
+    await this.sleep(3000)
+    console.log("FINISH")
+    this.loading = true
+    console.log(this.loading)
+
+  }*/
+
+  async toggleLoadingAnimation() {
+    this.loading = true
+    console.log("Now waiting")
+    await this.sleep(3000)
+    this.loading = false
+    console.log("FINISH")
+    //await this.toggle()
+    //setTimeout(() => this.loading = true, 1000);
+    //setTimeout(() => this.loading = false, 3000);
   }
 
   async transform() {
     this.updateConfigSettings(false)
     let output
+    this.loading = true
+    this.loaded = false
+    this.setLoadingMessage()
     try {
       let m = JSON.parse(editor.mapperEditor.getText())
       m["targetDataModel"] = "DataModelTemp"
@@ -812,9 +865,33 @@ export class DMMComponent implements OnInit, OnChanges {
           output = error.error
       this.handleError(error, false, false)
     }
+    //setTimeout(() =>
+    this.loading = false//, 3000);
+    this.loaded = true
+    try {
+      output = output?.filter(e => e != null && e != undefined) || { error: "some errors occurred" }
+    }
+    catch (error) {
+      console.error(error)
+      output = { error: "some errors occurred" }
+    }
     if (!this.outputEditor)
-      this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output.filter(e => e != null && e != undefined));
-    else this.outputEditor.update(output.filter(e => e != null && e != undefined) || { error: "some errors occurred" })
+      this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
+    else this.outputEditor.update(output)
+    this.showToast('primary', "Transformed", '');
+  }
+
+  private showToast(type: NbComponentStatus, title: string, body: string) {
+    const config = {
+      status: type,
+      destroyByClick: true,
+      duration: 2500,
+      hasIcon: true,
+      position: NbGlobalPhysicalPosition.BOTTOM_RIGHT,
+      preventDuplicates: true,
+    } as Partial<NbToastrConfig>;
+
+    this.toastrService.show(body, title, config);
   }
 
   getAllNestedProperties(obj) {
@@ -1055,11 +1132,11 @@ export class DMMComponent implements OnInit, OnChanges {
       this.bodyBuilder(source)
 
     return "curl -X POST \\\n'".concat(
-    this.config.data_model_mapper.default_mapper_url) +
-    "' \\\n-H \"Accept:application/json\" \\\n" +
-    "-H \"Authorization:Bearer " + token + "\" \\\n"+
-    "-H 'Content-Type: application/json' \\\n"+
-    "-d '" + JSON.stringify(body) + "'"
+      this.config.data_model_mapper.default_mapper_url) +
+      "' \\\n-H \"Accept:application/json\" \\\n" +
+      "-H \"Authorization:Bearer " + token + "\" \\\n" +
+      "-H 'Content-Type: application/json' \\\n" +
+      "-d '" + JSON.stringify(body) + "'"
   }
 
   bodyBuilder(source) {

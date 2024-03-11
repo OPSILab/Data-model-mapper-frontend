@@ -3,6 +3,7 @@ import { Component, OnInit, TemplateRef, ViewChild, Inject, OnChanges, SimpleCha
 import {
   NbDialogRef,
   NbDialogService,
+  NbToastrService,
   NbWindowService,
 } from '@nebular/theme';
 import * as _ from "lodash"
@@ -38,11 +39,12 @@ export class TransformComponent extends DMMComponent implements OnInit, OnChange
     public windowService: NbWindowService,
     public errorService: ErrorDialogMapperRecordService,
     public dmmService: DMMService,
+    public toastrService: NbToastrService,
     public route: ActivatedRoute,
     public configService: NgxConfigureService,
     public ref: NbDialogRef<TransformComponent>,
   ) {
-    super(document, dialogService, windowService, errorService, dmmService, route, configService)
+    super(document, dialogService, windowService, errorService, dmmService,  toastrService, route, configService)
     this.config = configService.config as AppConfig;
     this.emptySource = true
   }

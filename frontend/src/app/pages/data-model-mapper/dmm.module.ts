@@ -13,6 +13,7 @@ import {
   NbCheckboxModule,
   NbUserModule,
   NbAutocompleteModule,
+  NbSpinnerModule,
 } from '@nebular/theme';
 import { CommonModule } from '@angular/common';
 import { DMMRoutingModule } from './dmm-routing.module';
@@ -53,6 +54,7 @@ import { HttpConfigInterceptor } from '../../http.interceptor';
     NbWindowModule.forChild(),
     NbCheckboxModule,
     NbUserModule,
+    NbSpinnerModule,
     TranslateModule.forChild({}),
     NbAutocompleteModule
   ],

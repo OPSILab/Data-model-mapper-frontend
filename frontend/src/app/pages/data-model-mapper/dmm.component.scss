@@ -36,3 +36,9 @@ code {
 #selectSource {
   width:500px//fit-content
 }
+
+//@use '../../styles/themes' as *;
+
+.control-status-example {
+  color: nb-theme(color-basic-100);
+}

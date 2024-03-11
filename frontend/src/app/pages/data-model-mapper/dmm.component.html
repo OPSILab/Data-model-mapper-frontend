@@ -199,7 +199,8 @@
             <p *ngIf="dialog">Tranform.
             </p>
             <br> <br> <br>
-            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small" (click)="testMapperRecord()">
+            <button *ngIf="!dialog" nbButton class="mr-2"
+              shape="rectangle" size="small" (click)="testMapperRecord()">
               {{ 'general.dmm.preview' | translate }}
               <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button> &nbsp;
@@ -212,8 +213,45 @@
               {{ 'general.dmm.export' | translate }}
               <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button>
+            <!--<nb-card [nbSpinner]="true" nbSpinnerStatus="basic">
+              <nb-card-body>
+                Some card content.
+              </nb-card-body>
+            </nb-card>-->
             <br> <br>
             <div style="height:500px" id="jsoneditor3"></div>
+            <!--<div [nbSpinner]="loading" nbSpinnerStatus="basic" style="height:500px" id="jsoneditor3"></div>-->
+            <!--<nb-card accent="danger" size="tiny" [nbSpinner]="loading" nbSpinnerStatus="danger" nbSpinnerSize="large"
+              nbSpinnerMessage="">
+              <nb-card-header>Spinners</nb-card-header>
+              <nb-card-body>
+                <p>
+                  A nebula is an interstellar cloud of dust, hydrogen, helium and other ionized gases.
+                  Originally, nebula was a name for any diffuse astronomical object.
+                </p>
+
+              </nb-card-body>
+            </nb-card>
+            <button nbButton status="info" size="small" (click)="toggleLoadingAnimation();">Reload</button>
+
+            <div [nbSpinner]=[loading] nbSpinnerStatus="basic"> loading</div>
+            <div [nbSpinner]=(loading) nbSpinnerStatus="basic"> loading</div>
+            <div [(nbSpinner)]=loading nbSpinnerStatus="basic"> loading</div>
+            <div [nbSpinner]=[(loading)] nbSpinnerStatus="basic"> loading</div>
+            <div nbSpinner=[(loading)] nbSpinnerStatus="basic"> loading</div>
+            <div nbSpinner=[loading] nbSpinnerStatus="basic"> loading</div>
+            <div nbSpinner=(loading) nbSpinnerStatus="basic"> loading</div>
+            <div *ngIf="this.loading==true">loading ngif</div>
+            <div *ngIf="this.loading==false">not loading ngif</div>
+            <div [nbSpinner]=[loaded] nbSpinnerStatus="basic"> loaded</div>
+            <div [nbSpinner]=(loaded) nbSpinnerStatus="basic"> loaded</div>
+            <div [(nbSpinner)]=loaded nbSpinnerStatus="basic"> loaded</div>
+            <div [nbSpinner]=[(loaded)] nbSpinnerStatus="basic"> loaded</div>
+            <div nbSpinner=[(loaded)] nbSpinnerStatus="basic"> loaded</div>
+            <div nbSpinner=[loaded] nbSpinnerStatus="basic"> loaded</div>
+            <div nbSpinner=(loaded) nbSpinnerStatus="basic"> loaded</div>
+          -->
+
           </nb-accordion-item-body>
         </nb-accordion-item>
         <nb-accordion-item expanded="true">
