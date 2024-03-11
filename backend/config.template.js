@@ -120,7 +120,8 @@ config.orionWriter = {
     parallelRequests: 30, // DO NOT TOUCH - Internal configuration for concurrent request parallelization
     keyValues: false, //If false, transforms Mapped object to an Orion Entity (explicit types in attributes)
     keyValuesOption : '?options=keyValues',
-    relativeUrl : "/v2/entities"
+    relativeUrl : "/v2/entities",
+    protocol : "v1"
 };
 
 /*************** File Wirter CONFIGURATION *******************************/
