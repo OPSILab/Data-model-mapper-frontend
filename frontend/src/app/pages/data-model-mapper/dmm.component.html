@@ -45,6 +45,29 @@
     <nb-card-footer>
       <!--Map Editor accordion-->
       <nb-accordion multi>
+        <nb-accordion-item expanded="false" [hidden]=dialog>
+          <nb-accordion-item-header>
+            Config
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
+            <p *ngIf="!dialog">Set transform config.
+            </p>
+            <br *ngIf="!dialog"> <br *ngIf="!dialog"> <br *ngIf="!dialog">
+            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
+              (click)="updateConfigSettings(true)">
+              {{ 'general.dmm.update_config' | translate }}
+              <i class="mx-1 fas fa-file-import fa-lg"></i>
+            </button>
+            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
+              (click)="resetConfigSettings()">
+              {{ 'general.dmm.reset_config' | translate }}
+              <i class="mx-1 fas fa-file-import fa-lg"></i>
+            </button>
+            <br *ngIf="!dialog"> <br *ngIf="!dialog">
+            <div [hidden]=dialog style="height:500px" id="configEditor"></div>
+
+          </nb-accordion-item-body>
+        </nb-accordion-item>
         <nb-accordion-item expanded="true">
           <nb-accordion-item-header>
             Source
@@ -285,29 +308,6 @@
             </button>
             <br> <br>
             <div style="height:500px" id="bodyEditor"></div>
-          </nb-accordion-item-body>
-        </nb-accordion-item>
-        <nb-accordion-item expanded="false" [hidden]=dialog>
-          <nb-accordion-item-header>
-            Config
-          </nb-accordion-item-header>
-          <nb-accordion-item-body>
-            <p *ngIf="!dialog">Set transform config.
-            </p>
-            <br *ngIf="!dialog"> <br *ngIf="!dialog"> <br *ngIf="!dialog">
-            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
-              (click)="updateConfigSettings(true)">
-              {{ 'general.dmm.update_config' | translate }}
-              <i class="mx-1 fas fa-file-import fa-lg"></i>
-            </button>
-            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
-              (click)="resetConfigSettings()">
-              {{ 'general.dmm.reset_config' | translate }}
-              <i class="mx-1 fas fa-file-import fa-lg"></i>
-            </button>
-            <br *ngIf="!dialog"> <br *ngIf="!dialog">
-            <div [hidden]=dialog style="height:500px" id="configEditor"></div>
-
           </nb-accordion-item-body>
         </nb-accordion-item>
       </nb-accordion>
