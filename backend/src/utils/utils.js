@@ -285,7 +285,7 @@ const printFinalReportAndSendResponse = async (logger) => {
         }
 
         try {
-            if (isMinioWriterActive()) {
+            /*if (isMinioWriterActive()) {
                 logger.debug("minio is enabled")
                 for (let obj of apiOutput.outputFile) {
                     logger.debug("minio writing")
@@ -307,7 +307,7 @@ const printFinalReportAndSendResponse = async (logger) => {
                     logger.debug("minio writing done")
                 }
                 logger.debug("written to minio")
-            }
+            }*/
             await sendOutput();
         }
         catch (error) {

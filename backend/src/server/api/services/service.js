@@ -261,7 +261,7 @@ module.exports = {
         //sources.push(...minioObjectList)
         log.debug(JSON.stringify(minioObjectList))
         for (let obj of minioObjectList) {
-            if (obj.name.toLowerCase().includes(prefix))
+            if (obj.name.toLowerCase().includes(prefix) && !obj.name.toLowerCase().split(prefix)[0])
                 try {
                     sources.push({ etag: obj.etag, from: "minio", bucket, name: obj.name, source: (await this.minioGetObject(bucket, obj.name, format)) })//, postMessage)) })
                 }
@@ -272,6 +272,7 @@ module.exports = {
     },
 
     async getAllSources(bucketName, prefix, format) {//, postMessage) {
+        console.debug(bucketName, "\nPREFIX\n", prefix)
         let sources = await Source.find()
         if (common.isMinioWriterActive())
             try {
@@ -368,6 +369,7 @@ module.exports = {
 
     async dereferenceSchema(schema) {
         let schemaCleaned = this.dataModelDeClean(schema)
+        console.debug(schemaCleaned)
         let schemaFixed = this.dataModelRefFix(schemaCleaned)
         let schemaDereferenced = await this.parseDataModelSchema(schemaFixed)
         return schemaDereferenced
@@ -385,31 +387,38 @@ module.exports = {
 
     async insertMap(name, id, map, dataModel, status, description,
         sourceData, sourceDataMinio, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
-        config, sourceDataType, path) {
+        config, sourceDataType, path, bucketName, prefix) {
         if (path == "") path = undefined
         if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
             throw { error: "schema is required" }
         if (dataModel) dataModel = this.dataModelClean(dataModel, {})
+        let objectName = (sourceDataMinio?.name || (prefix + "/" + name)).replace(config.minioWriter.defaultBucketName, config.minioWriter.defaultOutputBucketName) //.toLowerCase()
+        if (objectName.substring(objectName.length - 5) != ".json")
+            objectName = objectName + ".json"
+
+        let newMapper = {
+            name: name,
+            id: id,
+            map: map,
+            dataModel: dataModel,
+            status: status,
+            description: description,
+            sourceData,
+            sourceDataMinio,
+            sourceDataID,
+            sourceDataIn,
+            sourceDataURL,
+            dataModelIn,
+            dataModelID,
+            dataModelURL,
+            config,
+            sourceDataType,
+            path
+        }
+        await minioWriter.stringUpload(bucketName, objectName, JSON.stringify(newMapper))
+
         if (!await Map.findOne({ name }))
-            return await Map.insertMany([{
-                name: name,
-                id: id,
-                map: map,
-                dataModel: dataModel,
-                status: status,
-                description: description,
-                sourceData,
-                sourceDataID,
-                sourceDataMinio,
-                sourceDataIn,
-                sourceDataURL,
-                dataModelIn,
-                dataModelID,
-                dataModelURL,
-                config,
-                sourceDataType,
-                path
-            }])
+            return await Map.insertMany([newMapper])
         throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
@@ -475,7 +484,7 @@ module.exports = {
     },
 
     async modifyMap(name, id, map, dataModel, status, description, sourceData, sourceDataMinio, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
-        config, sourceDataType, path) {
+        config, sourceDataType, path, bucketName, prefix) {
 
         //if (dataModel && dataModel.$schema)
         //    dataModel.schema = dataModel.$schema
@@ -491,31 +500,31 @@ module.exports = {
         if (path == "") path = undefined
 
         if (dataModel) dataModel = this.dataModelClean(dataModel, {})
+        let objectName = (sourceDataMinio?.name || (prefix + "/" + name)).replace(config.minioWriter.defaultBucketName, config.minioWriter.defaultOutputBucketName) //.toLowerCase()
+        if (objectName.substring(objectName.length - 5) != ".json")
+            objectName = objectName + ".json"
 
-        return await Map.findOneAndReplace(
-            {
-                name
-            },
-
-            {
-                name: name,
-                id: id,
-                map: map,
-                dataModel: dataModel,
-                status: status,
-                description: description,
-                sourceData,
-                sourceDataMinio,
-                sourceDataID,
-                sourceDataIn,
-                sourceDataURL,
-                dataModelIn,
-                dataModelID,
-                dataModelURL,
-                config,
-                sourceDataType,
-                path
-            })
+        let newMapper = {
+            name: name,
+            id: id,
+            map: map,
+            dataModel: dataModel,
+            status: status,
+            description: description,
+            sourceData,
+            sourceDataMinio,
+            sourceDataID,
+            sourceDataIn,
+            sourceDataURL,
+            dataModelIn,
+            dataModelID,
+            dataModelURL,
+            config,
+            sourceDataType,
+            path
+        }
+        await minioWriter.stringUpload(bucketName, objectName, JSON.stringify(newMapper))
+        return await Map.findOneAndReplace({ name }, newMapper)
     },
 
     async modifyDataModel(name, id, dataModel, mapRef) {

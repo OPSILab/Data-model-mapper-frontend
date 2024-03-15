@@ -202,7 +202,7 @@ module.exports = {
     let resultMessage
     let errorMessage
 
-    minioClient.putObject(bucketName, objectName, JSON.stringify(object), function (err, res) {
+    minioClient.putObject(bucketName, objectName, Buffer.from(object), function (err, res) {
       if (err) {
         console.error("An error occurred while writing object")
         errorMessage = err

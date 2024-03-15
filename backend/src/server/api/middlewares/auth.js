@@ -76,9 +76,9 @@ module.exports = {
 
                         try {
                             let data = (await axios.get(config.authConfig.userInfoEndpoint, { headers: { "Authorization": req.headers.authorization } })).data
-                            let { pilot, username } = data
+                            let { pilot, username, email } = data
                             req.body.bucketName = pilot.toLowerCase() //+ "/" + email + "/" + config.minioWriter.defaultBucketName//{pilot, email}
-                            req.body.prefix = username + "/" + config.minioWriter.defaultBucketName
+                            req.body.prefix = (email || username) + "/" + config.minioWriter.defaultBucketName
                         }
                         catch (error) {
                             console.error(error?.toString())

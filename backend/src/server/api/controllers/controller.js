@@ -114,7 +114,7 @@ module.exports = {
         try {
             res.send(await service.insertMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
                 req.body.sourceData, req.body.sourceDataMinio, req.body.sourceDataID, req.body.sourceDataIn, req.body.sourceDataURL, req.body.dataModelIn, req.body.dataModelID, req.body.dataModelURL,
-                req.body.config, req.body.sourceDataType, req.body.path))
+                req.body.config, req.body.sourceDataType, req.body.path, req.body.bucketName, req.body.prefix))
             log.debug("Map inserted");
         }
         catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
@@ -150,7 +150,7 @@ module.exports = {
         try {
             res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
                 req.body.sourceData, req.body.sourceDataMinio, req.body.sourceDataID, req.body.sourceDataIn, req.body.sourceDataURL, req.body.dataModelIn, req.body.dataModelID, req.body.dataModelURL,
-                req.body.config, req.body.sourceDataType, req.body.path))
+                req.body.config, req.body.sourceDataType, req.body.path, req.body.bucketName, req.body.prefix))
             log.debug("Map modified");
         }
         catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
@@ -191,6 +191,8 @@ module.exports = {
 
         process.res = res;
         if (req.body.bucketName) req.body.bucketName = undefined
+        if (req.body.prefix) req.body.prefix = undefined
+
         try { res.send(await service.dereferenceSchema(req.body)) }
         catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
