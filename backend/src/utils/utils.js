@@ -247,8 +247,9 @@ const bodyMapper = (body) => {
 
 const sendOutput = async () => {
     if (config.deleteEmptySpaceAtBeginning) apiOutput.outputFile = spaceCleaner(apiOutput.outputFile)
-    if (parseInt((apiOutput.outputFile[apiOutput.outputFile.length - 1].MAPPING_REPORT.Mapped_and_NOT_Validated_Objects)[0].charAt(0))) process.res.status(400).send({ errors: apiOutput.outputFile.errors || "Validation errors", report: apiOutput.outputFile[apiOutput.outputFile.length - 1] })
-    else if (!config.mappingReport) process.res.send(apiOutput.outputFile.slice(0, apiOutput.outputFile.length - 1));
+    //if (parseInt((apiOutput.outputFile[apiOutput.outputFile.length - 1].MAPPING_REPORT.Mapped_and_NOT_Validated_Objects)[0].charAt(0))) process.res.status(400).send({ errors: apiOutput.outputFile.errors || "Validation errors", report: apiOutput.outputFile[apiOutput.outputFile.length - 1] })
+    //else 
+    if (!config.mappingReport) process.res.send(apiOutput.outputFile.slice(0, apiOutput.outputFile.length - 1));
     else process.res.send(apiOutput.outputFile);
     apiOutput.outputFile = [];
 };

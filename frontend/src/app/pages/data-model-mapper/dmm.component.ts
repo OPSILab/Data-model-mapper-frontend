@@ -889,7 +889,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       console.error(error)
-      output = { error: "some errors occurred" }
+      //output = { error: "some errors occurred" }
     }
     if (!this.outputEditor)
       this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
@@ -1265,6 +1265,8 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   generate_NGSI_ID() {
+    if (!this.map || typeof this.map != "object")
+      this.map = {}
     if (this.transformSettings.NGSI_entity) {
       if (!this.map[this.transformSettings.entityNameField])
         mapGl = this.map[this.transformSettings.entityNameField] = ""

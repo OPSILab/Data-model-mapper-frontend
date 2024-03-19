@@ -354,16 +354,16 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
         // Append type field, according to the Data Model Schema
         try {
-            result.type = modelSchema?.allOf ? modelSchema.allOf[0]?.properties?.type?.enum[0] : "Unknown Type";
+            result.type = modelSchema?.allOf ? modelSchema.allOf ? modelSchema.allOf[0]?.properties?.type?.enum ? modelSchema.allOf[0]?.properties?.type?.enum[0] : "Thing" : "Thing" : "Thing";
             // Generate unique id for the mapped object (according to Id Pattern)
             result.id = utils.createSynchId(
-                result ? result.type : "", 
+                result ? result.type : "",
                 //"", 
-                site || "", 
-                service || "", 
-                group || "", 
-                result ? result[entityIdField] : "", 
-                isIdPrefix || "", 
+                site || "",
+                service || "",
+                group || "",
+                result ? result[entityIdField] : "",
+                isIdPrefix || "",
                 rowNumber);
             delete result[entityIdField];
         } catch (error) {
