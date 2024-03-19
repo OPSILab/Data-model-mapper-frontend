@@ -128,7 +128,7 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
             console.error(err);
         })
         .on('header', function (columns) {
-            // console.log(columns);
+            console.debug("----------------------------\n",columns,"\n-------------------------------------");
         })
         .on('data', function (row) {
 

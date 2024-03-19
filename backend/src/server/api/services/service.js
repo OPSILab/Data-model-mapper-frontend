@@ -107,6 +107,7 @@ module.exports = {
 
     resetConfig: (request, response, next) => {
         if (config.backup) {
+            console.debug("CONFIG BACKUP", config.backup)
             for (let configKey in config.backup)
                 config[configKey] = config.backup[configKey]
             config.backup = undefined
@@ -394,7 +395,7 @@ module.exports = {
 
     async insertMap(name, id, map, dataModel, status, description,
         sourceData, sourceDataMinio, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
-        config, sourceDataType, path, bucketName, prefix) {
+        mapConfig, sourceDataType, path, bucketName, prefix) {
         if (path == "") path = undefined
         if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
             throw { error: "schema is required" }
@@ -419,7 +420,7 @@ module.exports = {
             dataModelIn,
             dataModelID,
             dataModelURL,
-            config,
+            config : mapConfig,
             sourceDataType,
             path
         }
@@ -499,7 +500,7 @@ module.exports = {
     },
 
     async modifyMap(name, id, map, dataModel, status, description, sourceData, sourceDataMinio, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
-        config, sourceDataType, path, bucketName, prefix) {
+        mapConfig, sourceDataType, path, bucketName, prefix) {
 
         //if (dataModel && dataModel.$schema)
         //    dataModel.schema = dataModel.$schema
@@ -534,7 +535,7 @@ module.exports = {
             dataModelIn,
             dataModelID,
             dataModelURL,
-            config,
+            config : mapConfig,
             sourceDataType,
             path
         }

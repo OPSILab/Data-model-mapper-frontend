@@ -558,6 +558,8 @@ export class DMMComponent implements OnInit, OnChanges {
         }
         else {
           this.csvSourceData = this.source()
+          if (Array.isArray(this.csvSourceData))
+          this.csvSourceData = this.csvSourceData[0].data
           this.importedSource = this.csvSourceData
         }
       }
@@ -653,6 +655,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     else
       this.etag = this.bucket = this.minioObjName = undefined
+    console.debug(filteredSource)
     return filteredSource.source || filteredSource.sourceCSV
   }
 

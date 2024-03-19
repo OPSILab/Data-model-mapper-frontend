@@ -116,10 +116,23 @@
             <div class="mb-2" id="csv-input" style="display:none;">
               <div class="mb-2">
                 <br><br>
-                <nb-select placeholder="Select source file" size="small" [(ngModel)]="selectedSource"
-                  (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
-                  <nb-option *ngFor="let source of sources" value={{source._id}}>{{source.name}}</nb-option>
+                <nb-select id="selectSource" *ngIf="sourceFrom=='minio'" placeholder="Select source file" size="small"
+                  [(ngModel)]="selectedSource" (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
+                  <!--<nb-option value="">---select source---</nb-option>-->
+                  <nb-option *ngFor="let source of minioSources" value={{source.etag}}>{{source.name}}</nb-option>
+                </nb-select>
+                <nb-select id="selectSource" *ngIf="sourceFrom=='db'" placeholder="Select source file" size="small"
+                  [(ngModel)]="selectedSource" (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
+                  <!--<nb-option value="">---select source---</nb-option>-->
+                  <nb-option *ngFor="let source of dbSources" value={{source._id}}>{{source.name}}</nb-option>
                 </nb-select>&nbsp;
+                <nb-select placeholder="From" size="small" [(ngModel)]="sourceFrom"
+                  (ngModelChange)="sourceFromChanged($event)" (click)="fixBrokenPageBug()">
+                  <!--<nb-option value="">---select source---</nb-option>-->
+                  <nb-option value=minio>minio</nb-option>
+                  <nb-option value=db>db</nb-option>
+                </nb-select>
+                &nbsp;
                 <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('source','csv')">
                   {{ 'general.editor.upload' | translate }}
                   <i class="mx-1 fas fa-file-import fa-lg"></i>

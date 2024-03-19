@@ -31,6 +31,7 @@ module.exports = () => {
         dmmServer.listen(config.httpPort || 5500, () => {
           log.info("Server has started!");
           log.info("listening on port: " + config.httpPort || 5500);
+          config.backup = JSON.parse(JSON.stringify(config))
 
           /*if (config.writers.filter(writer => writer == "minioWriter")[0]) {
             const minioWriter = require('../writers/minioWriter')
