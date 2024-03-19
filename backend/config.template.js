@@ -153,8 +153,8 @@ config.minioWriter = {
     secretKey: '',
     location: 'eu',
     defaultFileInput: '',
-    defaultBucketName: '',
-    defaultOutputBucketName: '',
+    defaultInputFolderName: '',
+    defaultOutputFolderName: '',
     subscribe: {
         all: false,
         buckets: []

@@ -293,7 +293,7 @@ const printFinalReportAndSendResponse = async (logger) => {
                     try {
                         logger.debug("apiOutput.minioObj.name")
                         logger.debug(apiOutput.minioObj.name)
-                        let bucketName = apiOutput.minioObj.bucket || config.minioWriter.defaultOutputBucketName || "output"
+                        let bucketName = apiOutput.minioObj.bucket || config.minioWriter.defaultOutputFolderName || "output"
                         let objectName = (obj[apiOutput.minioObj.name]?.concat(obj[config.entityNameField] || obj.id || Date.now().toString()) || apiOutput.minioObj.name.concat("/output_processed_").concat(Date.now().toString()) || Date.now().toString())//.toLowerCase()
                         logger.debug("bucket name")
                         logger.debug(bucketName)

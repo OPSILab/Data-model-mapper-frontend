@@ -85,15 +85,7 @@ module.exports = {
             configCopy.host =
             configCopy.externalPort =
             configCopy.writers =
-            configCopy.minioWriter.accessKey =
-            configCopy.minioWriter.secretKey =
-            configCopy.minioWriter.endPoint =
-            configCopy.minioWriter.port =
-            configCopy.minioWriter.useSSL =
-            configCopy.minioWriter.location =
-            configCopy.minioWriter.defaultFileInput =
-            configCopy.minioWriter.endPoint =
-            configCopy.minioWriter.endPoint =
+            configCopy.minioWriter =
             configCopy.authConfig =
             configCopy.fileWriter =
             configCopy.debugger =
@@ -114,7 +106,6 @@ module.exports = {
     },
 
     resetConfig: (request, response, next) => {
-        console.debug("--------------------Config reset-----------------------")
         if (config.backup) {
             for (let configKey in config.backup)
                 config[configKey] = config.backup[configKey]
@@ -409,7 +400,7 @@ module.exports = {
             throw { error: "schema is required" }
         if (dataModel) dataModel = this.dataModelClean(dataModel, {})
         console.debug(config)
-        let objectName = (sourceDataMinio?.name || (prefix + "/" + name)).replace(config.minioWriter.defaultBucketName, config.minioWriter.defaultOutputBucketName) //.toLowerCase()
+        let objectName = (sourceDataMinio?.name || (prefix + "/" + name)).replace(config.minioWriter.defaultInputFolderName, config.minioWriter.defaultOutputFolderName) //.toLowerCase()
         if (objectName.substring(objectName.length - 5) != ".json")
             objectName = objectName + ".json"
 
@@ -432,7 +423,14 @@ module.exports = {
             sourceDataType,
             path
         }
-        await minioWriter.stringUpload(bucketName, objectName, JSON.stringify(newMapper))
+        objectName = objectName.split("/")
+        objectName[objectName.length - 1] = name
+        console.debug(name, objectName)
+        let minioName = ""
+        for (substring of objectName)
+            minioName = minioName + "/" + substring
+        minioName = minioName + ".json"
+        await minioWriter.stringUpload(bucketName, minioName, JSON.stringify(newMapper))
 
         if (!await Map.findOne({ name }))
             return await Map.insertMany([newMapper])
@@ -517,7 +515,7 @@ module.exports = {
         if (path == "") path = undefined
 
         if (dataModel) dataModel = this.dataModelClean(dataModel, {})
-        let objectName = (sourceDataMinio?.name || (prefix + "/" + name)).replace(config.minioWriter.defaultBucketName, config.minioWriter.defaultOutputBucketName) //.toLowerCase()
+        let objectName = (sourceDataMinio?.name || (prefix + "/" + name)).replace(config.minioWriter.defaultInputFolderName, config.minioWriter.defaultOutputFolderName) //.toLowerCase()
         if (objectName.substring(objectName.length - 5) != ".json")
             objectName = objectName + ".json"
 
@@ -540,7 +538,13 @@ module.exports = {
             sourceDataType,
             path
         }
-        await minioWriter.stringUpload(bucketName, objectName, JSON.stringify(newMapper))
+        objectName = objectName.split("/")
+        objectName[objectName.length - 1] = name
+        let minioName = ""
+        for (substring of objectName)
+            minioName = minioName + "/" + substring
+        minioName = minioName + ".json"
+        await minioWriter.stringUpload(bucketName, minioName, JSON.stringify(newMapper))
         return await Map.findOneAndReplace({ name }, newMapper)
     },
 
