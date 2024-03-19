@@ -10,6 +10,7 @@ router.post(encodeURI("/map/register"), upload.none(), auth, controller.insertMa
 router.post(encodeURI("/source"), upload.none(), auth, controller.insertSource)
 router.post(encodeURI("/dataModel"), upload.none(), auth, controller.insertDataModel)
 router.post(encodeURI("/dereferenceSchema"), upload.none(), auth, controller.dereferenceSchema)
+router.post(encodeURI("/cleanSchema"), upload.none(), auth, controller.cleanSchema)
 router.post(encodeURI("/minio/createBucket/:bucketName"), upload.none(), auth, controller.minioCreateBucket)
 router.post(encodeURI("/minio/insertObject/:bucketName/:objectName"), upload.none(), auth, controller.minioInsertObject)
 

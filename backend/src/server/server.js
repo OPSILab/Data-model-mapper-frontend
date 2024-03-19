@@ -6,6 +6,7 @@ module.exports = () => {
   const config = require('../../config')
   const swaggerUi = require('swagger-ui-express');
   let swaggerDocument = require('./swagger.json');
+  const service = require("./api/services/service.js")
   const log = require('../utils/logger').app(module)
 
   const dmmServer = express();
@@ -15,6 +16,7 @@ module.exports = () => {
   dmmServer.use(cors());
   dmmServer.use(express.json());
   dmmServer.use(express.urlencoded({ extended: false }));
+  dmmServer.use(service.resetConfig)
   dmmServer.use("/api", routes);
   dmmServer.use(
     '/api-docs',

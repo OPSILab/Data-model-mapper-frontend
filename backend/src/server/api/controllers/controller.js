@@ -197,6 +197,16 @@ module.exports = {
         catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
+    cleanSchema: async (req, res) => {
+
+        process.res = res;
+        if (req.body.bucketName) req.body.bucketName = undefined
+        if (req.body.prefix) req.body.prefix = undefined
+
+        try { res.send(await service.dataModelDeClean(req.body)) }
+        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
+    },
+
 
     minioCreateBucket: async (req, res) => {
         process.res = res;

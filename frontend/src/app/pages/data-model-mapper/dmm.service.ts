@@ -91,6 +91,12 @@ export class DMMService {
     return this.http.post<any>(this.config.data_model_mapper.default_mapper_base_url + "/dereferenceSchema", schema).toPromise();
   }
 
+  cleanSchema(schema) {
+    console.log("wait backend")
+    if (Array.isArray(schema)) schema = schema[0]
+    return this.http.post<any>(this.config.data_model_mapper.default_mapper_base_url + "/cleanSchema", schema).toPromise();
+  }
+
   getRemoteSource(url, type) {
     return type == "csv" ?
       this.http.get<any>(url, { responseType: 'text' as 'json' }).toPromise() :

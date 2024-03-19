@@ -113,6 +113,16 @@ module.exports = {
         return configCopy
     },
 
+    resetConfig: (request, response, next) => {
+        console.debug("--------------------Config reset-----------------------")
+        if (config.backup) {
+            for (let configKey in config.backup)
+                config[configKey] = config.backup[configKey]
+            config.backup = undefined
+        }
+        next()
+    },
+
     async mapData(source, map, dataModel, configIn) {
 
         //this.restoreDefaultConfs()
@@ -321,13 +331,14 @@ module.exports = {
     async getMap(id, name) {
         let map = await Map.findOne(id ? { _id: id } : { name })
         if (!map) throw { code: 404, message: "NOT FOUND" }
-        return map
+        if (map.dataModel)
+            return { ...map, dataModel: this.dataModelDeClean(map.dataModel) }
     },
 
     async getDataModel(id, name) {
         let dataModel = await DataModel.findOne(id ? { _id: id } : { name })
         if (!dataModel) throw { code: 404, message: "NOT FOUND" }
-        return dataModel
+        return this.dataModelDeClean(dataModel)
     },
 
     async parseDataModelSchema(schemaPath) {
@@ -338,6 +349,7 @@ module.exports = {
 
             if (schema.allOf) {
                 rootProperties = schema.allOf.pop().properties;
+                console.debug("--------------rp--------------------", rootProperties)
 
                 for (var allOf of schema.allOf) {
 
@@ -359,6 +371,10 @@ module.exports = {
             }
             else rootProperties = schema.properties
             schema.allOf = new Array({ properties: rootProperties });
+            if (schema.properties) {
+                schema.allOf[0].properties = { ...schema.allOf[0].properties, ...schema.properties }
+                schema.properties = undefined
+            }
 
             return new Promise((resolve, reject) => {
                 resolve(schema);
@@ -392,6 +408,7 @@ module.exports = {
         if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
             throw { error: "schema is required" }
         if (dataModel) dataModel = this.dataModelClean(dataModel, {})
+        console.debug(config)
         let objectName = (sourceDataMinio?.name || (prefix + "/" + name)).replace(config.minioWriter.defaultBucketName, config.minioWriter.defaultOutputBucketName) //.toLowerCase()
         if (objectName.substring(objectName.length - 5) != ".json")
             objectName = objectName + ".json"

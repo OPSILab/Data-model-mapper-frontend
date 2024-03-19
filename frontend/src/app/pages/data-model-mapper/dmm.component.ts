@@ -440,18 +440,26 @@ export class DMMComponent implements OnInit, OnChanges {
   parsed = false
 
   async refParse(subObj) {
+    console.debug("REF PARSE")
     if (!subObj) this.parsed = false
     let obj2 = subObj ? subObj : this.tempSchema || this.schemaJson
-    for (let key in obj2)
+    for (let key in obj2) {
+      console.debug(key)
       if (typeof obj2[key] == "object" || Array.isArray(obj2[key]))
         await this.refParse(obj2[key])
       else if (key.startsWith("$ref") || key.startsWith("dollarref")) {
+        console.debug(key, subObj[key])
         this.parsed = true
       }
+    }
     if (!subObj && !this.parsed) {
+      console.debug("returning without backend")
       return this.tempSchema || this.schemaJson
     }
-    else return await this.dmmService.refParse(this.tempSchema || this.schemaJson)
+    else {
+      console.debug(await this.dmmService.refParse(this.tempSchema || this.schemaJson))
+      return await this.dmmService.refParse(this.tempSchema || this.schemaJson)
+    }
   }
 
   generateMapper(schemaParsed) {
@@ -463,11 +471,13 @@ export class DMMComponent implements OnInit, OnChanges {
     try {
       this.map = this.getAllNestedProperties(schemaParsed);
       try {
+        console.debug(this.map, this.oldMap)
         if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
       }
       catch (error) {
         this.handleError(error, false, false)
       }
+      console.debug(this.map)
       this.generate_NGSI_ID()
       mapGl = this.map
       editor.mapperEditor.update(this.map)
@@ -501,9 +511,14 @@ export class DMMComponent implements OnInit, OnChanges {
 
       try {
         //this.generateMapper(await this.refParse(false))
-        this.schemaJson = await this.refParse(false)
+        if (from == "DB")
+          this.schemaJson = await this.dmmService.cleanSchema(this.tempSchema || this.schemaJson) //TODO clean schema here in frontend or chose a different way to solve $ saving error on DB
+        else
+          this.schemaJson = await this.refParse(false)
+        console.debug(this.schemaJson)
         this.selectedDataModel = this.schemaJson
         this.schemaEditor.update(this.selectedDataModel)
+        //console.debug(this.selectedDataModel)
       }
       catch (error) {
         errors = true
@@ -770,18 +785,19 @@ export class DMMComponent implements OnInit, OnChanges {
     return this.inputType == "csv" ? limit ? this.partialCsv : this.csvSourceData : source
   }
 
-  setLoadingMessage() {
+  setLoadingMessage(editor, editorContainer, editorOptions) {
     //while (this.loading && this.sleep(3000))
-    if (!this.outputEditor)
-      this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, {Loading:"..."});
-    else this.outputEditor.update( {Loading:"..."})
+    if (!editor)
+      editor = new JSONEditor(editorContainer, editorOptions, {});
+    else editor.update({})
+    editor.update({ "Loading": "..." })
   }
 
   async testMapperRecord() {
     this.updateConfigSettings(false)
     this.loading = true
     this.loaded = false
-    this.setLoadingMessage()
+    this.setLoadingMessage(this.outputEditor, this.outputEditorContainer, this.outputEditorOptions)
     let output
     try {
       let m = JSON.parse(editor.mapperEditor.getText())
@@ -838,7 +854,7 @@ export class DMMComponent implements OnInit, OnChanges {
     let output
     this.loading = true
     this.loaded = false
-    this.setLoadingMessage()
+    this.setLoadingMessage(this.outputEditor, this.outputEditorContainer, this.outputEditorOptions)
     try {
       let m = JSON.parse(editor.mapperEditor.getText())
       m["targetDataModel"] = "DataModelTemp"
@@ -915,12 +931,26 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   compareMaps(oldMap, newMap) {
-    for (let key in newMap)
+    for (let key in newMap) {
+      console.debug(key)
       if (oldMap && oldMap[key])
         if (typeof newMap[key] == "object" || Array.isArray(newMap[key]))
           this.compareMaps(oldMap[key], newMap[key])
         else //if (oldMap[key] && (typeof oldMap[key] == "object" || Array.isArray(typeof oldMap[key])))
+        {
           newMap[key] = JSON.parse(JSON.stringify(oldMap[key]))
+          console.debug(newMap[key], "|", JSON.parse(JSON.stringify(oldMap[key])))
+        }
+    }
+    if (this.transformSettings.NGSI_entity) {
+      if (oldMap[this.transformSettings.entityNameField])
+        newMap[this.transformSettings.entityNameField] = oldMap[this.transformSettings.entityNameField]
+      if (!newMap.targetDataModel)
+        newMap.targetDataModel = "DataModelTemp"
+      if (oldMap.type)
+        newMap.type = oldMap.type
+    }
+
   }
 
   //skipArrays:Ignore the array part
@@ -1240,11 +1270,14 @@ export class DMMComponent implements OnInit, OnChanges {
         mapGl = this.map[this.transformSettings.entityNameField] = ""
       if (!this.map.targetDataModel)
         mapGl = this.map.targetDataModel = "DataModelTemp"
+      if (!this.map.type)
+        mapGl = this.map.type = ""
       editor.mapperEditor.update(this.map)
     }
     else {
       //if (this.map[this.transformSettings.entityNameField] || typeof this.map[this.transformSettings.entityNameField] == 'string')
       mapGl = this.map[this.transformSettings.entityNameField] = undefined
+      mapGl = this.map.type = undefined
       //if (this.map.targetDataModel)
       mapGl = this.map.targetDataModel = undefined
       editor.mapperEditor.update("m")
@@ -1393,7 +1426,12 @@ export class DMMComponent implements OnInit, OnChanges {
       editor.mapperEditor.update(this.map)
       this.selectedSchema = "---select schema---"
       this.selectedSource = undefined
-      if (mapSettings.dataModel) this.schemaEditor.update(mapSettings.dataModel)
+      //this.loading = true
+      //this.loaded = false
+      this.setLoadingMessage(this.schemaEditor, this.schemaEditorContainer, this.schemaOptions)
+      if (mapSettings.dataModel) this.schemaEditor.update(await this.dmmService.cleanSchema(mapSettings.dataModel))
+      //this.loading = false
+      //this.loaded = true
     }
   }
 
