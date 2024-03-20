@@ -152,7 +152,7 @@ const createSynchId = (type, site, service, group, entityName, isIdPrefix, rowNu
     }
 
     // Group field is optional
-    return "urn:ngsi-ld:" + type + ":" + site + ":" + service + (group ? (":" + group) : "") + ":" + cleanIdString(entityName);
+    return "urn:ngsi-ld:" + type + ":" + (site ? site + ":" : "") + (service ? service + ":" : "")  + (group ? group + ":"  : "") + cleanIdString(entityName);
 };
 
 
