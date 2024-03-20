@@ -1035,6 +1035,11 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
+  setMapGl() {
+    mapGl = JSON.parse(editor.mapperEditor.getText())
+    return mapGl
+  }
+
   updateMapper(path, value, map) {//, mapperEditor) {
     const deepInPath = (path, value, map) => {
       //for (let sub of path)
@@ -1065,6 +1070,7 @@ export class DMMComponent implements OnInit, OnChanges {
   setMapEditor(justOptions) {
 
     let updateMapper = this.updateMapper
+    let setMapGl = this.setMapGl
     var dialogService = this.dialogService;
 
     //let map = this.map
@@ -1092,7 +1098,7 @@ export class DMMComponent implements OnInit, OnChanges {
               }).onClose.subscribe((value) => {
                 let editor = require('./mapperEditor')
                 if (value)
-                  updateMapper(selectPath, value ? value[0] : "", mapGl)//, mapperEditor)// value[1] is the map
+                  updateMapper(selectPath, value ? value[0] : "", setMapGl())//, mapperEditor)// value[1] is the map
               });
           }
 

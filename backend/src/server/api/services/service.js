@@ -125,14 +125,15 @@ module.exports = {
 
             map = await Map.findOne({ _id: map.id })
 
-            if (!map.dataModel.$schema && map.dataModel.schema)
+            if (!map.dataModel?.$schema && map.dataModel?.schema)
                 map.dataModel.$schema = map.dataModel.schema
-            if (!map.dataModel.$id && map.dataModel.id)
+            if (!map.dataModel?.$id && map.dataModel?.id)
                 map.dataModel.$id = map.dataModel.id
 
-            dataModel.schema_id =
-                //dataModel.data.$id || 
-                config.modelSchemaFolder + '/DataModelTemp.json'
+            if (dataModel)
+                dataModel.schema_id =
+                    //dataModel.data.$id || 
+                    config.modelSchemaFolder + '/DataModelTemp.json'
 
             if (map.sourceDataIn && !source.name) source.name = map.sourceDataIn
             if (map.sourceData && !source.data) source.data = map.sourceData
@@ -420,7 +421,7 @@ module.exports = {
             dataModelIn,
             dataModelID,
             dataModelURL,
-            config : mapConfig,
+            config: mapConfig,
             sourceDataType,
             path
         }
@@ -535,7 +536,7 @@ module.exports = {
             dataModelIn,
             dataModelID,
             dataModelURL,
-            config : mapConfig,
+            config: mapConfig,
             sourceDataType,
             path
         }
