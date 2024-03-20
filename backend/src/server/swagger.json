@@ -83,6 +83,24 @@
             "schema": {
               "$ref": "#/definitions/BAD_REQUEST"
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       }
@@ -115,13 +133,31 @@
           "200": {
             "description": "JSON output",
             "schema": {
-              "$ref": "#/definitions/Insert Map response 2"
+              "$ref": "#/definitions/Modify Map_6"
             }
           },
           "400": {
             "description": "BAD REQUEST",
             "schema": {
               "$ref": "#/definitions/BAD_REQUEST_2"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
             }
           }
         }
@@ -163,6 +199,24 @@
             "schema": {
               "$ref": "#/definitions/404"
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       },
@@ -182,7 +236,7 @@
             "in": "body",
             "description": "Example request for modifying a json mapper document",
             "schema": {
-              "$ref": "#/definitions/Insert Map_6"
+              "$ref": "#/definitions/Modify Map_6"
             }
           }
         ],
@@ -205,6 +259,24 @@
                   "type": "string"
                 }
               }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
             }
           }
         }
@@ -262,6 +334,24 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       }
@@ -302,6 +392,24 @@
             "schema": {
               "$ref": "#/definitions/404"
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       },
@@ -339,6 +447,24 @@
             "description": "BAD REQUEST",
             "schema": {
               "$ref": "#/definitions/BAD_REQUEST_2"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
             }
           }
         }
@@ -382,6 +508,24 @@
                   "type": "string"
                 }
               }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
             }
           }
         }
@@ -438,6 +582,24 @@
                   "example": "not found"
                 }
               }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
             }
           }
         }
@@ -515,6 +677,24 @@
             "schema": {
               "$ref": "#/definitions/BAD_REQUEST_2"
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       }
@@ -555,6 +735,24 @@
             "schema": {
               "$ref": "#/definitions/404"
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       },
@@ -592,6 +790,24 @@
             "description": "BAD REQUEST",
             "schema": {
               "$ref": "#/definitions/BAD_REQUEST_2"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
             }
           }
         }
@@ -635,6 +851,24 @@
                   "type": "string"
                 }
               }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
             }
           }
         }
@@ -689,6 +923,24 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       }
@@ -714,6 +966,24 @@
             "schema": {
               "$ref": "#/definitions/Example get mapper records 2"
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       }
@@ -738,6 +1008,24 @@
             "description": "JSON output",
             "schema": {
               "$ref": "#/definitions/Example get dataModels 2"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
             }
           }
         }
@@ -769,6 +1057,24 @@
                 }
               ]
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       }
@@ -793,6 +1099,24 @@
             "description": "JSON output",
             "schema": {
               "$ref": "#/definitions/config"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
             }
           }
         }
@@ -845,6 +1169,24 @@
             "description": "NOT FOUND",
             "schema": {
               "$ref": "#/definitions/404"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
             }
           }
         }
@@ -906,6 +1248,24 @@
             "schema": {
               "$ref": "#/definitions/404"
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       }
@@ -950,6 +1310,24 @@
             "schema": {
               "$ref": "#/definitions/404"
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       }
@@ -984,6 +1362,24 @@
             "description": "NOT FOUND",
             "schema": {
               "$ref": "#/definitions/404"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
             }
           }
         }
@@ -1029,6 +1425,24 @@
             "schema": {
               "$ref": "#/definitions/404"
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       }
@@ -1064,6 +1478,24 @@
             "schema": {
               "$ref": "#/definitions/404"
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       }
@@ -1098,6 +1530,24 @@
             "description": "NOT FOUND",
             "schema": {
               "$ref": "#/definitions/404"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
             }
           }
         }
@@ -1143,6 +1593,24 @@
             "schema": {
               "$ref": "#/definitions/404"
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       }
@@ -1187,6 +1655,24 @@
             "schema": {
               "$ref": "#/definitions/404"
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
           }
         }
       }
@@ -1215,14 +1701,14 @@
         "sourceDataMinio": {
           "type": "object",
           "properties": {
-            "name" : {
-              "type" : "string"
+            "name": {
+              "type": "string"
             },
-            "bucket" : {
-              "type" : "string"
+            "bucket": {
+              "type": "string"
             },
-            "etag" : {
-              "type" : "string"
+            "etag": {
+              "type": "string"
             }
           }
         },
@@ -1639,7 +2125,7 @@
     "BAD_REQUEST_2": {
       "type": "object",
       "properties": {
-        "message": {
+        "error": {
           "type": "string"
         }
       }
@@ -1798,7 +2284,7 @@
     },
     "Insert Map_6": {
       "type": "object",
-      "properties" : {
+      "properties": {
         "sourceDataIn": {
           "type": "string",
           "uniqueItems": true
@@ -1819,17 +2305,27 @@
         "description": {
           "type": "string"
         },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Completed",
+            "UnderDevelopment"
+          ]
+        },
         "sourceDataMinio": {
           "type": "object",
           "properties": {
-            "name" : {
-              "type" : "string"
+            "name": {
+              "type": "string"
             },
-            "bucket" : {
-              "type" : "string"
+            "bucket": {
+              "type": "string"
             },
-            "etag" : {
-              "type" : "string"
+            "etag": {
+              "type": "string"
             }
           }
         },
@@ -1840,7 +2336,85 @@
           "type": "string",
           "uniqueItems": true
         },
-        "mapID": {
+        "mapData": {
+          "type": "object"
+        },
+        "dataModelIn": {
+          "type": "string",
+          "uniqueItems": true
+        },
+        "dataModel": {
+          "type": "object"
+        },
+        "dataModelID": {
+          "type": "string"
+        },
+        "dataModelURL": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "config": {
+          "$ref": "#/definitions/config"
+        }
+      }
+    },
+    "Modify Map_6": {
+      "type": "object",
+      "properties": {
+        "sourceDataIn": {
+          "type": "string",
+          "uniqueItems": true
+        },
+        "sourceData": {
+          "example": [
+            {
+              "string": "string"
+            }
+          ]
+        },
+        "sourceDataType": {
+          "type": "string"
+        },
+        "sourceDataID": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Completed",
+            "UnderDevelopment"
+          ]
+        },
+        "sourceDataMinio": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "bucket": {
+              "type": "string"
+            },
+            "etag": {
+              "type": "string"
+            }
+          }
+        },
+        "sourceDataURL": {
+          "type": "string"
+        },
+        "mapPathIn": {
+          "type": "string",
+          "uniqueItems": true
+        },
+        "id": {
           "type": "string",
           "uniqueItems": true
         },
@@ -2033,24 +2607,7 @@
         "dataModelID": "string",
         "dataModel": "object",
         "config": {
-          "delimiter": "string",
-          "NGSI_entity": true,
-          "modelSchemaFolder": "string",
-          "ignoreValidation": true,
-          "mappingReport": true,
-          "targetDataModel": "string",
-          "rowStart": 0,
-          "rowEnd": 0,
-          "regexClean": {
-            "custom": "string"
-          },
-          "endLine": "string",
-          "deleteEmptySpaceAtBeginning": true,
-          "site": "string",
-          "service": "string",
-          "group": "string",
-          "entityNameField": "string",
-          "entityDefaultPrefix": "string"
+          "$ref": "#/definitions/config"
         }
       }
     },
@@ -4942,6 +5499,17 @@
           "dataModel": []
         }
       ]
+    },
+    "INTERNAL_SERVER_ERROR": {
+      "error": "string"
+    },
+    "UNAUTHORIZED": {
+      "type": "string",
+      "example": "Unauthorized"
+    },
+    "FORBIDDEN": {
+      "type": "string",
+      "example": "Forbidden"
     }
   }
 }

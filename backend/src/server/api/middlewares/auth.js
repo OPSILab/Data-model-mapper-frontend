@@ -24,7 +24,7 @@ module.exports = {
             let authHeader = req.headers.authorization;
 
             if (authHeader) {
-                if (!authHeader.startsWith("Bearer"))
+                if (authHeader && !authHeader.startsWith("Bearer"))
                     authHeader = "Bearer " + authHeader
 
                 const jwtToken = authHeader.split(' ')[1];
@@ -40,7 +40,7 @@ module.exports = {
                 catch (error) {
 
                     console.error(error)
-                    if (error.message == "invalid token" || error.message == "jwt expired")
+                    if (error.message == "invalid token" || error.message == "jwt expired" || error.message == "jwt malformed")
                         return res.sendStatus(403);
                     else
                         return res.sendStatus(500);
