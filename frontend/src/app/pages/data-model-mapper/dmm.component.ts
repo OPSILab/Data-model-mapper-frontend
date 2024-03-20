@@ -276,7 +276,6 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   setContext(unsaved, map, source, save) {//, schemaSaved, sourceSaved) {
-    console.debug(unsaved.schema || this.rawSchema())
     return {
       unsaved,
       sources: this.sources,
@@ -440,24 +439,19 @@ export class DMMComponent implements OnInit, OnChanges {
   parsed = false
 
   async refParse(subObj) {
-    console.debug("REF PARSE")
     if (!subObj) this.parsed = false
     let obj2 = subObj ? subObj : this.tempSchema || this.schemaJson
     for (let key in obj2) {
-      console.debug(key)
       if (typeof obj2[key] == "object" || Array.isArray(obj2[key]))
         await this.refParse(obj2[key])
       else if (key.startsWith("$ref") || key.startsWith("dollarref")) {
-        console.debug(key, subObj[key])
         this.parsed = true
       }
     }
     if (!subObj && !this.parsed) {
-      console.debug("returning without backend")
       return this.tempSchema || this.schemaJson
     }
     else {
-      console.debug(await this.dmmService.refParse(this.tempSchema || this.schemaJson))
       return await this.dmmService.refParse(this.tempSchema || this.schemaJson)
     }
   }
@@ -471,13 +465,11 @@ export class DMMComponent implements OnInit, OnChanges {
     try {
       this.map = this.getAllNestedProperties(schemaParsed);
       try {
-        console.debug(this.map, this.oldMap)
         if (this.map && this.oldMap) this.compareMaps(this.oldMap, this.map)
       }
       catch (error) {
         this.handleError(error, false, false)
       }
-      console.debug(this.map)
       this.generate_NGSI_ID()
       mapGl = this.map
       editor.mapperEditor.update(this.map)
@@ -515,10 +507,8 @@ export class DMMComponent implements OnInit, OnChanges {
           this.schemaJson = await this.dmmService.cleanSchema(this.tempSchema || this.schemaJson) //TODO clean schema here in frontend or chose a different way to solve $ saving error on DB
         else
           this.schemaJson = await this.refParse(false)
-        console.debug(this.schemaJson)
         this.selectedDataModel = this.schemaJson
         this.schemaEditor.update(this.selectedDataModel)
-        //console.debug(this.selectedDataModel)
       }
       catch (error) {
         errors = true
@@ -655,7 +645,6 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     else
       this.etag = this.bucket = this.minioObjName = undefined
-    console.debug(filteredSource)
     return filteredSource.source || filteredSource.sourceCSV
   }
 
@@ -826,20 +815,7 @@ export class DMMComponent implements OnInit, OnChanges {
 
   sleep(delay) {
     return new Promise(resolve => setTimeout(resolve, delay));
-    //var start = new Date().getTime();
-    //while (new Date().getTime() < start + delay)
-    //  console.debug("waiting")
   }
-
-  /*async toggle() {
-    await this.sleep(3)
-    console.log("Now waiting")
-    await this.sleep(3000)
-    console.log("FINISH")
-    this.loading = true
-    console.log(this.loading)
-
-  }*/
 
   async toggleLoadingAnimation() {
     this.loading = true
@@ -935,14 +911,12 @@ export class DMMComponent implements OnInit, OnChanges {
 
   compareMaps(oldMap, newMap) {
     for (let key in newMap) {
-      console.debug(key)
       if (oldMap && oldMap[key])
         if (typeof newMap[key] == "object" || Array.isArray(newMap[key]))
           this.compareMaps(oldMap[key], newMap[key])
         else //if (oldMap[key] && (typeof oldMap[key] == "object" || Array.isArray(typeof oldMap[key])))
         {
           newMap[key] = JSON.parse(JSON.stringify(oldMap[key]))
-          console.debug(newMap[key], "|", JSON.parse(JSON.stringify(oldMap[key])))
         }
     }
     if (this.transformSettings.NGSI_entity) {

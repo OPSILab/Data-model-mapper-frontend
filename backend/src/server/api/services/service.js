@@ -107,7 +107,6 @@ module.exports = {
 
     resetConfig: (request, response, next) => {
         if (config.backup) {
-            console.debug("CONFIG BACKUP", config.backup)
             for (let configKey in config.backup)
                 config[configKey] = config.backup[configKey]
             config.backup = undefined
@@ -275,7 +274,6 @@ module.exports = {
     },
 
     async getAllSources(bucketName, prefix, format) {//, postMessage) {
-        console.debug(bucketName, "\nPREFIX\n", prefix)
         let sources = await Source.find()
         if (common.isMinioWriterActive())
             try {
@@ -342,7 +340,6 @@ module.exports = {
 
             if (schema.allOf) {
                 rootProperties = schema.allOf.pop().properties;
-                console.debug("--------------rp--------------------", rootProperties)
 
                 for (var allOf of schema.allOf) {
 
@@ -378,7 +375,6 @@ module.exports = {
 
     async dereferenceSchema(schema) {
         let schemaCleaned = this.dataModelDeClean(schema)
-        console.debug(schemaCleaned)
         let schemaFixed = this.dataModelRefFix(schemaCleaned)
         let schemaDereferenced = await this.parseDataModelSchema(schemaFixed)
         return schemaDereferenced
@@ -401,7 +397,6 @@ module.exports = {
         if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
             throw { error: "schema is required" }
         if (dataModel) dataModel = this.dataModelClean(dataModel, {})
-        console.debug(config)
         let objectName = (sourceDataMinio?.name || (prefix + "/" + name)).replace(config.minioWriter.defaultInputFolderName, config.minioWriter.defaultOutputFolderName) //.toLowerCase()
         if (objectName.substring(objectName.length - 5) != ".json")
             objectName = objectName + ".json"
@@ -427,7 +422,6 @@ module.exports = {
         }
         objectName = objectName.split("/")
         objectName[objectName.length - 1] = name
-        console.debug(name, objectName)
         let minioName = ""
         for (substring of objectName)
             minioName = minioName + "/" + substring

@@ -311,8 +311,6 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
             /********************* Perform actual mapping with parsed and normalized source key (parsedNorm) **/
 
-            console.debug(mapDestKey, parsedSourceKey)
-
             parsedSourceKey = parsedSourceKey.replaceAll('"', '')
 
             var converter = mapper.makeConverter({ [mapDestKey]: parsedSourceKey });
