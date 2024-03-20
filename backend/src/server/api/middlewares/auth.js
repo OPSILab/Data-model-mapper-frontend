@@ -21,9 +21,12 @@ module.exports = {
         if (authConfig.disableAuth)
             next()
         else {
-            const authHeader = req.headers.authorization;
+            let authHeader = req.headers.authorization;
 
             if (authHeader) {
+                if (!authHeader.startsWith("Bearer"))
+                    authHeader = "Bearer " + authHeader
+
                 const jwtToken = authHeader.split(' ')[1];
 
                 let verifiedToken
@@ -75,7 +78,7 @@ module.exports = {
                     if ((decodedToken.azp == authConfig.clientId) && ((decodedToken.exp * 1000) > Date.now())) {
 
                         try {
-                            let data = (await axios.get(config.authConfig.userInfoEndpoint, { headers: { "Authorization": req.headers.authorization } })).data
+                            let data = (await axios.get(config.authConfig.userInfoEndpoint, { headers: { "Authorization": authHeader } })).data
                             let { pilot, username, email } = data
                             req.body.bucketName = pilot.toLowerCase() //+ "/" + email + "/" + config.minioWriter.defaultInputFolderName//{pilot, email}
                             req.body.prefix = (email || username) + "/" + config.minioWriter.defaultInputFolderName

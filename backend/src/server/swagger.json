@@ -481,6 +481,44 @@
         }
       }
     },
+    "/cleanSchema": {
+      "post": {
+        "tags": [
+          "DataModel"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Clean data model",
+        "parameters": [
+          {
+            "name": "Schema",
+            "in": "body",
+            "description": "The schema you want to clean",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON output",
+            "schema": {}
+          },
+          "400": {
+            "description": "BAD REQUEST",
+            "schema": {
+              "$ref": "#/definitions/BAD_REQUEST_2"
+            }
+          }
+        }
+      }
+    },
     "/source": {
       "get": {
         "tags": [
@@ -1174,12 +1212,33 @@
         "sourceDataID": {
           "type": "string"
         },
+        "sourceDataMinio": {
+          "type": "object",
+          "properties": {
+            "name" : {
+              "type" : "string"
+            },
+            "bucket" : {
+              "type" : "string"
+            },
+            "etag" : {
+              "type" : "string"
+            }
+          }
+        },
         "sourceDataURL": {
           "type": "string"
         },
         "mapPathIn": {
           "type": "string",
           "uniqueItems": true
+        },
+        "mapID": {
+          "type": "string",
+          "uniqueItems": true
+        },
+        "mapData": {
+          "type": "object"
         },
         "dataModelIn": {
           "type": "string",
@@ -1739,38 +1798,73 @@
     },
     "Insert Map_6": {
       "type": "object",
-      "example": {
-        "name": "string",
-        "id": "string",
-        "path": "string",
-        "description": "string",
-        "sourceDataType": "string",
-        "sourceData": "array",
-        "sourceDataID": "string",
-        "sourceDataURL": "string",
-        "map": "object",
-        "dataModelURL": "string",
-        "dataModelID": "string",
-        "dataModel": "object",
+      "properties" : {
+        "sourceDataIn": {
+          "type": "string",
+          "uniqueItems": true
+        },
+        "sourceData": {
+          "example": [
+            {
+              "string": "string"
+            }
+          ]
+        },
+        "sourceDataType": {
+          "type": "string"
+        },
+        "sourceDataID": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "sourceDataMinio": {
+          "type": "object",
+          "properties": {
+            "name" : {
+              "type" : "string"
+            },
+            "bucket" : {
+              "type" : "string"
+            },
+            "etag" : {
+              "type" : "string"
+            }
+          }
+        },
+        "sourceDataURL": {
+          "type": "string"
+        },
+        "mapPathIn": {
+          "type": "string",
+          "uniqueItems": true
+        },
+        "mapID": {
+          "type": "string",
+          "uniqueItems": true
+        },
+        "mapData": {
+          "type": "object"
+        },
+        "dataModelIn": {
+          "type": "string",
+          "uniqueItems": true
+        },
+        "dataModel": {
+          "type": "object"
+        },
+        "dataModelID": {
+          "type": "string"
+        },
+        "dataModelURL": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
         "config": {
-          "delimiter": "string",
-          "NGSI_entity": true,
-          "modelSchemaFolder": "string",
-          "ignoreValidation": true,
-          "mappingReport": true,
-          "targetDataModel": "string",
-          "rowStart": 0,
-          "rowEnd": 0,
-          "regexClean": {
-            "custom": "string"
-          },
-          "endLine": "string",
-          "deleteEmptySpaceAtBeginning": true,
-          "site": "string",
-          "service": "string",
-          "group": "string",
-          "entityNameField": "string",
-          "entityDefaultPrefix": "string"
+          "$ref": "#/definitions/config"
         }
       }
     },

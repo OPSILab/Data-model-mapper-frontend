@@ -362,9 +362,9 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             result.id = utils.createSynchId(
                 result ? result.type : "",
                 //"", 
-                site || "",
-                service || "",
-                group || "",
+                site,// || "",
+                service,// || "",
+                group,// || "",
                 result ? result[entityIdField] : "",
                 isIdPrefix || "",
                 rowNumber);

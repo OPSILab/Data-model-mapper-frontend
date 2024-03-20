@@ -105,7 +105,7 @@ module.exports = {
             configCopy.fileUnWrittenCount =
             configCopy.rowNumber =
             configCopy.orionUrl =
-            configCopy.updateMode = 
+            configCopy.updateMode =
             configCopy.fiwareService =
             configCopy.fiwareServicePath =
             configCopy.orionAuthHeaderName =
@@ -412,7 +412,9 @@ module.exports = {
         if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
             throw { error: "schema is required" }
         if (dataModel) dataModel = this.dataModelClean(dataModel, {})
-        let objectName = (sourceDataMinio?.name || (prefix + "/" + name)).replace(config.minioWriter.defaultInputFolderName, config.minioWriter.defaultOutputFolderName) //.toLowerCase()
+        let objectName = (
+            //sourceDataMinio?.name || 
+            (prefix + "/" + name)).replace(config.minioWriter.defaultInputFolderName, config.minioWriter.defaultOutputFolderName) //.toLowerCase()
         if (objectName.substring(objectName.length - 5) != ".json")
             objectName = objectName + ".json"
 
@@ -526,7 +528,9 @@ module.exports = {
         if (path == "") path = undefined
 
         if (dataModel) dataModel = this.dataModelClean(dataModel, {})
-        let objectName = (sourceDataMinio?.name || (prefix + "/" + name)).replace(config.minioWriter.defaultInputFolderName, config.minioWriter.defaultOutputFolderName) //.toLowerCase()
+        let objectName = (
+            //sourceDataMinio?.name || 
+            (prefix + "/" + name)).replace(config.minioWriter.defaultInputFolderName, config.minioWriter.defaultOutputFolderName) //.toLowerCase()
         if (objectName.substring(objectName.length - 5) != ".json")
             objectName = objectName + ".json"
 
