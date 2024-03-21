@@ -22,7 +22,8 @@ const fs = require('fs');
 const utils = require('../utils/utils.js');
 const log = require('../utils/logger')//.app(module);
 const {trace, debug, info, warn, err} = log
-function logger (fn, msg) {fn(msg, __filename)}
+const e = log.error
+function logger(fn, ...msg) { fn(__filename, ...msg) }
 const report = require('../utils/logger').report;
 const apiOutput = require('../server/api/services/service')
 const config = require('./../../config');
@@ -36,8 +37,8 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
             fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
-            logger(err,'There was an error while getting buffer from source data: ');
-            logger(err,err)
+            logger(e,'There was an error while getting buffer from source data: ');
+            logger(e,err)
         }
 
     }
@@ -50,7 +51,7 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
     else if (sourceData.ext)
         fileToRowStream(fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
     else
-        logger(err,"No valid Source Data was provided");
+        logger(e,"No valid Source Data was provided");
 
 }
 
@@ -62,7 +63,7 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
 
     request(url).pipe(geo.parse())
         .on('error', function (err) {
-            logger(err,err);
+            logger(e,err);
         })
         .on('header', function (columns) {
             //  logger(info,'Columns: ' + columns);
@@ -89,8 +90,8 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
                 utils.printFinalReportAndSendResponse(log);
                 utils.printFinalReportAndSendResponse(report);
             } catch (error) {
-                logger(err,"Error While finalizing the streaming process: ");
-                logger(err,error)
+                logger(e,"Error While finalizing the streaming process: ");
+                logger(e,error)
             }
 
         });
@@ -105,7 +106,7 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
 
     inputData.pipe(geo.parse())
         .on('error', function (err) {
-            logger(err,err);
+            logger(e,err);
         })
         .on('header', function (columns) {
             // logger(info,columns);

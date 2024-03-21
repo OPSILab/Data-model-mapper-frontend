@@ -30,7 +30,8 @@ const minioWriter = require("../writers/minioWriter")
 const { isMinioWriterActive, sleep } = require('./common')
 const log = require('./logger')
 const {trace, debug, info, warn, err} = log
-function logger (fn, msg) {fn(msg, __filename)}
+const e = log.error
+function logger(fn, ...msg) { fn(__filename, ...msg) }
 
 function ngsi() {
     return (((apiOutput.NGSI_entity == undefined) && config.NGSI_entity || apiOutput.NGSI_entity).toString() === 'true')
@@ -256,9 +257,9 @@ const sendOutput = async () => {
     apiOutput.outputFile = [];
 };
 
-const printFinalReportAndSendResponse = async (logger) => {
+const printFinalReportAndSendResponse = async (loggerr) => {
 
-    await logger.info('\n--------  MAPPING REPORT ----------\n' +
+    await logger(info,'\n--------  MAPPING REPORT ----------\n' +
         '\t Processed objects: ' + config.rowNumber + '\n' +
         '\t Mapped and Validated Objects: ' + config.validCount + '/' + config.rowNumber + '\n' +
         '\t Mapped and NOT Validated Objects: ' + config.unvalidCount + '/' + config.rowNumber + '\n' +
@@ -305,7 +306,7 @@ const printFinalReportAndSendResponse = async (logger) => {
                             await minioWriter.stringUpload(bucketName, objectName, obj)
                     }
                     catch (error) {
-                        logger(err,error)
+                        logger(e,error)
                     }
                     logger.debug("minio writing done")
                 }
@@ -314,7 +315,7 @@ const printFinalReportAndSendResponse = async (logger) => {
             await sendOutput();
         }
         catch (error) {
-            logger(err,error.message)
+            logger(e,error.message)
             apiOutput.outputFile = [];
         }
     }

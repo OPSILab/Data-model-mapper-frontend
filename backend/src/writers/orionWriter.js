@@ -24,7 +24,8 @@ const config = require('../../config')
 const report = require('../utils/logger').orionReport;
 const log = require('../utils/logger')//.app(module);
 const {trace, debug, info, warn, err} = log
-function logger (fn, msg) {fn(msg, __filename)}
+const e = log.error
+function logger(fn, ...msg) { fn(__filename, ...msg) }
 const proxyConf = config.orionWriter.enableProxy ? config.orionWriter.proxy : undefined;
 
 const sleep = (ms) => {
@@ -124,13 +125,13 @@ const writeObject = async (objNumber, obj, modelSchema) => {
 
                         } else {
                             return Promise.reject('Update Error').catch((error) => {
-                                logger(err,'There was an error while writing Mapped Object: ')
-                                logger(err,error)
+                                logger(e,'There was an error while writing Mapped Object: ')
+                                logger(e,error)
                             });
                         }
 
                     } catch (error) {
-                        logger(err,error)
+                        logger(e,error)
                         report.info('----------------------------------------------------------\n' +
                             'Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
                         logger(debug,'Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
@@ -145,8 +146,8 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                         logger(debug,'Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
                         config.orionUnWrittenCount++;
                         return Promise.reject(error).catch((error) => {
-                            logger(err,'There was an error while writing Mapped Object: ')
-                            logger(err,error)
+                            logger(e,'There was an error while writing Mapped Object: ')
+                            logger(e,error)
                         });
 
                     }
@@ -163,13 +164,13 @@ const writeObject = async (objNumber, obj, modelSchema) => {
             } else {
                 config.orionUnWrittenCount++;
                 return Promise.reject('Error returned from Context Broker: ' + JSON.stringify(createResponse) + '\n').catch((error) => {
-                    logger(err,'There was an error while writing Mapped Object: ')
-                    logger(err,error)
+                    logger(e,'There was an error while writing Mapped Object: ')
+                    logger(e,error)
                 });
             }
 
         } catch (error) {
-            logger(err,error)
+            logger(e,error)
 
             report.info('----------------------------------------------------------\n' +
                 'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT CREATED in the Context Broker');

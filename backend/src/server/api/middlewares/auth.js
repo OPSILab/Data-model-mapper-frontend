@@ -39,7 +39,7 @@ module.exports = {
                 }
                 catch (error) {
 
-                    logger(err,error)
+                    logger(e,error)
                     if (error.message == "invalid token" || error.message == "jwt expired" || error.message == "jwt malformed")
                         return res.sendStatus(403);
                     else
@@ -61,13 +61,13 @@ module.exports = {
                                 logger(info,'Token valid:', response.data);
                                 next();
                             } else {
-                                logger(err,'Token not valid.');
+                                logger(e,'Token not valid.');
                                 res.sendStatus(403);
                             }
                         })
                         .catch(error => {
-                            logger(err,error.response.data)
-                            logger(err,'Errore during token verify:', error.message);
+                            logger(e,error.response.data)
+                            logger(e,'Errore during token verify:', error.message);
                             res.sendStatus(500);
                         });
                 }
@@ -84,8 +84,8 @@ module.exports = {
                             req.body.prefix = (email || username) + "/" + config.minioWriter.defaultInputFolderName
                         }
                         catch (error) {
-                            logger(err,error?.toString())
-                            logger(err,error?.response?.data)
+                            logger(e,error?.toString())
+                            logger(e,error?.response?.data)
                         }
                         next()
                     }

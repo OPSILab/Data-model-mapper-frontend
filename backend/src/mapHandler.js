@@ -27,7 +27,8 @@ const dotPattern = /(.*)\.(.*)/;
 
 const log = require('./utils/logger')//.app(module);
 const {trace, debug, info, warn, err} = log
-function logger (fn, msg) {fn(msg, __filename)}
+const e = log.error
+function logger(fn, ...msg) { fn(__filename, ...msg) }
 const Debugger = require('./utils/debugger');
 const report = require('./utils/logger').report;
 const service = require("./server/api/services/service")
@@ -152,7 +153,7 @@ const extractFromNestedField = (source, field) => {
         layers = field.split('.')
     }
     catch (error) {
-        logger(err,error.message)
+        logger(e,error.message)
     }
     let value = source
     for (let sublayer in layers) {
@@ -321,7 +322,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 singleResult = converter(source);
             } catch (error) {
                 //logger.error(error)
-                logger(err,`There was an error: ${error} while processing ${parsedSourceKey} field`);
+                logger(e,`There was an error: ${error} while processing ${parsedSourceKey} field`);
                 continue;
             }
 
@@ -372,8 +373,8 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 rowNumber);
             delete result[entityIdField];
         } catch (error) {
-            logger(err,error)
-            logger(err,"UnknownEntity")
+            logger(e,error)
+            logger(e,"UnknownEntity")
         }
     }
     else

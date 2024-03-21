@@ -5,7 +5,8 @@ const Map = require("../models/map.js")
 const DataModel = require("../models/dataModel.js")
 const log = require('../../../utils/logger')//.app(module);
 const {trace, debug, info, warn, err} = log
-function logger (fn, msg) {fn(msg, __filename)}
+const e = log.error
+function logger(fn, ...msg) { fn(__filename, ...msg) }
 const axios = require('axios')
 const RefParser = require('json-schema-ref-parser');
 const minioWriter = require('../../../writers/minioWriter')
@@ -197,7 +198,7 @@ module.exports = {
         if (source.id && !source.data[0]) {
             try { source.data = await Source.findOne({ _id: source.id }) }
             catch (error) {
-                logger(err,error)
+                logger(e,error)
                 process.res.sendStatus(404)
             }
             source.data = source.data.source || source.data.sourceCSV
@@ -206,7 +207,7 @@ module.exports = {
         if (source.minioObjName && !source.data[0]) {
             try { source.data = await this.minioGetObject(source.minioBucketName, source.minioObjName, source.type) }
             catch (error) {
-                logger(err,error)
+                logger(e,error)
                 process.res.sendStatus(404)
             }
         }
@@ -214,7 +215,7 @@ module.exports = {
         if (dataModel.id && !dataModel.data) {
             try { dataModel.data = await DataModel.findOne({ _id: dataModel.id }) }
             catch (error) {
-                logger(err,error)
+                logger(e,error)
                 process.res.sendStatus(404)
             }
             dataModel.data = dataModel.data.dataModel
@@ -270,7 +271,7 @@ module.exports = {
             );
         }
         catch (error) {
-            logger(err,error)
+            logger(e,error)
             return error.toString()
         }
     },
@@ -285,7 +286,7 @@ module.exports = {
                     sources.push({ etag: obj.etag, from: "minio", bucket, name: obj.name, source: (await this.minioGetObject(bucket, obj.name, format)) })//, postMessage)) })
                 }
                 catch (error) {
-                    logger(err,error)
+                    logger(e,error)
                 }
         }
     },
@@ -297,7 +298,7 @@ module.exports = {
                 await this.getMinioObjects(bucketName, prefix, format, sources)
             }
             catch (error) {
-                logger(err,"Unable to connect to minio")//TODO delete this try / catch and handle frontend side the error
+                logger(e,"Unable to connect to minio")//TODO delete this try / catch and handle frontend side the error
             }
         return sources
     },

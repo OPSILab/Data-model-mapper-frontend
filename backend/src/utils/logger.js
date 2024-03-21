@@ -167,6 +167,10 @@ winston.loggers.add('orionReport', {
 
 const LEVEL = process.env.LEVEL?.toLowerCase() || config.logLevel || "trace"
 function customLogger(level, fileName) {
+    //console.debug(typeof fileName)
+    //console.debug(JSON.stringify(fileName))
+    if (fileName.includes("backend"))
+        fileName = fileName.split("backend")[1]
     //const currentDate = new Date().toISOString();
 
     // Ottieni la riga di codice
@@ -176,13 +180,13 @@ function customLogger(level, fileName) {
     // Ottieni il file di esecuzione (nome del file che importa il logger)
     //const fileName = __filename
     //return (`[${currentDate}] [${fileName}:${lineNumber}] [${level}]`)
-    
+
     const currentDate = new Date().toISOString();
     return (`[${currentDate}] [${fileName}] [${level}]`);
     const stackTrace = fileName.stack.split("\n")[2].trim().split("(");
     const filePath = stackTrace[stackTrace.length - 1]?.split(")")[0].split("backend")[1]
     return (`[${currentDate}] [${filePath}] [${level}]`);
-    
+
 }
 
 module.exports = {
@@ -191,29 +195,29 @@ module.exports = {
 
     //customLogger : customLogger,
 
-    trace(message, fileName) {
+    trace(fileName, ...message) {
         if (LEVEL == "trace")
-            console.log(customLogger("trace", fileName), " ", message)
+            console.log(customLogger("trace", fileName), " ", ...message)
     },
-    debug(message, fileName) {
+    debug(fileName, ...message) {
         if (LEVEL == "trace" || LEVEL == "debug")
-            console.debug(customLogger("debug", fileName), " ", message)
+            console.debug(customLogger("debug", fileName), " ", ...message)
     },
-    info(message, fileName) {
+    info(fileName, ...message) {
         if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info")
-            console.info(customLogger("info", fileName), " ", message)
+            console.info(customLogger("info", fileName), " ", ...message)
     },
-    warn(message, fileName) {
+    warn(fileName, ...message) {
         if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn")
-            console.warn(customLogger("warn", fileName), " ", message)
+            console.warn(customLogger("warn", fileName), " ", ...message)
     },
-    error(message, fileName) {
+    error(fileName, ...message) {
         if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn" || LEVEL == "error")
-            console.error(customLogger("error", fileName), " ", message)
+            console.error(customLogger("error", fileName), " ", ...message)
     },
-    err(message, fileName) {
+    err(fileName, ...message) {
         if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn" || LEVEL == "error")
-            console.error(customLogger("error", fileName), " ", message)
+            console.error(customLogger("error", fileName), " ", ...message)
     },
 
     report: winston.loggers.get('report'),

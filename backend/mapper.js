@@ -17,7 +17,8 @@
  ******************************************************************************/
 const log = require('./src/utils/logger')
 const {trace, debug, info, warn, err} = log
-function logger (fn, msg) {fn(msg, __filename)}
+const e = log.error
+function logger(fn, ...msg) { fn(__filename, ...msg) }
 
 try {
     const config = require('./config');
@@ -46,5 +47,5 @@ try {
     };
 }
 catch (error) {
-    logger(err, error)
+    logger(e, error)
 }

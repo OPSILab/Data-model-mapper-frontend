@@ -22,7 +22,8 @@ const fs = require('fs');
 const utils = require('../utils/utils');
 const log = require('../utils/logger')//.app(module);
 const {trace, debug, info, warn, err} = log
-function logger (fn, msg) {fn(msg, __filename)}
+const e = log.error
+function logger(fn, ...msg) { fn(__filename, ...msg) }
 const report = require('../utils/logger').report;
 const apiOutput = require('../server/api/services/service')
 const config = require('./../../config');
@@ -38,8 +39,8 @@ async function sourceDataToRowStream(sourceData, map, schema, rowHandler, mapped
             await fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
-            logger(err,'There was an error while getting buffer from source data: ');
-            logger(err,err)
+            logger(e,'There was an error while getting buffer from source data: ');
+            logger(e,err)
         }
 
     }
@@ -52,7 +53,7 @@ async function sourceDataToRowStream(sourceData, map, schema, rowHandler, mapped
     else if (sourceData.ext)
         await fileToRowStream(fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
     else
-        logger(err,"No valid Source Data was provided");
+        logger(e,"No valid Source Data was provided");
 
 }
 
@@ -64,7 +65,7 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
 
     request(url).pipe(JSONStream.parse('.*'))
         .on('error', function (err) {
-            logger(err,err);
+            logger(e,err);
         })
         .on('header', function (columns) {
             //  logger(info,'Columns: ' + columns);
@@ -92,8 +93,8 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
                 await utils.printFinalReportAndSendResponse(log);
                 await utils.printFinalReportAndSendResponse(report);
             } catch (error) {
-                logger(err,"Error While finalizing the streaming process: ");
-                logger(err,error);
+                logger(e,"Error While finalizing the streaming process: ");
+                logger(e,error);
             }
 
         });
@@ -108,7 +109,7 @@ async function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler
 
     await inputData.pipe(JSONStream.parse('.*'))
         .on('error', function (err) {
-            logger(err,err);
+            logger(e,err);
         })
         .on('header', function (columns) {
             // logger(info,columns);

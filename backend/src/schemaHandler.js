@@ -24,7 +24,8 @@ const RefParser = require('json-schema-ref-parser');
 
 const log = require('./utils/logger')//.app(module);
 const {trace, debug, info, warn, err} = log
-function logger (fn, msg) {fn(msg, __filename)}
+const e = log.error
+function logger(fn, ...msg) { fn(__filename, ...msg) }
 const report = require('./utils/logger').report;
 const config = require('../config')
 const apiOutput = require('./server/api/services/service')
@@ -71,7 +72,7 @@ function nestedFieldsHandler(field, model) {
             field = field.replaceAll(":", '":"');
             try { field = JSON.parse(field) }
             catch (error) {
-                logger(err,error.message)
+                logger(e,error.message)
                 field = field.replaceAll('}","{', '},{');
                 while (field.replaceAll('" ', '"') != field) field = field.replaceAll('" ', '"')
                 while (field.replaceAll(' "', '"') != field) field = field.replaceAll(' "', '"')
@@ -187,7 +188,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         var validate = ajv.compile(schema);
     } catch (error) {
         if (schema.anyOf && schema.anyOf[0] == undefined && !isSingleField) schema.anyOf = undefined;
-        logger(err,error);
+        logger(e,error);
         logger(info,schema)
         var validate = ajv.compile(schema);
     }
@@ -198,7 +199,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
             data = nestedFieldsHandler(data, schema.allOf[0].properties)
         }
         catch (error) {
-            logger(err,error)
+            logger(e,error)
         }
         validate = ajv.compile(schema);
         valid = validate(data)
@@ -237,7 +238,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         if (!isSingleField) {
             report.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
         }
-        logger(err,"Field is not valid")
+        logger(e,"Field is not valid")
         return false
     }
 }
