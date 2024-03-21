@@ -39,7 +39,7 @@ module.exports = {
                 }
                 catch (error) {
 
-                    log.error(error)
+                    logger(err,error)
                     if (error.message == "invalid token" || error.message == "jwt expired" || error.message == "jwt malformed")
                         return res.sendStatus(403);
                     else
@@ -58,16 +58,16 @@ module.exports = {
                     axios.post(introspectionEndpoint, data)
                         .then(response => {
                             if (response.data.active) {
-                                log.info('Token valid:', response.data);
+                                logger(info,'Token valid:', response.data);
                                 next();
                             } else {
-                                log.error('Token not valid.');
+                                logger(err,'Token not valid.');
                                 res.sendStatus(403);
                             }
                         })
                         .catch(error => {
-                            log.error(error.response.data)
-                            log.error('Errore during token verify:', error.message);
+                            logger(err,error.response.data)
+                            logger(err,'Errore during token verify:', error.message);
                             res.sendStatus(500);
                         });
                 }
@@ -84,8 +84,8 @@ module.exports = {
                             req.body.prefix = (email || username) + "/" + config.minioWriter.defaultInputFolderName
                         }
                         catch (error) {
-                            log.error(error?.toString())
-                            log.error(error?.response?.data)
+                            logger(err,error?.toString())
+                            logger(err,error?.response?.data)
                         }
                         next()
                     }

@@ -18,6 +18,8 @@
 
 var fs = require('fs');
 const log = require('../utils/logger')//.app(module);
+const {trace, debug, info, warn, err} = log
+function logger (fn, msg) {fn(msg, __filename)}
 const utils = require('../utils/utils');
 const config = require('../../config').fileWriter;
 
@@ -40,7 +42,7 @@ const writeObject = async (objNumber, obj, addBRLine) => {
 
         return new Promise(async (resolve, reject) => {
 
-            log.debug('Writing to file, object number: ' + objNumber + ' , id: ' + obj.id);
+            logger(debug,'Writing to file, object number: ' + objNumber + ' , id: ' + obj.id);
             try {
 
                 outFileStream.on('error', (error) => reject("There was an error while writing object to File Stream: " + error));
@@ -58,23 +60,23 @@ const writeObject = async (objNumber, obj, addBRLine) => {
                 if (addBRLine)
                     outFileStream.write("\n");
 
-                log.debug("'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly written to file");
+                logger(debug,"'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly written to file");
                 return resolve();
 
             } catch (err) {
                 config.fileUnWrittenCount++;
-                log.error('Error while writing mapped object to file');
-                log.error('----------------------------------------------------------\n' +
+                logger(err,'Error while writing mapped object to file');
+                logger(err,'----------------------------------------------------------\n' +
                     'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT written to file');
-                log.error(err)
+                logger(err,err)
                 return reject(err);
             }
         });
     } else {
 
         return new Promise(async (resolve, reject) => {
-            log.info('');
-            log.debug("Mapped Object is undefined or the FileWriter was not correctly configured");
+            logger(info,'');
+            logger(debug,"Mapped Object is undefined or the FileWriter was not correctly configured");
             return resolve();
         });
     }
@@ -90,7 +92,7 @@ const finalizeFile = async () => {
         await outFileStream?.end();
         outFileStream = undefined;
         return resolve();
-    }).then(value => { if (value) log.debug(value) }).catch(value => log.error(value));
+    }).then(value => { if (value) logger(debug,value) }).catch(value => logger(err,value));
 };
 
 const printFileFinalReport = async (logger) => {

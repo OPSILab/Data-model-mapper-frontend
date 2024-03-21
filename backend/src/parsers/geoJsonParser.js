@@ -21,6 +21,8 @@ const request = require('request');
 const fs = require('fs');
 const utils = require('../utils/utils.js');
 const log = require('../utils/logger')//.app(module);
+const {trace, debug, info, warn, err} = log
+function logger (fn, msg) {fn(msg, __filename)}
 const report = require('../utils/logger').report;
 const apiOutput = require('../server/api/services/service')
 const config = require('./../../config');
@@ -34,8 +36,8 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
             fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
-            log.error('There was an error while getting buffer from source data: ');
-            log.error(err)
+            logger(err,'There was an error while getting buffer from source data: ');
+            logger(err,err)
         }
 
     }
@@ -48,7 +50,7 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
     else if (sourceData.ext)
         fileToRowStream(fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
     else
-        log.error("No valid Source Data was provided");
+        logger(err,"No valid Source Data was provided");
 
 }
 
@@ -60,10 +62,10 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
 
     request(url).pipe(geo.parse())
         .on('error', function (err) {
-            log.error(err);
+            logger(err,err);
         })
         .on('header', function (columns) {
-            //  log.info('Columns: ' + columns);
+            //  logger(info,'Columns: ' + columns);
         })
         .on('data', function (data) {
 
@@ -78,17 +80,17 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
         })
         .on('column', function (key, value) {
             // outputs the column name associated with the value found
-            // log.info('#' + key + ' = ' + value);
+            // logger(info,'#' + key + ' = ' + value);
         })
         .on('end', function () {
             try {
                 finalizeProcess();
-                log.debug("urlToRowStream: request(url).pipe(geo.parse()).on(end)");
+                logger(debug,"urlToRowStream: request(url).pipe(geo.parse()).on(end)");
                 utils.printFinalReportAndSendResponse(log);
                 utils.printFinalReportAndSendResponse(report);
             } catch (error) {
-                log.error("Error While finalizing the streaming process: ");
-                log.error(error)
+                logger(err,"Error While finalizing the streaming process: ");
+                logger(err,error)
             }
 
         });
@@ -103,10 +105,10 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
 
     inputData.pipe(geo.parse())
         .on('error', function (err) {
-            log.error(err);
+            logger(err,err);
         })
         .on('header', function (columns) {
-            // log.info(columns);
+            // logger(info,columns);
         })
         .on('data', function (row) {
 
@@ -122,12 +124,12 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
         })
         .on('column', function (key, value) {
             // outputs the column name associated with the value found
-            //log.info('#' + key + ' = ' + value);
+            //logger(info,'#' + key + ' = ' + value);
         })
         .on('end', function () {
 
             finalizeProcess();
-            log.debug("fileToRowStream: inputData.pipe(geo.parse()).on(end)");
+            logger(debug,"fileToRowStream: inputData.pipe(geo.parse()).on(end)");
             utils.printFinalReportAndSendResponse(log);
             utils.printFinalReportAndSendResponse(report);
 

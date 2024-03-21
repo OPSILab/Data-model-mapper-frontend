@@ -26,6 +26,8 @@ const staticPattern = /static:(.*)/;
 const dotPattern = /(.*)\.(.*)/;
 
 const log = require('./utils/logger')//.app(module);
+const {trace, debug, info, warn, err} = log
+function logger (fn, msg) {fn(msg, __filename)}
 const Debugger = require('./utils/debugger');
 const report = require('./utils/logger').report;
 const service = require("./server/api/services/service")
@@ -33,7 +35,7 @@ const service = require("./server/api/services/service")
 const loadMap = (mapData) => {
 
     if (typeof mapData === 'object' && mapData.absolute) {
-        log.info('Loading Map File');
+        logger(info,'Loading Map File');
         return new Promise(function (resolve, reject) {
             resolve(JSON.parse(fs.readFileSync(mapData.absolute, 'utf8')));
         });
@@ -150,7 +152,7 @@ const extractFromNestedField = (source, field) => {
         layers = field.split('.')
     }
     catch (error) {
-        log.error(error.message)
+        logger(err,error.message)
     }
     let value = source
     for (let sublayer in layers) {
@@ -319,7 +321,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 singleResult = converter(source);
             } catch (error) {
                 //logger.error(error)
-                log.error(`There was an error: ${error} while processing ${parsedSourceKey} field`);
+                logger(err,`There was an error: ${error} while processing ${parsedSourceKey} field`);
                 continue;
             }
 
@@ -344,11 +346,11 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             else if (config.ignoreValidation)
                 result[mapDestKey] = singleResult[mapDestKey];
             else {
-                log.debug(`Skipping source field: ${JSON.stringify(mapSourceKey)} because the value ${JSON.stringify(singleResult)} is not valid for mapped key: ${mapDestKey}`);
+                logger(debug,`Skipping source field: ${JSON.stringify(mapSourceKey)} because the value ${JSON.stringify(singleResult)} is not valid for mapped key: ${mapDestKey}`);
             }
 
         } else {
-            log.info(`The mapped key: ${mapDestKey} is not present in the selected Data Model Schema`);
+            logger(info,`The mapped key: ${mapDestKey} is not present in the selected Data Model Schema`);
         }
     }
 
@@ -370,8 +372,8 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 rowNumber);
             delete result[entityIdField];
         } catch (error) {
-            log.error(error)
-            log.error("UnknownEntity")
+            logger(err,error)
+            logger(err,"UnknownEntity")
         }
     }
     else
@@ -381,7 +383,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
     * Despite single validations, the following one is mandatory to be successful
     **/
     if (checkResultWithDestModelSchema(result, mapDestKey, modelSchema, rowNumber)) {
-        log.debug('Mapped object, number: ' + rowNumber + ' is compliant with target Data Model');
+        logger(debug,'Mapped object, number: ' + rowNumber + ' is compliant with target Data Model');
         report.info('Mapped object, number: ' + rowNumber + ' is compliant with target Data Model');
         config.validCount++;
         return result;
@@ -393,7 +395,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             JSON.stringify(result) +
             '\n--------------------------------------------------------------------------------\n');
 
-        log.debug('Mapped object, number: ' + rowNumber + ', id: ' + result.id + ' is not compliant the target Data Model! Skipping!');
+        logger(debug,'Mapped object, number: ' + rowNumber + ', id: ' + result.id + ' is not compliant the target Data Model! Skipping!');
         config.unvalidCount++;
         return undefined;
     }

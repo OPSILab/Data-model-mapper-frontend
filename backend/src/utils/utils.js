@@ -29,6 +29,8 @@ const filenameFromPathPattern = /^(.:)?\\(.+\\)*(.+)\.(.+)$/;
 const minioWriter = require("../writers/minioWriter")
 const { isMinioWriterActive, sleep } = require('./common')
 const log = require('./logger')
+const {trace, debug, info, warn, err} = log
+function logger (fn, msg) {fn(msg, __filename)}
 
 function ngsi() {
     return (((apiOutput.NGSI_entity == undefined) && config.NGSI_entity || apiOutput.NGSI_entity).toString() === 'true')
@@ -303,7 +305,7 @@ const printFinalReportAndSendResponse = async (logger) => {
                             await minioWriter.stringUpload(bucketName, objectName, obj)
                     }
                     catch (error) {
-                        log.error(error)
+                        logger(err,error)
                     }
                     logger.debug("minio writing done")
                 }
@@ -312,7 +314,7 @@ const printFinalReportAndSendResponse = async (logger) => {
             await sendOutput();
         }
         catch (error) {
-            log.error(error.message)
+            logger(err,error.message)
             apiOutput.outputFile = [];
         }
     }

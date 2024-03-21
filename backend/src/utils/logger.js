@@ -166,40 +166,56 @@ winston.loggers.add('orionReport', {
 };*/
 
 const LEVEL = process.env.LEVEL?.toLowerCase() || config.logLevel || "trace"
+function customLogger(level, fileName) {
+    //const currentDate = new Date().toISOString();
 
-function customLogger(level) {
-  const currentDate = new Date().toISOString();
-  const stackTrace = new Error().stack.split("\n")[2].trim().split("(");
-  const getLine = stackTrace[stackTrace.length - 1].split(":")
-  //const lineNumber = getLine[getLine.length-2];
-  //console.log(stackTrace)
-  const filePath = stackTrace[stackTrace.length - 1]?.split(")")[0].split("backend")[1]
-  return (`[${currentDate}] [${filePath}] [${level}]`);
+    // Ottieni la riga di codice
+    //const stackTrace = new Error().stack.split("\n")[2].trim().split(" ");
+    //const lineNumber = stackTrace[stackTrace.length - 1].split(":")[1];
+
+    // Ottieni il file di esecuzione (nome del file che importa il logger)
+    //const fileName = __filename
+    //return (`[${currentDate}] [${fileName}:${lineNumber}] [${level}]`)
+    
+    const currentDate = new Date().toISOString();
+    return (`[${currentDate}] [${fileName}] [${level}]`);
+    const stackTrace = fileName.stack.split("\n")[2].trim().split("(");
+    const filePath = stackTrace[stackTrace.length - 1]?.split(")")[0].split("backend")[1]
+    return (`[${currentDate}] [${filePath}] [${level}]`);
+    
 }
 
 module.exports = {
 
-  trace(message) {
-    if (LEVEL == "trace")
-      console.log(customLogger("trace"), " ", message)
-  },
-  debug(message) {
-    if (LEVEL == "trace" || LEVEL == "debug")
-      console.debug(customLogger("debug"), " ", message)
-  },
-  info(message) {
-    if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info")
-      console.info(customLogger("info"), " ", message)
-  },
-  warn(message) {
-    if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn")
-      console.warn(customLogger("warn"), " ", message)
-  },
-  error(message) {
-    if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn" || LEVEL == "error")
-      console.error(customLogger("error"), " ", message)
-  },
+    fileName: new Error(),
 
-  report: winston.loggers.get('report'),
-  orionReport: winston.loggers.get('orionReport')
+    //customLogger : customLogger,
+
+    trace(message, fileName) {
+        if (LEVEL == "trace")
+            console.log(customLogger("trace", fileName), " ", message)
+    },
+    debug(message, fileName) {
+        if (LEVEL == "trace" || LEVEL == "debug")
+            console.debug(customLogger("debug", fileName), " ", message)
+    },
+    info(message, fileName) {
+        if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info")
+            console.info(customLogger("info", fileName), " ", message)
+    },
+    warn(message, fileName) {
+        if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn")
+            console.warn(customLogger("warn", fileName), " ", message)
+    },
+    error(message, fileName) {
+        if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn" || LEVEL == "error")
+            console.error(customLogger("error", fileName), " ", message)
+    },
+    err(message, fileName) {
+        if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn" || LEVEL == "error")
+            console.error(customLogger("error", fileName), " ", message)
+    },
+
+    report: winston.loggers.get('report'),
+    orionReport: winston.loggers.get('orionReport')
 }

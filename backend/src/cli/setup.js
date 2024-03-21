@@ -21,18 +21,20 @@ const process = require('../utils/process');
 const config = require('../../config')
 
 const log = require('../utils/logger')//.app(module);
+const {trace, debug, info, warn, err} = log
+function logger (fn, msg) {fn(msg, __filename)}
 const utils = require('../utils/utils');
 
 let service = require ("../server/api/services/service")
 
 module.exports = async (sourceDataIn, mapPathIn, dataModelIn) => {
-    log.info("Initializing Mapper in " + (config.mode == "commandLine" ? "Command Line " : "Server ") + "Mode");
+    logger(info,"Initializing Mapper in " + (config.mode == "commandLine" ? "Command Line " : "Server ") + "Mode");
 
     if (Array.isArray(sourceDataIn)) sourceDataIn = sourceDataIn[0]
 
     if (commandLine.init(sourceDataIn, mapPathIn, dataModelIn)) {
 
-        log.debug("commandLine.init()");
+        logger(debug,"commandLine.init()");
 
         // file path or directly string/binary content 
         var sourceData = sourceDataIn || commandLine.getParam('sourceDataPath');
@@ -42,16 +44,16 @@ module.exports = async (sourceDataIn, mapPathIn, dataModelIn) => {
         try {
             await process.processSource(sourceData, "", mapPath, dataModelPath);
         } catch (error) {
-            log.error(error)
+            logger(err,error)
             service.error = error
             return error
         }
 
-        log.debug("process.processSource end")
+        logger(debug,"process.processSource end")
 
     } else {
-        log.error(error)
-        log.error("There was an error while initializing Mapper configuration");
+        logger(err,error)
+        logger(err,"There was an error while initializing Mapper configuration");
         service.error = "There was an error while initializing Mapper configuration"
     }
 };
