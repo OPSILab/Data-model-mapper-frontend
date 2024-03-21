@@ -1,8 +1,9 @@
 ﻿const config = require ('../../config')
 let logIndex = 0
+const log = require('./logger')
 module.exports = {
     e(error) {
-        console.error(error)
+        log.error(error)
         let str = ""
         var util = require('util')
         for (let key in error) {
@@ -17,7 +18,7 @@ module.exports = {
         var fs = require('fs');
     
         fs.writeFile("./logs/errorLog" + JSON.stringify(logIndex) + ".json", "[" + str.substring(0, str.length - 1) + "]", function (err) {
-            if (err) console.error(err);
+            if (err) log.error(err);
         })
     
         logIndex++

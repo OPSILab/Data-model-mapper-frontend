@@ -20,7 +20,7 @@ const commandLine = require('../utils/confUtils');
 const process = require('../utils/process');
 const config = require('../../config')
 
-const log = require('../utils/logger').app(module);
+const log = require('../utils/logger')//.app(module);
 const utils = require('../utils/utils');
 
 let service = require ("../server/api/services/service")
@@ -42,8 +42,7 @@ module.exports = async (sourceDataIn, mapPathIn, dataModelIn) => {
         try {
             await process.processSource(sourceData, "", mapPath, dataModelPath);
         } catch (error) {
-            console.log(error)
-            //console.error(error)
+            log.error(error)
             service.error = error
             return error
         }
@@ -51,8 +50,8 @@ module.exports = async (sourceDataIn, mapPathIn, dataModelIn) => {
         log.debug("process.processSource end")
 
     } else {
-        console.log(error)
-        console.error("There was an error while initializing Mapper configuration");
+        log.error(error)
+        log.error("There was an error while initializing Mapper configuration");
         service.error = "There was an error while initializing Mapper configuration"
     }
 };

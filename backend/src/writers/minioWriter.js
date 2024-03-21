@@ -2,7 +2,7 @@ var Minio = require('minio')
 let minioConfig = require('../../config').minioWriter
 const { e, sleep } = require('../utils/common')
 const Source = require("../server/api/models/source.js")
-const log = require('../utils/logger').app(module);
+const log = require('../utils/logger')//.app(module);
 
 let minioClient = new Minio.Client({
   endPoint: minioConfig.endPoint,
@@ -22,7 +22,7 @@ module.exports = {
     minioClient.makeBucket(name, location, function (err) {
       if (err) {
         errorMessage = err;
-        console.error(err)
+        log.error(err)
         return err
         //return e(err)
       }
@@ -53,8 +53,8 @@ module.exports = {
 
   subscribe(bucket) {
     minioClient.getBucketNotification(bucket, function (err, bucketNotificationConfig) {
-      if (err) return console.log(err)
-      console.log(bucketNotificationConfig)
+      if (err) return log.error(err)
+      log.info(bucketNotificationConfig)
     })
   },
 
@@ -67,7 +67,7 @@ module.exports = {
     queue.addEvent(Minio.ObjectCreatedAll)
     bucketNotification.add(queue)
     minioClient.setBucketNotification(bucket, bucketNotification, function (err) {
-      if (err) return console.log(err)
+      if (err) return log.error(err)
       log.info('Success')
     })
   },
@@ -75,14 +75,14 @@ module.exports = {
   getNotifications(bucketName) {
     const poller = minioClient.listenBucketNotification(bucketName, '', '', ['s3:ObjectCreated:*'])
     poller.on('notification', async (record) => {
-      console.log('New object: %s/%s (size: %d)', record.s3.bucket.name, record.s3.object.key, record.s3.object.size)
+      log.info('New object: %s/%s (size: %d)', record.s3.bucket.name, record.s3.object.key, record.s3.object.size)
       const newObject = await this.getObject(record.s3.bucket.name, record.s3.object.key)
       let jsonParsed
       try {
         jsonParsed = JSON.parse(newObject)
       }
       catch (error) {
-        console.error(error)
+        log.error(error)
       }
 
       let foundObject = (await Source.find({ name: record.s3.object.key }))[0]
@@ -112,7 +112,7 @@ module.exports = {
         ])
     })
     poller.on('error', (error) => {
-      console.error(error)
+      log.error(error)
       log.debug("Creating bucket")
       this.creteBucket(bucketName, minioConfig.location).then(message => {
         log.debug(message)
@@ -145,7 +145,7 @@ module.exports = {
       //process.res.send(data)
     })
     stream.on('error', function (err) {
-      console.error(err)
+      log.error(err)
       errorMessage = err
     })
 
@@ -182,7 +182,7 @@ module.exports = {
       minioClient.fPutObject(bucketName, objectName, minioConfig.defaultFileInput, metaData, function (err, etag) {
         log.info(etag)
         if (err) {
-          console.error(err)
+          log.error(err)
           return err
           //return e(err)
         }
@@ -190,7 +190,7 @@ module.exports = {
       })
     }
     catch (error) {
-      console.error(error)
+      log.error(error)
       //e(error)
     }
   },
@@ -204,9 +204,9 @@ module.exports = {
 
     minioClient.putObject(bucketName, objectName, Buffer.from(object), function (err, res) {
       if (err) {
-        console.error("An error occurred while writing object")
+        log.error("An error occurred while writing object")
         errorMessage = err
-        console.error(err)
+        log.error(err)
         return err
         //return e(err)
       }
@@ -245,7 +245,7 @@ module.exports = {
     minioClient.getObject(bucketName, objectName, function (err, dataStream) {
       if (err) {
         errorMessage = err
-        console.error(err)
+        log.error(err)
         return err
         //return e(err)
       }
@@ -261,7 +261,7 @@ module.exports = {
           resultMessage = format == 'json' ? JSON.parse(objectData) : objectData
         }
         catch (error) {
-          console.error(error)
+          log.error(error)
           resultMessage = format == 'json' ? [{ data: objectData }] : objectData
         }
       });
@@ -269,7 +269,7 @@ module.exports = {
       dataStream.on('error', function (err) {
         log.info('Error reading object:')
         errorMessage = err
-        console.error(err)
+        log.error(err)
         //e(err);
       });
 

@@ -3,7 +3,7 @@ const config = require('../../../../config')
 const Source = require("../models/source.js")
 const Map = require("../models/map.js")
 const DataModel = require("../models/dataModel.js")
-const log = require('../../../utils/logger').app(module);
+const log = require('../../../utils/logger')//.app(module);
 const axios = require('axios')
 const RefParser = require('json-schema-ref-parser');
 const minioWriter = require('../../../writers/minioWriter')
@@ -195,7 +195,7 @@ module.exports = {
         if (source.id && !source.data[0]) {
             try { source.data = await Source.findOne({ _id: source.id }) }
             catch (error) {
-                console.log(error)
+                log.error(error)
                 process.res.sendStatus(404)
             }
             source.data = source.data.source || source.data.sourceCSV
@@ -204,7 +204,7 @@ module.exports = {
         if (source.minioObjName && !source.data[0]) {
             try { source.data = await this.minioGetObject(source.minioBucketName, source.minioObjName, source.type) }
             catch (error) {
-                console.log(error)
+                log.error(error)
                 process.res.sendStatus(404)
             }
         }
@@ -212,7 +212,7 @@ module.exports = {
         if (dataModel.id && !dataModel.data) {
             try { dataModel.data = await DataModel.findOne({ _id: dataModel.id }) }
             catch (error) {
-                console.log(error)
+                log.error(error)
                 process.res.sendStatus(404)
             }
             dataModel.data = dataModel.data.dataModel
@@ -247,7 +247,7 @@ module.exports = {
         }
 
         if (dataModel.data) {
-            console.log(this.dataModelDeClean(dataModel.data))
+            log.info(this.dataModelDeClean(dataModel.data))
             fs.writeFile(
                 //dataModel.schema_id || 
                 "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
@@ -268,7 +268,7 @@ module.exports = {
             );
         }
         catch (error) {
-            console.log(error)
+            log.error(error)
             return error.toString()
         }
     },
@@ -283,7 +283,7 @@ module.exports = {
                     sources.push({ etag: obj.etag, from: "minio", bucket, name: obj.name, source: (await this.minioGetObject(bucket, obj.name, format)) })//, postMessage)) })
                 }
                 catch (error) {
-                    console.error(error)
+                    log.error(error)
                 }
         }
     },
@@ -295,7 +295,7 @@ module.exports = {
                 await this.getMinioObjects(bucketName, prefix, format, sources)
             }
             catch (error) {
-                console.error("Unable to connect to minio")//TODO delete this try / catch and handle frontend side the error
+                log.error("Unable to connect to minio")//TODO delete this try / catch and handle frontend side the error
             }
         return sources
     },

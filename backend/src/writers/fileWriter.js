@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 var fs = require('fs');
-const log = require('../utils/logger').app(module);
+const log = require('../utils/logger')//.app(module);
 const utils = require('../utils/utils');
 const config = require('../../config').fileWriter;
 
@@ -63,17 +63,17 @@ const writeObject = async (objNumber, obj, addBRLine) => {
 
             } catch (err) {
                 config.fileUnWrittenCount++;
-                console.error('Error while writing mapped object to file');
-                console.error('----------------------------------------------------------\n' +
+                log.error('Error while writing mapped object to file');
+                log.error('----------------------------------------------------------\n' +
                     'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT written to file');
-                console.log(err)
+                log.error(err)
                 return reject(err);
             }
         });
     } else {
 
         return new Promise(async (resolve, reject) => {
-            console.log('');
+            log.info('');
             log.debug("Mapped Object is undefined or the FileWriter was not correctly configured");
             return resolve();
         });
@@ -90,7 +90,7 @@ const finalizeFile = async () => {
         await outFileStream?.end();
         outFileStream = undefined;
         return resolve();
-    }).then(value => { if (value) log.debug(value) }).catch(value => console.log(value));
+    }).then(value => { if (value) log.debug(value) }).catch(value => log.error(value));
 };
 
 const printFileFinalReport = async (logger) => {

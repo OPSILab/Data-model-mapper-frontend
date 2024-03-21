@@ -25,7 +25,7 @@ const unorm = require('unorm');
 const staticPattern = /static:(.*)/;
 const dotPattern = /(.*)\.(.*)/;
 
-const log = require('./utils/logger').app(module);
+const log = require('./utils/logger')//.app(module);
 const Debugger = require('./utils/debugger');
 const report = require('./utils/logger').report;
 const service = require("./server/api/services/service")
@@ -150,7 +150,7 @@ const extractFromNestedField = (source, field) => {
         layers = field.split('.')
     }
     catch (error) {
-        console.error(error.message)
+        log.error(error.message)
     }
     let value = source
     for (let sublayer in layers) {
@@ -318,8 +318,8 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             try {
                 singleResult = converter(source);
             } catch (error) {
-                console.log(error)
-                console.error(`There was an error: ${error} while processing ${parsedSourceKey} field`);
+                //logger.error(error)
+                log.error(`There was an error: ${error} while processing ${parsedSourceKey} field`);
                 continue;
             }
 
@@ -370,8 +370,8 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 rowNumber);
             delete result[entityIdField];
         } catch (error) {
-            console.log(error)
-            console.error("UnknownEntity")
+            log.error(error)
+            log.error("UnknownEntity")
         }
     }
     else

@@ -7,7 +7,7 @@ module.exports = () => {
   const swaggerUi = require('swagger-ui-express');
   let swaggerDocument = require('./swagger.json');
   const service = require("./api/services/service.js")
-  const log = require('../utils/logger').app(module)
+  const log = require('../utils/logger')//.app(module);
 
   const dmmServer = express();
 
@@ -32,6 +32,7 @@ module.exports = () => {
           log.info("Server has started!");
           log.info("listening on port: " + config.httpPort || 5500);
           config.backup = JSON.parse(JSON.stringify(config))
+          log.info({test:"test new logger"})
 
           /*if (config.writers.filter(writer => writer == "minioWriter")[0]) {
             const minioWriter = require('../writers/minioWriter')

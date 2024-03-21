@@ -159,9 +159,47 @@ winston.loggers.add('orionReport', {
 });
 
 
-module.exports = {
+/*module.exports = {
     app: createAppLogger,
     report: winston.loggers.get('report'),
     orionReport: winston.loggers.get('orionReport')
-};
+};*/
 
+const LEVEL = process.env.LEVEL?.toLowerCase() || config.logLevel || "trace"
+
+function customLogger(level) {
+  const currentDate = new Date().toISOString();
+  const stackTrace = new Error().stack.split("\n")[2].trim().split("(");
+  const getLine = stackTrace[stackTrace.length - 1].split(":")
+  //const lineNumber = getLine[getLine.length-2];
+  //console.log(stackTrace)
+  const filePath = stackTrace[stackTrace.length - 1]?.split(")")[0].split("backend")[1]
+  return (`[${currentDate}] [${filePath}] [${level}]`);
+}
+
+module.exports = {
+
+  trace(message) {
+    if (LEVEL == "trace")
+      console.log(customLogger("trace"), " ", message)
+  },
+  debug(message) {
+    if (LEVEL == "trace" || LEVEL == "debug")
+      console.debug(customLogger("debug"), " ", message)
+  },
+  info(message) {
+    if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info")
+      console.info(customLogger("info"), " ", message)
+  },
+  warn(message) {
+    if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn")
+      console.warn(customLogger("warn"), " ", message)
+  },
+  error(message) {
+    if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn" || LEVEL == "error")
+      console.error(customLogger("error"), " ", message)
+  },
+
+  report: winston.loggers.get('report'),
+  orionReport: winston.loggers.get('orionReport')
+}

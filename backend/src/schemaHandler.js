@@ -22,7 +22,7 @@ const fs = require('fs');
 const startHttp = /http:\/\//g;
 const RefParser = require('json-schema-ref-parser');
 
-const log = require('./utils/logger').app(module);
+const log = require('./utils/logger')//.app(module);
 const report = require('./utils/logger').report;
 const config = require('../config')
 const apiOutput = require('./server/api/services/service')
@@ -69,7 +69,7 @@ function nestedFieldsHandler(field, model) {
             field = field.replaceAll(":", '":"');
             try { field = JSON.parse(field) }
             catch (error) {
-                console.log(error.message)
+                log.error(error.message)
                 field = field.replaceAll('}","{', '},{');
                 while (field.replaceAll('" ', '"') != field) field = field.replaceAll('" ', '"')
                 while (field.replaceAll(' "', '"') != field) field = field.replaceAll(' "', '"')
@@ -100,9 +100,9 @@ function nestedFieldsHandler(field, model) {
 
 //function loadDataModelSchemaFromFile(path) {
 
-//    console.log('Loading Data Model Json Schema from File');
+//    log.info('Loading Data Model Json Schema from File');
 //    var map = fs.readFileSync(filename, 'utf8');
-//    console.log('JSON Schema file loaded');
+//    log.info('JSON Schema file loaded');
 //    return JSON.parse(map);
 
 //}
@@ -110,14 +110,14 @@ function nestedFieldsHandler(field, model) {
 
 //function loadDataModelSchemaFromUrl(url) {
 //    var schema;
-//    console.log('Loading Data Model Json Schema from URL');
+//    log.info('Loading Data Model Json Schema from URL');
 //    http.get('url', function (res) {
 //        res.on('end', function (chunk) {
 //            schema = ('BODY: ' + chunk);
 //        });
 //    });
-//    console.log(schema);
-//    console.log('Loading Data Model Json Schema from URL');
+//    log.info(schema);
+//    log.info('Loading Data Model Json Schema from URL');
 //    return JSON.parse(schema);
 //}
 
@@ -185,8 +185,8 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         var validate = ajv.compile(schema);
     } catch (error) {
         if (schema.anyOf && schema.anyOf[0] == undefined && !isSingleField) schema.anyOf = undefined;
-        console.log(error);
-        console.log(schema)
+        log.error(error);
+        log.info(schema)
         var validate = ajv.compile(schema);
     }
     var valid = validate(data);
@@ -196,7 +196,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
             data = nestedFieldsHandler(data, schema.allOf[0].properties)
         }
         catch (error) {
-            console.log(error)
+            log.error(error)
         }
         validate = ajv.compile(schema);
         valid = validate(data)
@@ -204,8 +204,8 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
             log.info("Field is valid")
         }
         else {
-            log.info("\n--------------------------------\n\nField is not valid\n--------------------------------\n\n")
-            console.log(data)
+            log.warn("\n--------------------------------\n\nField is not valid\n--------------------------------\n\n")
+            log.warn(data)
         }
     }
 
@@ -220,7 +220,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
 
     if (valid) {
         if (!isSingleField)
-            log.log({
+            log.info({
                 level: 'silly',
                 message: 'Validation successful for entity with id:' + data.id
             });
@@ -235,7 +235,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         if (!isSingleField) {
             report.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
         }
-        console.error("Field is not valid")
+        log.error("Field is not valid")
         return false
     }
 }
