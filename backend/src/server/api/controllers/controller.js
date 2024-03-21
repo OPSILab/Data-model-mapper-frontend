@@ -1,6 +1,9 @@
 const service = require("../services/service.js")
 const utils = require("../../../utils/utils.js")
-const log = require('../../../utils/logger').app(module);
+const log = require('../../../utils/logger')//.app(module);
+const {trace, debug, info, warn, err} = log
+const e = log.error
+function logger(fn, ...msg) { fn(__filename, ...msg) }
 
 module.exports = {
 
@@ -14,11 +17,11 @@ module.exports = {
             if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")
         }
         catch (error) {
-            console.error(error)
+            logger(e,error)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         service.error = null
-        log.debug("service.mapData end");
+        logger(log.info,"service.mapData end");
     },
 
     getSources: async (req, res) => {
@@ -27,7 +30,7 @@ module.exports = {
             res.send(await service.getAllSources(req.query.bucketName || req.body.bucketName, req.body.prefix, req.query.format))
         }
         catch (error) {
-            console.error(error)
+            logger(e,error)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -38,7 +41,7 @@ module.exports = {
             res.send(await service.getSourcesFromDB())
         }
         catch (error) {
-            console.error(error)
+            logger(e,error)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -49,7 +52,7 @@ module.exports = {
             res.send(await service.getMinioObjects(req.params.bucketName || req.query.bucketName, req.query.format, []))
         }
         catch (error) {
-            console.error(error)
+            logger(e,error)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -100,10 +103,10 @@ module.exports = {
         process.res = res;
         try {
             res.send(await service.insertSource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef))
-            log.debug("Source inserted");
+            logger(log.info,"Source inserted");
         }
         catch (error) {
-            console.error(error)
+            logger(e,error)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -115,7 +118,7 @@ module.exports = {
             res.send(await service.insertMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
                 req.body.sourceData, req.body.sourceDataMinio, req.body.sourceDataID, req.body.sourceDataIn, req.body.sourceDataURL, req.body.dataModelIn, req.body.dataModelID, req.body.dataModelURL,
                 req.body.config, req.body.sourceDataType, req.body.path, req.body.bucketName, req.body.prefix))
-            log.debug("Map inserted");
+            logger(log.info,"Map inserted");
         }
         catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
@@ -125,11 +128,11 @@ module.exports = {
         process.res = res;
         try {
             res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef))
-            log.debug("Model inserted");
+            logger(log.info,"Model inserted");
         }
         catch (error) {
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
-            console.error(error.toString() == "[object Object]" ? error : error.toString())
+            logger(e,error.toString() == "[object Object]" ? error : error.toString())
         }
 
     },
@@ -139,7 +142,7 @@ module.exports = {
         process.res = res;
         try {
             res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef))
-            log.debug("Source modified");
+            logger(log.info,"Source modified");
         }
         catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
@@ -151,7 +154,7 @@ module.exports = {
             res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
                 req.body.sourceData, req.body.sourceDataMinio, req.body.sourceDataID, req.body.sourceDataIn, req.body.sourceDataURL, req.body.dataModelIn, req.body.dataModelID, req.body.dataModelURL,
                 req.body.config, req.body.sourceDataType, req.body.path, req.body.bucketName, req.body.prefix))
-            log.debug("Map modified");
+            logger(log.info,"Map modified");
         }
         catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
@@ -161,7 +164,7 @@ module.exports = {
         process.res = res;
         try {
             res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef))
-            log.debug("Schema modified");
+            logger(log.info,"Schema modified");
         }
         catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
@@ -215,7 +218,7 @@ module.exports = {
         }
         catch (error) {
             let errorStatusCode
-            console.error(error)
+            logger(e,error)
             if (error.code == "BucketAlreadyOwnedByYou" || error.name == "InvalidBucketNameError")
                 errorStatusCode = 400
             else
@@ -233,7 +236,7 @@ module.exports = {
         }
         catch (error) {
             let errorStatusCode
-            console.error(error)
+            logger(e,error)
             if (error.code == "NoSuchKey")
                 errorStatusCode = 400
             else
@@ -248,7 +251,7 @@ module.exports = {
             res.send(await service.minioListObjects(req.params.bucketName || req.query.bucketName))
         }
         catch (error) {
-            console.error(error)
+            logger(e,error)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -259,7 +262,7 @@ module.exports = {
             res.send(await service.minioGetBuckets())
         }
         catch (error) {
-            console.error(error)
+            logger(e,error)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -270,7 +273,7 @@ module.exports = {
             res.send(await service.minioSubscribe(req.params.bucketName))
         }
         catch (error) {
-            console.error(error)
+            logger(e,error)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -282,7 +285,7 @@ module.exports = {
         }
         catch (error) {
             let errorStatusCode
-            console.error(error)
+            logger(e,error)
             if (error.message == 'third argument should be of type "stream.Readable" or "Buffer" or "string"')
                 errorStatusCode = 400
             else
@@ -296,7 +299,7 @@ module.exports = {
             res.send({ pilot: "cartagena", email: "test@hotmail.it" })
         }
         catch (error) {
-            console.error(error)
+            logger(e,error)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -306,7 +309,7 @@ module.exports = {
             res.send(req.headers.authorization.split(' ')[1])
         }
         catch (error) {
-            console.error(error)
+            logger(e,error)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },

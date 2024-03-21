@@ -20,7 +20,10 @@ const csv = require('csv-stream');
 const request = require('request');
 const fs = require('fs');
 const utils = require('../utils/utils.js');
-const log = require('../utils/logger').app(module);
+const log = require('../utils/logger')//.app(module);
+const {trace, debug, info, warn, err} = log
+const e = log.error
+function logger(fn, ...msg) { fn(__filename, ...msg) }
 const config = require('../../config');
 
 
@@ -42,14 +45,14 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
     // The Source Data is the File Stream
     if (sourceData && utils.isReadableStream(sourceData)) {
 
-        log.debug("The Source Data is the File Stream")
+        logger(debug,"The Source Data is the File Stream")
 
         try {
             fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
-            console.error('There was an error while getting buffer from source data: ');
-            console.log(err)
+            logger(e,'There was an error while getting buffer from source data: ');
+            logger(e,err)
         }
     }
 
@@ -59,8 +62,8 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
             urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (error) {
-            console.error('There was an error while getting buffer from source data: \n');
-            console.log(error)
+            logger(e,'There was an error while getting buffer from source data: \n');
+            logger(e,error)
         }
 
     // The Source Data is the file path
@@ -69,11 +72,11 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
             fileToRowStream(fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
-            console.error('There was an error while getting buffer from source data: \n');
-            console.log(err)
+            logger(e,'There was an error while getting buffer from source data: \n');
+            logger(e,err)
         }
     else
-        console.error("No valid Source Data was provided");
+        logger(e,"No valid Source Data was provided");
 }
 
 function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizeProcess) {
@@ -85,10 +88,10 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
 
     request(url).pipe(csvStream)
         .on('error', function (err) {
-            console.error(err);
+            logger(e,err);
         })
         .on('header', function (columns) {
-            //  console.log('Columns: ' + columns);
+            //  logger(info,'Columns: ' + columns);
         })
         .on('data', function (data) {
 
@@ -102,15 +105,15 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
         })
         .on('column', function (key, value) {
             // outputs the column name associated with the value found
-            // console.log('#' + key + ' = ' + value);
+            // logger(info,'#' + key + ' = ' + value);
         })
         .on('end', async function () {
             try {
                 await finalizeProcess();
 
             } catch (error) {
-                console.error("Error While finalizing the streaming process: ");
-                console.log(error)
+                logger(e,"Error While finalizing the streaming process: ");
+                logger(e,error)
             }
         });
 }
@@ -125,10 +128,10 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
 
     inputData.pipe(csvStream)
         .on('error', function (err) {
-            console.error(err);
+            logger(e,err);
         })
         .on('header', function (columns) {
-            log.debug(columns)
+            logger(debug,columns)
         })
         .on('data', function (row) {
 
@@ -143,15 +146,15 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
         })
         .on('column', function (key, value) {
             // outputs the column name associated with the value found
-            //console.log('#' + key + ' = ' + value);
+            //logger(info,'#' + key + ' = ' + value);
         })
         .on('end', async function () {
             try {
                 await finalizeProcess();
 
             } catch (error) {
-                console.error("Error While finalizing the streaming process: ");
-                console.log(error)
+                logger(e,"Error While finalizing the streaming process: ");
+                logger(e,error)
             }
         });
 

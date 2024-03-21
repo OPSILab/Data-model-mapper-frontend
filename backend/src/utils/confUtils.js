@@ -18,7 +18,10 @@
 
 const nconf = require('nconf');
 const config = require('../../config');
-const log = require('./logger').app(module);
+const log = require('./logger')//.app(module);
+const {trace, debug, info, warn, err} = log
+const e = log.error
+function logger(fn, ...msg) { fn(__filename, ...msg) }
 const path = require('path');
 const pathPattern = /^.+(\/|\\)[^\/|\\]+$/g;
 const utils = require('./utils');
@@ -163,17 +166,17 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
     /************ MAPPING CONFIGURATION PARAMETERS ************/
     var mapPath = mapPathIn || nconf.get('mapPath');
     if (!mapPath) {
-        console.error('You need to specify the mapping file path');
+        logger(e,'You need to specify the mapping file path');
         return false;
     }
     if (!mapPath[1] && mapPath && !mapPath.match(pathPattern)) {//TODO verify this
-        console.error('Incorrect mapping file path');
+        logger(e,'Incorrect mapping file path');
         return false;
     }
 
     var sourcePath = sourceDataIn || nconf.get('sourceDataPath');
     if (!sourcePath) {
-        console.error('You need to specify the source file path');
+        logger(e,'You need to specify the source file path');
         return false;
     }
     //if (sourcePath && !sourcePath.match(pathPattern)) {
@@ -183,95 +186,95 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
         try {
             sourcePath = path.normalize(sourcePath);
         } catch (error) {
-            console.error("There was an error while normalizing Source Path: ");
-            console.log(error)
+            logger(e,"There was an error while normalizing Source Path: ");
+            logger(e,error)
             return false;
         }
     } else {
-        console.error('Incorrect source file path');
-        log.info(sourcePath)
+        logger(e,'Incorrect source file path');
+        logger(info,sourcePath)
         return false;
     }
 
     var dataModel = dataModelPath || nconf.get('targetDataModel');
     if (!utils.checkInputDataModel(config.modelSchemaFolder, dataModel)) {
-        console.error('Incorrect target Data Model name: '+ dataModel);
+        logger(e,'Incorrect target Data Model name: '+ dataModel);
         return false;
     } else
         nconf.set('targetDataModel', path.join(config.modelSchemaFolder, dataModel + '.json'));
 
 
     //if (!nconf.get('site')) {
-    //    console.error('You need to specify the site part of ID Pattern');
+    //    logger(e,'You need to specify the site part of ID Pattern');
     //    return false;
     //}
 
 
     //if (!nconf.get('service')) {
-    //    console.error('You need to specify the service part of ID Pattern');
+    //    logger(e,'You need to specify the service part of ID Pattern');
     //    return false;
     //}
 
 
     //if (!nconf.get('group')) {
-    //    console.error('You need to specify the group part of ID Pattern');
+    //    logger(e,'You need to specify the group part of ID Pattern');
     //    return false;
     //}
 
     /*********************** ORION WRITER CONFIGURATION PARAMETERS *********/
     nconf.set('orionUrl', nconf.get('orionUrl') || config.orionWriter.orionUrl);
     if (!nconf.get('orionUrl')) {
-        console.error('You need to specify the remote URL of Orion Context Broker');
+        logger(e,'You need to specify the remote URL of Orion Context Broker');
         return false;
     }
 
     nconf.set('skipExisting', nconf.get('skipExisting') || config.orionWriter.skipExisting);
     if (nconf.get('skipExisting') !== true && nconf.get('skipExisting') !== false) {
-        console.error('You need to specify the Skip Existing parameter of Orion Context Broker, allowed values: true, false');
+        logger(e,'You need to specify the Skip Existing parameter of Orion Context Broker, allowed values: true, false');
         return false;
     }
 
     nconf.set('updateMode', nconf.get('updateMode') || config.orionWriter.updateMode);
     if (!nconf.get('updateMode') || (nconf.get('updateMode') !== 'APPEND' && nconf.get('updateMode') !== 'REPLACE')) {
-        console.error('You need to specify the update Mode of Orion Context Broker, allowed values: APPEND, REPLACE');
+        logger(e,'You need to specify the update Mode of Orion Context Broker, allowed values: APPEND, REPLACE');
         return false;
     }
     //} else if (nconf.get('skipExisting') !== true) {
-    //    console.error('You need also to set true the Skip Existing parameter');
+    //    logger(e,'You need also to set true the Skip Existing parameter');
     //    return false;
     //}
 
     nconf.set('fiwareService', nconf.get('fiwareService') || config.orionWriter.fiwareService);
     //if (!nconf.get('fiwareService')) {
-    //    console.error('You need to specify the Fiware-Service header of Orion Context Broker');
+    //    logger(e,'You need to specify the Fiware-Service header of Orion Context Broker');
     //    return false;
     //}
 
     nconf.set('fiwareServicePath', nconf.get('fiwareServicePath') || config.orionWriter.fiwareServicePath);
     //if (!nconf.get('fiwareServicePath')) {
-    //    console.error('You need to specify the Fiware-ServicePath header of Orion Context Broker');
+    //    logger(e,'You need to specify the Fiware-ServicePath header of Orion Context Broker');
     //    return false;
     //}
 
     nconf.set('orionAuthHeaderName', nconf.get('orionAuthHeaderName') || config.orionWriter.orionAuthHeaderName);
     //if (!nconf.get('orionAuthHeaderName')) {
-    //    console.error('You need to specify the Authorization Header Name of Orion Context Broker');
+    //    logger(e,'You need to specify the Authorization Header Name of Orion Context Broker');
     //    return false;
     //}
 
     nconf.set('orionAuthToken', nconf.get('orionAuthToken') || config.orionWriter.orionAuthToken);
     if (nconf.get('orionAuthHeaderName') && !nconf.get('orionAuthToken')) {
-        console.error('You need to specify the Authorization Token of Orion Context Broker');
+        logger(e,'You need to specify the Authorization Token of Orion Context Broker');
         return false;
     }
     if (!nconf.get('orionAuthHeaderName') && nconf.get('orionAuthToken')) {
-        console.error('You need also to set the Authorization Header Name parameter');
+        logger(e,'You need also to set the Authorization Header Name parameter');
         return false;
     }
 
     /*********************** FILE WRITER CONFIGURATION PARAMETERS *********/
     if (!nconf.get('outFilePath') && !config.fileWriter.filePath) {
-        console.error('You need to specify the output File Path');
+        logger(e,'You need to specify the output File Path');
         return false;
     } else {
         nconf.set('outFilePath', nconf.get('outFilePath') || config.fileWriter.filePath);

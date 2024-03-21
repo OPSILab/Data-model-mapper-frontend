@@ -1,8 +1,11 @@
 var Minio = require('minio')
 let minioConfig = require('../../config').minioWriter
-const { e, sleep } = require('../utils/common')
+const { sleep } = require('../utils/common')
 const Source = require("../server/api/models/source.js")
-const log = require('../utils/logger').app(module);
+const log = require('../utils/logger')//.app(module);
+const { trace, debug, info, warn, error } = log
+const e = log.error
+function logger(fn, ...msg) { fn(__filename, ...msg) }
 
 let minioClient = new Minio.Client({
   endPoint: minioConfig.endPoint,
@@ -22,12 +25,12 @@ module.exports = {
     minioClient.makeBucket(name, location, function (err) {
       if (err) {
         errorMessage = err;
-        console.error(err)
+        logger(e, err)
         return err
         //return e(err)
       }
       resultMessage = 'Bucket created successfully in ' + location + '.'
-      log.info(resultMessage)
+      logger(info, resultMessage)
       return resultMessage
     })
 
@@ -38,7 +41,7 @@ module.exports = {
         logCounterFlag = true
         sleep(1000).then(resolve => {
           if (!errorMessage && !resultMessage)
-            log.debug("waiting for creating bucket")
+            logger(debug, "waiting for creating bucket")
           logCounterFlag = false
         })
       }
@@ -53,8 +56,8 @@ module.exports = {
 
   subscribe(bucket) {
     minioClient.getBucketNotification(bucket, function (err, bucketNotificationConfig) {
-      if (err) return console.log(err)
-      console.log(bucketNotificationConfig)
+      if (err) return logger(e, err)
+      logger(info, bucketNotificationConfig)
     })
   },
 
@@ -67,22 +70,22 @@ module.exports = {
     queue.addEvent(Minio.ObjectCreatedAll)
     bucketNotification.add(queue)
     minioClient.setBucketNotification(bucket, bucketNotification, function (err) {
-      if (err) return console.log(err)
-      log.info('Success')
+      if (err) return logger(e, err)
+      logger(info, 'Success')
     })
   },
 
   getNotifications(bucketName) {
     const poller = minioClient.listenBucketNotification(bucketName, '', '', ['s3:ObjectCreated:*'])
     poller.on('notification', async (record) => {
-      console.log('New object: %s/%s (size: %d)', record.s3.bucket.name, record.s3.object.key, record.s3.object.size)
+      logger(info, 'New object: %s/%s (size: %d)', record.s3.bucket.name, record.s3.object.key, record.s3.object.size)
       const newObject = await this.getObject(record.s3.bucket.name, record.s3.object.key)
       let jsonParsed
       try {
         jsonParsed = JSON.parse(newObject)
       }
       catch (error) {
-        console.error(error)
+        logger(e, error)
       }
 
       let foundObject = (await Source.find({ name: record.s3.object.key }))[0]
@@ -112,10 +115,10 @@ module.exports = {
         ])
     })
     poller.on('error', (error) => {
-      console.error(error)
-      log.debug("Creating bucket")
+      logger(e, error)
+      logger(debug, "Creating bucket")
       this.creteBucket(bucketName, minioConfig.location).then(message => {
-        log.debug(message)
+        logger(debug, message)
         this.getNotifications(bucketName)
       }
       )
@@ -136,16 +139,16 @@ module.exports = {
     })
     stream.on('end', function (obj) {
       if (!obj)
-        log.info("ListObjects ended returning an empty object")
+        logger(info, "ListObjects ended returning an empty object")
       else
-        log.info("Found object " + JSON.stringify(obj))
+        logger(info, "Found object " + JSON.stringify(obj))
       if (data[0])
-        log.info(JSON.stringify(data))
+        logger(info, JSON.stringify(data))
       resultMessage = data
       //process.res.send(data)
     })
     stream.on('error', function (err) {
-      console.error(err)
+      logger(e, err)
       errorMessage = err
     })
 
@@ -156,7 +159,7 @@ module.exports = {
         logCounterFlag = true
         sleep(1000).then(resolve => {
           if (!errorMessage && !resultMessage)
-            log.debug("waiting for list")
+            logger(debug, "waiting for list")
           logCounterFlag = false
         })
       }
@@ -180,38 +183,38 @@ module.exports = {
 
     try {
       minioClient.fPutObject(bucketName, objectName, minioConfig.defaultFileInput, metaData, function (err, etag) {
-        log.info(etag)
+        logger(info, etag)
         if (err) {
-          console.error(err)
+          logger(e, err)
           return err
           //return e(err)
         }
-        log.info('File uploaded successfully.')
+        logger(info, 'File uploaded successfully.')
       })
     }
     catch (error) {
-      console.error(error)
+      logger("e", error)
       //e(error)
     }
   },
 
   async stringUpload(bucketName, objectName, object) {
 
-    log.debug(bucketName + " " + " " + objectName + " " + JSON.stringify(object))
+    logger(debug, bucketName + " " + " " + objectName + " " + JSON.stringify(object))
 
     let resultMessage
     let errorMessage
 
     minioClient.putObject(bucketName, objectName, Buffer.from(object), function (err, res) {
       if (err) {
-        console.error("An error occurred while writing object")
+        logger(e, "An error occurred while writing object")
         errorMessage = err
-        console.error(err)
+        logger(e, err)
         return err
         //return e(err)
       }
-      log.info("Object Writter.\n Result : ")
-      log.info(JSON.stringify(res))
+      logger(info, "Object Writter.\n Result : ")
+      logger(info, JSON.stringify(res))
       resultMessage = res
     })
 
@@ -222,7 +225,7 @@ module.exports = {
         logCounterFlag = true
         sleep(1000).then(resolve => {
           if (!errorMessage && !resultMessage)
-            log.debug("waiting for upload")
+            logger(debug, "waiting for upload")
           logCounterFlag = false
         })
       }
@@ -237,7 +240,7 @@ module.exports = {
 
   async getObject(bucketName, objectName, format) {
 
-    log.debug("Now getting object " + objectName + " in bucket " + bucketName)
+    logger(debug, "Now getting object " + objectName + " in bucket " + bucketName)
 
     let resultMessage
     let errorMessage
@@ -245,7 +248,7 @@ module.exports = {
     minioClient.getObject(bucketName, objectName, function (err, dataStream) {
       if (err) {
         errorMessage = err
-        console.error(err)
+        logger(e, err)
         return err
         //return e(err)
       }
@@ -256,20 +259,20 @@ module.exports = {
       });
 
       dataStream.on('end', function () {
-        log.info('Object data: ', objectData);
+        logger(info, 'Object data: ', objectData);
         try {
           resultMessage = format == 'json' ? JSON.parse(objectData) : objectData
         }
         catch (error) {
-          console.error(error)
+          logger(e, error)
           resultMessage = format == 'json' ? [{ data: objectData }] : objectData
         }
       });
 
       dataStream.on('error', function (err) {
-        log.info('Error reading object:')
+        logger(info, 'Error reading object:')
         errorMessage = err
-        console.error(err)
+        logger(e, err)
         //e(err);
       });
 
@@ -282,7 +285,7 @@ module.exports = {
         logCounterFlag = true
         sleep(1000).then(resolve => {
           if (!errorMessage && !resultMessage)
-            log.debug("waiting for object " + objectName + " in bucket " + bucketName)
+            logger(debug, "waiting for object " + objectName + " in bucket " + bucketName)
           logCounterFlag = false
         })
       }
