@@ -4,7 +4,7 @@ const Source = require("../models/source.js")
 const Map = require("../models/map.js")
 const DataModel = require("../models/dataModel.js")
 const log = require('../../../utils/logger')//.app(module);
-const {trace, debug, info, warn, err} = log
+const { trace, debug, info, warn, err } = log
 const e = log.error
 function logger(fn, ...msg) { fn(__filename, ...msg) }
 const axios = require('axios')
@@ -17,9 +17,9 @@ if (common.isMinioWriterActive())
         minioWriter.listBuckets().then((buckets) => {
             let a = 0
             for (let bucket of buckets) {
-                logger(debug,bucket.name)
+                logger(debug, bucket.name)
                 minioWriter.getNotifications(bucket.name)
-                logger(debug,(a++) + " " + buckets.length)
+                logger(debug, (a++) + " " + buckets.length)
             }
         })
     else for (let bucket of config.minioWriter.subscribe.buckets)
@@ -54,7 +54,7 @@ module.exports = {
 
     async minioCreateBucket(bucketName) {
         let createdResult = await minioWriter.creteBucket(bucketName, config.minioWriter.location)
-        logger(debug,"created result:\t" + createdResult)
+        logger(debug, "created result:\t" + createdResult)
         return createdResult
     },
 
@@ -198,7 +198,7 @@ module.exports = {
         if (source.id && !source.data[0]) {
             try { source.data = await Source.findOne({ _id: source.id }) }
             catch (error) {
-                logger(e,error)
+                logger(e, error)
                 process.res.sendStatus(404)
             }
             source.data = source.data.source || source.data.sourceCSV
@@ -207,7 +207,7 @@ module.exports = {
         if (source.minioObjName && !source.data[0]) {
             try { source.data = await this.minioGetObject(source.minioBucketName, source.minioObjName, source.type) }
             catch (error) {
-                logger(e,error)
+                logger(e, error)
                 process.res.sendStatus(404)
             }
         }
@@ -215,7 +215,7 @@ module.exports = {
         if (dataModel.id && !dataModel.data) {
             try { dataModel.data = await DataModel.findOne({ _id: dataModel.id }) }
             catch (error) {
-                logger(e,error)
+                logger(e, error)
                 process.res.sendStatus(404)
             }
             dataModel.data = dataModel.data.dataModel
@@ -238,7 +238,7 @@ module.exports = {
         if (source.data) {
             fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
                 if (err) throw err;
-                logger(debug,'File sourceData temp is created successfully.');
+                logger(debug, 'File sourceData temp is created successfully.');
             })
         }
 
@@ -250,12 +250,12 @@ module.exports = {
         }
 
         if (dataModel.data) {
-            logger(info,this.dataModelDeClean(dataModel.data))
+            logger(info, this.dataModelDeClean(dataModel.data))
             fs.writeFile(
                 //dataModel.schema_id || 
                 "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
                     if (err) throw err;
-                    logger(debug,'File dataModel temp is created successfully.');
+                    logger(debug, 'File dataModel temp is created successfully.');
                 })
         }
 
@@ -271,7 +271,7 @@ module.exports = {
             );
         }
         catch (error) {
-            logger(e,error)
+            logger(e, error)
             return error.toString()
         }
     },
@@ -279,14 +279,14 @@ module.exports = {
     async getMinioObjectsFromBucket(bucket, prefix, format, sources) {//, postMessage) {
         let minioObjectList = await minioWriter.listObjects(bucket, undefined, undefined)//, postMessage)
         //sources.push(...minioObjectList)
-        logger(debug,JSON.stringify(minioObjectList))
+        logger(debug, minioObjectList)
         for (let obj of minioObjectList) {
             if (obj.name.toLowerCase().includes(prefix) && !obj.name.toLowerCase().split(prefix)[0])
                 try {
                     sources.push({ etag: obj.etag, from: "minio", bucket, name: obj.name, source: (await this.minioGetObject(bucket, obj.name, format)) })//, postMessage)) })
                 }
                 catch (error) {
-                    logger(e,error)
+                    logger(e, error)
                 }
         }
     },
@@ -295,10 +295,11 @@ module.exports = {
         let sources = await Source.find()
         if (common.isMinioWriterActive())
             try {
+                logger(debug, bucketName, prefix, format)
                 await this.getMinioObjects(bucketName, prefix, format, sources)
             }
             catch (error) {
-                logger(e,"Unable to connect to minio")//TODO delete this try / catch and handle frontend side the error
+                logger(e, "Unable to connect to minio")//TODO delete this try / catch and handle frontend side the error
             }
         return sources
     },
@@ -310,12 +311,12 @@ module.exports = {
     async getMinioObjects(bucketName, prefix, format, sources) {
         if (!bucketName || Array.isArray(bucketName)) {
             let buckets = Array.isArray(bucketName) ? bucketName : await minioWriter.listBuckets()
-            logger(debug,JSON.stringify(buckets))
+            logger(debug, JSON.stringify(buckets))
             let totalBuckets = buckets.length
             let index = 0
             for (let bucket of buckets) {
                 await this.getMinioObjectsFromBucket(bucket.name || bucket, prefix, format, sources)// postMessage)
-                logger(debug,(index++) + " - " + totalBuckets)
+                logger(debug, (index++) + " - " + totalBuckets)
             }
         }
         else

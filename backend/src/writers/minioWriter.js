@@ -135,6 +135,8 @@ module.exports = {
     var stream = minioClient.listObjects(bucketName, '', true, { IncludeVersion: true })
     //var stream = minioClient.extensions.listObjectsV2WithMetadata(bucketName, '', true, '')
     stream.on('data', function (obj) {
+      logger(debug, bucketName)
+      logger(debug, obj)
       data.push(obj)
     })
     stream.on('end', function (obj) {
