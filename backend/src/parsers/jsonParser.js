@@ -21,9 +21,8 @@ const request = require('request');
 const fs = require('fs');
 const utils = require('../utils/utils');
 const log = require('../utils/logger')//.app(module);
-const {trace, debug, info, warn, err} = log
-const e = log.error
-function logger(fn, ...msg) { fn(__filename, ...msg) }
+const {Logger} = log
+const logger = new Logger(__filename)
 const report = require('../utils/logger').report;
 const apiOutput = require('../server/api/services/service')
 const config = require('./../../config');
@@ -39,8 +38,8 @@ async function sourceDataToRowStream(sourceData, map, schema, rowHandler, mapped
             await fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
         }
         catch (err) {
-            logger(e,'There was an error while getting buffer from source data: ');
-            logger(e,err)
+            logger.error('There was an error while getting buffer from source data: ');
+            logger.error(err)
         }
 
     }
@@ -53,7 +52,7 @@ async function sourceDataToRowStream(sourceData, map, schema, rowHandler, mapped
     else if (sourceData.ext)
         await fileToRowStream(fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
     else
-        logger(e,"No valid Source Data was provided");
+        logger.error("No valid Source Data was provided");
 
 }
 
@@ -65,10 +64,10 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
 
     request(url).pipe(JSONStream.parse('.*'))
         .on('error', function (err) {
-            logger(e,err);
+            logger.error(err);
         })
         .on('header', function (columns) {
-            //  logger(info,'Columns: ' + columns);
+            //  logger.info('Columns: ' + columns);
         })
         .on('data', function (data) {
 
@@ -83,18 +82,18 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
         })
         .on('column', function (key, value) {
             // outputs the column name associated with the value found
-            // logger(info,'#' + key + ' = ' + value);
+            // logger.info('#' + key + ' = ' + value);
         })
         .on('end', async function () {
             try {
 
                 await finalizeProcess();
-                logger(debug,"urlToRowStream: request(url).pipe(geo.parse()).on(end)");
+                logger.debug("urlToRowStream: request(url).pipe(geo.parse()).on(end)");
                 await utils.printFinalReportAndSendResponse(log);
                 await utils.printFinalReportAndSendResponse(report);
             } catch (error) {
-                logger(e,"Error While finalizing the streaming process: ");
-                logger(e,error);
+                logger.error("Error While finalizing the streaming process: ");
+                logger.error(error);
             }
 
         });
@@ -109,10 +108,10 @@ async function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler
 
     await inputData.pipe(JSONStream.parse('.*'))
         .on('error', function (err) {
-            logger(e,err);
+            logger.error(err);
         })
         .on('header', function (columns) {
-            // logger(info,columns);
+            // logger.info(columns);
         })
         .on('data', function (row) {
             rowNumber = Number(config.rowNumber) + 1;
@@ -127,12 +126,12 @@ async function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler
 
         }).on('column', function (key, value) {
             // outputs the column name associated with the value found
-            //logger(info,'#' + key + ' = ' + value);
+            //logger.info('#' + key + ' = ' + value);
         })
         .on('end', async function () {
            
             await finalizeProcess();
-            logger(debug,"fileToRowStream: inputData.pipe(geo.parse()).on(end)");
+            logger.debug("fileToRowStream: inputData.pipe(geo.parse()).on(end)");
             await utils.printFinalReportAndSendResponse(log);
             await utils.printFinalReportAndSendResponse(report);
 

@@ -189,37 +189,51 @@ function customLogger(level, fileName) {
 
 }
 
-module.exports = {
+class Logger {
 
-    fileName: new Error(),
+    constructor(fileName) {
+        this.fileName = fileName
+    }
+
+    customLogger(level) {
+        if (this.fileName.includes("backend"))
+            this.fileName = this.fileName.split("backend")[1]
+        const currentDate = new Date().toISOString();
+        return (`[${currentDate}] [${this.fileName}] [${level}]`);
+    }
+
+    //fileName = new Error()
 
     //customLogger : customLogger,
 
-    trace(fileName, ...message) {
+    trace(...message) {
         if (LEVEL == "trace")
-            console.log(customLogger("trace", fileName), " ", ...message)
-    },
-    debug(fileName, ...message) {
+            console.log(customLogger("trace", this.fileName), " ", ...message)
+    }
+    debug(...message) {
         if (LEVEL == "trace" || LEVEL == "debug")
-            console.debug(customLogger("debug", fileName), " ", ...message)
-    },
-    info(fileName, ...message) {
+            console.debug(customLogger("debug", this.fileName), " ", ...message)
+    }
+    info(...message) {
         if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info")
-            console.info(customLogger("info", fileName), " ", ...message)
-    },
-    warn(fileName, ...message) {
+            console.info(customLogger("info", this.fileName), " ", ...message)
+    }
+    warn(...message) {
         if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn")
-            console.warn(customLogger("warn", fileName), " ", ...message)
-    },
-    error(fileName, ...message) {
+            console.warn(customLogger("warn", this.fileName), " ", ...message)
+    }
+    error(...message) {
         if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn" || LEVEL == "error")
-            console.error(customLogger("error", fileName), " ", ...message)
-    },
-    err(fileName, ...message) {
+            console.error(customLogger("error", this.fileName), " ", ...message)
+    }
+    err(...message) {
         if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn" || LEVEL == "error")
-            console.error(customLogger("error", fileName), " ", ...message)
-    },
+            console.error(customLogger("error", this.fileName), " ", ...message)
+    }
+}
 
+module.exports = {
+    Logger: Logger,
     report: winston.loggers.get('report'),
     orionReport: winston.loggers.get('orionReport')
 }

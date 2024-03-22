@@ -25,9 +25,8 @@ const jsonParser = require("../parsers/jsonParser.js");
 const orionWriter = require("../writers/orionWriter");
 const fileWriter = require("../writers/fileWriter");
 const log = require('../utils/logger')//.app(module);
-const {trace, debug, info, warn, err} = log
-const e = log.error
-function logger(fn, ...msg) { fn(__filename, ...msg) }
+const {Logger} = log
+const logger = new Logger(__filename)
 const report = require('../utils/logger').report;
 const utils = require('../utils/utils.js');
 const common = require('../utils/common.js');
@@ -51,16 +50,16 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
     if (dataModelSchemaPath && mapData) {
 
-        logger(debug,"dataModelSchemaPath && mapData")
+        logger.debug("dataModelSchemaPath && mapData")
 
         if (sourceData) {
 
-            logger(debug,"sourceData:");
-            logger(debug,sourceData);
-            logger(debug,typeof sourceData)
+            logger.debug("sourceData:");
+            logger.debug(sourceData);
+            logger.debug(typeof sourceData)
 
             if (typeof sourceData === 'object') sourceData = sourceData.toString()
-            logger(debug,sourceData);
+            logger.debug(sourceData);
 
             if (typeof sourceData === 'string') {
 
@@ -73,34 +72,34 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 var extension = sourceData.ext;
                 if (!extension) {
                     // No file path provided nor dataType
-                    logger(e,'The provided url/file path does not have file extension');
+                    logger.error('The provided url/file path does not have file extension');
                     return Promise.reject('The provided url / file path does not have file extension');
                 }
 
             } else if (!sourceDataType) {
                 // No file path provided nor dataType
-                logger(e,'No file path provided nor dataType');
+                logger.error('No file path provided nor dataType');
                 return Promise.reject('No file path provided nor dataType');
             }
 
             if (typeof mapData === 'string' && !mapData.startsWith("{")) {
                 mapData = utils.parseFilePath(mapData);
-                logger(debug,"typeof mapData === 'string' && !mapData.startsWith({})");
+                logger.debug("typeof mapData === 'string' && !mapData.startsWith({})");
             }
 
             try {
                 // Load Map form file/url or directly as object
                 var map = await mapHandler.loadMap(mapData[1] == "mapData" ? mapData[0] : mapData); // map is the file map loaded
-                logger(debug,"map is the file map loaded")
+                logger.debug("map is the file map loaded")
             } catch (error) {
-                logger(e,'There was an error while loading Map: ');
-                logger(e,error)
+                logger.error('There was an error while loading Map: ');
+                logger.error(error)
                 return Promise.reject('There was an error while loading Map: ' + error);
             }
 
 
             if (map) {
-                logger(info,'Map loaded');
+                logger.info('Map loaded');
 
                 try {
 
@@ -109,22 +108,22 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                     if ((targetDataModel = map['targetDataModel']) !== undefined) {
                         /* Check if provided TargetDataModel is valid, otherwise return error */
                         if ((dataModelSchemaPath = utils.getDataModelPath(targetDataModel)) === undefined) {
-                            logger(e,"Incorrect target Data Model name: " + targetDataModel);
+                            logger.error("Incorrect target Data Model name: " + targetDataModel);
                             process.res?.status(400).json({ "error": "Incorrect target Data Model name: " + targetDataModel })
                             return Promise.reject("Incorrect target Data Model name");
                         }
                     }
                     delete map['targetDataModel'];
                     var loadedSchema = await schemaHandler.parseDataModelSchema(dataModelSchemaPath); // here schema is loaded
-                    logger(info,'Data Model Schema loaded and dereferenced');
+                    logger.info('Data Model Schema loaded and dereferenced');
 
                 } catch (error) {
-                    logger(e,'There was an error while processing Data Model schema: ');
-                    logger(e,error)
+                    logger.error('There was an error while processing Data Model schema: ');
+                    logger.error(error)
                     return Promise.reject(error);
                 }
 
-                logger(info,'Starting to Map Source Object');
+                logger.info('Starting to Map Source Object');
 
                 switch (extension || sourceDataType.toLowerCase()) {
 
@@ -150,20 +149,20 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 return await Promise.resolve("OK");
 
             } else {
-                logger(e,'There was an error while loading Map File');
+                logger.error('There was an error while loading Map File');
                 return await Promise.reject('There was an error while loading Map File');
             }
 
         } else {
-            logger(e,'The source Data is not a valid file nor a valid path/url: ');
+            logger.error('The source Data is not a valid file nor a valid path/url: ');
             return await Promise.reject('The source Data is not a valid file nor a valid path/url');
         }
 
     } else if (!dataModelSchemaPath) {
-        logger(e,'Data Model Schema path not specified');
+        logger.error('Data Model Schema path not specified');
         return await Promise.reject('Data Model Schema path not specified');
     } else {
-        logger(e,'Map path not specified');
+        logger.error('Map path not specified');
         return await Promise.reject('Map path not specified');
     }
 
@@ -187,11 +186,11 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
         var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, config.idSite, config.idService, config.idGroup, config.entityNameField);
     }
     catch (error) {
-        logger(e,error.message)
+        logger.error(error.message)
     }
 
-    logger(debug,"Row: " + rowNumber + " - Object mapped correctly ");
-    logger(debug,"Result: "+ JSON.stringify(result))
+    logger.debug("Row: " + rowNumber + " - Object mapped correctly ");
+    logger.debug("Result: "+ JSON.stringify(result))
     await mappedHandler(rowNumber, result, schema);
 
 };
@@ -204,12 +203,12 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
 
                 case 'orionWriter':
                     try {
-                        logger(debug,"obj : " + JSON.stringify(obj))
+                        logger.debug("obj : " + JSON.stringify(obj))
                         promises.push(await orionWriter.writeObject(objNumber, obj, modelSchema));
                     }
                     catch (error) {
-                        logger(e,error.toString())
-                        logger(debug,JSON.stringify(error))
+                        logger.error(error.toString())
+                        logger.debug(JSON.stringify(error))
                     }
                     break;
                 case 'fileWriter':
@@ -222,8 +221,8 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
         });
     }
     catch (error) {
-        logger(e,error.toString())
-        logger(debug,JSON.stringify(error))
+        logger.error(error.toString())
+        logger.debug(JSON.stringify(error))
     }
 };
 
@@ -253,7 +252,7 @@ const finalizeProcess = async () => {
         return await Promise.resolve();
 
     } catch (error) {
-        logger(e,error)
+        logger.error(error)
         return await Promise.reject(error);
     }
 };

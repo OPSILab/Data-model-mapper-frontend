@@ -16,9 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 const log = require('./src/utils/logger')
-const {trace, debug, info, warn, err} = log
-const e = log.error
-function logger(fn, ...msg) { fn(__filename, ...msg) }
+//const {trace, debug, info, warn, err} = log
+//const e = log.error
+//function logger(fn, ...msg) { fn(__filename, ...msg) }
+
+const {Logger} = log
+const logger = new Logger(__filename)
 
 try {
     const config = require('./config');
@@ -47,5 +50,6 @@ try {
     };
 }
 catch (error) {
-    logger(e, error)
+    logger.error(error)
+    //logger.error( error)
 }

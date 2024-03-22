@@ -8,9 +8,12 @@ module.exports = () => {
   let swaggerDocument = require('./swagger.json');
   const service = require("./api/services/service.js")
   const log = require('../utils/logger')//.app(module);
-  const { trace, debug, info, warn, err } = log
-  const e = log.error
-  function logger(fn, ...msg) { fn(__filename, ...msg) }
+//const {trace, debug, info, warn, err} = log
+//const e = log.error
+//function logger(fn, ...msg) { fn(__filename, ...msg) }
+
+const {Logger} = log
+const logger = new Logger(__filename)
 
   const dmmServer = express();
 
@@ -32,14 +35,14 @@ module.exports = () => {
       .connect(config.mongo, { useNewUrlParser: true })
       .then(() => {
         dmmServer.listen(config.httpPort || 5500, () => {
-          logger(info, "Server has started!");
-          logger(info, "listening on port: " + config.httpPort || 5500);
+          logger.info("Server has started!");
+          logger.info( "listening on port: " + config.httpPort || 5500);
           config.backup = JSON.parse(JSON.stringify(config))
-          logger(info, { test: "test new logger" })
+          logger.info( { test: "test new logger" })
 
           /*if (config.writers.filter(writer => writer == "minioWriter")[0]) {
             const minioWriter = require('../writers/minioWriter')
-            logger(log.info,"Minio connection enabled")
+            logger.info("Minio connection enabled")
           }*/
         });
 

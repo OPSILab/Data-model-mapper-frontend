@@ -7,6 +7,9 @@ const keycloakServerURL = authConfig.idmHost;
 const realm = authConfig.authRealm;
 const clientID = authConfig.clientId;
 const clientSecret = authConfig.secret;
+const log = require("../../../utils/logger")
+const {Logger} = log
+const logger = new Logger(__filename)
 
 function parseJwt(token) {
     return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
@@ -39,7 +42,7 @@ module.exports = {
                 }
                 catch (error) {
 
-                    logger(e,error)
+                    logger.error(error)
                     if (error.message == "invalid token" || error.message == "jwt expired" || error.message == "jwt malformed")
                         return res.sendStatus(403);
                     else
@@ -58,16 +61,16 @@ module.exports = {
                     axios.post(introspectionEndpoint, data)
                         .then(response => {
                             if (response.data.active) {
-                                logger(info,'Token valid:', response.data);
+                                logger.info('Token valid:', response.data);
                                 next();
                             } else {
-                                logger(e,'Token not valid.');
+                                logger.error('Token not valid.');
                                 res.sendStatus(403);
                             }
                         })
                         .catch(error => {
-                            logger(e,error.response.data)
-                            logger(e,'Errore during token verify:', error.message);
+                            logger.error(error.response.data)
+                            logger.error('Errore during token verify:', error.message);
                             res.sendStatus(500);
                         });
                 }
@@ -84,8 +87,8 @@ module.exports = {
                             req.body.prefix = (email || username) + "/" + config.minioWriter.defaultInputFolderName
                         }
                         catch (error) {
-                            logger(e,error?.toString())
-                            logger(e,error?.response?.data)
+                            logger.error(error?.toString())
+                            logger.error(error?.response?.data)
                         }
                         next()
                     }
