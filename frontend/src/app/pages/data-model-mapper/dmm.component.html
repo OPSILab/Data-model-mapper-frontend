@@ -27,8 +27,13 @@
           {{ 'general.dmm.save_as_new' | translate }}
           <i class="mx-1 material-icons">save</i>
         </button>
-        <button *ngIf="isNew && !backendDown" nbButton class="mx-4" shape="rectangle" size="medium" status="primary"
+        <!--<button *ngIf="isNotNew && !backendDown" nbButton class="mx-4" shape="rectangle" size="medium" status="primary"
           (click)="updateRecord()">
+          {{ 'general.editor.update' | translate }}
+          <i class="mx-1 material-icons">update</i>
+        </button>-->
+        <button nbButton class="mx-4" shape="rectangle" size="medium" status="primary" (click)="updateRecord()"
+          hidden="true" id="updateButton">
           {{ 'general.editor.update' | translate }}
           <i class="mx-1 material-icons">update</i>
         </button>
@@ -52,11 +57,12 @@
           <nb-accordion-item-body>
             <p>To get started, select the type of input (CSV or JSON) and upload or paste your data.
             </p>
-            <p *ngIf="sourceRef!==''&&sourceRefFormat==='url'">URL: <a class="mb-3" href={{sourceRef}} target="_blank">
-                <i>{{sourceRef}}</i></a></p>
-            <p *ngIf="sourceRef!==''&&sourceRefFormat==='file'">File: <i>{{sourceRef}}</i></p>
+            <p *ngIf="source.sourceRef!==''&&source.sourceRefFormat==='url'">URL: <a class="mb-3"
+                href={{source.sourceRef}} target="_blank">
+                <i>{{source.sourceRef}}</i></a></p>
+            <p *ngIf="source.sourceRef!==''&&source.sourceRefFormat==='file'">File: <i>{{source.sourceRef}}</i></p>
             <div class="mb-2" *ngIf="!dialog">
-              <nb-select [(ngModel)]="inputType" placeholder="Select Input Type" size="small"
+              <nb-select [(ngModel)]="source.inputType" placeholder="Select Input Type" size="small"
                 (selectedChange)="onUpdateInputType($event)" (click)="fixBrokenPageBug()">
                 <nb-option value="csv">CSV</nb-option>
                 <nb-option value="json">JSON</nb-option>
@@ -72,19 +78,22 @@
             <div class="mb-1" style="display:none;" id="json-input">
               <div class="mb-2">
                 <br><br>
-                <nb-select id="selectSource" *ngIf="sourceFrom=='minio'" placeholder="Select source file" size="small"
-                  [(ngModel)]="selectedSource" (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
+                <nb-select id="selectSource" *ngIf="source.sourceFrom=='minio'" placeholder="Select source file"
+                  size="small" [(ngModel)]="source.selectedSource" (ngModelChange)="source.sourceChanged($event)"
+                  (click)="fixBrokenPageBug()">
                   <!--<nb-option value="">---select source---</nb-option>-->
-                  <nb-option *ngFor="let source of minioSources" value={{source.etag}}>{{source.name}}</nb-option>
+                  <nb-option *ngFor="let source of source.minioSources"
+                    value={{source.etag}}>{{source.name}}</nb-option>
                 </nb-select>
-                <nb-select id="selectSource" *ngIf="sourceFrom=='db'" placeholder="Select source file" size="small"
-                  [(ngModel)]="selectedSource" (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
+                <nb-select id="selectSource" *ngIf="source.sourceFrom=='db'" placeholder="Select source file"
+                  size="small" [(ngModel)]="source.selectedSource" (ngModelChange)="source.sourceChanged($event)"
+                  (click)="fixBrokenPageBug()">
                   <!--<nb-option value="">---select source---</nb-option>-->
-                  <nb-option *ngFor="let source of dbSources" value={{source._id}}>{{source.name}}</nb-option>
+                  <nb-option *ngFor="let source of source.dbSources" value={{source._id}}>{{source.name}}</nb-option>
                 </nb-select>
                 &nbsp;
-                <nb-select placeholder="From" size="small" [(ngModel)]="sourceFrom"
-                  (ngModelChange)="sourceFromChanged($event)" (click)="fixBrokenPageBug()">
+                <nb-select placeholder="From" size="small" [(ngModel)]="source.sourceFrom"
+                  (ngModelChange)="source.sourceFromChanged($event)" (click)="fixBrokenPageBug()">
                   <!--<nb-option value="">---select source---</nb-option>-->
                   <nb-option value=minio>minio</nb-option>
                   <nb-option value=db>db</nb-option>
@@ -95,7 +104,7 @@
                   <i class="mx-1 fas fa-file-import fa-lg"></i>
                 </button>
                 <button nbButton class="mr-2" shape="rectangle" size="small"
-                  (click)="onUpdatePathForDataMap(selectedPath, verifyRoot($event))">
+                  (click)="source.onUpdatePathForDataMap(source.selectedPath, verifyRoot($event))">
                   {{ 'general.editor.confirm_source' | translate }}
                   <i class="mx-1 fas fa-file-import fa-lg"></i>
                 </button>
@@ -105,10 +114,10 @@
                 <i class="mx-1 fas fa-lg"></i>
               </button>
               -->
-                <nb-select [(ngModel)]="selectedPath" placeholder="Select path" size="small"
-                  (selectedChange)="onUpdatePathForDataMap($event, verifyRoot($event))">
+                <nb-select [(ngModel)]="source.selectedPath" placeholder="Select path" size="small"
+                  (selectedChange)="source.onUpdatePathForDataMap($event, verifyRoot($event))">
                   <nb-option value=".root$$$">root.</nb-option>
-                  <nb-option *ngFor="let path of paths" value={{path}}>.{{path}}</nb-option>
+                  <nb-option *ngFor="let path of source.paths" value={{path}}>.{{path}}</nb-option>
                 </nb-select>
               </div>
               <div style="height:500px; margin-top:10px" id="jsoneditor"></div>
@@ -116,18 +125,21 @@
             <div class="mb-2" id="csv-input" style="display:none;">
               <div class="mb-2">
                 <br><br>
-                <nb-select id="selectSource" *ngIf="sourceFrom=='minio'" placeholder="Select source file" size="small"
-                  [(ngModel)]="selectedSource" (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
+                <nb-select id="selectSource" *ngIf="source.sourceFrom=='minio'" placeholder="Select source file"
+                  size="small" [(ngModel)]="source.selectedSource" (ngModelChange)="source.sourceChanged($event)"
+                  (click)="fixBrokenPageBug()">
                   <!--<nb-option value="">---select source---</nb-option>-->
-                  <nb-option *ngFor="let source of minioSources" value={{source.etag}}>{{source.name}}</nb-option>
+                  <nb-option *ngFor="let source of source.minioSources"
+                    value={{source.etag}}>{{source.name}}</nb-option>
                 </nb-select>
-                <nb-select id="selectSource" *ngIf="sourceFrom=='db'" placeholder="Select source file" size="small"
-                  [(ngModel)]="selectedSource" (ngModelChange)="sourceChanged($event)" (click)="fixBrokenPageBug()">
+                <nb-select id="selectSource" *ngIf="source.sourceFrom=='db'" placeholder="Select source file"
+                  size="small" [(ngModel)]="source.selectedSource" (ngModelChange)="source.sourceChanged($event)"
+                  (click)="fixBrokenPageBug()">
                   <!--<nb-option value="">---select source---</nb-option>-->
-                  <nb-option *ngFor="let source of dbSources" value={{source._id}}>{{source.name}}</nb-option>
+                  <nb-option *ngFor="let source of source.dbSources" value={{source._id}}>{{source.name}}</nb-option>
                 </nb-select>&nbsp;
-                <nb-select placeholder="From" size="small" [(ngModel)]="sourceFrom"
-                  (ngModelChange)="sourceFromChanged($event)" (click)="fixBrokenPageBug()">
+                <nb-select placeholder="From" size="small" [(ngModel)]="source.sourceFrom"
+                  (ngModelChange)="source.sourceFromChanged($event)" (click)="fixBrokenPageBug()">
                   <!--<nb-option value="">---select source---</nb-option>-->
                   <nb-option value=minio>minio</nb-option>
                   <nb-option value=db>db</nb-option>
@@ -151,9 +163,10 @@
               <div class="mb-3" id="csveditor">
                 <nb-tabset>
                   <nb-tab tabTitle="CSV text">
-                    <textarea (blur)="updateCSVTable(); displayCSV(this.csvSourceData, this.csvtable, this.separatorItem)" id="textarea" nbInput rows="10" fullWidth=true
-                      placeholder="Enter CVS text..."
-                      [(ngModel)]="csvSourceData"></textarea><!--(ngModelChange)=sourceEditorMode('code')-->
+                    <textarea
+                      (blur)="updateCSVTable(); displayCSV(this.source.csvSourceData, this.csvtable, this.separatorItem)"
+                      id="textarea" nbInput rows="10" fullWidth=true placeholder="Enter CVS text..."
+                      [(ngModel)]="source.csvSourceData"></textarea><!--(ngModelChange)=sourceEditorMode('code')-->
                   </nb-tab>
                   <nb-tab id="csv-table" tabTitle="CSV Table">
                   </nb-tab>
@@ -213,8 +226,7 @@
                 <i class="mx-1 fas fa-lg"></i>
               </button>-->
 
-              <button nbButton class="mr-2" shape="rectangle"
-                size="small" (click)="generateMapper(getSchema())">
+              <button nbButton class="mr-2" shape="rectangle" size="small" (click)="generateMapper(getSchema())">
                 {{ 'general.editor.generate_mapper' | translate }}
                 <i class="mx-1 fas fa-lg"></i>
               </button>

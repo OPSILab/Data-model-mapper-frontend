@@ -16,7 +16,9 @@
     "default_mapper_url":"http://localhost:5500/api/map/transform",
     "default_mapper_base_url":"http://localhost:5500/api",
     "minioCache" : false,
-    "minioBuckets" : []
+    "minioBuckets" : [],
+    "alwaysPromptSaveSource" : false,
+    "alwaysPromptSaveSchema" : false
   },
   "i18n": {
     "locale": "en",

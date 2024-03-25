@@ -331,8 +331,8 @@ module.exports = {
         return await DataModel.find()
     },
 
-    async getSource(id, name) {
-        let source = await Source.findOne(id ? { _id: id } : { name })
+    async getSource(id, name, mapRef) {
+        let source = await Source.findOne(mapRef ? { mapRef: id } : id ? { _id: id } : { name })
         if (!source) throw { code: 404, message: "NOT FOUND" }
         return source
     },
@@ -344,8 +344,8 @@ module.exports = {
             return { ...map, dataModel: this.dataModelDeClean(map.dataModel) }
     },
 
-    async getDataModel(id, name) {
-        let dataModel = await DataModel.findOne(id ? { _id: id } : { name })
+    async getDataModel(id, name, mapRef) {
+        let dataModel = await DataModel.findOne(mapref ? {mapref : mapRef} : id ? { _id: id } : { name })
         if (!dataModel) throw { code: 404, message: "NOT FOUND" }
         return this.dataModelDeClean(dataModel)
     },

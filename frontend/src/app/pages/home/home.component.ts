@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   @Output() updateResult = new EventEmitter<unknown>();
   schemaDir: string;
   loading = false;
-  public isNew = false;
+  public isNotNew = false;
   private systemConfig: System;
   private systemLocale: string;
   private config: AppConfig;

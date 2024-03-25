@@ -69,9 +69,9 @@ module.exports = {
     },
 
     getSource: async (req, res) => {
-        const { id, name } = req.query
+        const { id, name, mapRef } = req.query
         process.res = res;
-        try { res.send(await service.getSource(id, name)) }
+        try { res.send(await service.getSource(id, name, mapRef)) }
         catch (error) { res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
@@ -91,9 +91,9 @@ module.exports = {
     },
 
     getDataModel: async (req, res) => {
-        const { id, name } = req.query
+        const { id, name, mapRef } = req.query
         process.res = res;
-        try { res.send(await service.getDataModel(id, name)) }
+        try { res.send(await service.getDataModel(id, name, mapRef)) }
         catch (error) { res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 

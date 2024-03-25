@@ -413,7 +413,7 @@ function toOrionObject(obj, schema) {
 }
 
 
-async function printOrionFinalReport(logger) {
+async function printOrionFinalReport(loggerr) {
 
     await logger.info('\t\n--------ORION REPORT----------\n' +
         '\t Object written to Orion Context Broker: ' + config.orionWrittenCount + '/' + config.validCount + '\n' +

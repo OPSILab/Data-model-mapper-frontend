@@ -69,16 +69,24 @@ export class DMMService {
     return this.http.get<any[]>("assets/transformConfig.json").toPromise();
   }
 
-  getSource(id): any {
-    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/source?id=" + urlencode(id)).toPromise();
+  getSource(id, name, mapRef): any {
+    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/source?" + (
+      id ? "id=" + urlencode(id) :
+        name ? "name=" + urlencode(name) :
+          mapRef ? "mapRef=" + urlencode(mapRef) : ""
+    )).toPromise();
   }
 
   getMap(id): any {
     return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/map?id=" + urlencode(id)).toPromise();
   }
 
-  getSchema(id): any {
-    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel?id=" + urlencode(id)).toPromise();
+  getSchema(id, name, mapRef): any {
+    return this.http.get<any>(this.config.data_model_mapper.default_mapper_base_url + "/dataModel?" + (
+      id ? "id=" + urlencode(id) :
+        name ? "name=" + urlencode(name) :
+          mapRef ? "mapRef=" + urlencode(mapRef) : ""
+    )).toPromise();
   }
 
   deleteMap(id: any) {

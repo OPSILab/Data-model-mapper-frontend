@@ -159,16 +159,18 @@ export class CreateMapComponent implements OnInit {
         ] as const
 
         if (this.save) {
-          this.mapperRecordId = (await this.dmmService.saveMap(...params))[0]._id;
-          this.ref.close({ name, mapperRecordId, status, description, saveSchema: this.saveSchema, saveSource: this.saveSource });
-          this.editedValue.emit({ name, mapperRecordId, status, description });
+          let mapperRecord = (await this.dmmService.saveMap(...params))[0];
+          mapperRecord.mapperRecordId = this.mapperRecordId = mapperRecord._id;
+          this.ref.close({ ...mapperRecord, saveSchema: this.saveSchema, saveSource: this.saveSource });
+          this.editedValue.emit({ ...mapperRecord });
           this.showToast('primary', this.translate.instant('general.dmm.map_added_message'), '');
         }
 
         else {
-          this.mapperRecordId = (await this.dmmService.updateMap(...params))._id;
-          this.ref.close({ name, mapperRecordId, status, description, saveSchema: this.saveSchema, saveSource: this.saveSource });
-          this.editedValue.emit({ name, mapperRecordId, status, description });
+          let mapperRecord = await this.dmmService.updateMap(...params);
+          mapperRecord.mapperRecordId = this.mapperRecordId = mapperRecord._id;
+          this.ref.close({ ...mapperRecord, saveSchema: this.saveSchema, saveSource: this.saveSource });
+          this.editedValue.emit({  ...mapperRecord });
           this.showToast('primary', this.translate.instant('general.dmm.map_edited_message'), '');
         }
 
