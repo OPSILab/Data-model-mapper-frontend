@@ -4,7 +4,7 @@ const Source = require("../models/source.js")
 const Map = require("../models/map.js")
 const DataModel = require("../models/dataModel.js")
 const log = require('../../../utils/logger')//.app(module);
-const {Logger} = log
+const { Logger } = log
 const logger = new Logger(__filename)
 const axios = require('axios')
 const RefParser = require('json-schema-ref-parser');
@@ -16,9 +16,9 @@ if (common.isMinioWriterActive())
         minioWriter.listBuckets().then((buckets) => {
             let a = 0
             for (let bucket of buckets) {
-                logger.debug( bucket.name)
+                logger.debug(bucket.name)
                 minioWriter.getNotifications(bucket.name)
-                logger.debug( (a++) + " " + buckets.length)
+                logger.debug((a++) + " " + buckets.length)
             }
         })
     else for (let bucket of config.minioWriter.subscribe.buckets)
@@ -53,7 +53,7 @@ module.exports = {
 
     async minioCreateBucket(bucketName) {
         let createdResult = await minioWriter.creteBucket(bucketName, config.minioWriter.location)
-        logger.debug( "created result:\t" + createdResult)
+        logger.debug("created result:\t" + createdResult)
         return createdResult
     },
 
@@ -197,7 +197,7 @@ module.exports = {
         if (source.id && !source.data[0]) {
             try { source.data = await Source.findOne({ _id: source.id }) }
             catch (error) {
-                logger.error( error)
+                logger.error(error)
                 process.res.sendStatus(404)
             }
             source.data = source.data.source || source.data.sourceCSV
@@ -206,7 +206,7 @@ module.exports = {
         if (source.minioObjName && !source.data[0]) {
             try { source.data = await this.minioGetObject(source.minioBucketName, source.minioObjName, source.type) }
             catch (error) {
-                logger.error( error)
+                logger.error(error)
                 process.res.sendStatus(404)
             }
         }
@@ -214,7 +214,7 @@ module.exports = {
         if (dataModel.id && !dataModel.data) {
             try { dataModel.data = await DataModel.findOne({ _id: dataModel.id }) }
             catch (error) {
-                logger.error( error)
+                logger.error(error)
                 process.res.sendStatus(404)
             }
             dataModel.data = dataModel.data.dataModel
@@ -237,7 +237,7 @@ module.exports = {
         if (source.data) {
             fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
                 if (err) throw err;
-                logger.debug( 'File sourceData temp is created successfully.');
+                logger.debug('File sourceData temp is created successfully.');
             })
         }
 
@@ -249,12 +249,12 @@ module.exports = {
         }
 
         if (dataModel.data) {
-            logger.info( this.dataModelDeClean(dataModel.data))
+            logger.info(this.dataModelDeClean(dataModel.data))
             fs.writeFile(
                 //dataModel.schema_id || 
                 "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
                     if (err) throw err;
-                    logger.debug( 'File dataModel temp is created successfully.');
+                    logger.debug('File dataModel temp is created successfully.');
                 })
         }
 
@@ -270,7 +270,7 @@ module.exports = {
             );
         }
         catch (error) {
-            logger.error( error)
+            logger.error(error)
             return error.toString()
         }
     },
@@ -278,14 +278,14 @@ module.exports = {
     async getMinioObjectsFromBucket(bucket, prefix, format, sources) {//, postMessage) {
         let minioObjectList = await minioWriter.listObjects(bucket, undefined, undefined)//, postMessage)
         //sources.push(...minioObjectList)
-        logger.debug( minioObjectList)
+        logger.debug(minioObjectList)
         for (let obj of minioObjectList) {
             if (obj.name.toLowerCase().includes(prefix) && !obj.name.toLowerCase().split(prefix)[0])
                 try {
                     sources.push({ etag: obj.etag, from: "minio", bucket, name: obj.name, source: (await this.minioGetObject(bucket, obj.name, format)) })//, postMessage)) })
                 }
                 catch (error) {
-                    logger.error( error)
+                    logger.error(error)
                 }
         }
     },
@@ -294,11 +294,11 @@ module.exports = {
         let sources = await Source.find()
         if (common.isMinioWriterActive())
             try {
-                logger.debug( bucketName, prefix, format)
+                logger.debug(bucketName, prefix, format)
                 await this.getMinioObjects(bucketName, prefix, format, sources)
             }
             catch (error) {
-                logger.error( "Unable to connect to minio")//TODO delete this try / catch and handle frontend side the error
+                logger.error("Unable to connect to minio")//TODO delete this try / catch and handle frontend side the error
             }
         return sources
     },
@@ -310,12 +310,12 @@ module.exports = {
     async getMinioObjects(bucketName, prefix, format, sources) {
         if (!bucketName || Array.isArray(bucketName)) {
             let buckets = Array.isArray(bucketName) ? bucketName : await minioWriter.listBuckets()
-            logger.debug( JSON.stringify(buckets))
+            logger.debug(JSON.stringify(buckets))
             let totalBuckets = buckets.length
             let index = 0
             for (let bucket of buckets) {
                 await this.getMinioObjectsFromBucket(bucket.name || bucket, prefix, format, sources)// postMessage)
-                logger.debug( (index++) + " - " + totalBuckets)
+                logger.debug((index++) + " - " + totalBuckets)
             }
         }
         else
@@ -345,7 +345,7 @@ module.exports = {
     },
 
     async getDataModel(id, name, mapRef) {
-        let dataModel = await DataModel.findOne(mapref ? {mapref : mapRef} : id ? { _id: id } : { name })
+        let dataModel = await DataModel.findOne(mapref ? { mapref: mapRef } : id ? { _id: id } : { name })
         if (!dataModel) throw { code: 404, message: "NOT FOUND" }
         return this.dataModelDeClean(dataModel)
     },
@@ -398,13 +398,26 @@ module.exports = {
         return schemaDereferenced
     },
 
-    async insertSource(name, id, source, path, mapRef) {
+    async insertSource(name, id, source, path, mapRef, bucket, prefix) {
+        let insertedSource, map
         if (!source)
             throw { error: "source is required" }
         if (path == "") path = undefined
-        if (mapRef)
-            mapRef = (await Map.findOne({ name }))?._id
-        if (mapRef || !await Source.findOne({ name })) return await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source, mapRef: mapRef?.toString() } : { name: name, id: id, source: source, path, mapRef: mapRef?.toString() }])
+        if (mapRef) {
+            map = (await Map.findOne({ name }))
+            mapRef = map?._id
+        }
+        if ((mapRef || !await Source.findOne({ name })) && !await Source.findOne({ mapRef: mapRef.toString() })) {
+            insertedSource = (await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source, mapRef: mapRef?.toString() } : { name: name, id: id, source: source, path, mapRef: mapRef?.toString() }]))[0]
+            if (mapRef) {
+                map.sourceDataID = insertedSource._id.toString()
+                //map.sourceData = undefined
+                logger.debug("INSERT SOURCE\n", map)
+                await this.modifyMap(map.name, map._id, map.map, map.dataModel, map.status, map.description, undefined, undefined, insertedSource._id.toString(), undefined, undefined, map.dataModelIn, map.dataModelID, map.dataModelURL, map.config, map.sourceDataType, map.path, bucket, prefix)
+                //logger.debug("INSERT SOURCE NEW MAP\n", await Map.findByIdAndUpdate(mapRef.toString(), { $unset: { sourceData: "" } }, map))
+            }
+            return insertedSource
+        }
         throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
@@ -453,25 +466,48 @@ module.exports = {
         throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
-    async insertDataModel(name, id, dataModel, mapRef) {
+    async insertDataModel(name, id, dataModel, mapRef, bucket, prefix) {
+        let insertedDataModel, map
         if (!dataModel)
             throw { error: "schema is required" }
         if (dataModel) dataModel = this.dataModelClean(dataModel, {})
-        //if (mapRef)
+        //if (typeof mapRef == "string")
         //    mapRef = (await Map.findOne({ name }))?._id
-        if (mapRef || !await DataModel.findOne({ name })) return await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel, mapRef: mapRef?.toString() }])
+        if (mapRef) {
+            map = await Map.findOne({ name })
+            mapRef = map?._id
+        }
+        if ((mapRef || !await DataModel.findOne({ name })) && !await DataModel.findOne({ mapRef: mapRef.toString() })) {
+            insertedDataModel = (await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel, mapRef: mapRef?.toString() }]))[0]
+            if (mapRef) {
+                //map.dataModelID = insertedDataModel._id.toString()
+                //map.dataModel = undefined
+                //logger.debug("INSERT SCHEMA NEW MAP PUT\n", await Map.findByIdAndUpdate(mapRef.toString(), { $unset: { dataModel: "" } }, { dataModelID: insertedDataModel._id.toString() }))
+                await this.modifyMap(map.name, map._id, map.map, undefined, map.status, map.description, map.sourceData, map.sourceDataMinio, map.sourceDataID, map.sourceDataIn, map.sourceDataURL, undefined, insertedDataModel._id.toString(), undefined, map.config, map.sourceDataType, map.path, bucket, prefix)
+                logger.debug("INSERT SCHEMA NEW MAP GET\n", await Map.findById(mapRef.toString()))
+
+            }
+            return insertedDataModel
+        }
         throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
-    async modifySource(name, id, source, path, mapRef) {
+    async modifySource(name, id, source, path, mapRef, bucket, prefix) {
+        let insertedSource, map
         if (!source)
             throw { error: "source is required" }
         if (path == "") path = undefined
-        if (mapRef)
-            mapRef = (await Map.findOne({ name }))?._id
-        mapRef = mapRef.toString()
-        let result = await Source.findOneAndReplace(mapRef ? { mapRef } : { name }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source, mapRef: mapRef?.toString() } : { name: name, id: id, source: source, path: path, mapRef: mapRef?.toString() })
-        return result
+        if (mapRef){
+            map = (await Map.findOne({ name }))
+            mapRef = map?._id.toString()
+        }
+        insertedSource = await Source.findOneAndReplace(mapRef ? { mapRef } : { name }, typeof source === 'string' ? { name: name, id: id, sourceCSV: source, mapRef: mapRef?.toString() } : { name: name, id: id, source: source, path: path, mapRef: mapRef?.toString() })
+        if (mapRef) {
+            //map.sourceDataID = insertedSource._id.toString()
+            //map.sourceData = undefined
+            await this.modifyMap(map.name, map._id, map.map, map.dataModel, map.status, map.description, undefined, undefined, insertedSource._id.toString(), undefined, undefined, map.dataModelIn, map.dataModelID, map.dataModelURL, map.config, map.sourceDataType, map.path, bucket, prefix)
+        }
+        return insertedSource
     },
 
     call: 0,
@@ -566,14 +602,22 @@ module.exports = {
         return await Map.findOneAndReplace({ name }, newMapper)
     },
 
-    async modifyDataModel(name, id, dataModel, mapRef) {
+    async modifyDataModel(name, id, dataModel, mapRef, bucket, prefix) {
+        let insertedDataModel, map
         if (!dataModel)
             throw { error: "schema is required" }
         dataModel = this.dataModelClean(dataModel, {})
-        if (mapRef)
-            mapRef = (await Map.findOne({ name }))?._id
-        mapRef = mapRef.toString()
-        return await DataModel.findOneAndReplace(mapRef ? { mapRef } : { name }, { name: name, id: id, dataModel: dataModel, mapRef: mapRef.toString() })
+        if (mapRef){
+            map = (await Map.findOne({ name }))
+            mapRef = map?._id.toString()
+        }
+        insertedDataModel = DataModel.findOneAndReplace(mapRef ? { mapRef } : { name }, { name: name, id: id, dataModel: dataModel, mapRef: mapRef.toString() })
+        if (mapRef) {
+            map.dataModelID = insertedDataModel._id.toString()
+            //map.dataModel = undefined
+            await this.modifyMap(map.name, map._id, map.map, undefined, map.status, map.description, map.sourceData, map.sourceDataMinio, map.sourceDataID, map.sourceDataIn, map.sourceDataURL, undefined, insertedDataModel._id.toString(), undefined, map.config, map.sourceDataType, map.path, bucket, prefix)
+        }
+        return insertedDataModel
     },
 
     async deleteSource(id, name) {

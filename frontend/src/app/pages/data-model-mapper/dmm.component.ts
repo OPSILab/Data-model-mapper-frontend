@@ -170,7 +170,7 @@ export class DMMComponent implements OnInit, OnChanges {
     dbSources: undefined,
     minioSources: undefined,
     sourceOptions: undefined,
-    importedSource: undefined,
+    sourceBeforeChanges: undefined,
     sourceFrom: undefined,
     sourceDataURL: undefined,
     selectedSource: undefined,
@@ -227,15 +227,15 @@ export class DMMComponent implements OnInit, OnChanges {
             this.source.paths = this.selectMapJsonOptions(this.source.sourceEditor.getText(), '')
             this.source.onUpdatePathForDataMap("", true)
             console.debug($event)
-            this.source.importedSource = JSON.parse(this.source.sourceEditor.getText())
-            console.debug(this.source.importedSource)
+            this.source.sourceBeforeChanges = JSON.parse(this.source.sourceEditor.getText())
+            console.debug(this.source.sourceBeforeChanges)
           }
           else {
             this.source.csvSourceData = this.source.source()
             if (Array.isArray(this.source.csvSourceData))
               this.source.csvSourceData = this.source.csvSourceData[0].data
-            this.source.importedSource = this.source.csvSourceData
-            console.debug(this.source.importedSource)
+            this.source.sourceBeforeChanges = this.source.csvSourceData
+            console.debug(this.source.sourceBeforeChanges)
           }
         }
       }
@@ -390,8 +390,8 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     else {
       this.importedSchema = this.exampleSchema
-      this.source.importedSource = o(this.source.sourceJson)
-      console.debug(this.source.importedSource)
+      this.source.sourceBeforeChanges = o(this.source.sourceJson)
+      console.debug(this.source.sourceBeforeChanges)
     }
   }
 
@@ -422,7 +422,7 @@ export class DMMComponent implements OnInit, OnChanges {
   unsaved() {
     return {
       schema: this.config.data_model_mapper.alwaysPromptSaveSource ? true : this.differences(this.importedSchema, JSON.parse(this.schemaEditor.getText())),
-      source: this.config.data_model_mapper.alwaysPromptSaveSchema ? true : this.differences(this.source.importedSource, this.source.inputType == "json" ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData)
+      source: this.config.data_model_mapper.alwaysPromptSaveSchema ? true : this.differences(this.source.sourceBeforeChanges, this.source.inputType == "json" ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData)
     }
   }
 
@@ -453,13 +453,13 @@ export class DMMComponent implements OnInit, OnChanges {
             this.schemaEditor.update(this.importedSchema)
           if (mapperRecord.saveSource) {
             this.source.sources.push(this.dmmService.getSource(null, null, mapperRecord._id))
-            this.source.importedSource = this.source.inputType == "json" ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData
-            console.debug(this.source.importedSource)
+            this.source.sourceBeforeChanges = this.source.inputType == "json" ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData
+            console.debug(this.source.sourceBeforeChanges)
             this.source.selectedSource = undefined
             this.source.sourceDataURL = undefined
           }
-          else if (this.source.importedSource)
-            this.source.sourceEditor.update(this.source.importedSource)
+          else if (this.source.sourceBeforeChanges)
+            this.source.sourceEditor.update(this.source.sourceBeforeChanges)
         }
       });
     }
@@ -499,8 +499,8 @@ export class DMMComponent implements OnInit, OnChanges {
           }
           if (mapperRecord.saveSource) {
             this.source.sources.push(this.dmmService.getSource(null, null, mapperRecord._id))
-            this.source.importedSource = JSON.parse(this.source.sourceEditor.getText())
-            console.debug(this.source.importedSource)
+            this.source.sourceBeforeChanges = JSON.parse(this.source.sourceEditor.getText())
+            console.debug(this.source.sourceBeforeChanges)
             this.source.selectedSource = undefined
             this.source.sourceDataURL = undefined
           }
@@ -625,10 +625,10 @@ export class DMMComponent implements OnInit, OnChanges {
 
   async reset() {
     this.importedSchema = undefined
-    this.source.importedSource = [{
+    this.source.sourceBeforeChanges = [{
       "info": "set your source json here"
     }]
-    console.debug(this.source.importedSource)
+    console.debug(this.source.sourceBeforeChanges)
     this.mapperRecordId = undefined
     this.dataModelURL = undefined
     this.inputID = undefined
@@ -1121,7 +1121,7 @@ export class DMMComponent implements OnInit, OnChanges {
         body["dataModelID"] = this.selectedSchema
       body["dataModelURL"] = this.dataModelURL
     }
-    if (this.differences(this.source.importedSource, this.source.inputType == "json" ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData) || this.rawSource())//TODO verify
+    if (this.differences(this.source.sourceBeforeChanges, this.source.inputType == "json" ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData) || this.rawSource())//TODO verify
       body["sourceData"] = this.source.setSource(source, true)
     else {
       body["sourceDataURL"] = this.source.sourceDataURL
@@ -1259,32 +1259,32 @@ export class DMMComponent implements OnInit, OnChanges {
         this.source.selectedSource = mapSettings.sourceDataID
         try {
           mapSettings.sourceData = await this.source.source()//TODO maybe source is already loaded. Check this.source.sourceEditor.getText()
-          this.source.importedSource = o(mapSettings.sourceData)
-          console.debug(this.source.importedSource)
+          this.source.sourceBeforeChanges = o(mapSettings.sourceData)
+          console.debug(this.source.sourceBeforeChanges)
         }
         catch (error) {
           if (error.message == "Cannot read properties of undefined (reading 'source')")
             error.message = "Source could not be loaded"
           this.handleError(error, false, false)
           mapSettings.sourceData = { error: "source is empty or could not be loaded" }
-          this.source.importedSource = o(mapSettings.sourceData)
-          console.debug(this.source.importedSource)
+          this.source.sourceBeforeChanges = o(mapSettings.sourceData)
+          console.debug(this.source.sourceBeforeChanges)
         }
       }
       else if (mapSettings.sourceDataMinio && !mapSettings.sourceData && !this.source.emptySource) {
         this.source.selectedSource = mapSettings.sourceDataMinio.etag
         try {
           mapSettings.sourceData = await this.dmmService.getMinioObject(mapSettings.sourceDataMinio.bucket, mapSettings.sourceDataMinio.name) //TODO maybe source is already loaded. Check this.source.sourceEditor.getText()
-          this.source.importedSource = o(mapSettings.sourceData)
-          console.debug(this.source.importedSource)
+          this.source.sourceBeforeChanges = o(mapSettings.sourceData)
+          console.debug(this.source.sourceBeforeChanges)
         }
         catch (error) {
           if (error.message == "Cannot read properties of undefined (reading 'source')")
             error.message = "Source could not be loaded"
           this.handleError(error, false, false)
           mapSettings.sourceData = { error: "source is empty or could not be loaded" }
-          this.source.importedSource = o(mapSettings.sourceData)
-          console.debug(this.source.importedSource)
+          this.source.sourceBeforeChanges = o(mapSettings.sourceData)
+          console.debug(this.source.sourceBeforeChanges)
         }
       }
       else if (mapSettings.sourceDataURL && !mapSettings.sourceData && !this.source.emptySource) {
@@ -1292,26 +1292,26 @@ export class DMMComponent implements OnInit, OnChanges {
         if (this.source.selectedSource) this.source.selectedSource = undefined
         try {
           mapSettings.sourceData = await this.dmmService.getRemoteSource(mapSettings.sourceDataURL, mapSettings.sourceDataType);
-          this.source.importedSource = o(mapSettings.sourceData)
-          console.debug(this.source.importedSource)
+          this.source.sourceBeforeChanges = o(mapSettings.sourceData)
+          console.debug(this.source.sourceBeforeChanges)
         }
         catch (error) {
           this.handleError(error, false, false)
           mapSettings.sourceData = { error: "some errors occurred when downloading remote source" }
-          this.source.importedSource = o(mapSettings.sourceData)
+          this.source.sourceBeforeChanges = o(mapSettings.sourceData)
         }
       }
       else if (!mapSettings.sourceData) {
         mapSettings.sourceData = this.source.exampleSource
-        this.source.importedSource = o(mapSettings.sourceData)
-        console.debug(this.source.importedSource)
+        this.source.sourceBeforeChanges = o(mapSettings.sourceData)
+        console.debug(this.source.sourceBeforeChanges)
         this.source.csvSourceData = "" //TODO verify if this is sufficient
         this.updateCSVTable()
         this.source.sourceEditor.update(mapSettings.sourceData)
       }
       else {
-        this.source.importedSource = o(mapSettings.sourceData)
-        console.debug(this.source.importedSource)
+        this.source.sourceBeforeChanges = o(mapSettings.sourceData)
+        console.debug(this.source.sourceBeforeChanges)
       }
 
       if (mapSettings.dataModelID && !mapSettings.dataModel) {
@@ -1358,8 +1358,8 @@ export class DMMComponent implements OnInit, OnChanges {
         else this.source.onUpdatePathForDataMap("", true)
       }
       else if (mapSettings.sourceDataType == "csv" && !this.source.emptySource) {
-        this.source.importedSource = this.source.csvSourceData = typeof mapSettings.sourceData == "string" ? mapSettings.sourceData : JSON.stringify(mapSettings.sourceData)
-        console.debug(this.source.importedSource)
+        this.source.sourceBeforeChanges = this.source.csvSourceData = typeof mapSettings.sourceData == "string" ? mapSettings.sourceData : JSON.stringify(mapSettings.sourceData)
+        console.debug(this.source.sourceBeforeChanges)
         this.updateCSVTable()
       }
       else if (!this.source.emptySource)
@@ -1423,8 +1423,8 @@ export class DMMComponent implements OnInit, OnChanges {
             this.displayCSV(this.source.csvSourceData, this.csvtable, this.separatorItem);
             mapOptionsGl = this.source.csvSourceData.slice(0, this.source.csvSourceData.indexOf("\n")).split(this.separatorItem);
             if (this.source.selectedSource) this.source.selectedSource = undefined
-            this.source.importedSource = this.source.csvSourceData
-            console.debug(this.source.importedSource)
+            this.source.sourceBeforeChanges = this.source.csvSourceData
+            console.debug(this.source.sourceBeforeChanges)
           }
           else if (field == 'source') {
             this.source.sourceRef = result?.source;
@@ -1435,17 +1435,17 @@ export class DMMComponent implements OnInit, OnChanges {
             }
             if (!this.source.sourceEditor) {
               this.source.sourceEditor = new JSONEditor(this.source.sourceEditorContainer, this.source.sourceOptions, JSON.parse(result.content));
-              this.source.importedSource = JSON.parse(result.content)
-              console.debug(this.source.importedSource)
+              this.source.sourceBeforeChanges = JSON.parse(result.content)
+              console.debug(this.source.sourceBeforeChanges)
             }
             else
               try {
                 this.source.sourceEditor.setText(result.content);
                 if (this.source.selectedSource) this.source.selectedSource = undefined
-                this.source.importedSource = [{
+                this.source.sourceBeforeChanges = [{
                   "info": "set your source json here"
                 }]
-                console.debug(this.source.importedSource)
+                console.debug(this.source.sourceBeforeChanges)
               }
               catch (error) {
                 this.handleError(error, false, false)

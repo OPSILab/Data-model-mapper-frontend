@@ -101,7 +101,7 @@ module.exports = {
        
         process.res = res;
         try {
-            res.send(await service.insertSource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef))
+            res.send(await service.insertSource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef, req.body.bucketName, req.body.prefix))
             logger.info("Source inserted");
         }
         catch (error) {
@@ -126,7 +126,7 @@ module.exports = {
 
         process.res = res;
         try {
-            res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef))
+            res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef, req.body.bucketName, req.body.prefix))
             logger.info("Model inserted");
         }
         catch (error) {
@@ -140,7 +140,7 @@ module.exports = {
 
         process.res = res;
         try {
-            res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef))
+            res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef, req.body.bucketName, req.body.prefix))
             logger.info("Source modified");
         }
         catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
@@ -162,7 +162,7 @@ module.exports = {
    
         process.res = res;
         try {
-            res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef))
+            res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef, req.body.bucketName, req.body.prefix))
             logger.info("Schema modified");
         }
         catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
