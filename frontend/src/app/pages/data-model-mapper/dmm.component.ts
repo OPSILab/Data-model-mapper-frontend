@@ -387,6 +387,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (this.source.inputType == "csv" && !this.source.emptySource)
         this.updateCSVTable()
       this.updateBody()
+      this.showUpdateButton()
     }
     else {
       this.importedSchema = this.exampleSchema
