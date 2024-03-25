@@ -30,7 +30,7 @@ router.get(encodeURI("/sources"), auth, controller.getSources)
 router.get(encodeURI("/sources/db"), auth, controller.getSourcesFromDB)
 router.get(encodeURI("/sources/minio"), auth, controller.getSourcesFromMinio)
 router.get(encodeURI("/dataModels"), auth, controller.getDataModels)
-router.get(encodeURI("/mockGetUser"), controller.mockGetUser)
+//router.get(encodeURI("/mockGetUser"), controller.mockGetUser)
 router.get(encodeURI("/bearer"), controller.getToken)
 
 router.put(encodeURI("/map"), upload.none(), auth, controller.modifyMap)

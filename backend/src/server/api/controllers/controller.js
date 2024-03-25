@@ -1,7 +1,7 @@
 const service = require("../services/service.js")
 const utils = require("../../../utils/utils.js")
 const log = require('../../../utils/logger')//.app(module);
-const {Logger} = log
+const { Logger } = log
 const logger = new Logger(__filename)
 
 module.exports = {
@@ -58,47 +58,75 @@ module.exports = {
 
     getMaps: async (req, res) => {
         process.res = res;
-        try { res.send(await service.getMaps()) }
-        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
+        try {
+            res.send(await service.getMaps())
+        }
+        catch (error) {
+            logger.error(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
     },
 
     getDataModels: async (req, res) => {
         process.res = res;
-        try { res.send(await service.getDataModels()) }
-        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
+        try {
+            res.send(await service.getDataModels())
+        }
+        catch (error) {
+            logger.error(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
     },
 
     getSource: async (req, res) => {
         const { id, name, mapRef } = req.query
         process.res = res;
-        try { res.send(await service.getSource(id, name, mapRef)) }
-        catch (error) { res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString()) }
+        try {
+            res.send(await service.getSource(id, name, mapRef))
+        }
+        catch (error) {
+            logger.error(error)
+            res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
     },
 
     getMap: async (req, res) => {
         const { id, name } = req.query
         process.res = res;
-        try { res.send(await service.getMap(id, name)) }
+        try {
+            res.send(await service.getMap(id, name))
+        }
         catch (error) {
+            logger.error(error)
             res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
 
     getConfig: async (req, res) => {
         process.res = res;
-        try { res.send(await service.getConfig()) }
-        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
+        try {
+            res.send(await service.getConfig())
+        }
+        catch (error) {
+            logger.error(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
     },
 
     getDataModel: async (req, res) => {
         const { id, name, mapRef } = req.query
         process.res = res;
-        try { res.send(await service.getDataModel(id, name, mapRef)) }
-        catch (error) { res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString()) }
+        try {
+            res.send(await service.getDataModel(id, name, mapRef))
+        }
+        catch (error) {
+            logger.error(error)
+            res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
     },
 
     insertSource: async (req, res) => {
-       
+
         process.res = res;
         try {
             res.send(await service.insertSource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef, req.body.bucketName, req.body.prefix))
@@ -119,7 +147,10 @@ module.exports = {
                 req.body.config, req.body.sourceDataType, req.body.path, req.body.bucketName, req.body.prefix))
             logger.info("Map inserted");
         }
-        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
+        catch (error) {
+            logger.error(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
     },
 
     insertDataModel: async (req, res) => {
@@ -143,7 +174,10 @@ module.exports = {
             res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef, req.body.bucketName, req.body.prefix))
             logger.info("Source modified");
         }
-        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
+        catch (error) {
+            logger.error(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
     },
 
     modifyMap: async (req, res) => {
@@ -155,17 +189,23 @@ module.exports = {
                 req.body.config, req.body.sourceDataType, req.body.path, req.body.bucketName, req.body.prefix))
             logger.info("Map modified");
         }
-        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
+        catch (error) {
+            logger.error(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
     },
 
     modifyDataModel: async (req, res) => {
-   
+
         process.res = res;
         try {
             res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef, req.body.bucketName, req.body.prefix))
             logger.info("Schema modified");
         }
-        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
+        catch (error) {
+            logger.error(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
     },
 
     deleteSource: async (req, res) => {
@@ -178,15 +218,24 @@ module.exports = {
     deleteMap: async (req, res) => {
         const { id, name } = req.query
         process.res = res;
-        try { res.send(await service.deleteMap(id || req.params.id, name)) }
-        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
+        try {
+            res.send(await service.deleteMap(id || req.params.id, name))
+        }
+        catch (error) {
+            logger.error(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
     },
 
     deleteDataModel: async (req, res) => {
         const { id, name } = req.query
         process.res = res;
-        try { res.send(await service.deleteDataModel(id, name)) }
-        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
+        try {
+            res.send(await service.deleteDataModel(id, name))
+        }
+        catch (error) {
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
     },
 
     dereferenceSchema: async (req, res) => {
@@ -195,8 +244,13 @@ module.exports = {
         if (req.body.bucketName) req.body.bucketName = undefined
         if (req.body.prefix) req.body.prefix = undefined
 
-        try { res.send(await service.dereferenceSchema(req.body)) }
-        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
+        try {
+            res.send(await service.dereferenceSchema(req.body))
+        }
+        catch (error) {
+            logger.error(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
     },
 
     cleanSchema: async (req, res) => {
@@ -205,8 +259,14 @@ module.exports = {
         if (req.body.bucketName) req.body.bucketName = undefined
         if (req.body.prefix) req.body.prefix = undefined
 
-        try { res.send(await service.dataModelDeClean(req.body)) }
-        catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
+        try {
+            res.send(await service.dataModelDeClean(req.body))
+        }
+
+        catch (error) {
+            logger.error(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
     },
 
 
@@ -293,7 +353,7 @@ module.exports = {
         }
     },
 
-    mockGetUser: async (req, res) => {
+    /*mockGetUser: async (req, res) => {
         try {
             res.send({ pilot: "cartagena", email: "test@hotmail.it" })
         }
@@ -301,7 +361,7 @@ module.exports = {
             logger.error(error)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-    },
+    },*/
 
     getToken: async (req, res) => {
         try {

@@ -332,7 +332,7 @@ module.exports = {
     },
 
     async getSource(id, name, mapRef) {
-        let source = await Source.findOne(mapRef ? { mapRef: id } : id ? { _id: id } : { name })
+        let source = await Source.findOne(mapRef ? { mapRef:  mapRef } : id ? { _id: id } : { name })
         if (!source) throw { code: 404, message: "NOT FOUND" }
         return source
     },
@@ -341,13 +341,15 @@ module.exports = {
         let map = await Map.findOne(id ? { _id: id } : { name })
         if (!map) throw { code: 404, message: "NOT FOUND" }
         if (map.dataModel)
-            return { ...map, dataModel: this.dataModelDeClean(map.dataModel) }
+            map.dataModel = this.dataModelDeClean(map.dataModel)
+        return map
     },
 
     async getDataModel(id, name, mapRef) {
-        let dataModel = await DataModel.findOne(mapref ? { mapref: mapRef } : id ? { _id: id } : { name })
+        let dataModel = await DataModel.findOne(mapRef ? { mapRef: mapRef } : id ? { _id: id } : { name })
         if (!dataModel) throw { code: 404, message: "NOT FOUND" }
-        return this.dataModelDeClean(dataModel)
+        dataModel.dataModel = this.dataModelDeClean(dataModel.dataModel)
+        return dataModel
     },
 
     async parseDataModelSchema(schemaPath) {
@@ -539,7 +541,9 @@ module.exports = {
 
     dataModelDeClean(dataModel) {
         this.call++;
+        logger.debug(this.call)
         for (let key in dataModel) {
+            logger.debug(key)
             if (Array.isArray(dataModel[key]) || typeof dataModel[key] == "object")
                 dataModel[key] = this.dataModelDeClean(dataModel[key])
             else if (key.startsWith("dollar")) {
@@ -611,7 +615,7 @@ module.exports = {
             map = (await Map.findOne({ name }))
             mapRef = map?._id.toString()
         }
-        insertedDataModel = DataModel.findOneAndReplace(mapRef ? { mapRef } : { name }, { name: name, id: id, dataModel: dataModel, mapRef: mapRef.toString() })
+        insertedDataModel = await DataModel.findOneAndReplace(mapRef ? { mapRef } : { name }, { name: name, id: id, dataModel: dataModel, mapRef: mapRef.toString() })
         if (mapRef) {
             map.dataModelID = insertedDataModel._id.toString()
             //map.dataModel = undefined

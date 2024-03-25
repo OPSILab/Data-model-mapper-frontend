@@ -77,6 +77,15 @@ export class CreateMapComponent implements OnInit {
     if (this.value) //TODO check if it is required using value
       for (let key in this.value)
         this[key] = this.value[key]
+    console.debug(this)
+    console.debug(this.saveSchema)
+    console.debug(this.saveSource)
+    if (!this.unsaved.schema)
+      this.saveSchema = false
+    if (!this.unsaved.source)
+      this.saveSource = false
+    console.debug(this.saveSchema)
+    console.debug(this.saveSource)
   }
 
   confirm() {
@@ -161,44 +170,78 @@ export class CreateMapComponent implements OnInit {
         if (this.save) {
           let mapperRecord = (await this.dmmService.saveMap(...params))[0];
           mapperRecord.mapperRecordId = this.mapperRecordId = mapperRecord._id;
-          this.ref.close({ ...mapperRecord, saveSchema: this.saveSchema, saveSource: this.saveSource });
-          this.editedValue.emit({ ...mapperRecord });
-          this.showToast('primary', this.translate.instant('general.dmm.map_added_message'), '');
+          if (!errors && this.saveSchema)
+            try {
+              if (!this.schemaSaved)
+                await this.dmmService.saveSchema(name, this.mapperRecordId, status, description, this.schema);
+              else
+                await this.dmmService.updateSchema(name, this.mapperRecordId, status, description, this.schema);
+            }
+            catch (error) {
+              this.errorHandle("schema", error)
+              errors = true
+            }
+          if (!errors && this.saveSource)
+            try {
+              if (!this.sourceSaved)
+                await this.dmmService.saveSource(name, this.mapperRecordId, status, description, this.sourceData, this.minioObjName, this.bucket, this.etag, this.path);
+              else
+                await this.dmmService.updateSource(name, this.mapperRecordId, status, description, this.sourceData, this.minioObjName, this.bucket, this.etag, this.path);
+            }
+            catch (error) {
+              this.errorHandle("source", error)
+              errors = true
+            }
+          if (this.saveSchema || this.saveSource) {
+            mapperRecord = await this.dmmService.getMap(mapperRecord._id)
+            mapperRecord.mapperRecordId = this.mapperRecordId
+          }
+          if (!errors) {
+            this.ref.close({ ...mapperRecord, saveSchema: this.saveSchema, saveSource: this.saveSource });
+            this.editedValue.emit({ ...mapperRecord });
+            this.showToast('primary', this.translate.instant('general.dmm.map_added_message'), '');
+          }
         }
 
         else {
           let mapperRecord = await this.dmmService.updateMap(...params);
           mapperRecord.mapperRecordId = this.mapperRecordId = mapperRecord._id;
-          this.ref.close({ ...mapperRecord, saveSchema: this.saveSchema, saveSource: this.saveSource });
-          this.editedValue.emit({  ...mapperRecord });
-          this.showToast('primary', this.translate.instant('general.dmm.map_edited_message'), '');
+          if (!errors && this.saveSchema)
+            try {
+              if (!this.schemaSaved)
+                await this.dmmService.saveSchema(name, this.mapperRecordId, status, description, this.schema);
+              else
+                await this.dmmService.updateSchema(name, this.mapperRecordId, status, description, this.schema);
+            }
+            catch (error) {
+              this.errorHandle("schema", error)
+              errors = true
+            }
+          if (!errors && this.saveSource)
+            try {
+              if (!this.sourceSaved)
+                await this.dmmService.saveSource(name, this.mapperRecordId, status, description, this.sourceData, this.minioObjName, this.bucket, this.etag, this.path);
+              else
+                await this.dmmService.updateSource(name, this.mapperRecordId, status, description, this.sourceData, this.minioObjName, this.bucket, this.etag, this.path);
+            }
+            catch (error) {
+              this.errorHandle("source", error)
+              errors = true
+            }
+          if (this.saveSchema || this.saveSource) {
+            mapperRecord = await this.dmmService.getMap(mapperRecord._id)
+            mapperRecord.mapperRecordId = this.mapperRecordId
+          }
+          if (!errors) {
+            this.ref.close({ ...mapperRecord, saveSchema: this.saveSchema, saveSource: this.saveSource });
+            this.editedValue.emit({ ...mapperRecord });
+            this.showToast('primary', this.translate.instant('general.dmm.map_edited_message'), '');
+          }
         }
 
       }
       catch (error) {
         this.errorHandle("record", error)
-        errors = true
-      }
-    if (!errors && this.saveSchema)
-      try {
-        if (!this.schemaSaved)
-          await this.dmmService.saveSchema(name, this.mapperRecordId, status, description, this.schema);
-        else
-          await this.dmmService.updateSchema(name, this.mapperRecordId, status, description, this.schema);
-      }
-      catch (error) {
-        this.errorHandle("schema", error)
-        errors = true
-      }
-    if (!errors && this.saveSource)
-      try {
-        if (!this.sourceSaved)
-          await this.dmmService.saveSource(name, this.mapperRecordId, status, description, this.sourceData, this.minioObjName, this.bucket, this.etag, this.path);
-        else
-          await this.dmmService.updateSource(name, this.mapperRecordId, status, description, this.sourceData, this.minioObjName, this.bucket, this.etag, this.path);
-      }
-      catch (error) {
-        this.errorHandle("source", error)
         errors = true
       }
   }

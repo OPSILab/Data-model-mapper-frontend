@@ -396,6 +396,8 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   setContext(unsaved, map, source, save) {//, schemaSaved, sourceSaved) {
+    console.debug(this.source.selectedSource)
+    console.debug(this.selectedSchema)
     return {
       unsaved,
       sources: this.source.sources,
@@ -440,22 +442,26 @@ export class DMMComponent implements OnInit, OnChanges {
           this.mapperRecord = mapperRecord;
           this.showUpdateButton()
           this.maps.push(mapperRecord)
-          this.selectMap = mapperRecord.mapperRecordId
+          this.selectMap = mapperRecord.mapperRecordId//TODO this does not work with ngModel and it should. Fix
           this.savedSchema = mapperRecord.saveSchema
           this.source.savedSource = mapperRecord.saveSource
           if (mapperRecord.saveSchema) {
-            this.schemas.push(this.dmmService.getSchema(null, null, mapperRecord._id))
+            let schemaSaved = await this.dmmService.getSchema(null, null, mapperRecord._id)
+            this.schemas.push(o(schemaSaved))
             this.importedSchema = JSON.parse(this.schemaEditor.getText())
-            this.selectedDataModel = undefined
+            console.debug(schemaSaved)
+            this.selectedSchema = o(schemaSaved._id)
             this.dataModelURL = undefined
           }
           else if (this.importedSchema)
             this.schemaEditor.update(this.importedSchema)
           if (mapperRecord.saveSource) {
-            this.source.sources.push(this.dmmService.getSource(null, null, mapperRecord._id))
+            let savedSource = await this.dmmService.getSource(null, null, mapperRecord._id)
+            this.source.sources.push(o(savedSource))
             this.source.sourceBeforeChanges = this.source.inputType == "json" ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData
             console.debug(this.source.sourceBeforeChanges)
-            this.source.selectedSource = undefined
+            console.debug(savedSource)
+            this.source.selectedSource = savedSource._id
             this.source.sourceDataURL = undefined
           }
           else if (this.source.sourceBeforeChanges)
@@ -492,16 +498,18 @@ export class DMMComponent implements OnInit, OnChanges {
           if (!this.savedSchema) this.savedSchema = mapperRecord.saveSchema
           if (!this.source.savedSource) this.source.savedSource = mapperRecord.saveSource
           if (mapperRecord.saveSchema) {
-            this.schemas.push(this.dmmService.getSchema(null, null, mapperRecord._id))
+            let schemaSaved = await this.dmmService.getSchema(null, null, mapperRecord._id)
+            this.schemas.push(o(schemaSaved))
             this.importedSchema = JSON.parse(this.schemaEditor.getText())
-            this.selectedDataModel = undefined
+            this.selectedSchema = o(schemaSaved._id)
             this.dataModelURL = undefined
           }
           if (mapperRecord.saveSource) {
-            this.source.sources.push(this.dmmService.getSource(null, null, mapperRecord._id))
-            this.source.sourceBeforeChanges = JSON.parse(this.source.sourceEditor.getText())
+            let savedSource = await this.dmmService.getSource(null, null, mapperRecord._id)
+            this.source.sources.push(o(savedSource))
+            this.source.sourceBeforeChanges = this.source.inputType == "json" ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData
             console.debug(this.source.sourceBeforeChanges)
-            this.source.selectedSource = undefined
+            this.source.selectedSource = savedSource._id
             this.source.sourceDataURL = undefined
           }
         }
