@@ -450,7 +450,7 @@ export class DMMComponent implements OnInit, OnChanges {
             let schemaSaved = await this.dmmService.getSchema(null, null, mapperRecord._id)
             this.schemas.push(o(schemaSaved))
             this.importedSchema = JSON.parse(this.schemaEditor.getText())
-            console.debug(schemaSaved)
+            //console.debug(schemaSaved)
             this.selectedSchema = o(schemaSaved._id)
             this.dataModelURL = undefined
           }
