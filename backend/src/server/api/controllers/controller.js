@@ -353,16 +353,6 @@ module.exports = {
         }
     },
 
-    /*mockGetUser: async (req, res) => {
-        try {
-            res.send({ pilot: "cartagena", email: "test@hotmail.it" })
-        }
-        catch (error) {
-            logger.error(error)
-            res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
-        }
-    },*/
-
     getToken: async (req, res) => {
         try {
             res.send(req.headers.authorization.split(' ')[1])
