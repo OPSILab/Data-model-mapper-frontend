@@ -197,6 +197,7 @@ export class CreateMapComponent implements OnInit {
             mapperRecord.mapperRecordId = this.mapperRecordId
           }
           if (!errors) {
+            console.debug(mapperRecord)
             this.ref.close({ ...mapperRecord, saveSchema: this.saveSchema, saveSource: this.saveSource });
             this.editedValue.emit({ ...mapperRecord });
             this.showToast('primary', this.translate.instant('general.dmm.map_added_message'), '');
@@ -206,6 +207,8 @@ export class CreateMapComponent implements OnInit {
         else {
           let mapperRecord = await this.dmmService.updateMap(...params);
           mapperRecord.mapperRecordId = this.mapperRecordId = mapperRecord._id;
+          mapperRecord.description = this.description
+          mapperRecord.status = this.status
           if (!errors && this.saveSchema)
             try {
               if (!this.schemaSaved)

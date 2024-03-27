@@ -496,6 +496,7 @@ export class DMMComponent implements OnInit, OnChanges {
       }).onClose.subscribe(async (mapperRecord) => {
         if (mapperRecord) {
           this.mapperRecord = mapperRecord;
+          console.debug(mapperRecord)
           if (!this.savedSchema) this.savedSchema = mapperRecord.saveSchema
           if (!this.source.savedSource) this.source.savedSource = mapperRecord.saveSource
           if (mapperRecord.saveSchema) {
@@ -1378,6 +1379,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.mapperRecord = {}
       if (mapSettings._id) this.mapperRecord.mapperRecordId = mapSettings._id
       if (mapSettings.name) this.name = mapSettings.name
+      console.debug(mapSettings.description)
       if (mapSettings.description) this.mapperRecord.description = mapSettings.description
       if (mapSettings.status) this.mapperRecord.status = mapSettings.status
       if (this.mapperRecord.mapperRecordId) this.isNotNew = true
