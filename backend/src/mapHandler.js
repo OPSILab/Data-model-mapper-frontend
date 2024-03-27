@@ -26,7 +26,7 @@ const staticPattern = /static:(.*)/;
 const dotPattern = /(.*)\.(.*)/;
 
 const log = require('./utils/logger')//.app(module);
-const {Logger} = log
+const { Logger } = log
 const logger = new Logger(__filename)
 const Debugger = require('./utils/debugger');
 const report = require('./utils/logger').report;
@@ -313,7 +313,11 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
             /********************* Perform actual mapping with parsed and normalized source key (parsedNorm) **/
 
-            parsedSourceKey = parsedSourceKey.replaceAll('"', '')
+            if (typeof parsedSourceKey == "string")
+                parsedSourceKey = parsedSourceKey.replaceAll('"', '')
+
+            logger.debug(parsedSourceKey)
+            logger.debug(typeof parsedSourceKey)
 
             var converter = mapper.makeConverter({ [mapDestKey]: parsedSourceKey });
 
@@ -358,7 +362,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 
         // Append type field, according to the Data Model Schema
         try {
-            logger.debug( result)
+            logger.debug(result)
             if (!result.type)
                 result.type = modelSchema?.allOf ? modelSchema.allOf ? modelSchema.allOf[0]?.properties?.type?.enum ? modelSchema.allOf[0]?.properties?.type?.enum[0] : modelSchema?.properties?.type?.enum ? modelSchema.properties.type.enum[0] || "Thing" : "Thing" : "Thing" : "Thing";
             // Generate unique id for the mapped object (according to Id Pattern)
