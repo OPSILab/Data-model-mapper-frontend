@@ -421,7 +421,7 @@ module.exports = {
             return insertedSource
         }
         throw { "error": "name already exists" }
-    },//TODO replace with insertOne
+    }, //TODO replace with insertOne
 
     async insertMap(name, id, map, dataModel, status, description,
         sourceData, sourceDataMinio, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
