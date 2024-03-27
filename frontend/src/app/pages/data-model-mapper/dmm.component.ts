@@ -496,7 +496,6 @@ export class DMMComponent implements OnInit, OnChanges {
       }).onClose.subscribe(async (mapperRecord) => {
         if (mapperRecord) {
           this.mapperRecord = mapperRecord;
-          console.debug(mapperRecord)
           if (!this.savedSchema) this.savedSchema = mapperRecord.saveSchema
           if (!this.source.savedSource) this.source.savedSource = mapperRecord.saveSource
           if (mapperRecord.saveSchema) {
