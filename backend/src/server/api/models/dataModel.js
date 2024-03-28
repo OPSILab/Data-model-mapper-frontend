@@ -4,6 +4,7 @@ const dataModel = mongoose.Schema({
   name: String,
   //id: String,
   mapRef : {},
+  isAlsoReferencedBy : Array,
   dataModel: {}
 }, { versionKey: false });
 

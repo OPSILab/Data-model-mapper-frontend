@@ -32,6 +32,7 @@ router.get(encodeURI("/sources/minio"), auth, controller.getSourcesFromMinio)
 router.get(encodeURI("/dataModels"), auth, controller.getDataModels)
 //router.get(encodeURI("/mockGetUser"), controller.mockGetUser)
 router.get(encodeURI("/bearer"), controller.getToken)
+router.get(encodeURI("/logs"), auth, controller.getLogs)
 
 router.put(encodeURI("/map"), upload.none(), auth, controller.modifyMap)
 router.put(encodeURI("/source"), upload.none(), auth, controller.modifySource)

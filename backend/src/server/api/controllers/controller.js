@@ -362,4 +362,14 @@ module.exports = {
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
+
+    getLogs: async (req, res) => {
+        try {
+            res.send(await service.getLogs(req.query.from, req.query.to))
+        }
+        catch (error) {
+            logger.error(error)
+            res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
+    }
 };

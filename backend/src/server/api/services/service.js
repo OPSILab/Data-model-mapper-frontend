@@ -4,6 +4,7 @@ const Source = require("../models/source.js")
 const Map = require("../models/map.js")
 const DataModel = require("../models/dataModel.js")
 const log = require('../../../utils/logger')//.app(module);
+const Log = require('../models/log')
 const { Logger } = log
 const logger = new Logger(__filename)
 const axios = require('axios')
@@ -332,7 +333,7 @@ module.exports = {
     },
 
     async getSource(id, name, mapRef) {
-        let source = await Source.findOne(mapRef ? { mapRef:  mapRef } : id ? { _id: id } : { name })
+        let source = await Source.findOne(mapRef ? { mapRef: mapRef } : id ? { _id: id } : { name })
         if (!source) throw { code: 404, message: "NOT FOUND" }
         return source
     },
@@ -499,7 +500,7 @@ module.exports = {
         if (!source)
             throw { error: "source is required" }
         if (path == "") path = undefined
-        if (mapRef){
+        if (mapRef) {
             map = (await Map.findOne({ name }))
             mapRef = map?._id.toString()
         }
@@ -541,9 +542,9 @@ module.exports = {
 
     dataModelDeClean(dataModel) {
         this.call++;
-        logger.debug(this.call)
+        //logger.debug(this.call)
         for (let key in dataModel) {
-            logger.debug(key)
+            //logger.debug(key)
             if (Array.isArray(dataModel[key]) || typeof dataModel[key] == "object")
                 dataModel[key] = this.dataModelDeClean(dataModel[key])
             else if (key.startsWith("dollar")) {
@@ -611,7 +612,7 @@ module.exports = {
         if (!dataModel)
             throw { error: "schema is required" }
         dataModel = this.dataModelClean(dataModel, {})
-        if (mapRef){
+        if (mapRef) {
             map = (await Map.findOne({ name }))
             mapRef = map?._id.toString()
         }
@@ -625,6 +626,9 @@ module.exports = {
     },
 
     async deleteSource(id, name) {
+        let source = await DataModel.findOne(id ? { _id: id } : { name })
+        if (source.mapRef)
+            throw { code: 400, message: "BAD REQUEST.\nResource has a mapRef. Delete the mapper record who reference it before." }
         return await Source.deleteOne(id ? { _id: id } : { name })
     },
 
@@ -633,9 +637,28 @@ module.exports = {
         let mapRef
         if (!id)
             mapRef = (await Map.findOne({ name }))._id
+        let map = await Map.findOne(id ? { _id: id } : { name })
         let deletion = await Map.deleteOne(id ? { _id: id } : { name })
-        await Source.deleteOne({ mapRef: id || mapRef })
-        await DataModel.deleteOne({ mapRef: id || mapRef })
+        //if (map.sourceDataID) {
+        let source = await Source.findOne({ mapRef: (id || mapRef) })
+        if (source?.isAlsoReferencedBy[0]) {
+            source.mapRef = source.isAlsoReferencedBy.shift()
+            logger.debug(source)
+            await source.save()
+        }
+        else
+            await Source.deleteOne({ mapRef: (id || mapRef) })
+        //}
+        //if (map.dataModelID) {
+        let dataModel = await DataModel.findOne({ mapRef: (id || mapRef) })
+        if (dataModel?.isAlsoReferencedBy[0]) {
+            dataModel.mapRef = dataModel.isAlsoReferencedBy.shift()
+            logger.debug(dataModel)
+            await dataModel.save()
+        }
+        else
+            await DataModel.deleteOne({ mapRef: (id || mapRef) })
+        //}
         if (deletion.deletedCount)
             return deletion
         throw { code: 404, message: "NOT FOUND" }
@@ -643,6 +666,27 @@ module.exports = {
     },
 
     async deleteDataModel(id, name) {
+        let dataModel = await DataModel.findOne(id ? { _id: id } : { name })
+        if (dataModel.mapRef)
+            throw { code: 400, message: "BAD REQUEST.\nResource has a mapRef. Delete the mapper record who reference it before." }
         return await DataModel.deleteOne(id ? { _id: id } : { name })
     },
+
+    async getLogs(from, to) {
+        let logs = from && to ?
+            await Log.find({ timestamp: { $gte: parseInt(from), $lte: parseInt(to) } }) :
+            from ?
+                await Log.find({ timestamp: { $gte: parseInt(from) } }) :
+                to ?
+                    await Log.find({ timestamp: { $lte: parseInt(to) } }) :
+                    await Log.find()
+        let stringifiedLogs = ""
+        //return logs
+        for (let log of logs) {
+            stringifiedLogs += log.messages
+            //console.debug(log.timestamp)
+            //console.debug(Date.now()-log.timestamp)
+        }
+        return stringifiedLogs
+    }
 }
