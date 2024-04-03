@@ -563,12 +563,13 @@ module.exports = {
     async deAssignSource(id, mapRef) {
 
         if (!id || !mapRef)
-            throw { error: "id or mapRef not specified" }
+            return logger.warn({ warning: "id or mapRef not specified" })
         let source = await Source.findById(id)
         if (!source)
             return logger.warn({ warning: "No source found" })
         if (!source.isAlsoReferencedBy)
-            return await Source.findOneAndReplace({ _id: id }, { $unset: { [mapRef]: 1 } })
+            return "Primary ref map cannot lose source possession"
+        //return await Source.findOneAndReplace({ _id: id }, { $unset: { [mapRef]: 1 } })
         return await Source.findOneAndReplace({ _id: id }, { $pull: { isAlsoReferencedBy: mapRef } })
     },
 
@@ -589,12 +590,13 @@ module.exports = {
 
     async deAssignSchema(id, mapRef) {
         if (!id || !mapRef)
-            throw { error: "id or mapRef not specified" }
+            return logger.warn({ warning: "id or mapRef not specified" })
         let dataModel = await DataModel.findById(id)
         if (!dataModel)
             return logger.warn({ warning: "No schema found" })
         if (!dataModel.isAlsoReferencedBy)
-            return await DataModel.findOneAndReplace({ _id: id }, { $unset: { [mapRef]: 1 } })
+            return "Primary ref map cannot lose schema possession"
+        //return await DataModel.findOneAndReplace({ _id: id }, { $unset: { [mapRef]: 1 } })
         return await DataModel.findOneAndReplace({ _id: id }, { $pull: { isAlsoReferencedBy: mapRef } })
     },
 
