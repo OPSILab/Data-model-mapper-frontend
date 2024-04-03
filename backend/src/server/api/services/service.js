@@ -405,13 +405,25 @@ module.exports = {
         let insertedSource, map
         if (!source)
             throw { error: "source is required" }
-        if (path == "") path = undefined
+        if (path == "")
+            path = undefined
         if (mapRef) {
             map = (await Map.findOne({ name }))
             mapRef = map?._id
         }
         if ((mapRef || !await Source.findOne({ name })) && !await Source.findOne({ mapRef: mapRef.toString() })) {
-            insertedSource = (await Source.insertMany([typeof source === 'string' ? { name: name, id: id, sourceCSV: source, mapRef: mapRef?.toString() } : { name: name, id: id, source: source, path, mapRef: mapRef?.toString() }]))[0]
+            insertedSource = (await Source.insertMany([typeof source === 'string' ? {
+                name: name,
+                id: id,
+                sourceCSV: source,
+                mapRef: mapRef?.toString()
+            } : {
+                name: name,
+                id: id,
+                source: source,
+                path,
+                mapRef: mapRef?.toString()
+            }]))[0]
             if (mapRef) {
                 map.sourceDataID = insertedSource._id.toString()
                 //map.sourceData = undefined
@@ -427,10 +439,12 @@ module.exports = {
     async insertMap(name, id, map, dataModel, status, description,
         sourceData, sourceDataMinio, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
         mapConfig, sourceDataType, path, bucketName, prefix) {
-        if (path == "") path = undefined
+        if (path == "")
+            path = undefined
         if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
             throw { error: "schema is required" }
-        if (dataModel) dataModel = this.dataModelClean(dataModel, {})
+        if (dataModel)
+            dataModel = this.dataModelClean(dataModel, {})
         let objectName = (
             //sourceDataMinio?.name || 
             (prefix + "/" + name)).replace(config.minioWriter.defaultInputFolderName, config.minioWriter.defaultOutputFolderName) //.toLowerCase()
@@ -464,8 +478,25 @@ module.exports = {
         minioName = minioName + ".json"
         await minioWriter.stringUpload(bucketName, minioName, JSON.stringify(newMapper))
 
-        if (!await Map.findOne({ name }))
-            return await Map.insertMany([newMapper])
+        if (!await Map.findOne({ name })) {
+            let insertedMap = await Map.insertMany([newMapper])
+            if (sourceDataID)
+                try {
+                    await this.assignSource(sourceDataID, insertedMap._id)
+                }
+                catch (error) {
+                    Map.deleteOne({ _id })
+                    throw { error: "Error during source assignment" }
+                }
+            if (dataModelID)
+                try {
+                    await this.assignSchema(dataModelID, insertedMap._id)
+                }
+                catch (error) {
+                    Map.deleteOne({ _id })
+                    throw { error: "Error during schema assignment" }
+                }
+        }
         throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
@@ -511,6 +542,60 @@ module.exports = {
             await this.modifyMap(map.name, map._id, map.map, map.dataModel, map.status, map.description, undefined, undefined, insertedSource._id.toString(), undefined, undefined, map.dataModelIn, map.dataModelID, map.dataModelURL, map.config, map.sourceDataType, map.path, bucket, prefix)
         }
         return insertedSource
+    },
+
+    async assignSource(id, mapRef) {
+
+        if (!id || !mapRef)
+            throw { error: "id or mapRef not specified" }
+        let source = await Source.findById(id)
+        if (!source)
+            throw { error: "No source found" }
+        if (source.mapRef == mapRef)
+            return "Map already own this source"
+        if (!source.isAlsoReferencedBy)
+            source.isAlsoReferencedBy = [mapRef]
+        else
+            source.isAlsoReferencedBy.push(mapRef)
+        return await source.save()
+    },
+
+    async deAssignSource(id, mapRef) {
+
+        if (!id || !mapRef)
+            throw { error: "id or mapRef not specified" }
+        let source = await Source.findById(id)
+        if (!source)
+            return logger.warn({ warning: "No source found" })
+        if (!source.isAlsoReferencedBy)
+            return await Source.findOneAndReplace({ _id: id }, { $unset: { [mapRef]: 1 } })
+        return await Source.findOneAndReplace({ _id: id }, { $pull: { isAlsoReferencedBy: mapRef } })
+    },
+
+    async assignSchema(id, mapRef) {
+        if (!id || !mapRef)
+            throw { error: "id or mapRef not specified" }
+        let schema = await DataModel.findById(id)
+        if (!schema)
+            throw { warning: "No schema found" }
+        if (schema.mapRef == mapRef)
+            return "Map already own this schema"
+        if (!schema.isAlsoReferencedBy)
+            schema.isAlsoReferencedBy = [mapRef]
+        else
+            schema.isAlsoReferencedBy.push(mapRef)
+        return await schema.save()
+    },
+
+    async deAssignSchema(id, mapRef) {
+        if (!id || !mapRef)
+            throw { error: "id or mapRef not specified" }
+        let dataModel = await DataModel.findById(id)
+        if (!dataModel)
+            return logger.warn({ warning: "No schema found" })
+        if (!dataModel.isAlsoReferencedBy)
+            return await DataModel.findOneAndReplace({ _id: id }, { $unset: { [mapRef]: 1 } })
+        return await DataModel.findOneAndReplace({ _id: id }, { $pull: { isAlsoReferencedBy: mapRef } })
     },
 
     call: 0,
@@ -604,7 +689,13 @@ module.exports = {
             minioName = minioName + "/" + substring
         minioName = minioName + ".json"
         await minioWriter.stringUpload(bucketName, minioName, JSON.stringify(newMapper))
-        return await Map.findOneAndReplace({ name }, newMapper)
+        let oldMap = await Map.findOneAndReplace({ name }, newMapper)
+        logger.debug(oldMap)
+        if (oldMap.sourceDataID)
+            await this.deAssignSource(oldMap._id)
+        if (oldMap.dataModelID)
+            await this.deAssignSchema(oldMap._id)
+        return oldMap
     },
 
     async modifyDataModel(name, id, dataModel, mapRef, bucket, prefix) {

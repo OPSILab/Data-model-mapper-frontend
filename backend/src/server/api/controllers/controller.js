@@ -180,6 +180,58 @@ module.exports = {
         }
     },
 
+    assignSource: async (req, res) => {
+
+        process.res = res;
+        try {
+            res.send(await service.assignSource(req.body.sourceDataID, req.body.mapRef))
+            logger.info("Source assigned");
+        }
+        catch (error) {
+            logger.error(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
+    },
+
+    assignSchema: async (req, res) => {
+
+        process.res = res;
+        try {
+            res.send(await service.assignSchema(req.body.dataModelID, req.body.mapRef))
+            logger.info("Schema assigned");
+        }
+        catch (error) {
+            logger.error(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
+    },
+
+    deAssignSource: async (req, res) => {
+
+        process.res = res;
+        try {
+            res.send(await service.deAssignSource(req.body.sourceDataID, req.body.mapRef))
+            logger.info("Source deassigned");
+        }
+        catch (error) {
+            logger.error(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
+    },
+
+    deAssignSchema: async (req, res) => {
+
+        process.res = res;
+        try {
+            res.send(await service.deAssignSchema(req.body.dataModelID, req.body.mapRef))
+            logger.info("Schema deassigned");
+        }
+        catch (error) {
+            logger.error(error)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
+    },
+
     modifyMap: async (req, res) => {
 
         process.res = res;
