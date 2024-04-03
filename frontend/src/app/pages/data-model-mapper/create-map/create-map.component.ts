@@ -168,7 +168,7 @@ export class CreateMapComponent implements OnInit {
         ] as const
 
         if (this.save) {
-          let mapperRecord = (await this.dmmService.saveMap(...params))[0];
+          let mapperRecord = await this.dmmService.saveMap(...params);
           mapperRecord.mapperRecordId = this.mapperRecordId = mapperRecord._id;
           if (!errors && this.saveSchema)
             try {

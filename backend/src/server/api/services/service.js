@@ -479,13 +479,14 @@ module.exports = {
         await minioWriter.stringUpload(bucketName, minioName, JSON.stringify(newMapper))
 
         if (!await Map.findOne({ name })) {
-            let insertedMap = await Map.insertMany([newMapper])
+            let insertedMap = (await Map.insertMany([newMapper]))[0]
             if (sourceDataID)
                 try {
                     await this.assignSource(sourceDataID, insertedMap._id)
                 }
                 catch (error) {
-                    Map.deleteOne({ _id })
+                    logger.error(error)
+                    Map.deleteOne({ _id : insertedMap._id })
                     throw { error: "Error during source assignment" }
                 }
             if (dataModelID)
@@ -493,9 +494,11 @@ module.exports = {
                     await this.assignSchema(dataModelID, insertedMap._id)
                 }
                 catch (error) {
-                    Map.deleteOne({ _id })
+                    logger.error(error)
+                    Map.deleteOne({ _id : insertedMap._id })
                     throw { error: "Error during schema assignment" }
                 }
+            return insertedMap
         }
         throw { "error": "name already exists" }
     },//TODO replace with insertOne
@@ -523,6 +526,10 @@ module.exports = {
             }
             return insertedDataModel
         }
+        logger.debug(mapRef)
+        logger.debug(await DataModel.findOne({ name }))
+        logger.debug(await DataModel.findOne({ mapRef: mapRef.toString() }))
+        logger.debug(mapRef || !await DataModel.findOne({ name })) && !await DataModel.findOne({ mapRef: mapRef.toString() })
         throw { "error": "name already exists" }
     },//TODO replace with insertOne
 
@@ -546,58 +553,64 @@ module.exports = {
 
     async assignSource(id, mapRef) {
 
+        logger.debug(id, mapRef)
         if (!id || !mapRef)
             throw { error: "id or mapRef not specified" }
         let source = await Source.findById(id)
         if (!source)
             throw { error: "No source found" }
-        if (source.mapRef == mapRef)
+        if (source.mapRef == mapRef.toString())
             return "Map already own this source"
         if (!source.isAlsoReferencedBy)
-            source.isAlsoReferencedBy = [mapRef]
+            source.isAlsoReferencedBy = [mapRef.toString()]
         else
-            source.isAlsoReferencedBy.push(mapRef)
+            source.isAlsoReferencedBy.push(mapRef.toString())
         return await source.save()
     },
 
     async deAssignSource(id, mapRef) {
 
+        logger.debug(id, mapRef)
         if (!id || !mapRef)
-            return logger.warn({ warning: "id or mapRef not specified" })
+            return logger.warn("id or mapRef not specified")
         let source = await Source.findById(id)
         if (!source)
-            return logger.warn({ warning: "No source found" })
+            return logger.warn("No source found")
         if (!source.isAlsoReferencedBy)
-            return "Primary ref map cannot lose source possession"
+            return logger.warn("Primary ref map cannot lose source possession")
         //return await Source.findOneAndReplace({ _id: id }, { $unset: { [mapRef]: 1 } })
-        return await Source.findOneAndReplace({ _id: id }, { $pull: { isAlsoReferencedBy: mapRef } })
+        return await Source.findOneAndUpdate({ _id: id }, { $pull: { isAlsoReferencedBy: mapRef.toString() } })
     },
 
     async assignSchema(id, mapRef) {
+
+        logger.debug(id, mapRef)
         if (!id || !mapRef)
             throw { error: "id or mapRef not specified" }
         let schema = await DataModel.findById(id)
         if (!schema)
             throw { warning: "No schema found" }
-        if (schema.mapRef == mapRef)
+        if (schema.mapRef == mapRef.toString())
             return "Map already own this schema"
         if (!schema.isAlsoReferencedBy)
-            schema.isAlsoReferencedBy = [mapRef]
+            schema.isAlsoReferencedBy = [mapRef.toString()]
         else
-            schema.isAlsoReferencedBy.push(mapRef)
+            schema.isAlsoReferencedBy.push(mapRef.toString())
         return await schema.save()
     },
 
     async deAssignSchema(id, mapRef) {
+
+        logger.debug(id, mapRef)
         if (!id || !mapRef)
-            return logger.warn({ warning: "id or mapRef not specified" })
+            return logger.warn("id or mapRef not specified")
         let dataModel = await DataModel.findById(id)
         if (!dataModel)
-            return logger.warn({ warning: "No schema found" })
+            return logger.warn("No schema found")
         if (!dataModel.isAlsoReferencedBy)
-            return "Primary ref map cannot lose schema possession"
+            return logger.warn("Primary ref map cannot lose schema possession")
         //return await DataModel.findOneAndReplace({ _id: id }, { $unset: { [mapRef]: 1 } })
-        return await DataModel.findOneAndReplace({ _id: id }, { $pull: { isAlsoReferencedBy: mapRef } })
+        return await DataModel.findOneAndUpdate({ _id: id }, { $pull: { isAlsoReferencedBy: mapRef.toString() } })
     },
 
     call: 0,
@@ -731,6 +744,10 @@ module.exports = {
         if (!id)
             mapRef = (await Map.findOne({ name }))._id
         let map = await Map.findOne(id ? { _id: id } : { name })
+        if (map?.sourceDataID)
+            await this.deAssignSource(map.sourceDataID, map._id)
+        if (map?.dataModelID)
+            await this.deAssignSchema(map.dataModelID, map._id)
         let deletion = await Map.deleteOne(id ? { _id: id } : { name })
         //if (map.sourceDataID) {
         let source = await Source.findOne({ mapRef: (id || mapRef) })
