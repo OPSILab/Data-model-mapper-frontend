@@ -23,7 +23,7 @@ const logger = new Logger(__filename)
   dmmServer.use(express.json());
   dmmServer.use(express.urlencoded({ extended: false }));
   dmmServer.use(service.resetConfig)
-  dmmServer.use("/api", routes);
+  dmmServer.use(config.apiPrefix || "/api", routes);
   dmmServer.use(
     '/api-docs',
     swaggerUi.serve,
