@@ -403,6 +403,8 @@ module.exports = {
 
     async insertSource(name, id, source, path, mapRef, bucket, prefix) {
         let insertedSource, map
+        name = name.replaceAll("/", "-")
+
         if (!source)
             throw { error: "source is required" }
         if (path == "")
@@ -439,6 +441,7 @@ module.exports = {
     async insertMap(name, id, map, dataModel, status, description,
         sourceData, sourceDataMinio, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
         mapConfig, sourceDataType, path, bucketName, prefix) {
+        name = name.replaceAll("/", "-")
         if (path == "")
             path = undefined
         if ((!dataModelIn && !dataModelID && !dataModelURL && !dataModel))
@@ -486,7 +489,7 @@ module.exports = {
                 }
                 catch (error) {
                     logger.error(error)
-                    Map.deleteOne({ _id : insertedMap._id })
+                    Map.deleteOne({ _id: insertedMap._id })
                     throw { error: "Error during source assignment" }
                 }
             if (dataModelID)
@@ -495,7 +498,7 @@ module.exports = {
                 }
                 catch (error) {
                     logger.error(error)
-                    Map.deleteOne({ _id : insertedMap._id })
+                    Map.deleteOne({ _id: insertedMap._id })
                     throw { error: "Error during schema assignment" }
                 }
             return insertedMap
@@ -505,6 +508,7 @@ module.exports = {
 
     async insertDataModel(name, id, dataModel, mapRef, bucket, prefix) {
         let insertedDataModel, map
+        name = name.replaceAll("/", "-")
         if (!dataModel)
             throw { error: "schema is required" }
         if (dataModel) dataModel = this.dataModelClean(dataModel, {})
@@ -535,6 +539,7 @@ module.exports = {
 
     async modifySource(name, id, source, path, mapRef, bucket, prefix) {
         let insertedSource, map
+        name = name.replaceAll("/", "-")
         if (!source)
             throw { error: "source is required" }
         if (path == "") path = undefined
@@ -657,6 +662,7 @@ module.exports = {
 
     async modifyMap(name, id, map, dataModel, status, description, sourceData, sourceDataMinio, sourceDataID, sourceDataIn, sourceDataURL, dataModelIn, dataModelID, dataModelURL,
         mapConfig, sourceDataType, path, bucketName, prefix) {
+        name = name.replaceAll("/", "-")
 
         //if (dataModel && dataModel.$schema)
         //    dataModel.schema = dataModel.$schema
@@ -715,6 +721,8 @@ module.exports = {
 
     async modifyDataModel(name, id, dataModel, mapRef, bucket, prefix) {
         let insertedDataModel, map
+        name = name.replaceAll("/", "-")
+
         if (!dataModel)
             throw { error: "schema is required" }
         dataModel = this.dataModelClean(dataModel, {})
