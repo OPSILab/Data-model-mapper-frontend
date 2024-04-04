@@ -155,12 +155,12 @@ export class DMMComponent implements OnInit, OnChanges {
 
   showUpdateButton() {
     this.isNotNew = true
-    document.getElementById('updateButton').hidden = false
+    document.getElementById('updateButton') && (document.getElementById('updateButton').hidden = false)
   }
 
   hideUpdateButton() {
     this.isNotNew = false
-    document.getElementById('updateButton').hidden = true
+    document.getElementById('updateButton') && (document.getElementById('updateButton').hidden = true)
   }
 
   source = {
@@ -812,7 +812,7 @@ export class DMMComponent implements OnInit, OnChanges {
     this.loaded = false
     this.setLoadingMessage(this.outputEditor, this.outputEditorContainer, this.outputEditorOptions)
     try {
-      let m = JSON.parse(editor.mapperEditor.getText())
+      let m = JSON.parse(editor.mapperEditor.getText()) || this.map
       m["targetDataModel"] = "DataModelTemp"
       let source = this.source.setSource(JSON.parse(this.source.sourceEditor.getText()), false)
 

@@ -34,6 +34,10 @@
     {
       "name": "Source",
       "description": "CRUD for data model (schema) object"
+    },
+    {
+      "name": "Log",
+      "description": "Logs endpoints"
     }
   ],
   "schemes": [
@@ -64,7 +68,7 @@
             "in": "body",
             "description": "Example request to transform a source",
             "schema": {
-              "$ref": "#/definitions/Example Request 1"
+              "$ref": "#/definitions/Example transform request 1"
             }
           }
         ],
@@ -115,7 +119,7 @@
             "bearerAuth": []
           }
         ],
-        "description": "Insert map in Mongo DB",
+        "description": "Insert map",
         "parameters": [
           {
             "name": "Insert map example 1",
@@ -229,7 +233,7 @@
             "bearerAuth": []
           }
         ],
-        "description": "Modify map in Mongo DB",
+        "description": "Modify map",
         "parameters": [
           {
             "name": "Modify map example 1",
@@ -290,7 +294,7 @@
             "bearerAuth": []
           }
         ],
-        "description": "Delete map in Mongo DB",
+        "description": "Delete map",
         "parameters": [
           {
             "name": "id",
@@ -478,7 +482,7 @@
             "bearerAuth": []
           }
         ],
-        "description": "Modify dataModel in Mongo DB",
+        "description": "Modify dataModel",
         "parameters": [
           {
             "name": "name",
@@ -539,7 +543,7 @@
             "bearerAuth": []
           }
         ],
-        "description": "Delete dataModel in Mongo DB",
+        "description": "Delete dataModel",
         "parameters": [
           {
             "name": "id",
@@ -615,7 +619,7 @@
             "bearerAuth": []
           }
         ],
-        "description": "Insert data model",
+        "description": "Dereference data model",
         "parameters": [
           {
             "name": "Schema",
@@ -821,7 +825,7 @@
             "bearerAuth": []
           }
         ],
-        "description": "Modify source in Mongo DB",
+        "description": "Modify source",
         "parameters": [
           {
             "name": "name",
@@ -882,7 +886,7 @@
             "bearerAuth": []
           }
         ],
-        "description": "Delete source in Mongo DB",
+        "description": "Delete source",
         "parameters": [
           {
             "name": "id",
@@ -955,7 +959,7 @@
             "bearerAuth": []
           }
         ],
-        "description": "Get all mappers",
+        "description": "Get all mapper  records",
         "parameters": [],
         "produces": [
           "application/json"
@@ -1676,10 +1680,53 @@
           }
         }
       }
+    },
+    "/logs": {
+      "get": {
+        "tags": [
+          "Log"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Get logs",
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of logs",
+            "schema": {
+                "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/UNAUTHORIZED"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/FORBIDDEN"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/INTERNAL_SERVER_ERROR"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
-    "Example Request 1": {
+    "Example transform request 1": {
       "properties": {
         "sourceDataIn": {
           "type": "string",
@@ -1906,7 +1953,7 @@
           "mappingReport": true,
           "targetDataModel": "string",
           "rowStart": 0,
-          "rowEnd": 0,
+          "rowEnd": 10,
           "regexClean": {
             "custom": "string"
           },
@@ -2227,6 +2274,993 @@
           "isPersonalDataHandling": "isPersonalDataHandling",
           "entitySourceId": "static:serviceModel",
           "targetDataModel": "ServiceModel"
+        },
+        "dataModel": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "type": "object",
+          "title": "ServiceModel",
+          "properties": {
+            "identifier": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string",
+              "title": "name"
+            },
+            "issued": {
+              "type": "string"
+            },
+            "createdByUserId": {
+              "type": "string"
+            },
+            "versionInfo": {
+              "type": "string",
+              "title": "Description Version"
+            },
+            "serviceIconUrl": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "title": "Service Description status",
+              "description": "Status of Service Description (Allowed values: *Completed*, *Deprecated*, *UnderDevelopment*, *Withdrawn*)",
+              "default": "UnderDevelopment",
+              "enum": [
+                "Completed",
+                "Deprecated",
+                "UnderDevelopment",
+                "WithDrawn"
+              ]
+            },
+            "isPublicService": {
+              "type": "boolean"
+            },
+            "hasInfo": {
+              "type": "object",
+              "properties": {
+                "identifier": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string",
+                  "title": "name"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "keyword": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "sector": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "thematicArea": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "type": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "language": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "description": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "locale": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "keyword": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "locale",
+                    "description",
+                    "title"
+                  ]
+                },
+                "isDescribedAt": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "landingPage": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "hasCost": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "code": {
+                        "type": "string"
+                      },
+                      "hasCost": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "locale": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "locale",
+                            "description"
+                          ]
+                        }
+                      },
+                      "ifAccessedThrough": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "processingTime": {
+                  "type": "string"
+                },
+                "isGroupedBy": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "hasCompetentAuthority": {
+                  "type": "object",
+                  "properties": {
+                    "identifier": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string",
+                      "title": "name"
+                    },
+                    "hasAddress": {
+                      "type": "string"
+                    },
+                    "prefLabel": {
+                      "type": "string"
+                    },
+                    "spatial": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "prefLabel",
+                    "spatial"
+                  ]
+                },
+                "requires": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "spatial": {
+                  "type": "string"
+                },
+                "hasInput": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string",
+                        "title": "name"
+                      },
+                      "description": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "locale": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "required": [
+                          "locale",
+                          "description",
+                          "title"
+                        ]
+                      },
+                      "type": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "language": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "page": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "conformsTo": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "produces": {
+                  "title": "produces",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string",
+                        "title": "name"
+                      },
+                      "description": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "locale": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "required": [
+                          "locale",
+                          "description",
+                          "title"
+                        ]
+                      },
+                      "type": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasContactPoint": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string"
+                    },
+                    "faxNumber": {
+                      "type": "string"
+                    },
+                    "telephone": {
+                      "type": "string"
+                    },
+                    "identifier": {
+                      "type": "string"
+                    },
+                    "openingHours": {
+                      "type": "string"
+                    },
+                    "hoursAvailable": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "hasChannel": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "openingHours": {
+                        "type": "string"
+                      },
+                      "hoursAvailable": {
+                        "type": "string"
+                      },
+                      "language": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "description": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "locale": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "required": [
+                          "locale",
+                          "description",
+                          "title"
+                        ]
+                      },
+                      "hasInput": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "identifier",
+                      "type",
+                      "openingHours"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "identifier",
+                "title",
+                "status",
+                "keyword",
+                "sector",
+                "thematicArea",
+                "type",
+                "language",
+                "description",
+                "isDescribedAt",
+                "hasCost",
+                "processingTime",
+                "isGroupedBy",
+                "hasCompetentAuthority",
+                "requires",
+                "spatial",
+                "hasInput",
+                "produces",
+                "hasContactPoint",
+                "hasChannel"
+              ]
+            },
+            "hasServiceInstance": {
+              "type": "object",
+              "properties": {
+                "serviceProvider": {
+                  "type": "object",
+                  "properties": {
+                    "businessId": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "hasAddress": {
+                      "type": "string"
+                    },
+                    "postalcode": {
+                      "type": "string"
+                    },
+                    "city": {
+                      "type": "string"
+                    },
+                    "state": {
+                      "type": "string"
+                    },
+                    "country": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "telephone": {
+                      "type": "string"
+                    },
+                    "jurisdiction": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "businessId",
+                    "name",
+                    "hasAddress",
+                    "postalcode",
+                    "city",
+                    "state",
+                    "country",
+                    "email",
+                    "telephone",
+                    "jurisdiction"
+                  ]
+                },
+                "endpointConnector": {
+                  "type": "object",
+                  "properties": {
+                    "endpoint": {
+                      "type": "object",
+                      "properties": {
+                        "accessURL": {
+                          "type": "string"
+                        },
+                        "endpointInformation": {
+                          "type": "string"
+                        },
+                        "endpointDocumentation": {
+                          "type": "string"
+                        },
+                        "path": {
+                          "type": "string"
+                        },
+                        "async": {
+                          "type": "boolean"
+                        },
+                        "callback": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "accessURL",
+                        "endpointInformation",
+                        "endpointDocumentation",
+                        "path",
+                        "async"
+                      ]
+                    },
+                    "connectorId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "endpoint",
+                    "connectorId"
+                  ]
+                },
+                "dataset": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "locale": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "keywords": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "required": [
+                            "locale",
+                            "description",
+                            "keywords"
+                          ]
+                        }
+                      },
+                      "datasetSchema": {
+                        "type": "object",
+                        "properties": {
+                          "context": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "id": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "context",
+                          "type",
+                          "id"
+                        ]
+                      },
+                      "dataStructureSpecification": {
+                        "type": "string"
+                      },
+                      "distribution": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "distributionId": {
+                              "type": "string"
+                            },
+                            "accessUrl": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "locale": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "keywords": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "locale",
+                                  "description",
+                                  "keywords"
+                                ]
+                              }
+                            },
+                            "format": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "distributionId",
+                            "accessUrl",
+                            "description",
+                            "format"
+                          ]
+                        }
+                      },
+                      "dataMapping": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "property": {
+                              "type": "string"
+                            },
+                            "conceptId": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "string"
+                            },
+                            "inputType": {
+                              "type": "string"
+                            },
+                            "multiple": {
+                              "type": "boolean"
+                            },
+                            "required": {
+                              "type": "boolean"
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "readonly": {
+                              "type": "boolean"
+                            },
+                            "datamap": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "locale": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "required": [
+                                "locale",
+                                "description",
+                                "title"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "property",
+                            "conceptId",
+                            "name",
+                            "type",
+                            "required",
+                            "source",
+                            "readonly",
+                            "datamap"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "datasetId",
+                      "description",
+                      "datasetSchema",
+                      "dataStructureSpecification",
+                      "distribution",
+                      "dataMapping"
+                    ]
+                  }
+                },
+                "serviceUrls": {
+                  "type": "object",
+                  "properties": {
+                    "libraryDomain": {
+                      "type": "string"
+                    },
+                    "loginUri": {
+                      "type": "string"
+                    },
+                    "linkingRedirectUri": {
+                      "type": "string"
+                    },
+                    "objectionUri": {
+                      "type": "string"
+                    },
+                    "notificationUri": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "libraryDomain",
+                    "loginUri",
+                    "linkingRedirectUri",
+                    "objectionUri",
+                    "notificationUri"
+                  ]
+                },
+                "dataController": {
+                  "type": "object",
+                  "properties": {
+                    "piiController": {
+                      "type": "string"
+                    },
+                    "organizationName": {
+                      "type": "string"
+                    },
+                    "hasContact": {
+                      "type": "string"
+                    },
+                    "hasAddress": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "telephone": {
+                      "type": "string"
+                    },
+                    "operatorName": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "piiController",
+                    "organizationName",
+                    "hasContact",
+                    "hasAddress",
+                    "email",
+                    "telephone",
+                    "operatorName"
+                  ]
+                }
+              },
+              "required": [
+                "serviceProvider",
+                "cert",
+                "connector",
+                "dataset",
+                "serviceUrls",
+                "dataController"
+              ]
+            },
+            "hasUsageRule": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "usageId": {
+                    "type": "string"
+                  },
+                  "usageName": {
+                    "type": "string"
+                  },
+                  "usageType": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "usageId",
+                  "usageName",
+                  "usageType"
+                ]
+              }
+            },
+            "isPersonalDataHandling": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "purposeId": {
+                    "type": "string"
+                  },
+                  "purposeName": {
+                    "type": "string"
+                  },
+                  "legalBasis": {
+                    "type": "string"
+                  },
+                  "purposeCategory": {
+                    "type": "string"
+                  },
+                  "hasSector": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "hasContext": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "processingCategories": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "description": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "locale": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "descriptionUrl": {
+                          "type": "string"
+                        },
+                        "iconUrl": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "locale",
+                        "title",
+                        "description",
+                        "descriptionUrl",
+                        "iconUrl"
+                      ]
+                    }
+                  },
+                  "hasPersonalDataCategory": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "requiredDatasets": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "storage": {
+                    "type": "object",
+                    "properties": {
+                      "location": {
+                        "type": "string"
+                      },
+                      "duration": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "location",
+                      "duration"
+                    ]
+                  },
+                  "recipients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "shareWith": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "orgName": {
+                          "type": "string"
+                        },
+                        "orgUrl": {
+                          "type": "string"
+                        },
+                        "businessType": {
+                          "type": "string"
+                        },
+                        "required": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "orgName",
+                        "orgUrl",
+                        "businessType",
+                        "required"
+                      ]
+                    }
+                  },
+                  "obligations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "event": {
+                          "type": "string"
+                        },
+                        "activity": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "event",
+                        "activity"
+                      ]
+                    }
+                  },
+                  "policyRef": {
+                    "type": "string"
+                  },
+                  "collectionMethod": {
+                    "type": "string"
+                  },
+                  "collectionOperator": {
+                    "type": "string"
+                  },
+                  "termination": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "purposeId",
+                  "purposeName",
+                  "legalBasis",
+                  "purposeCategory",
+                  "hasSector",
+                  "hasContext",
+                  "processingCategories",
+                  "description",
+                  "hasPersonalDataCategory",
+                  "requiredDatasets",
+                  "storage",
+                  "recipients",
+                  "shareWith",
+                  "obligations",
+                  "policyRef",
+                  "collectionMethod",
+                  "collectionOperator",
+                  "termination"
+                ]
+              }
+            }
+          },
+          "required": [
+            "title",
+            "identifier",
+            "issued",
+            "createdByUserId",
+            "serviceDescriptionVersion",
+            "serviceIconUrl",
+            "status",
+            "isPublicService",
+            "hasInfo",
+            "hasServiceInstance",
+            "hasUsageRule"
+          ]
         }
       }
     },
@@ -2465,7 +3499,7 @@
           "mappingReport": true,
           "targetDataModel": "string",
           "rowStart": 0,
-          "rowEnd": 0,
+          "rowEnd": 10,
           "regexClean": {
             "custom": "string"
           },
@@ -2484,6 +3518,8 @@
       "example": {
         "id": "string",
         "description": "string",
+        "mapRef": "string",
+        "isAlsoReferencedBy": "array",
         "sourceData": [
           {
             "string": "string"
@@ -2589,6 +3625,993 @@
           "entitySourceId": "static:serviceModel",
           "targetDataModel": "ServiceModel"
         },
+        "dataModel": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "type": "object",
+          "title": "ServiceModel",
+          "properties": {
+            "identifier": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string",
+              "title": "name"
+            },
+            "issued": {
+              "type": "string"
+            },
+            "createdByUserId": {
+              "type": "string"
+            },
+            "versionInfo": {
+              "type": "string",
+              "title": "Description Version"
+            },
+            "serviceIconUrl": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "title": "Service Description status",
+              "description": "Status of Service Description (Allowed values: *Completed*, *Deprecated*, *UnderDevelopment*, *Withdrawn*)",
+              "default": "UnderDevelopment",
+              "enum": [
+                "Completed",
+                "Deprecated",
+                "UnderDevelopment",
+                "WithDrawn"
+              ]
+            },
+            "isPublicService": {
+              "type": "boolean"
+            },
+            "hasInfo": {
+              "type": "object",
+              "properties": {
+                "identifier": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string",
+                  "title": "name"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "keyword": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "sector": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "thematicArea": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "type": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "language": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "description": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "locale": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "keyword": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "locale",
+                    "description",
+                    "title"
+                  ]
+                },
+                "isDescribedAt": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "landingPage": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "hasCost": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "code": {
+                        "type": "string"
+                      },
+                      "hasCost": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "locale": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "locale",
+                            "description"
+                          ]
+                        }
+                      },
+                      "ifAccessedThrough": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "processingTime": {
+                  "type": "string"
+                },
+                "isGroupedBy": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "hasCompetentAuthority": {
+                  "type": "object",
+                  "properties": {
+                    "identifier": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string",
+                      "title": "name"
+                    },
+                    "hasAddress": {
+                      "type": "string"
+                    },
+                    "prefLabel": {
+                      "type": "string"
+                    },
+                    "spatial": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "prefLabel",
+                    "spatial"
+                  ]
+                },
+                "requires": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "spatial": {
+                  "type": "string"
+                },
+                "hasInput": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string",
+                        "title": "name"
+                      },
+                      "description": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "locale": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "required": [
+                          "locale",
+                          "description",
+                          "title"
+                        ]
+                      },
+                      "type": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "language": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "page": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "conformsTo": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "produces": {
+                  "title": "produces",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string",
+                        "title": "name"
+                      },
+                      "description": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "locale": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "required": [
+                          "locale",
+                          "description",
+                          "title"
+                        ]
+                      },
+                      "type": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasContactPoint": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string"
+                    },
+                    "faxNumber": {
+                      "type": "string"
+                    },
+                    "telephone": {
+                      "type": "string"
+                    },
+                    "identifier": {
+                      "type": "string"
+                    },
+                    "openingHours": {
+                      "type": "string"
+                    },
+                    "hoursAvailable": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "hasChannel": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "openingHours": {
+                        "type": "string"
+                      },
+                      "hoursAvailable": {
+                        "type": "string"
+                      },
+                      "language": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "description": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "locale": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "required": [
+                          "locale",
+                          "description",
+                          "title"
+                        ]
+                      },
+                      "hasInput": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "identifier",
+                      "type",
+                      "openingHours"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "identifier",
+                "title",
+                "status",
+                "keyword",
+                "sector",
+                "thematicArea",
+                "type",
+                "language",
+                "description",
+                "isDescribedAt",
+                "hasCost",
+                "processingTime",
+                "isGroupedBy",
+                "hasCompetentAuthority",
+                "requires",
+                "spatial",
+                "hasInput",
+                "produces",
+                "hasContactPoint",
+                "hasChannel"
+              ]
+            },
+            "hasServiceInstance": {
+              "type": "object",
+              "properties": {
+                "serviceProvider": {
+                  "type": "object",
+                  "properties": {
+                    "businessId": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "hasAddress": {
+                      "type": "string"
+                    },
+                    "postalcode": {
+                      "type": "string"
+                    },
+                    "city": {
+                      "type": "string"
+                    },
+                    "state": {
+                      "type": "string"
+                    },
+                    "country": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "telephone": {
+                      "type": "string"
+                    },
+                    "jurisdiction": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "businessId",
+                    "name",
+                    "hasAddress",
+                    "postalcode",
+                    "city",
+                    "state",
+                    "country",
+                    "email",
+                    "telephone",
+                    "jurisdiction"
+                  ]
+                },
+                "endpointConnector": {
+                  "type": "object",
+                  "properties": {
+                    "endpoint": {
+                      "type": "object",
+                      "properties": {
+                        "accessURL": {
+                          "type": "string"
+                        },
+                        "endpointInformation": {
+                          "type": "string"
+                        },
+                        "endpointDocumentation": {
+                          "type": "string"
+                        },
+                        "path": {
+                          "type": "string"
+                        },
+                        "async": {
+                          "type": "boolean"
+                        },
+                        "callback": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "accessURL",
+                        "endpointInformation",
+                        "endpointDocumentation",
+                        "path",
+                        "async"
+                      ]
+                    },
+                    "connectorId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "endpoint",
+                    "connectorId"
+                  ]
+                },
+                "dataset": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "locale": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "keywords": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "required": [
+                            "locale",
+                            "description",
+                            "keywords"
+                          ]
+                        }
+                      },
+                      "datasetSchema": {
+                        "type": "object",
+                        "properties": {
+                          "context": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "id": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "context",
+                          "type",
+                          "id"
+                        ]
+                      },
+                      "dataStructureSpecification": {
+                        "type": "string"
+                      },
+                      "distribution": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "distributionId": {
+                              "type": "string"
+                            },
+                            "accessUrl": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "locale": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "keywords": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "locale",
+                                  "description",
+                                  "keywords"
+                                ]
+                              }
+                            },
+                            "format": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "distributionId",
+                            "accessUrl",
+                            "description",
+                            "format"
+                          ]
+                        }
+                      },
+                      "dataMapping": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "property": {
+                              "type": "string"
+                            },
+                            "conceptId": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "string"
+                            },
+                            "inputType": {
+                              "type": "string"
+                            },
+                            "multiple": {
+                              "type": "boolean"
+                            },
+                            "required": {
+                              "type": "boolean"
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "readonly": {
+                              "type": "boolean"
+                            },
+                            "datamap": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "locale": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "required": [
+                                "locale",
+                                "description",
+                                "title"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "property",
+                            "conceptId",
+                            "name",
+                            "type",
+                            "required",
+                            "source",
+                            "readonly",
+                            "datamap"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "datasetId",
+                      "description",
+                      "datasetSchema",
+                      "dataStructureSpecification",
+                      "distribution",
+                      "dataMapping"
+                    ]
+                  }
+                },
+                "serviceUrls": {
+                  "type": "object",
+                  "properties": {
+                    "libraryDomain": {
+                      "type": "string"
+                    },
+                    "loginUri": {
+                      "type": "string"
+                    },
+                    "linkingRedirectUri": {
+                      "type": "string"
+                    },
+                    "objectionUri": {
+                      "type": "string"
+                    },
+                    "notificationUri": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "libraryDomain",
+                    "loginUri",
+                    "linkingRedirectUri",
+                    "objectionUri",
+                    "notificationUri"
+                  ]
+                },
+                "dataController": {
+                  "type": "object",
+                  "properties": {
+                    "piiController": {
+                      "type": "string"
+                    },
+                    "organizationName": {
+                      "type": "string"
+                    },
+                    "hasContact": {
+                      "type": "string"
+                    },
+                    "hasAddress": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "telephone": {
+                      "type": "string"
+                    },
+                    "operatorName": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "piiController",
+                    "organizationName",
+                    "hasContact",
+                    "hasAddress",
+                    "email",
+                    "telephone",
+                    "operatorName"
+                  ]
+                }
+              },
+              "required": [
+                "serviceProvider",
+                "cert",
+                "connector",
+                "dataset",
+                "serviceUrls",
+                "dataController"
+              ]
+            },
+            "hasUsageRule": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "usageId": {
+                    "type": "string"
+                  },
+                  "usageName": {
+                    "type": "string"
+                  },
+                  "usageType": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "usageId",
+                  "usageName",
+                  "usageType"
+                ]
+              }
+            },
+            "isPersonalDataHandling": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "purposeId": {
+                    "type": "string"
+                  },
+                  "purposeName": {
+                    "type": "string"
+                  },
+                  "legalBasis": {
+                    "type": "string"
+                  },
+                  "purposeCategory": {
+                    "type": "string"
+                  },
+                  "hasSector": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "hasContext": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "processingCategories": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "description": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "locale": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "descriptionUrl": {
+                          "type": "string"
+                        },
+                        "iconUrl": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "locale",
+                        "title",
+                        "description",
+                        "descriptionUrl",
+                        "iconUrl"
+                      ]
+                    }
+                  },
+                  "hasPersonalDataCategory": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "requiredDatasets": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "storage": {
+                    "type": "object",
+                    "properties": {
+                      "location": {
+                        "type": "string"
+                      },
+                      "duration": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "location",
+                      "duration"
+                    ]
+                  },
+                  "recipients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "shareWith": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "orgName": {
+                          "type": "string"
+                        },
+                        "orgUrl": {
+                          "type": "string"
+                        },
+                        "businessType": {
+                          "type": "string"
+                        },
+                        "required": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "orgName",
+                        "orgUrl",
+                        "businessType",
+                        "required"
+                      ]
+                    }
+                  },
+                  "obligations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "event": {
+                          "type": "string"
+                        },
+                        "activity": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "event",
+                        "activity"
+                      ]
+                    }
+                  },
+                  "policyRef": {
+                    "type": "string"
+                  },
+                  "collectionMethod": {
+                    "type": "string"
+                  },
+                  "collectionOperator": {
+                    "type": "string"
+                  },
+                  "termination": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "purposeId",
+                  "purposeName",
+                  "legalBasis",
+                  "purposeCategory",
+                  "hasSector",
+                  "hasContext",
+                  "processingCategories",
+                  "description",
+                  "hasPersonalDataCategory",
+                  "requiredDatasets",
+                  "storage",
+                  "recipients",
+                  "shareWith",
+                  "obligations",
+                  "policyRef",
+                  "collectionMethod",
+                  "collectionOperator",
+                  "termination"
+                ]
+              }
+            }
+          },
+          "required": [
+            "title",
+            "identifier",
+            "issued",
+            "createdByUserId",
+            "serviceDescriptionVersion",
+            "serviceIconUrl",
+            "status",
+            "isPublicService",
+            "hasInfo",
+            "hasServiceInstance",
+            "hasUsageRule"
+          ]
+        },
         "_id": "6401c595f3f421ae0a41a1ef"
       }
     },
@@ -2615,7 +4638,10 @@
       "example": {
         "name": "string",
         "id": "string",
-        "dataModel": "object"
+        "description": "string",
+        "dataModel": "object",
+        "mapRef": "string",
+        "isAlsoReferencedBy": "array"
       }
     },
     "Insert data model response": {
@@ -2623,13 +4649,18 @@
         "name": "string",
         "id": "string",
         "description": "string",
-        "dataModel": "object"
+        "dataModel": "object",
+        "mapRef": "string",
+        "isAlsoReferencedBy": "array"
       }
     },
     "Insert source response": {
       "example": {
         "name": "string",
         "id": "string",
+        "description": "string",
+        "mapRef": "string",
+        "isAlsoReferencedBy": "array",
         "sourceData": "object",
         "sourceCSV": "string"
       }
@@ -2645,6 +4676,9 @@
       "example": {
         "name": "Service Model",
         "id": "service_1",
+        "description": "string",
+        "mapRef": "string",
+        "isAlsoReferencedBy": "array",
         "dataModel": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "type": "object",
@@ -3532,6 +5566,9 @@
       "example": {
         "name": "Service Model",
         "id": "service_1",
+        "description": "string",
+        "mapRef": "string",
+        "isAlsoReferencedBy": "array",
         "dataModel": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "type": "object",
@@ -4423,13 +6460,16 @@
         }
       ]
     },
-    "Example dìget dataModels": {
+    "Example get dataModels": {
       "type": "array",
       "example": [
         {
           "_id": "6401c59ff3f421ae0a41a1f5",
           "name": "Service Model",
           "id": "service_1",
+          "description": "string",
+          "mapRef": "string",
+          "isAlsoReferencedBy": "array",
           "dataModel": {
             "$schema": "http://json-schema.org/draft-04/schema#",
             "type": "object",
@@ -5310,11 +7350,6 @@
               "hasUsageRule"
             ]
           }
-        },
-        {
-          "_id": "6401f9d8fdbe1a17596d7146",
-          "name": "Example Model",
-          "id": "example_1"
         }
       ]
     },
@@ -5417,6 +7452,993 @@
             "isPersonalDataHandling": "isPersonalDataHandling",
             "entitySourceId": "static:serviceModel",
             "targetDataModel": "ServiceModel"
+          },
+          "dataModel": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "title": "ServiceModel",
+            "properties": {
+              "identifier": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string",
+                "title": "name"
+              },
+              "issued": {
+                "type": "string"
+              },
+              "createdByUserId": {
+                "type": "string"
+              },
+              "versionInfo": {
+                "type": "string",
+                "title": "Description Version"
+              },
+              "serviceIconUrl": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "title": "Service Description status",
+                "description": "Status of Service Description (Allowed values: *Completed*, *Deprecated*, *UnderDevelopment*, *Withdrawn*)",
+                "default": "UnderDevelopment",
+                "enum": [
+                  "Completed",
+                  "Deprecated",
+                  "UnderDevelopment",
+                  "WithDrawn"
+                ]
+              },
+              "isPublicService": {
+                "type": "boolean"
+              },
+              "hasInfo": {
+                "type": "object",
+                "properties": {
+                  "identifier": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "title": "name"
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "keyword": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "sector": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "thematicArea": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "type": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "language": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "description": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "locale": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "keyword": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "required": [
+                      "locale",
+                      "description",
+                      "title"
+                    ]
+                  },
+                  "isDescribedAt": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "identifier": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "landingPage": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "hasCost": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "identifier": {
+                          "type": "string"
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "hasCost": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "locale": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "locale",
+                              "description"
+                            ]
+                          }
+                        },
+                        "ifAccessedThrough": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "processingTime": {
+                    "type": "string"
+                  },
+                  "isGroupedBy": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "hasCompetentAuthority": {
+                    "type": "object",
+                    "properties": {
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string",
+                        "title": "name"
+                      },
+                      "hasAddress": {
+                        "type": "string"
+                      },
+                      "prefLabel": {
+                        "type": "string"
+                      },
+                      "spatial": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "prefLabel",
+                      "spatial"
+                    ]
+                  },
+                  "requires": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "spatial": {
+                    "type": "string"
+                  },
+                  "hasInput": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "identifier": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string",
+                          "title": "name"
+                        },
+                        "description": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "locale": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "title": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "required": [
+                            "locale",
+                            "description",
+                            "title"
+                          ]
+                        },
+                        "type": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "language": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "page": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "conformsTo": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "produces": {
+                    "title": "produces",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "identifier": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string",
+                          "title": "name"
+                        },
+                        "description": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "locale": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "title": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "required": [
+                            "locale",
+                            "description",
+                            "title"
+                          ]
+                        },
+                        "type": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "hasContactPoint": {
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "string"
+                      },
+                      "faxNumber": {
+                        "type": "string"
+                      },
+                      "telephone": {
+                        "type": "string"
+                      },
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "openingHours": {
+                        "type": "string"
+                      },
+                      "hoursAvailable": {
+                        "type": "string"
+                      },
+                      "url": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "hasChannel": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "identifier": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "openingHours": {
+                          "type": "string"
+                        },
+                        "hoursAvailable": {
+                          "type": "string"
+                        },
+                        "language": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "description": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "locale": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "title": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "required": [
+                            "locale",
+                            "description",
+                            "title"
+                          ]
+                        },
+                        "hasInput": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "identifier",
+                        "type",
+                        "openingHours"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "identifier",
+                  "title",
+                  "status",
+                  "keyword",
+                  "sector",
+                  "thematicArea",
+                  "type",
+                  "language",
+                  "description",
+                  "isDescribedAt",
+                  "hasCost",
+                  "processingTime",
+                  "isGroupedBy",
+                  "hasCompetentAuthority",
+                  "requires",
+                  "spatial",
+                  "hasInput",
+                  "produces",
+                  "hasContactPoint",
+                  "hasChannel"
+                ]
+              },
+              "hasServiceInstance": {
+                "type": "object",
+                "properties": {
+                  "serviceProvider": {
+                    "type": "object",
+                    "properties": {
+                      "businessId": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "hasAddress": {
+                        "type": "string"
+                      },
+                      "postalcode": {
+                        "type": "string"
+                      },
+                      "city": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string"
+                      },
+                      "country": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "telephone": {
+                        "type": "string"
+                      },
+                      "jurisdiction": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "businessId",
+                      "name",
+                      "hasAddress",
+                      "postalcode",
+                      "city",
+                      "state",
+                      "country",
+                      "email",
+                      "telephone",
+                      "jurisdiction"
+                    ]
+                  },
+                  "endpointConnector": {
+                    "type": "object",
+                    "properties": {
+                      "endpoint": {
+                        "type": "object",
+                        "properties": {
+                          "accessURL": {
+                            "type": "string"
+                          },
+                          "endpointInformation": {
+                            "type": "string"
+                          },
+                          "endpointDocumentation": {
+                            "type": "string"
+                          },
+                          "path": {
+                            "type": "string"
+                          },
+                          "async": {
+                            "type": "boolean"
+                          },
+                          "callback": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "accessURL",
+                          "endpointInformation",
+                          "endpointDocumentation",
+                          "path",
+                          "async"
+                        ]
+                      },
+                      "connectorId": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "endpoint",
+                      "connectorId"
+                    ]
+                  },
+                  "dataset": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "identifier": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "locale": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "title": {
+                                "type": "string"
+                              },
+                              "keywords": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "required": [
+                              "locale",
+                              "description",
+                              "keywords"
+                            ]
+                          }
+                        },
+                        "datasetSchema": {
+                          "type": "object",
+                          "properties": {
+                            "context": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "string"
+                            },
+                            "id": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "context",
+                            "type",
+                            "id"
+                          ]
+                        },
+                        "dataStructureSpecification": {
+                          "type": "string"
+                        },
+                        "distribution": {
+                          "type": "array",
+                          "items": {
+                            "properties": {
+                              "distributionId": {
+                                "type": "string"
+                              },
+                              "accessUrl": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "locale": {
+                                      "type": "string"
+                                    },
+                                    "description": {
+                                      "type": "string"
+                                    },
+                                    "keywords": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "locale",
+                                    "description",
+                                    "keywords"
+                                  ]
+                                }
+                              },
+                              "format": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "distributionId",
+                              "accessUrl",
+                              "description",
+                              "format"
+                            ]
+                          }
+                        },
+                        "dataMapping": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "property": {
+                                "type": "string"
+                              },
+                              "conceptId": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "type": "string"
+                              },
+                              "inputType": {
+                                "type": "string"
+                              },
+                              "multiple": {
+                                "type": "boolean"
+                              },
+                              "required": {
+                                "type": "boolean"
+                              },
+                              "source": {
+                                "type": "string"
+                              },
+                              "readonly": {
+                                "type": "boolean"
+                              },
+                              "datamap": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "locale": {
+                                      "type": "string"
+                                    },
+                                    "description": {
+                                      "type": "string"
+                                    },
+                                    "title": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "locale",
+                                  "description",
+                                  "title"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "property",
+                              "conceptId",
+                              "name",
+                              "type",
+                              "required",
+                              "source",
+                              "readonly",
+                              "datamap"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "datasetId",
+                        "description",
+                        "datasetSchema",
+                        "dataStructureSpecification",
+                        "distribution",
+                        "dataMapping"
+                      ]
+                    }
+                  },
+                  "serviceUrls": {
+                    "type": "object",
+                    "properties": {
+                      "libraryDomain": {
+                        "type": "string"
+                      },
+                      "loginUri": {
+                        "type": "string"
+                      },
+                      "linkingRedirectUri": {
+                        "type": "string"
+                      },
+                      "objectionUri": {
+                        "type": "string"
+                      },
+                      "notificationUri": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "libraryDomain",
+                      "loginUri",
+                      "linkingRedirectUri",
+                      "objectionUri",
+                      "notificationUri"
+                    ]
+                  },
+                  "dataController": {
+                    "type": "object",
+                    "properties": {
+                      "piiController": {
+                        "type": "string"
+                      },
+                      "organizationName": {
+                        "type": "string"
+                      },
+                      "hasContact": {
+                        "type": "string"
+                      },
+                      "hasAddress": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "telephone": {
+                        "type": "string"
+                      },
+                      "operatorName": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "piiController",
+                      "organizationName",
+                      "hasContact",
+                      "hasAddress",
+                      "email",
+                      "telephone",
+                      "operatorName"
+                    ]
+                  }
+                },
+                "required": [
+                  "serviceProvider",
+                  "cert",
+                  "connector",
+                  "dataset",
+                  "serviceUrls",
+                  "dataController"
+                ]
+              },
+              "hasUsageRule": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "usageId": {
+                      "type": "string"
+                    },
+                    "usageName": {
+                      "type": "string"
+                    },
+                    "usageType": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "usageId",
+                    "usageName",
+                    "usageType"
+                  ]
+                }
+              },
+              "isPersonalDataHandling": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "purposeId": {
+                      "type": "string"
+                    },
+                    "purposeName": {
+                      "type": "string"
+                    },
+                    "legalBasis": {
+                      "type": "string"
+                    },
+                    "purposeCategory": {
+                      "type": "string"
+                    },
+                    "hasSector": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "hasContext": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "processingCategories": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "description": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "locale": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "descriptionUrl": {
+                            "type": "string"
+                          },
+                          "iconUrl": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "locale",
+                          "title",
+                          "description",
+                          "descriptionUrl",
+                          "iconUrl"
+                        ]
+                      }
+                    },
+                    "hasPersonalDataCategory": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "requiredDatasets": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "storage": {
+                      "type": "object",
+                      "properties": {
+                        "location": {
+                          "type": "string"
+                        },
+                        "duration": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "location",
+                        "duration"
+                      ]
+                    },
+                    "recipients": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "shareWith": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "orgName": {
+                            "type": "string"
+                          },
+                          "orgUrl": {
+                            "type": "string"
+                          },
+                          "businessType": {
+                            "type": "string"
+                          },
+                          "required": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "orgName",
+                          "orgUrl",
+                          "businessType",
+                          "required"
+                        ]
+                      }
+                    },
+                    "obligations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "event": {
+                            "type": "string"
+                          },
+                          "activity": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "event",
+                          "activity"
+                        ]
+                      }
+                    },
+                    "policyRef": {
+                      "type": "string"
+                    },
+                    "collectionMethod": {
+                      "type": "string"
+                    },
+                    "collectionOperator": {
+                      "type": "string"
+                    },
+                    "termination": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "purposeId",
+                    "purposeName",
+                    "legalBasis",
+                    "purposeCategory",
+                    "hasSector",
+                    "hasContext",
+                    "processingCategories",
+                    "description",
+                    "hasPersonalDataCategory",
+                    "requiredDatasets",
+                    "storage",
+                    "recipients",
+                    "shareWith",
+                    "obligations",
+                    "policyRef",
+                    "collectionMethod",
+                    "collectionOperator",
+                    "termination"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "title",
+              "identifier",
+              "issued",
+              "createdByUserId",
+              "serviceDescriptionVersion",
+              "serviceIconUrl",
+              "status",
+              "isPublicService",
+              "hasInfo",
+              "hasServiceInstance",
+              "hasUsageRule"
+            ]
           }
         },
         {
@@ -5434,15 +8456,89 @@
               "streetAddress": "properties.INDIRIZZO"
             },
             "targetDataModel": "BikeHireDockingStation"
-          }
-        },
-        {
-          "_id": "6401f9d1fdbe1a17596d7144",
-          "name": "Example",
-          "id": "example",
-          "map": {
-            "Field 1": "Field 1",
-            "targetDataModel": "Example"
+          },
+          "dataModel": {
+            "$schema": "http://json-schema.org/schema#",
+            "$id": "dataModels/BikeHireDockingStation.json",
+            "title": "FIWARE - Transportation / Bike Hire Docking Station",
+            "description": "Bike Hire Docking Station",
+            "type": "object",
+            "required": [
+              "id",
+              "type",
+              "name"
+            ],
+            "anyOf": [
+              {
+                "required": [
+                  "location"
+                ]
+              },
+              {
+                "required": [
+                  "address"
+                ]
+              }
+            ],
+            "allOf": [
+              {
+                "$ref": "common-schema.json#/definitions/GSMA-Commons"
+              },
+              {
+                "$ref": "common-schema.json#/definitions/Location-Commons"
+              },
+              {
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "BikeHireDockingStation"
+                    ],
+                    "description": "NGSI Entity type"
+                  },
+                  "totalSlotNumber": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "freeSlotNumber": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "availableBikeNumber": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "outOfServiceSlotNumber": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "openingHours": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "working",
+                      "outOfService",
+                      "withIncidence",
+                      "full",
+                      "almostFull",
+                      "empty",
+                      "almostEmpty"
+                    ]
+                  },
+                  "owner": {
+                    "type": "string"
+                  },
+                  "provider": {
+                    "type": "object"
+                  },
+                  "contactPoint": {
+                    "type": "object"
+                  }
+                }
+              }
+            ]
           }
         }
       ]
@@ -5458,6 +8554,7 @@
             "path": "string",
             "description": "string",
             "sourceDataType": "string",
+            "sourcedataMinio": "object",
             "sourceData": "array",
             "sourceDataID": "string",
             "sourceDataURL": "string",
@@ -5495,8 +8592,10 @@
         {
           "id": "string",
           "name": "string",
+          "dataModel": [],
           "description": "string",
-          "dataModel": []
+          "mapRef": "string",
+          "isAlsoReferencedBy": "array"
         }
       ]
     },
