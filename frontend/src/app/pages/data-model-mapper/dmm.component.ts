@@ -30,8 +30,8 @@ function o(obj) {
 @Component({
   selector: 'app-root',
   templateUrl: './dmm.component.html',
-  styleUrls: ['./dmm.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./dmm.component.scss']//,
+  //changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class DMMComponent implements OnInit, OnChanges {
