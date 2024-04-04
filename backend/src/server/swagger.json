@@ -594,6 +594,12 @@
               "$ref": "#/definitions/UNAUTHORIZED"
             }
           },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/BAD_REQUEST_DELETE"
+            }
+          },
           "403": {
             "description": "Forbidden",
             "schema": {
@@ -911,6 +917,12 @@
                   "example": 1
                 }
               }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/BAD_REQUEST_DELETE"
             }
           },
           "404": {
@@ -1692,7 +1704,24 @@
           }
         ],
         "description": "Get logs",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "description": "from date in timestamp",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "to date in timestamp",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "produces": [
           "application/json"
         ],
@@ -1700,7 +1729,7 @@
           "200": {
             "description": "List of logs",
             "schema": {
-                "type": "string"
+              "type": "string"
             }
           },
           "401": {
@@ -2146,6 +2175,17 @@
         }
       }
     },
+    "BAD_REQUEST_DELETE": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "code": {
+          "type": "number"
+        }
+      }
+    },
     "BAD_REQUEST": {
       "type": "object",
       "properties": {
@@ -2181,7 +2221,6 @@
       "type": "object",
       "example": {
         "name": "Service Model map",
-        "id": "map_1",
         "map": {
           "identifier": "identifier",
           "title": "title",
@@ -3268,7 +3307,7 @@
       "type": "object",
       "example": {
         "name": "string",
-        "id": "string",
+        "_id": "string",
         "description": "string",
         "map": {
           "string": "string"
@@ -3294,7 +3333,7 @@
       "type": "object",
       "example": {
         "name": "string",
-        "id": "string",
+        "_id": "string",
         "description": "string",
         "map": {
           "string": "string"
@@ -3307,7 +3346,7 @@
       "type": "object",
       "example": {
         "name": "string",
-        "id": "string",
+        "_id": "string",
         "description": "string",
         "map": {
           "string": "string"
@@ -3370,7 +3409,7 @@
           "type": "string",
           "uniqueItems": true
         },
-        "mapData": {
+        "map": {
           "type": "object"
         },
         "dataModelIn": {
@@ -3448,11 +3487,11 @@
           "type": "string",
           "uniqueItems": true
         },
-        "id": {
+        "_id": {
           "type": "string",
           "uniqueItems": true
         },
-        "mapData": {
+        "map": {
           "type": "object"
         },
         "dataModelIn": {
@@ -3480,7 +3519,7 @@
       "type": "object",
       "example": {
         "name": "string",
-        "id": "string",
+        "_id": "string",
         "path": "string",
         "description": "string",
         "sourceDataType": "string",
@@ -3516,11 +3555,15 @@
     "get source by id": {
       "type": "object",
       "example": {
-        "id": "string",
-        "description": "string",
+        "_id": "string",
+        "name": "string",
+        "path": "string",
+        "bucket": "string",
+        "from": "string",
+        "timestamp": "number",
         "mapRef": "string",
         "isAlsoReferencedBy": "array",
-        "sourceData": [
+        "source": [
           {
             "string": "string"
           }
@@ -3531,7 +3574,6 @@
       "type": "object",
       "example": {
         "name": "Service Model map",
-        "id": "map_1",
         "map": {
           "identifier": "identifier",
           "title": "title",
@@ -4618,7 +4660,7 @@
     "Insert Map response 2": {
       "example": {
         "name": "string",
-        "id": "string",
+        "_id": "string",
         "path": "string",
         "description": "string",
         "sourceDataType": "string",
@@ -4637,8 +4679,7 @@
     "Insert data model": {
       "example": {
         "name": "string",
-        "id": "string",
-        "description": "string",
+        "_id": "string",
         "dataModel": "object",
         "mapRef": "string",
         "isAlsoReferencedBy": "array"
@@ -4647,8 +4688,7 @@
     "Insert data model response": {
       "example": {
         "name": "string",
-        "id": "string",
-        "description": "string",
+        "_id": "string",
         "dataModel": "object",
         "mapRef": "string",
         "isAlsoReferencedBy": "array"
@@ -4656,13 +4696,19 @@
     },
     "Insert source response": {
       "example": {
+        "_id": "string",
         "name": "string",
-        "id": "string",
-        "description": "string",
+        "path": "string",
+        "bucket": "string",
+        "from": "string",
+        "timestamp": "number",
         "mapRef": "string",
         "isAlsoReferencedBy": "array",
-        "sourceData": "object",
-        "sourceCSV": "string"
+        "source": [
+          {
+            "string": "string"
+          }
+        ]
       }
     },
     "404": {
@@ -4675,8 +4721,7 @@
       "type": "object",
       "example": {
         "name": "Service Model",
-        "id": "service_1",
-        "description": "string",
+        "_id": "service_1",
         "mapRef": "string",
         "isAlsoReferencedBy": "array",
         "dataModel": {
@@ -5565,8 +5610,6 @@
       "type": "object",
       "example": {
         "name": "Service Model",
-        "id": "service_1",
-        "description": "string",
         "mapRef": "string",
         "isAlsoReferencedBy": "array",
         "dataModel": {
@@ -6466,8 +6509,6 @@
         {
           "_id": "6401c59ff3f421ae0a41a1f5",
           "name": "Service Model",
-          "id": "service_1",
-          "description": "string",
           "mapRef": "string",
           "isAlsoReferencedBy": "array",
           "dataModel": {
@@ -7359,7 +7400,6 @@
         {
           "_id": "6401c595f3f421ae0a41a1ef",
           "name": "Service Model map",
-          "id": "map_1",
           "map": {
             "identifier": "identifier",
             "title": "title",
@@ -8444,7 +8484,6 @@
         {
           "_id": "6401c597f3f421ae0a41a1f1",
           "name": "Bike",
-          "id": "bike",
           "map": {
             "name": "properties.BIKE_SH",
             "location": "geometry",
@@ -8550,7 +8589,7 @@
           "type": "object",
           "example": {
             "name": "string",
-            "id": "string",
+            "_id": "string",
             "path": "string",
             "description": "string",
             "sourceDataType": "string",
@@ -8590,10 +8629,9 @@
       "type": "array",
       "example": [
         {
-          "id": "string",
+          "_id": "string",
           "name": "string",
           "dataModel": [],
-          "description": "string",
           "mapRef": "string",
           "isAlsoReferencedBy": "array"
         }
