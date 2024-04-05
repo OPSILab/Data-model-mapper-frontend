@@ -9,6 +9,7 @@ const source = mongoose.Schema({
   sourceCSV: String,
   bucket: String,
   from: String,
+  user: String,
   isAlsoReferencedBy : Array,
   timestamp : Number
 }, { versionKey: false });

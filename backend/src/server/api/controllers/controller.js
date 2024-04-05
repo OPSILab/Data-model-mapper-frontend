@@ -37,7 +37,7 @@ module.exports = {
     getSourcesFromDB: async (req, res) => {
         process.res = res;
         try {
-            res.send(await service.getSourcesFromDB())
+            res.send(await service.getSourcesFromDB(req.body.prefix))
         }
         catch (error) {
             logger.error(error)
@@ -48,7 +48,7 @@ module.exports = {
     getSourcesFromMinio: async (req, res) => {
         process.res = res;
         try {
-            res.send(await service.getMinioObjects(req.params.bucketName || req.query.bucketName, req.query.format, []))
+            res.send(await service.getMinioObjects(req.params.bucketName || req.query.bucketName,req.body.prefix, req.query.format, []))
         }
         catch (error) {
             logger.error(error)
@@ -59,7 +59,7 @@ module.exports = {
     getMaps: async (req, res) => {
         process.res = res;
         try {
-            res.send(await service.getMaps())
+            res.send(await service.getMaps(req.body.prefix))
         }
         catch (error) {
             logger.error(error)
@@ -70,7 +70,7 @@ module.exports = {
     getDataModels: async (req, res) => {
         process.res = res;
         try {
-            res.send(await service.getDataModels())
+            res.send(await service.getDataModels(req.body.prefix))
         }
         catch (error) {
             logger.error(error)
@@ -82,7 +82,7 @@ module.exports = {
         const { id, name, mapRef } = req.query
         process.res = res;
         try {
-            res.send(await service.getSource(id, name, mapRef))
+            res.send(await service.getSource(id, name, mapRef, req.body.prefix))
         }
         catch (error) {
             logger.error(error)
@@ -94,7 +94,7 @@ module.exports = {
         const { id, name } = req.query
         process.res = res;
         try {
-            res.send(await service.getMap(id, name))
+            res.send(await service.getMap(id, name, req.body.prefix))
         }
         catch (error) {
             logger.error(error)
@@ -117,7 +117,7 @@ module.exports = {
         const { id, name, mapRef } = req.query
         process.res = res;
         try {
-            res.send(await service.getDataModel(id, name, mapRef))
+            res.send(await service.getDataModel(id, name, mapRef, req.body.prefix))
         }
         catch (error) {
             logger.error(error)
@@ -263,7 +263,7 @@ module.exports = {
     deleteSource: async (req, res) => {
         const { id, name } = req.query
         process.res = res;
-        try { res.send(await service.deleteSource(id, name)) }
+        try { res.send(await service.deleteSource(id, name, req.body.prefix)) }
         catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
     },
 
@@ -271,7 +271,7 @@ module.exports = {
         const { id, name } = req.query
         process.res = res;
         try {
-            res.send(await service.deleteMap(id || req.params.id, name))
+            res.send(await service.deleteMap(id || req.params.id, name, req.body.prefix))
         }
         catch (error) {
             logger.error(error)
@@ -283,7 +283,7 @@ module.exports = {
         const { id, name } = req.query
         process.res = res;
         try {
-            res.send(await service.deleteDataModel(id, name))
+            res.send(await service.deleteDataModel(id, name, req.body.prefix))
         }
         catch (error) {
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())

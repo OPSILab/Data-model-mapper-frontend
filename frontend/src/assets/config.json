@@ -9,7 +9,7 @@
       "authProfile": "oidc",
       "authRealm": "master"
     },
-    "mailTo":"support@dmm.eu",
+    "mailTo":"antonio.filograna@eng.it",
     "detailedErrors" : true
   },
   "data_model_mapper" : {

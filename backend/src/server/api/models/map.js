@@ -18,7 +18,8 @@ const map = mongoose.Schema({
   sourceDataID : String,
   config : {},
   sourceDataMinio : {},
-  path: String
+  path: String,
+  user: String
 }, { versionKey: false });
 
 module.exports = mongoose.model("map", map);
