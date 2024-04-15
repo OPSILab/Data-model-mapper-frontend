@@ -23,13 +23,23 @@ const startHttp = /http:\/\//g;
 const RefParser = require('json-schema-ref-parser');
 
 const log = require('./utils/logger')//.app(module);
-const {Logger} = log
+const { Logger } = log
 const logger = new Logger(__filename)
 const report = require('./utils/logger').report;
 const config = require('../config')
 const apiOutput = require('./server/api/services/service')
 
 // this function completes the compatibility with array inside nested objects and objects inside an array
+function removeUndefined(obj) {
+    for (let key in obj) {
+        if ((typeof obj[key] != "boolean" && !obj[key]) || (typeof obj[key] == "object" && Object.keys(obj[key]).length === 0)) {
+            delete obj[key];
+        } else if (typeof obj[key] === 'object') {
+            removeUndefined(obj[key]);
+        }
+    }
+}
+
 function nestedFieldsHandler(field, model) {
     log.silly("start function nestedFieldsHandler\n" + field)
     if (typeof field === "object") {
@@ -181,33 +191,58 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         schema.anyOf = undefined;
     }
 
-    try {
-        if (schema.schema == "http://json-schema.org/draft-04/schema#") schema.schema = "http://json-schema.org/schema#"
-        if (schema.$schema == "http://json-schema.org/draft-04/schema#") schema.$schema = "http://json-schema.org/schema#"
-        var validate = ajv.compile(schema);
-    } catch (error) {
-        if (schema.anyOf && schema.anyOf[0] == undefined && !isSingleField) schema.anyOf = undefined;
-        logger.error(error);
-        logger.info(schema)
-        var validate = ajv.compile(schema);
+    var valid
+
+    if (config.disableAjv) {
+        /*if (typeof data == "object") {
+            for (let key in data) {
+                logger.debug(data, "\n", data[key])
+                if (data[key]) {
+                    logger.debug(key, " is not undefined")
+                    valid = true
+                }
+                else
+                    logger.debug(key, " is undefined")
+            }
+            if (valid)
+                logger.debug(data, " is valid")
+            else
+                logger.debug(data, " is not valid")
+
+        }
+        else*/
+        removeUndefined(data)
+        valid = true
     }
-    var valid = validate(data);
-    if (valid) logger.info("Field is valid")
     else {
         try {
-            data = nestedFieldsHandler(data, schema.allOf[0].properties)
+            if (schema.schema == "http://json-schema.org/draft-04/schema#") schema.schema = "http://json-schema.org/schema#"
+            if (schema.$schema == "http://json-schema.org/draft-04/schema#") schema.$schema = "http://json-schema.org/schema#"
+            var validate = ajv.compile(schema);
+        } catch (error) {
+            if (schema.anyOf && schema.anyOf[0] == undefined && !isSingleField) schema.anyOf = undefined;
+            logger.error(error);
+            logger.info(schema)
+            var validate = ajv.compile(schema);
         }
-        catch (error) {
-            logger.error(error)
-        }
-        validate = ajv.compile(schema);
-        valid = validate(data)
-        if (valid) {
-            logger.info("Field is valid")
-        }
+        valid = validate(data);
+        if (valid) logger.info("Field is valid")
         else {
-            logger.warn("\n--------------------------------\n\nField is not valid\n--------------------------------\n\n")
-            logger.warn(data)
+            try {
+                data = nestedFieldsHandler(data, schema.allOf[0].properties)
+            }
+            catch (error) {
+                logger.error(error)
+            }
+            validate = ajv.compile(schema);
+            valid = validate(data)
+            if (valid) {
+                logger.info("Field is valid")
+            }
+            else {
+                logger.warn("\n--------------------------------\n\nField is not valid\n--------------------------------\n\n")
+                logger.warn(data)
+            }
         }
     }
 
@@ -231,7 +266,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
     }
     else {
         if (!apiOutput.outputFile.errors) apiOutput.outputFile.errors = []
-        apiOutput.outputFile.errors.push({ "Field is not valid": data, details : `Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`})
+        apiOutput.outputFile.errors.push({ "Field is not valid": data, details: `Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}` })
 
         logger.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
         if (!isSingleField) {

@@ -365,6 +365,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             logger.debug(result)
             if (!result.type)
                 result.type = modelSchema?.allOf ? modelSchema.allOf ? modelSchema.allOf[0]?.properties?.type?.enum ? modelSchema.allOf[0]?.properties?.type?.enum[0] : modelSchema?.properties?.type?.enum ? modelSchema.properties.type.enum[0] || "Thing" : "Thing" : "Thing" : "Thing";
+            result.type = result.type.replaceAll(" ", "")
             // Generate unique id for the mapped object (according to Id Pattern)
             result.id = utils.createSynchId(
                 result ? result.type : "",
@@ -376,6 +377,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 isIdPrefix || "",
                 rowNumber);
             delete result[entityIdField];
+            result.id = result.id.replaceAll(" ", "")
         } catch (error) {
             logger.error(error)
             logger.error("UnknownEntity")
