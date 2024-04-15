@@ -137,7 +137,7 @@
           "200": {
             "description": "JSON output",
             "schema": {
-              "$ref": "#/definitions/Modify Map_6"
+              "$ref": "#/definitions/Insert Map response"
             }
           },
           "400": {
@@ -1058,7 +1058,24 @@
           }
         ],
         "description": "Get all sources",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "bucketName",
+            "in": "query",
+            "description": "from date in timestamp",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "format",
+            "description": "from date in timestamp",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "produces": [
           "application/json"
         ],
@@ -3527,6 +3544,7 @@
         "sourceDataID": "string",
         "sourceDataURL": "string",
         "map": "object",
+        "user" : "string",
         "dataModelURL": "string",
         "dataModelID": "string",
         "dataModel": "object",
@@ -3563,6 +3581,7 @@
         "timestamp": "number",
         "mapRef": "string",
         "isAlsoReferencedBy": "array",
+        "user" : "string",
         "source": [
           {
             "string": "string"
@@ -3574,6 +3593,7 @@
       "type": "object",
       "example": {
         "name": "Service Model map",
+        "user" : "example@example.it",
         "map": {
           "identifier": "identifier",
           "title": "title",
@@ -4662,6 +4682,7 @@
         "name": "string",
         "_id": "string",
         "path": "string",
+        "user" : "string",
         "description": "string",
         "sourceDataType": "string",
         "sourceData": "array",
@@ -4682,7 +4703,8 @@
         "_id": "string",
         "dataModel": "object",
         "mapRef": "string",
-        "isAlsoReferencedBy": "array"
+        "isAlsoReferencedBy": "array",
+        "user" : "string"
       }
     },
     "Insert data model response": {
@@ -4691,7 +4713,8 @@
         "_id": "string",
         "dataModel": "object",
         "mapRef": "string",
-        "isAlsoReferencedBy": "array"
+        "isAlsoReferencedBy": "array",
+        "user" : "string"
       }
     },
     "Insert source response": {
@@ -4703,6 +4726,7 @@
         "from": "string",
         "timestamp": "number",
         "mapRef": "string",
+        "user" : "string",
         "isAlsoReferencedBy": "array",
         "source": [
           {
@@ -4723,6 +4747,7 @@
         "name": "Service Model",
         "_id": "service_1",
         "mapRef": "string",
+        "user" : "string",
         "isAlsoReferencedBy": "array",
         "dataModel": {
           "$schema": "http://json-schema.org/draft-04/schema#",
@@ -5611,6 +5636,7 @@
       "example": {
         "name": "Service Model",
         "mapRef": "string",
+        "user" : "string",
         "isAlsoReferencedBy": "array",
         "dataModel": {
           "$schema": "http://json-schema.org/draft-04/schema#",
@@ -6510,6 +6536,7 @@
           "_id": "6401c59ff3f421ae0a41a1f5",
           "name": "Service Model",
           "mapRef": "string",
+          "user" : "string",
           "isAlsoReferencedBy": "array",
           "dataModel": {
             "$schema": "http://json-schema.org/draft-04/schema#",
@@ -7400,6 +7427,7 @@
         {
           "_id": "6401c595f3f421ae0a41a1ef",
           "name": "Service Model map",
+          "user" : "string",
           "map": {
             "identifier": "identifier",
             "title": "title",
@@ -8484,6 +8512,7 @@
         {
           "_id": "6401c597f3f421ae0a41a1f1",
           "name": "Bike",
+          "user" : "string",
           "map": {
             "name": "properties.BIKE_SH",
             "location": "geometry",
@@ -8590,6 +8619,7 @@
           "example": {
             "name": "string",
             "_id": "string",
+            "user" : "string",
             "path": "string",
             "description": "string",
             "sourceDataType": "string",
@@ -8633,6 +8663,7 @@
           "name": "string",
           "dataModel": [],
           "mapRef": "string",
+          "user" : "string",
           "isAlsoReferencedBy": "array"
         }
       ]

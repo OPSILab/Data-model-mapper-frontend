@@ -169,7 +169,7 @@
       "new_account_use_data": "Cape will use your Email, First and Last Name, for more information see our ",
       "authorize_and_create": "Authorize and Create",
       "do_not_authorize_and_cancel": "Do not authorize and cancel",
-      "error_message": "An error occurred contacting CaPe!",
+      "error_message": "An error occurred contacting Data model mapper!",
       "no_cape_account": "Sorry! No Cape account associated with your email!"
     }
   }
