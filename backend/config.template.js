@@ -31,7 +31,9 @@ var config = {
     modelSchemaFolder: path.join(__dirname, "dataModels"), // DO NOT TOUCH - Data Model schemas folder
     NGSI_entity: true, // enable or disable ngsi entity source 
     ignoreValidation: false, // ignore validation errors
+    disableAjv: true, // disable an external validator,
     mappingReport: false, // disable output mapping report
+    logSaveInterval: 30000, // log backup interval
 
     /********************** 3 INPUTS CONFIGURATION ************************
     * Followings are related to Mapping MANDATORY inputs (source, map, data model).

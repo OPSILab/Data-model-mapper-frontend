@@ -215,7 +215,7 @@ async function deleteLogs() {
 setInterval(deleteLogs, 86400000)
 
 //setInterval(saveLogs, 600000);
-setInterval(saveLogs, 3600000);
+setInterval(saveLogs, config.logSaveInterval);
 
 async function customLogger(level, fileName) {
     //console.debug(typeof fileName)
@@ -297,6 +297,9 @@ class Logger {
     //fileName = new Error()
 
     //customLogger : customLogger,
+    async saveLogs(){
+        await saveLogs();
+    }
 
     async trace(...message) {
         if (LEVEL == "trace") {

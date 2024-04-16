@@ -25,12 +25,13 @@ const jsonParser = require("../parsers/jsonParser.js");
 const orionWriter = require("../writers/orionWriter");
 const fileWriter = require("../writers/fileWriter");
 const log = require('../utils/logger')//.app(module);
-const {Logger} = log
+const { Logger } = log
 const logger = new Logger(__filename)
 const report = require('../utils/logger').report;
 const utils = require('../utils/utils.js');
 const common = require('../utils/common.js');
 const config = require("../../config.js");
+const { load } = require('nconf');
 
 
 config.validCount = 0;
@@ -120,7 +121,10 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 } catch (error) {
                     logger.error('There was an error while processing Data Model schema: ');
                     logger.error(error)
-                    return Promise.reject(error);
+                    if (common.schema)
+                        loadedSchema = JSON.parse(JSON.stringify(common.schema))
+                    else
+                        return Promise.reject(error);
                 }
 
                 logger.info('Starting to Map Source Object');
@@ -190,7 +194,7 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
     }
 
     logger.debug("Row: " + rowNumber + " - Object mapped correctly ");
-    logger.debug("Result: "+ JSON.stringify(result))
+    logger.debug("Result: " + JSON.stringify(result))
     await mappedHandler(rowNumber, result, schema);
 
 };

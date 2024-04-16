@@ -137,6 +137,7 @@ module.exports = {
         //this.restoreDefaultConfs()
 
         const cli = require('../../../cli/setup');
+        common.schema = undefined
 
         if (map?.id) {
 
@@ -251,6 +252,7 @@ module.exports = {
 
         if (dataModel.data) {
             logger.info(this.dataModelDeClean(dataModel.data))
+            common.schema = JSON.parse(JSON.stringify(dataModel.data))
             fs.writeFile(
                 //dataModel.schema_id || 
                 "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
