@@ -18,6 +18,8 @@ function parseJwt(token) {
 module.exports = {
     auth: async (req, res, next) => {
 
+        process.env.start = Date.now()
+
         if (req.body.file)
             req.body = JSON.parse(req.body.file)
 

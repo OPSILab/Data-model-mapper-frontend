@@ -29,7 +29,7 @@ const filenameFromPathPattern = /^(.:)?\\(.+\\)*(.+)\.(.+)$/;
 const minioWriter = require("../writers/minioWriter")
 const { isMinioWriterActive, sleep } = require('./common')
 const log = require('./logger')
-const {Logger} = log
+const { Logger } = log
 const logger = new Logger(__filename)
 
 function ngsi() {
@@ -154,7 +154,7 @@ const createSynchId = (type, site, service, group, entityName, isIdPrefix, rowNu
     }
 
     // Group field is optional
-    return "urn:ngsi-ld:" + type + ":" + (site ? site + ":" : "") + (service ? service + ":" : "")  + (group ? group + ":"  : "") + cleanIdString(entityName);
+    return "urn:ngsi-ld:" + type + ":" + (site ? site + ":" : "") + (service ? service + ":" : "") + (group ? group + ":" : "") + cleanIdString(entityName);
 };
 
 
@@ -208,7 +208,7 @@ const bodyMapper = (body) => {
     let sourceData = {
         name: body.sourceDataIn,
         minioObjName: body.sourceDataMinio?.name || body.prefix,
-        minioBucketName:body.sourceDataMinio?.bucket || body.bucketName,
+        minioBucketName: body.sourceDataMinio?.bucket || body.bucketName,
         //minioObjEtag: body.sourceDataMinio.etag,
         id: body.sourceDataID,
         type: body.sourceDataType,
@@ -254,6 +254,7 @@ const sendOutput = async () => {
     if (!config.mappingReport) process.res.send(apiOutput.outputFile.slice(0, apiOutput.outputFile.length - 1));
     else process.res.send(apiOutput.outputFile);
     apiOutput.outputFile = [];
+    logger.debug("Processing time : ", Date.now() - process.env.start)
 };
 
 const printFinalReportAndSendResponse = async (loggerr) => {
