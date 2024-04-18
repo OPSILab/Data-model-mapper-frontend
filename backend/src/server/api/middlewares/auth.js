@@ -8,8 +8,9 @@ const realm = authConfig.authRealm;
 const clientID = authConfig.clientId;
 const clientSecret = authConfig.secret;
 const log = require("../../../utils/logger")
-const {Logger} = log
+const { Logger } = log
 const logger = new Logger(__filename)
+const common = require("../../../utils/common")
 
 function parseJwt(token) {
     return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
@@ -33,6 +34,8 @@ module.exports = {
                     authHeader = "Bearer " + authHeader
 
                 const jwtToken = authHeader.split(' ')[1];
+
+                //logger.debug("!" + jwtToken, "\n", Buffer.from(jwtToken.split(".")[1], 'base64').toString())
 
                 let verifiedToken
                 try {
@@ -83,10 +86,15 @@ module.exports = {
                     if ((decodedToken.azp == authConfig.clientId) && ((decodedToken.exp * 1000) > Date.now())) {
 
                         try {
-                            let data = (await axios.get(config.authConfig.userInfoEndpoint, { headers: { "Authorization": authHeader } })).data
-                            let { pilot, username, email } = data
-                            req.body.bucketName = pilot.toLowerCase() //+ "/" + email + "/" + config.minioWriter.defaultInputFolderName//{pilot, email}
-                            req.body.prefix = (email || username) + "/" + config.minioWriter.defaultInputFolderName
+                            if (common.isMinioWriterActive()) {
+                                let data = (await axios.get(config.authConfig.userInfoEndpoint, { headers: { "Authorization": authHeader } })).data
+                                let { pilot, username, email } = data
+                                req.body.bucketName = pilot.toLowerCase() //+ "/" + email + "/" + config.minioWriter.defaultInputFolderName//{pilot, email}
+                                req.body.prefix = (email || username) + "/" + config.minioWriter.defaultInputFolderName
+                            }
+                            else
+                                req.body.prefix = decodedToken.email
+                            logger.debug(req.body.prefix)
                         }
                         catch (error) {
                             logger.error(error?.toString())

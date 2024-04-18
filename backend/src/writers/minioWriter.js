@@ -214,7 +214,7 @@ module.exports = {
         return err
         //return e(err)
       }
-      logger.info( "Object Writter.\n Result : ")
+      logger.info( "Object Written.\n Result : ")
       logger.info( JSON.stringify(res))
       resultMessage = res
     })

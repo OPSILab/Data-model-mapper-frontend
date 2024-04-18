@@ -29,11 +29,12 @@ var config = {
     host: "",
     externalPort: undefined, //use undefined if, in prod, you are exposing the data model mapper server with domain instead of IP:port
     modelSchemaFolder: path.join(__dirname, "dataModels"), // DO NOT TOUCH - Data Model schemas folder
-    NGSI_entity: true, // enable or disable ngsi entity source 
+    NGSI_entity: false, // enable or disable ngsi entity source 
     ignoreValidation: false, // ignore validation errors
-    disableAjv: true, // disable an external validator,
+    disableAjv: false, // disable an external validator,
     mappingReport: false, // disable output mapping report
     logSaveInterval: 30000, // log backup interval
+    idVersion: 2, // 1 for 2023 version compatibility mode, 2 for newest version
 
     /********************** 3 INPUTS CONFIGURATION ************************
     * Followings are related to Mapping MANDATORY inputs (source, map, data model).
@@ -46,10 +47,10 @@ var config = {
 
     /************************** Rows/Objects proccesing range *************
     * Following indicates the start and end row/object of the input file to be proccessed
-    * To indicate "until end", use Infinity in rowEnd
+    * To indicate "until end", use Number.MAX_VALUE in rowEnd
     **/
     rowStart: 0,
-    rowEnd: Infinity,
+    rowEnd: Number.MAX_VALUE,
 
     /************************** Output string clean ***********************
     * The regex to delete from the output string fields

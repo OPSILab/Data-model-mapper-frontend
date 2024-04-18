@@ -12,6 +12,9 @@ const RefParser = require('json-schema-ref-parser');
 const minioWriter = require('../../../writers/minioWriter')
 const common = require('../../../utils/common')
 
+if (!config.idVersion)
+    config.idVersion = 2
+
 if (common.isMinioWriterActive())
     if (config.minioWriter.subscribe.all)
         minioWriter.listBuckets().then((buckets) => {
@@ -119,6 +122,7 @@ module.exports = {
             configCopy.LOG =
             configCopy.MODE =
             configCopy.SUPPRESS_NO_CONFIG_WARNING =
+            configCopy.logSaveInterval =
             configCopy.env = undefined
         return configCopy
     },
@@ -141,7 +145,10 @@ module.exports = {
 
         if (map?.id) {
 
-            map = await Map.findOne({ _id: map.id })
+            map = config.idVersion == 1 ? await Map.findOne({ id: map.id }) : await Map.findOne({ _id: map.id })
+            if (!map)
+                throw {error : "No map found"}
+            logger.trace(map)
 
             if (!map.dataModel?.$schema && map.dataModel?.schema)
                 map.dataModel.$schema = map.dataModel.schema
@@ -205,12 +212,19 @@ module.exports = {
             source.data = source.data.source || source.data.sourceCSV
         }
 
-        if (source.minioObjName && !source.data[0]) {
-            try { source.data = await this.minioGetObject(source.minioBucketName, source.minioObjName, source.type) }
-            catch (error) {
-                logger.error(error)
-                process.res.sendStatus(404)
-            }
+        logger.trace(source)
+
+        if (!source.name && !source.url && !source.id && source.minioObjName && (!source.data || source.data && !source.data[0])) {
+           // if (!source.name && source.minioObjName && (!source.data || source.data && !source.data[0])) {
+
+            //try { 
+                source.data = await this.minioGetObject(source.minioBucketName, source.minioObjName, source.type) 
+            //}
+            //catch (error) {
+            //    logger.error(error)
+            //    throw error
+            //    process.res.sendStatus(404)
+            //}
         }
 
         if (dataModel.id && !dataModel.data) {
@@ -225,7 +239,7 @@ module.exports = {
                 config.modelSchemaFolder + '/DataModelTemp.json'
         }
         //let sourceFileTemp2 = false
-        if (!source.data[0] && source.url) {
+        if ((!source.data || source.data && !source.data[0]) && source.url) {
             source.download = await axios.get(source.url)
             source.data = source.download.data
             /*
@@ -294,20 +308,22 @@ module.exports = {
     },
 
     async getAllSources(bucketName, prefix, format) {//, postMessage) {
-        let sources = await Source.find({user : prefix.split("/")[0]})
+
+        let sources = await Source.find({ user: (prefix?.split("/")[0] || "shared") })
+
         if (common.isMinioWriterActive())
             try {
                 logger.debug(bucketName, prefix, format)
                 await this.getMinioObjects(bucketName, prefix, format, sources)
             }
             catch (error) {
-                logger.error("Unable to connect to minio")//TODO delete this try / catch and handle frontend side the error
+                logger.error("Unable to connect to minio")//TODO inform frontend of this
             }
         return sources
     },
 
     async getSourcesFromDB(prefix) {
-        return await Source.find({user : prefix.split("/")[0]})
+        return await Source.find({ user: (prefix?.split("/")[0] || "shared") })
     },
 
     async getMinioObjects(bucketName, prefix, format, sources) {
@@ -327,21 +343,21 @@ module.exports = {
     },
 
     async getMaps(prefix) {
-        return await Map.find({user : prefix.split("/")[0]})
+        return await Map.find({ user: (prefix?.split("/")[0] || "shared") })
     },
 
     async getDataModels(prefix) {
-        return await DataModel.find({user : prefix.split("/")[0]})
+        return await DataModel.find({ user: (prefix?.split("/")[0] || "shared") })
     },
 
     async getSource(id, name, mapRef, prefix) {
-        let source = await Source.findOne(mapRef ? { mapRef: mapRef, user : prefix.split("/")[0] } : id ? { _id: id, user : prefix.split("/")[0] } : { name, user : prefix.split("/")[0] })
+        let source = await Source.findOne(mapRef ? { mapRef: mapRef, user: (prefix?.split("/")[0] || "shared") } : id ? { _id: id, user: (prefix?.split("/")[0] || "shared") } : { name, user: (prefix?.split("/")[0] || "shared") })
         if (!source) throw { code: 404, message: "NOT FOUND" }
         return source
     },
 
     async getMap(id, name, prefix) {
-        let map = await Map.findOne(id ? { _id: id, user : prefix.split("/")[0] } : { name, user : prefix.split("/")[0] })
+        let map = await Map.findOne(id ? { _id: id, user: (prefix?.split("/")[0] || "shared") } : { name, user: (prefix?.split("/")[0] || "shared") })
         if (!map) throw { code: 404, message: "NOT FOUND" }
         if (map.dataModel)
             map.dataModel = this.dataModelDeClean(map.dataModel)
@@ -349,7 +365,7 @@ module.exports = {
     },
 
     async getDataModel(id, name, mapRef, prefix) {
-        let dataModel = await DataModel.findOne(mapRef ? { mapRef: mapRef, user : prefix.split("/")[0] } : id ? { _id: id, user : prefix.split("/")[0] } : { name, user : prefix.split("/")[0] })
+        let dataModel = await DataModel.findOne(mapRef ? { mapRef: mapRef, user: (prefix?.split("/")[0] || "shared") } : id ? { _id: id, user: (prefix?.split("/")[0] || "shared") } : { name, user: (prefix?.split("/")[0] || "shared") })
         if (!dataModel) throw { code: 404, message: "NOT FOUND" }
         dataModel.dataModel = this.dataModelDeClean(dataModel.dataModel)
         return dataModel
@@ -416,19 +432,19 @@ module.exports = {
             mapRef = map?._id
         }
         logger.debug(prefix)
-        if ((mapRef || !await Source.findOne({ name })) && !await Source.findOne({ mapRef: mapRef.toString() })) {
+        if ((mapRef || !await Source.findOne({ name })) && !await Source.findOne({ mapRef: mapRef?.toString() })) {
             insertedSource = (await Source.insertMany([typeof source === 'string' ? {
                 name: name,
                 id: id,
                 sourceCSV: source,
-                user : prefix.split("/")[0],
+                user: (prefix?.split("/")[0] || "shared"),
                 mapRef: mapRef?.toString()
             } : {
                 name: name,
                 id: id,
                 source: source,
                 path,
-                user : prefix.split("/")[0],
+                user: (prefix?.split("/")[0] || "shared"),
                 mapRef: mapRef?.toString()
             }]))[0]
             if (mapRef) {
@@ -440,7 +456,7 @@ module.exports = {
             }
             return insertedSource
         }
-        throw { "error": "name already exists" }
+        throw { "error": "a source with the name or mapRef specified already exists" }
     }, //TODO replace with insertOne
 
     async insertMap(name, id, map, dataModel, status, description,
@@ -453,11 +469,6 @@ module.exports = {
             throw { error: "schema is required" }
         if (dataModel)
             dataModel = this.dataModelClean(dataModel, {})
-        let objectName = (
-            //sourceDataMinio?.name || 
-            (prefix + "/" + name)).replace(config.minioWriter.defaultInputFolderName, config.minioWriter.defaultOutputFolderName) //.toLowerCase()
-        if (objectName.substring(objectName.length - 5) != ".json")
-            objectName = objectName + ".json"
 
         let newMapper = {
             name: name,
@@ -477,15 +488,26 @@ module.exports = {
             config: mapConfig,
             sourceDataType,
             path,
-            user : prefix.split("/")[0]
+            user: (prefix?.split("/")[0] || "shared")
         }
-        objectName = objectName.split("/")
-        objectName[objectName.length - 1] = name
-        let minioName = ""
-        for (substring of objectName)
-            minioName = minioName + "/" + substring
-        minioName = minioName + ".json"
-        await minioWriter.stringUpload(bucketName, minioName, JSON.stringify(newMapper))
+
+        if (common.isMinioWriterActive()) {
+
+            let objectName = (
+                //sourceDataMinio?.name || 
+                (prefix + "/" + name)).replace(config.minioWriter.defaultInputFolderName, config.minioWriter.defaultOutputFolderName) //.toLowerCase()
+            if (objectName.substring(objectName.length - 5) != ".json")
+                objectName = objectName + ".json"
+
+            objectName = objectName.split("/")
+            objectName[objectName.length - 1] = name
+
+            let minioName = ""
+            for (substring of objectName)
+                minioName = minioName + "/" + substring
+            minioName = minioName + ".json"
+            await minioWriter.stringUpload(bucketName, minioName, JSON.stringify(newMapper))
+        }
 
         if (!await Map.findOne({ name })) {
             let insertedMap = (await Map.insertMany([newMapper]))[0]
@@ -524,8 +546,8 @@ module.exports = {
             map = await Map.findOne({ name })
             mapRef = map?._id
         }
-        if ((mapRef || !await DataModel.findOne({ name })) && !await DataModel.findOne({ mapRef: mapRef.toString() })) {
-            insertedDataModel = (await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel, user : prefix.split("/")[0], mapRef: mapRef?.toString() }]))[0]
+        if ((mapRef || !await DataModel.findOne({ name })) && !await DataModel.findOne({ mapRef: mapRef?.toString() })) {
+            insertedDataModel = (await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel, user: (prefix?.split("/")[0] || "shared"), mapRef: mapRef?.toString() }]))[0]
             if (mapRef) {
                 //map.dataModelID = insertedDataModel._id.toString()
                 //map.dataModel = undefined
@@ -536,11 +558,11 @@ module.exports = {
             }
             return insertedDataModel
         }
-        logger.debug(mapRef)
+        /*logger.debug(mapRef)
         logger.debug(await DataModel.findOne({ name }))
         logger.debug(await DataModel.findOne({ mapRef: mapRef.toString() }))
-        logger.debug(mapRef || !await DataModel.findOne({ name })) && !await DataModel.findOne({ mapRef: mapRef.toString() })
-        throw { "error": "name already exists" }
+        logger.debug(mapRef || !await DataModel.findOne({ name })) && !await DataModel.findOne({ mapRef: mapRef.toString() })*/
+        throw { "error": "a data model with this name or this mapRef already exists" }
     },//TODO replace with insertOne
 
     async modifySource(name, id, source, path, mapRef, bucket, prefix) {
@@ -553,9 +575,9 @@ module.exports = {
             map = (await Map.findOne({ name }))
             mapRef = map?._id.toString()
         }
-        insertedSource = await Source.findOneAndReplace(mapRef ? { mapRef } : { name }, typeof source === 'string' ? 
-        { name: name, id: id, sourceCSV: source, user : prefix.split("/")[0], mapRef: mapRef?.toString() } : 
-        { name: name, id: id, source: source, path: path, user : prefix.split("/")[0], mapRef: mapRef?.toString() })
+        insertedSource = await Source.findOneAndReplace(mapRef ? { mapRef } : { name }, typeof source === 'string' ?
+            { name: name, id: id, sourceCSV: source, user: (prefix?.split("/")[0] || "shared"), mapRef: mapRef?.toString() } :
+            { name: name, id: id, source: source, path: path, user: (prefix?.split("/")[0] || "shared"), mapRef: mapRef?.toString() })
         if (mapRef) {
             //map.sourceDataID = insertedSource._id.toString()
             //map.sourceData = undefined
@@ -686,11 +708,6 @@ module.exports = {
         if (path == "") path = undefined
 
         if (dataModel) dataModel = this.dataModelClean(dataModel, {})
-        let objectName = (
-            //sourceDataMinio?.name || 
-            (prefix + "/" + name)).replace(config.minioWriter.defaultInputFolderName, config.minioWriter.defaultOutputFolderName) //.toLowerCase()
-        if (objectName.substring(objectName.length - 5) != ".json")
-            objectName = objectName + ".json"
 
         let newMapper = {
             name: name,
@@ -709,16 +726,26 @@ module.exports = {
             dataModelURL,
             config: mapConfig,
             sourceDataType,
-            user : prefix.split("/")[0],
+            user: prefix?.split("/")[0],
             path
         }
-        objectName = objectName.split("/")
-        objectName[objectName.length - 1] = name
-        let minioName = ""
-        for (substring of objectName)
-            minioName = minioName + "/" + substring
-        minioName = minioName + ".json"
-        await minioWriter.stringUpload(bucketName, minioName, JSON.stringify(newMapper))
+        if (common.isMinioWriterActive()) {
+
+            let objectName = (
+                //sourceDataMinio?.name || 
+                (prefix + "/" + name)).replace(config.minioWriter.defaultInputFolderName, config.minioWriter.defaultOutputFolderName) //.toLowerCase()
+            if (objectName.substring(objectName.length - 5) != ".json")
+                objectName = objectName + ".json"
+
+            objectName = objectName.split("/")
+            objectName[objectName.length - 1] = name
+
+            let minioName = ""
+            for (substring of objectName)
+                minioName = minioName + "/" + substring
+            minioName = minioName + ".json"
+            await minioWriter.stringUpload(bucketName, minioName, JSON.stringify(newMapper))
+        }
         let oldMap = await Map.findOneAndReplace({ name }, newMapper)
         logger.debug(oldMap)
         if (oldMap.sourceDataID)
@@ -739,8 +766,8 @@ module.exports = {
             map = (await Map.findOne({ name }))
             mapRef = map?._id.toString()
         }
-        insertedDataModel = await DataModel.findOneAndReplace(mapRef ? { mapRef } : { name }, 
-            { name: name, id: id, dataModel: dataModel, user : prefix.split("/")[0], mapRef: mapRef.toString() })
+        insertedDataModel = await DataModel.findOneAndReplace(mapRef ? { mapRef } : { name },
+            { name: name, id: id, dataModel: dataModel, user: (prefix?.split("/")[0] || "shared"), mapRef: mapRef?.toString() })
         if (mapRef) {
             map.dataModelID = insertedDataModel._id.toString()
             //map.dataModel = undefined
@@ -750,42 +777,42 @@ module.exports = {
     },
 
     async deleteSource(id, name, prefix) {
-        let source = await DataModel.findOne(id ? { _id: id, user : prefix.split("/")[0] } : { name, user : prefix.split("/")[0] })
+        let source = await DataModel.findOne(id ? { _id: id, user: (prefix?.split("/")[0] || "shared") } : { name, user: (prefix?.split("/")[0] || "shared") })
         if (source.mapRef)
             throw { code: 400, message: "BAD REQUEST.\nResource has a mapRef. Delete the mapper record who reference it before." }
-        return await Source.deleteOne(id ? { _id: id, user : prefix.split("/")[0] } : { name, user : prefix.split("/")[0] })
+        return await Source.deleteOne(id ? { _id: id, user: (prefix?.split("/")[0] || "shared") } : { name, user: (prefix?.split("/")[0] || "shared") })
     },
 
     async deleteMap(id, name, prefix) {
 
         let mapRef
         if (!id)
-            mapRef = (await Map.findOne({ name, user : prefix.split("/")[0] }))._id
-        let map = await Map.findOne(id ? { _id: id, user : prefix.split("/")[0] } : { name, user : prefix.split("/")[0] })
+            mapRef = (await Map.findOne({ name, user: (prefix?.split("/")[0] || "shared") }))._id
+        let map = await Map.findOne(id ? { _id: id, user: (prefix?.split("/")[0] || "shared") } : { name, user: (prefix?.split("/")[0] || "shared") })
         if (map?.sourceDataID)
             await this.deAssignSource(map.sourceDataID, map._id)
         if (map?.dataModelID)
             await this.deAssignSchema(map.dataModelID, map._id)
-        let deletion = await Map.deleteOne(id ? { _id: id, user : prefix.split("/")[0] } : { name, user : prefix.split("/")[0] })
+        let deletion = await Map.deleteOne(id ? { _id: id, user: (prefix?.split("/")[0] || "shared") } : { name, user: (prefix?.split("/")[0] || "shared") })
         //if (map.sourceDataID) {
-        let source = await Source.findOne({ mapRef: (id || mapRef), user : prefix.split("/")[0] })
+        let source = await Source.findOne({ mapRef: (id || mapRef), user: (prefix?.split("/")[0] || "shared") })
         if (source?.isAlsoReferencedBy[0]) {
             source.mapRef = source.isAlsoReferencedBy.shift()
             logger.debug(source)
             await source.save()
         }
         else
-            await Source.deleteOne({ mapRef: (id || mapRef), user : prefix.split("/")[0] })
+            await Source.deleteOne({ mapRef: (id || mapRef), user: (prefix?.split("/")[0] || "shared") })
         //}
         //if (map.dataModelID) {
-        let dataModel = await DataModel.findOne({ mapRef: (id || mapRef), user : prefix.split("/")[0] })
+        let dataModel = await DataModel.findOne({ mapRef: (id || mapRef), user: (prefix?.split("/")[0] || "shared") })
         if (dataModel?.isAlsoReferencedBy[0]) {
             dataModel.mapRef = dataModel.isAlsoReferencedBy.shift()
             logger.debug(dataModel)
             await dataModel.save()
         }
         else
-            await DataModel.deleteOne({ mapRef: (id || mapRef), user : prefix.split("/")[0] })
+            await DataModel.deleteOne({ mapRef: (id || mapRef), user: (prefix?.split("/")[0] || "shared") })
         //}
         if (deletion.deletedCount)
             return deletion
@@ -794,10 +821,10 @@ module.exports = {
     },
 
     async deleteDataModel(id, name, prefix) {
-        let dataModel = await DataModel.findOne(id ? { _id: id, user : prefix.split("/")[0] } : { name, user : prefix.split("/")[0] })
+        let dataModel = await DataModel.findOne(id ? { _id: id, user: (prefix?.split("/")[0] || "shared") } : { name, user: (prefix?.split("/")[0] || "shared") })
         if (dataModel.mapRef)
             throw { code: 400, message: "BAD REQUEST.\nResource has a mapRef. Delete the mapper record who reference it before." }
-        return await DataModel.deleteOne(id ? { _id: id, user : prefix.split("/")[0] } : { name, user : prefix.split("/")[0] })
+        return await DataModel.deleteOne(id ? { _id: id, user: (prefix?.split("/")[0] || "shared") } : { name, user: (prefix?.split("/")[0] || "shared") })
     },
 
     async getLogs(from, to) {
