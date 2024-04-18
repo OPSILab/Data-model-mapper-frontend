@@ -89,8 +89,10 @@ module.exports = {
                             if (common.isMinioWriterActive()) {
                                 let data = (await axios.get(config.authConfig.userInfoEndpoint, { headers: { "Authorization": authHeader } })).data
                                 let { pilot, username, email } = data
-                                req.body.bucketName = pilot.toLowerCase() //+ "/" + email + "/" + config.minioWriter.defaultInputFolderName//{pilot, email}
+                                config.orionWriter.fiwareService = req.body.bucketName = pilot.toLowerCase() //+ "/" + email + "/" + config.minioWriter.defaultInputFolderName//{pilot, email}
                                 req.body.prefix = (email || username) + "/" + config.minioWriter.defaultInputFolderName
+                                config.group = email || username
+                                config.orionWriter.fiwareServicePath = "/" + pilot.toLowerCase()
                             }
                             else
                                 req.body.prefix = decodedToken.email
@@ -98,7 +100,9 @@ module.exports = {
                         }
                         catch (error) {
                             logger.error(error?.toString())
-                            logger.error(error?.response?.data)
+                            logger.error(error?.response?.data || error?.response)
+                            req.body.prefix = decodedToken.email
+                            config.group = decodedToken.email
                         }
                         next()
                     }
