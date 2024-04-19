@@ -25,4 +25,4 @@ COPY --from=builder /app/dist /app/data-model-mapper-gui/login/loginPopup
 WORKDIR /app/node_modules/http-server
 RUN npm install
 WORKDIR /app/node_modules/http-server/bin
-CMD ["node", "http-server", "../../../", "-p", "12345"]
+CMD ["node", "http-server", "../../../", "-p", "12345", " --cors"]
