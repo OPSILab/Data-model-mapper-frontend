@@ -726,7 +726,7 @@ module.exports = {
             dataModelURL,
             config: mapConfig,
             sourceDataType,
-            user: prefix?.split("/")[0],
+            user: prefix?.split("/")[0] || "shared",
             path
         }
         if (common.isMinioWriterActive()) {
