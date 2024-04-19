@@ -104,7 +104,16 @@ module.exports = {
                             req.body.prefix = decodedToken.email
                             config.group = decodedToken.email
                         }
-                        next()
+
+                        //logger.debug(req.body, req.params, req.query)
+
+                        //if (req.params.bucketName && req.params.objectName)
+                        //    logger.debug(req.body.bucketName , req.params.bucketName , req.body.prefix , req.params.objectName.split("/")[0] + "/" + req.params.objectName.split("/")[1])
+
+                        if ((!req.params.bucketName || !req.params.objectName) || (req.body.bucketName == req.params.bucketName && req.body.prefix == req.params.objectName.split("/")[0] + "/" + req.params.objectName.split("/")[1]))
+                            next()
+                        else 
+                            res.status(403).send("Available bucketname is " + req.body.bucketName + " and you tried to access " + req.params.bucketName + ".\nAvailable prefix is " + req.body.prefix + " and you tried to access this object " + req.params.objectName);
                     }
                     else
                         res.sendStatus(403);

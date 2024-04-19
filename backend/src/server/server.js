@@ -5,7 +5,8 @@ module.exports = () => {
   const cors = require('cors');
   const config = require('../../config')
   const swaggerUi = require('swagger-ui-express');
-  let swaggerDocument = require('./swagger.json');
+  let swaggerDocument = require('./swagger/swagger.json');
+  let minioDocument = require('./swagger/minio.json');
   const service = require("./api/services/service.js")
   const log = require('../utils/logger')//.app(module);
   //const {trace, debug, info, warn, err} = log
@@ -20,6 +21,12 @@ module.exports = () => {
   swaggerDocument.host = config.host + (config.externalPort ? ":" + (config.externalPort || 5500) : "")
   if (config.basePath)
     swaggerDocument.basePath = config.basePath
+  /*
+    for (let path in minioDocument.paths)
+      swaggerDocument.paths[path] = minioDocument.paths[path]
+  */
+  let path = "/minio/getObject/{bucketName}/{objectName}"
+  swaggerDocument.paths[path] = minioDocument.paths[path]
 
   dmmServer.use(cors());
   dmmServer.use(express.json());

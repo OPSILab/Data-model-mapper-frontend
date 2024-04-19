@@ -45,6 +45,7 @@ export class DMMService {
     return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/sources/db").toPromise();
   }
 
+  /*
   getMinioSources(): any {
     return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/getObjects?format=json" + this.buckets).toPromise();
   }
@@ -56,7 +57,9 @@ export class DMMService {
   getMinioSourcesList(bucketName): any {
     return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/listObjects/" + urlencode(bucketName)).toPromise();
 
-  }
+  }*/
+
+
   getMinioObject(bucketName: string, objectName: string) {
     return this.http.get<any[]>(this.config.data_model_mapper.default_mapper_base_url + "/minio/getObject" + "/" + urlencode(bucketName) + "/" + urlencode(objectName)).toPromise();
   }
