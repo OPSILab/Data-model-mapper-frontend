@@ -95,6 +95,7 @@ module.exports = {
             configCopy.authConfig =
             configCopy.fileWriter =
             configCopy.debugger =
+            configCopy.group =
             configCopy.orionWriter =
             configCopy.regexClean =
             configCopy.mapPath =
