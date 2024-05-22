@@ -182,7 +182,7 @@ module.exports = {
             map = [map.map, "mapData"] //TODO change this array form if possible
         }
 
-        if (!(source.name || (source.type && (source.data || source.url || source.id || source.minioObjName))) || (!map || !(dataModel.id || dataModel.data || dataModel.name || dataModel.url))) {
+        if (!(source.name || (source.type && (source.data || source.url || source.id || source.minioObjName))) || (!map || !(dataModel.id || dataModel.data || dataModel.name || dataModel.url || configIn.noSchema == undefined ? config.noSchema : configIn.noSchema))) {
 
             throw {
                 message: "Missing fields",
@@ -290,6 +290,25 @@ module.exports = {
             fs.writeFile(
                 //dataModel.schema_id || 
                 "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
+                    if (err) throw err;
+                    logger.debug('File dataModel temp is created successfully.');
+                })
+        }
+
+        if (configIn.noSchema || (configIn.noSchema == undefined) && config.noSchema) {
+            logger.info("No schema mode")
+            let schema = {	"$schema": "http://json-schema.org/schema#",
+            "$id": "dataModels/DataModelTemp.json",
+            "title": "DataModelTemp",
+            "description": "Bike Hire Docking Station",
+            "type": "object", "properties" : {}}
+            for (let key in map[0])
+                schema.properties[key] = {
+                    type: "object"
+                }
+            fs.writeFile(
+                //dataModel.schema_id || 
+                "dataModels/DataModelTemp.json", JSON.stringify(schema), function (err) {
                     if (err) throw err;
                     logger.debug('File dataModel temp is created successfully.');
                 })

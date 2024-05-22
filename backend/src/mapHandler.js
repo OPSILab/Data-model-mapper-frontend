@@ -413,8 +413,11 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 *  and checks if constraints present in the destination Model object are met by the source value
 **/
 const checkPairWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNumber) => {
-
+    
+    //if (config.noSchema)
+    //        return true
     var result = validator.validateSourceValue(mappedObject, modelSchema, true, rowNumber);
+    logger.debug("Validator result : ", result)
     return result;
 
 };
@@ -423,6 +426,8 @@ const checkPairWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNum
  **/
 const checkResultWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNumber) => {
 
+    //if (config.noSchema)
+    //    return true
     return validator.validateSourceValue(mappedObject, modelSchema, false, rowNumber);
 
 };
