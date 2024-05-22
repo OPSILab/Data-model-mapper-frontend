@@ -10,7 +10,8 @@ const logger = new Logger(__filename)
 const axios = require('axios')
 const RefParser = require('json-schema-ref-parser');
 const minioWriter = require('../../../writers/minioWriter')
-const common = require('../../../utils/common')
+const common = require('../../../utils/common');
+const { type } = require('os');
 
 if (!config.idVersion)
     config.idVersion = 2
@@ -85,8 +86,13 @@ module.exports = {
     },
 
     getConfig() {
-        let configCopy = JSON.parse(JSON.stringify(config))
 
+        //console.log(config.backup)
+
+        let responseConfig = JSON.parse(JSON.stringify(config.backup || config))
+        let configCopy = JSON.parse(JSON.stringify(responseConfig))
+
+        configCopy.orionUrl = JSON.parse(JSON.stringify(responseConfig.orionWriter.orionUrl))
         configCopy.mongo =
             configCopy.host =
             configCopy.externalPort =
@@ -111,7 +117,6 @@ module.exports = {
             configCopy.fileWrittenCount =
             configCopy.fileUnWrittenCount =
             configCopy.rowNumber =
-            configCopy.orionUrl =
             configCopy.updateMode =
             configCopy.fiwareService =
             configCopy.fiwareServicePath =
@@ -130,8 +135,10 @@ module.exports = {
 
     resetConfig: (request, response, next) => {
         if (config.backup) {
+            logger.info("There is a backup config", config.backup)
             for (let configKey in config.backup)
                 config[configKey] = config.backup[configKey]
+            config.orionUrl = undefined
             config.backup = undefined
         }
         next()
@@ -148,7 +155,7 @@ module.exports = {
 
             map = config.idVersion == 1 ? await Map.findOne({ id: map.id }) : await Map.findOne({ _id: map.id })
             if (!map)
-                throw {error : "No map found"}
+                throw { error: "No map found" }
             logger.trace(map)
 
             if (!map.dataModel?.$schema && map.dataModel?.schema)
@@ -194,12 +201,24 @@ module.exports = {
             config.backup = undefined
         }
 
-        if (configIn)
-            for (let configKey in configIn) {
-                if (!config.backup) config.backup = {}
-                config.backup[configKey] = config[configKey]
-                if (configIn[configKey] != "undefined") config[configKey] = configIn[configKey]
+        if (configIn) {
+            for (let key in config) {
+                if (!config.backup)
+                    config.backup = {}
+                if (key != "backup") {
+                    if (Array.isArray(config[key]) || typeof config[key] == "object")
+                        config.backup[key] = JSON.parse(JSON.stringify(config[key]))
+                    else
+                        config.backup[key] = config[key]
+                }
             }
+            for (let configKey in configIn) {
+                if (configKey == "orionUrl")
+                    config.orionWriter.orionUrl = configIn.orionUrl
+                else if (configIn[configKey] != "undefined")
+                    config[configKey] = configIn[configKey]
+            }
+        }
 
         config.delimiter = configIn ? configIn.delimiter : config.delimiter || ','
         if (config.NGSI_entity != undefined) this.NGSI_entity = config.NGSI_entity
@@ -216,10 +235,10 @@ module.exports = {
         logger.trace(source)
 
         if (!source.name && !source.url && !source.id && source.minioObjName && (!source.data || source.data && !source.data[0])) {
-           // if (!source.name && source.minioObjName && (!source.data || source.data && !source.data[0])) {
+            // if (!source.name && source.minioObjName && (!source.data || source.data && !source.data[0])) {
 
             //try { 
-                source.data = await this.minioGetObject(source.minioBucketName, source.minioObjName, source.type) 
+            source.data = await this.minioGetObject(source.minioBucketName, source.minioObjName, source.type)
             //}
             //catch (error) {
             //    logger.error(error)
