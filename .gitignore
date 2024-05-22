@@ -49,3 +49,5 @@ backend/examples/
 backend/src/validation.log
 backend/log*.json
 backend/src/utils/threads.js
+minio-storage/
+minio.yml
