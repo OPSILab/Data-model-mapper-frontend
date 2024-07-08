@@ -1,0 +1,99 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DMMComponent } from './dmm.component';
+import { DMMService } from './dmm.service';
+import { NbDialogService, NbToastrService, NbDialogRef } from '@nebular/theme';
+import { NgxConfigureService } from 'ngx-configure';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
+
+describe('DMMComponent', () => {
+  let component: DMMComponent;
+  let fixture: ComponentFixture<DMMComponent>;
+  let dmmServiceSpy: jasmine.SpyObj<DMMService>;
+  let dialogServiceSpy: jasmine.SpyObj<NbDialogService>;
+  let toastrServiceSpy: jasmine.SpyObj<NbToastrService>;
+  let configServiceSpy: jasmine.SpyObj<NgxConfigureService>;
+
+  beforeEach(async () => {
+    const dmmSpy = jasmine.createSpyObj('DMMService', ['getMaps', 'getSchemas', 'getSources', 'getConfig', 'transform']);
+    const dialogSpy = jasmine.createSpyObj('NbDialogService', ['open']);
+    const toastrSpy = jasmine.createSpyObj('NbToastrService', ['show']);
+    const configSpy = jasmine.createSpyObj('NgxConfigureService', [], { config: {} });
+
+    await TestBed.configureTestingModule({
+      declarations: [ DMMComponent ],
+      providers: [
+        { provide: DMMService, useValue: dmmSpy },
+        { provide: NbDialogService, useValue: dialogSpy },
+        { provide: NbToastrService, useValue: toastrSpy },
+        { provide: NgxConfigureService, useValue: configSpy },
+        { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } }
+      ]
+    }).compileComponents();
+
+    dmmServiceSpy = TestBed.inject(DMMService) as jasmine.SpyObj<DMMService>;
+    dialogServiceSpy = TestBed.inject(NbDialogService) as jasmine.SpyObj<NbDialogService>;
+    toastrServiceSpy = TestBed.inject(NbToastrService) as jasmine.SpyObj<NbToastrService>;
+    configServiceSpy = TestBed.inject(NgxConfigureService) as jasmine.SpyObj<NgxConfigureService>;
+  });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(DMMComponent);
+    component = fixture.componentInstance;
+    dmmServiceSpy.getMaps.and.returnValue(Promise.resolve([]));
+    dmmServiceSpy.getSchemas.and.returnValue(Promise.resolve([]));
+    dmmServiceSpy.getSources.and.returnValue(Promise.resolve([]));
+    dmmServiceSpy.getConfig.and.returnValue(Promise.resolve({}));
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should load mapper list on init', async () => {
+    const mockMaps = [{ id: 1, name: 'Map 1' }];
+    dmmServiceSpy.getMaps.and.returnValue(Promise.resolve(mockMaps));
+    await component.ngOnInit();
+    expect(component.maps).toEqual(mockMaps);
+  });
+
+  it('should handle error when loading mapper list fails', async () => {
+    const error = new Error('Failed to load maps');
+    dmmServiceSpy.getMaps.and.returnValue(Promise.reject(error));
+    spyOn(component, 'handleError');
+    await component.ngOnInit();
+    expect(component.handleError).toHaveBeenCalledWith(error, false, false);
+  });
+
+  it('should update map when saveRecord is called', async () => {
+    const mockMapperRecord = { mapperRecordId: '123', name: 'Test Map' };
+    const mockDialogRef = {
+      onClose: of(mockMapperRecord),
+      close: () => {},
+    } as NbDialogRef<unknown>;
+    dialogServiceSpy.open.and.returnValue(mockDialogRef);
+    await component.saveRecord();
+    expect(component.mapperRecord).toEqual(mockMapperRecord);
+    expect(component.selectMap).toEqual(mockMapperRecord.mapperRecordId);
+  });
+
+  it('should transform data when transform is called', async () => {
+    const mockOutput = [{ result: 'Transformed data' }];
+    dmmServiceSpy.transform.and.returnValue(Promise.resolve(mockOutput));
+    spyOn(component.outputEditor, 'update');
+    await component.transform();
+    expect(component.outputEditor.update).toHaveBeenCalledWith(mockOutput);
+    expect(toastrServiceSpy.show).toHaveBeenCalledWith('', 'Transformed', jasmine.any(Object));
+  });
+
+  it('should update CSV table when updateCSVTable is called', () => {
+    component.source.csvSourceData = 'col1,col2\nval1,val2';
+    component.separatorItem = ',';
+    spyOn(component, 'displayCSV');
+    component.updateCSVTable();
+    expect(component.displayCSV).toHaveBeenCalledWith('col1,col2\nval1,val2', jasmine.any(Object), ',');
+  });
+
+  // Add more tests here...
+});
