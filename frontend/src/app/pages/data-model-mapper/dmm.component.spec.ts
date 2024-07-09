@@ -10,6 +10,8 @@ import { ErrorDialogMapperRecordService } from '../error-dialog/error-dialog-map
 import { createTranslateLoader } from '../../app.module';
 import { HttpClient } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import mock from '../../../assets/tests/mock.js'
+//import { FormsModule } from '@angular/forms';
 
 describe('DMMComponent', () => {
   let component: DMMComponent;
@@ -18,15 +20,15 @@ describe('DMMComponent', () => {
   let dialogServiceSpy: jasmine.SpyObj<NbDialogService>;
   let toastrServiceSpy: jasmine.SpyObj<NbToastrService>;
   let configServiceSpy: jasmine.SpyObj<NgxConfigureService>;
-  let errorDialogServiceSpy: jasmine.SpyObj<ErrorDialogMapperRecordService>; // Dichiarazione del mock del servizio
-  let translateService: TranslateService; // Dichiarazione del servizio di traduzione
+  let errorDialogServiceSpy: jasmine.SpyObj<ErrorDialogMapperRecordService>;
+  let translateService: TranslateService;
 
   beforeEach(async () => {
     const dmmSpy = jasmine.createSpyObj('DMMService', ['getMaps', 'getSchemas', 'getSources', 'getConfig', 'transform']);
     const dialogSpy = jasmine.createSpyObj('NbDialogService', ['open']);
     const toastrSpy = jasmine.createSpyObj('NbToastrService', ['show']);
     const configSpy = jasmine.createSpyObj('NgxConfigureService', [], { config: {} });
-    const errorDialogSpy = jasmine.createSpyObj('ErrorDialogMapperRecordService', ['openErrorDialog']); // Creazione del mock del servizio
+    const errorDialogSpy = jasmine.createSpyObj('ErrorDialogMapperRecordService', ['openErrorDialog']);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -44,12 +46,14 @@ describe('DMMComponent', () => {
         NbOverlayModule.forRoot(),
         BrowserAnimationsModule,
         NbThemeModule.forRoot(),
-        NbCardModule, // Importa NbCardModule
-        NbAccordionModule // Importa NbAccordionModule
+        NbCardModule,
+        //FormsModule,
+        NbAccordionModule,
+
       ],
       declarations: [
         DMMComponent,
-        TranslatePipe // Dichiarazione del pipe di traduzione
+        TranslatePipe
       ],
       providers: [
         TranslateService,
@@ -58,8 +62,8 @@ describe('DMMComponent', () => {
         { provide: NbToastrService, useValue: toastrSpy },
         { provide: NgxConfigureService, useValue: configSpy },
         { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } },
-        { provide: ErrorDialogMapperRecordService, useValue: errorDialogSpy }, // Fornitura del mock del servizio
-        TranslateService // Fornitura del servizio di traduzione
+        { provide: ErrorDialogMapperRecordService, useValue: errorDialogSpy },
+        TranslateService
       ]
     }).compileComponents();
 
@@ -67,17 +71,17 @@ describe('DMMComponent', () => {
     dialogServiceSpy = TestBed.inject(NbDialogService) as jasmine.SpyObj<NbDialogService>;
     toastrServiceSpy = TestBed.inject(NbToastrService) as jasmine.SpyObj<NbToastrService>;
     configServiceSpy = TestBed.inject(NgxConfigureService) as jasmine.SpyObj<NgxConfigureService>;
-    errorDialogServiceSpy = TestBed.inject(ErrorDialogMapperRecordService) as jasmine.SpyObj<ErrorDialogMapperRecordService>; // Inizializzazione del mock del servizio
-    translateService = TestBed.inject(TranslateService); // Inizializzazione del servizio di traduzione
+    errorDialogServiceSpy = TestBed.inject(ErrorDialogMapperRecordService) as jasmine.SpyObj<ErrorDialogMapperRecordService>;
+    translateService = TestBed.inject(TranslateService);
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DMMComponent);
     component = fixture.componentInstance;
-    dmmServiceSpy.getMaps.and.returnValue(Promise.resolve([]));
-    dmmServiceSpy.getSchemas.and.returnValue(Promise.resolve([]));
-    dmmServiceSpy.getSources.and.returnValue(Promise.resolve([]));
-    dmmServiceSpy.getConfig.and.returnValue(Promise.resolve({}));
+    dmmServiceSpy.getMaps.and.returnValue(Promise.resolve([mock.maps]));
+    dmmServiceSpy.getSchemas.and.returnValue(Promise.resolve([mock.schemas]));
+    dmmServiceSpy.getSources.and.returnValue(Promise.resolve([mock.sources]));
+    dmmServiceSpy.getConfig.and.returnValue(Promise.resolve(mock.config));
     fixture.detectChanges();
   });
 
@@ -85,6 +89,11 @@ describe('DMMComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // Altri test possono essere aggiunti qui...
+  it('set source', () => {
+    component.source.inputType = "CSV"
+    expect(component.source.inputType).toBe("CSV");
+  });
+
+  // Other tests...
 
 });
