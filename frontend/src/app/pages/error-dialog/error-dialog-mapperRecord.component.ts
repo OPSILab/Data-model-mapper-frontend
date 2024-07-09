@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 import { Location } from '@angular/common';
-//import { LoginService } from '../../auth/login/login.service';
 @Component({
   selector: 'error-dialog',
   templateUrl: 'error-dialog-mapperRecord.component.html',

@@ -307,7 +307,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       this.handleError(error, false, false)
-      if (error.status == 0 || error.error.status == 0) {
+      if (error?.status == 0 || error?.error?.status == 0) {
         error.statusText = undefined
         error.message = error.error.message = "Unable to reach server"
         this.backendDown = true
@@ -778,7 +778,7 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       if (!output)
-        output = !error.status ? { "error": "Service unreachable" } : error.error
+        output = !error?.status ? { "error": "Service unreachable" } : error.error
       this.handleError(error, false, false)
     }
 
@@ -823,9 +823,9 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     catch (error) {
       if (!output)
-        if (!error.status && error.name == "HttpErrorResponse")
+        if (!error?.status && error?.name == "HttpErrorResponse")
           output = { "error": "Service unreachable" }
-        else if (error.status == 413) {
+        else if (error?.status == 413) {
           try {
             output = await this.dmmService.transform(this.source.inputType, this.minioObjName, this.bucket, this.etag, { url: this.source.sourceDataURL }, JSON.parse(editor.mapperEditor.getText()), this.schemaJson, this.transformSettings)
           }
@@ -1380,7 +1380,7 @@ export class DMMComponent implements OnInit, OnChanges {
       if (mapSettings.name) this.name = mapSettings.name
       console.debug(mapSettings.description)
       if (mapSettings.description) this.mapperRecord.description = mapSettings.description
-      if (mapSettings.status) this.mapperRecord.status = mapSettings.status
+      if (mapSettings?.status) this.mapperRecord.status = mapSettings?.status
       if (this.mapperRecord.mapperRecordId) this.isNotNew = true
       editor.mapperEditor.update(this.map)
       this.selectedSchema = "---select schema---"

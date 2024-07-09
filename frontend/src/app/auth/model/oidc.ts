@@ -12,6 +12,11 @@ export class UserClaims {
   sub?: string;
   updated_at?: string;
   roles?: string[];
+  realm_access?: {
+    roles: string[];
+  };
+  resource_access?: any;
+
 }
 
 export interface AccessTokenPayload {
@@ -25,6 +30,7 @@ export interface AccessTokenPayload {
 }
 
 export interface OidcToken {
+  user: UserClaims;
   id_token: string;
   access_token: string;
 }

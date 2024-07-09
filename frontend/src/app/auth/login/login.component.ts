@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 import { NbAuthOAuth2JWTToken, NbAuthService } from '@nebular/auth';
 import { NbDialogService } from '@nebular/theme';
 import { ErrorResponse } from '../../model/errorResponse';
-import { OidcJWTToken } from '../oidc/oidc';
+import { OidcJWTToken } from '../model/oidc';
 
 @Component({
   selector: 'login',

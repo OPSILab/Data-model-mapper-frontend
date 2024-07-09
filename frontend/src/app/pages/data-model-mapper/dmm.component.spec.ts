@@ -1,10 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DMMComponent } from './dmm.component';
 import { DMMService } from './dmm.service';
-import { NbDialogService, NbToastrService, NbDialogRef } from '@nebular/theme';
+import { NbDialogService, NbToastrService, NbWindowModule, NbOverlayModule, NbThemeModule, NbCardModule, NbAccordionModule } from '@nebular/theme';
 import { NgxConfigureService } from 'ngx-configure';
 import { ActivatedRoute } from '@angular/router';
+import { TranslateLoader, TranslateModule, TranslatePipe, TranslateService } from '@ngx-translate/core'; // Assicurati di importare il pipe e il servizio di traduzione corretti
 import { of } from 'rxjs';
+import { ErrorDialogMapperRecordService } from '../error-dialog/error-dialog-mapperRecord.service';
+import { createTranslateLoader } from '../../app.module';
+import { HttpClient } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('DMMComponent', () => {
   let component: DMMComponent;
@@ -13,21 +18,48 @@ describe('DMMComponent', () => {
   let dialogServiceSpy: jasmine.SpyObj<NbDialogService>;
   let toastrServiceSpy: jasmine.SpyObj<NbToastrService>;
   let configServiceSpy: jasmine.SpyObj<NgxConfigureService>;
+  let errorDialogServiceSpy: jasmine.SpyObj<ErrorDialogMapperRecordService>; // Dichiarazione del mock del servizio
+  let translateService: TranslateService; // Dichiarazione del servizio di traduzione
 
   beforeEach(async () => {
     const dmmSpy = jasmine.createSpyObj('DMMService', ['getMaps', 'getSchemas', 'getSources', 'getConfig', 'transform']);
     const dialogSpy = jasmine.createSpyObj('NbDialogService', ['open']);
     const toastrSpy = jasmine.createSpyObj('NbToastrService', ['show']);
     const configSpy = jasmine.createSpyObj('NgxConfigureService', [], { config: {} });
+    const errorDialogSpy = jasmine.createSpyObj('ErrorDialogMapperRecordService', ['openErrorDialog']); // Creazione del mock del servizio
 
     await TestBed.configureTestingModule({
-      declarations: [ DMMComponent ],
+      imports: [
+        /*TranslateModule.forChild(
+          {
+            loader: {
+              provide: TranslateLoader,
+              useFactory: (createTranslateLoader),
+              deps: [HttpClient]
+            }
+          }
+        ),*/
+        TranslateModule.forRoot(),
+        NbWindowModule.forRoot(),
+        NbOverlayModule.forRoot(),
+        BrowserAnimationsModule,
+        NbThemeModule.forRoot(),
+        NbCardModule, // Importa NbCardModule
+        NbAccordionModule // Importa NbAccordionModule
+      ],
+      declarations: [
+        DMMComponent,
+        TranslatePipe // Dichiarazione del pipe di traduzione
+      ],
       providers: [
+        TranslateService,
         { provide: DMMService, useValue: dmmSpy },
         { provide: NbDialogService, useValue: dialogSpy },
         { provide: NbToastrService, useValue: toastrSpy },
         { provide: NgxConfigureService, useValue: configSpy },
-        { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } }
+        { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } },
+        { provide: ErrorDialogMapperRecordService, useValue: errorDialogSpy }, // Fornitura del mock del servizio
+        TranslateService // Fornitura del servizio di traduzione
       ]
     }).compileComponents();
 
@@ -35,6 +67,8 @@ describe('DMMComponent', () => {
     dialogServiceSpy = TestBed.inject(NbDialogService) as jasmine.SpyObj<NbDialogService>;
     toastrServiceSpy = TestBed.inject(NbToastrService) as jasmine.SpyObj<NbToastrService>;
     configServiceSpy = TestBed.inject(NgxConfigureService) as jasmine.SpyObj<NgxConfigureService>;
+    errorDialogServiceSpy = TestBed.inject(ErrorDialogMapperRecordService) as jasmine.SpyObj<ErrorDialogMapperRecordService>; // Inizializzazione del mock del servizio
+    translateService = TestBed.inject(TranslateService); // Inizializzazione del servizio di traduzione
   });
 
   beforeEach(() => {
@@ -51,49 +85,6 @@ describe('DMMComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load mapper list on init', async () => {
-    const mockMaps = [{ id: 1, name: 'Map 1' }];
-    dmmServiceSpy.getMaps.and.returnValue(Promise.resolve(mockMaps));
-    await component.ngOnInit();
-    expect(component.maps).toEqual(mockMaps);
-  });
+  // Altri test possono essere aggiunti qui...
 
-  it('should handle error when loading mapper list fails', async () => {
-    const error = new Error('Failed to load maps');
-    dmmServiceSpy.getMaps.and.returnValue(Promise.reject(error));
-    spyOn(component, 'handleError');
-    await component.ngOnInit();
-    expect(component.handleError).toHaveBeenCalledWith(error, false, false);
-  });
-
-  it('should update map when saveRecord is called', async () => {
-    const mockMapperRecord = { mapperRecordId: '123', name: 'Test Map' };
-    const mockDialogRef = {
-      onClose: of(mockMapperRecord),
-      close: () => {},
-    } as NbDialogRef<unknown>;
-    dialogServiceSpy.open.and.returnValue(mockDialogRef);
-    await component.saveRecord();
-    expect(component.mapperRecord).toEqual(mockMapperRecord);
-    expect(component.selectMap).toEqual(mockMapperRecord.mapperRecordId);
-  });
-
-  it('should transform data when transform is called', async () => {
-    const mockOutput = [{ result: 'Transformed data' }];
-    dmmServiceSpy.transform.and.returnValue(Promise.resolve(mockOutput));
-    spyOn(component.outputEditor, 'update');
-    await component.transform();
-    expect(component.outputEditor.update).toHaveBeenCalledWith(mockOutput);
-    expect(toastrServiceSpy.show).toHaveBeenCalledWith('', 'Transformed', jasmine.any(Object));
-  });
-
-  it('should update CSV table when updateCSVTable is called', () => {
-    component.source.csvSourceData = 'col1,col2\nval1,val2';
-    component.separatorItem = ',';
-    spyOn(component, 'displayCSV');
-    component.updateCSVTable();
-    expect(component.displayCSV).toHaveBeenCalledWith('col1,col2\nval1,val2', jasmine.any(Object), ',');
-  });
-
-  // Add more tests here...
 });

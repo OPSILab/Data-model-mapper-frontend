@@ -38,7 +38,6 @@ import { NbAuthModule, NbOAuth2AuthStrategy } from '@nebular/auth';
 import { OidcJWTToken } from './auth/model/oidc';
 import { AuthGuard } from './auth/services/auth.guard';
 import { LoginModule } from './auth/login/login.module';
-import { TokenInterceptor } from './auth/services/token.interceptor';
 
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -101,12 +100,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpConfigInterceptor,
       multi: true,
-    }/*,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
-      multi: true,
-    },*/
+    }
 
   ],
   bootstrap: [AppComponent],

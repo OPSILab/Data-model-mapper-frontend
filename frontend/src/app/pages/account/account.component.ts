@@ -16,7 +16,6 @@ import { Validators, FormControl, FormGroup, ValidationErrors, FormArray, Abstra
 import { FormBuilder } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { Account, AccountNotificationEnum } from '../../model/account/account.model';
-import { LoginService } from '../../auth/login/login.service';
 import { OidcUserInformationService } from '../../auth/services/oidc-user-information.service';
 import { UserClaims } from '../../auth/model/oidc';
 import { NgxConfigureService } from 'ngx-configure';

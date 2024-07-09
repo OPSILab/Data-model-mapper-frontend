@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { ConfigService } from '@ngx-config/core';
-import { OidcJWTToken, UserClaims } from '../oidc/oidc';
+import { OidcJWTToken, UserClaims } from '../model/oidc';
 import { of as observableOf } from 'rxjs/observable/of';
 import { NbAuthService } from '@nebular/auth';
 
