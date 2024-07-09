@@ -102,7 +102,7 @@
                   {{ 'general.editor.upload' | translate }}
                   <i class="mx-1 fas fa-file-import fa-lg"></i>
                 </button>
-                <button nbButton class="mr-2" shape="rectangle" size="small"
+                <button id="onUpdatePathForDataMap" nbButton class="mr-2" shape="rectangle" size="small"
                   (click)="source.onUpdatePathForDataMap(source.selectedPath, verifyRoot($event))">
                   {{ 'general.editor.confirm_source' | translate }}
                   <i class="mx-1 fas fa-file-import fa-lg"></i>
@@ -252,7 +252,8 @@
             <p *ngIf="dialog">Tranform.
             </p>
             <br> <br> <br>
-            <button *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small" (click)="testMapperRecord()">
+            <button id="preview" *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
+              (click)="testMapperRecord()">
               {{ 'general.dmm.preview' | translate }}
               <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button> &nbsp;

@@ -1,6 +1,10 @@
 <nb-card>
   <nb-card-header class="h3">
     {{ 'general.menu.map_records' | translate }}
+    <button *ngIf="test" style="float:right" nbButton appearance="outline" shape="semi-round" size="tiny"
+    status="info" (click)="automated()">
+    <i class="material-icons">star</i>
+  </button>
   </nb-card-header>
 
   <nb-card-body>

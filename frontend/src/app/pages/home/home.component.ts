@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
 import { TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ng2-smart-table';
@@ -12,6 +12,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ActionsComponent } from './actions/actions.component';
 import { DetailsComponent } from './details/details.component';
 import { StatusComponent } from './status/status.component';
+import { TestDmmEditorComponent } from './testDmmEditor/testDmmEditor.component';
+//import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'home',
@@ -42,6 +44,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public source: LocalDataSource = new LocalDataSource();
   private mapRecords: any[];
   private unsubscribe: Subject<void> = new Subject();
+  test: any;
 
   constructor(
     private router: Router,
@@ -50,8 +53,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private configService: NgxConfigureService,
     private dialogService: NbDialogService,
-    public route: ActivatedRoute
+    public route: ActivatedRoute,
+    //@Inject(DOCUMENT) public document: Document,
+
   ) {
+    this.test = this.route.snapshot.queryParams['testing']
     this.config = this.configService.config as AppConfig;
     this.systemConfig = this.config.system;
     this.systemLocale = this.config.i18n.locale;
@@ -65,6 +71,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       '/' +
       this.systemConfig.editorSchemaName;
     this.loading = true;
+  }
+
+  automated() {
+    this.dialogService.open(TestDmmEditorComponent, {
+    //context: {dialog : true}
+  })
   }
 
   async ngOnInit() {

@@ -11,6 +11,7 @@ import { createTranslateLoader } from '../../app.module';
 import { HttpClient } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import mock from '../../../assets/tests/mock.js'
+import { By } from '@angular/platform-browser';
 //import { FormsModule } from '@angular/forms';
 
 describe('DMMComponent', () => {
@@ -75,13 +76,19 @@ describe('DMMComponent', () => {
     translateService = TestBed.inject(TranslateService);
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     fixture = TestBed.createComponent(DMMComponent);
     component = fixture.componentInstance;
+
+
     dmmServiceSpy.getMaps.and.returnValue(Promise.resolve([mock.maps]));
     dmmServiceSpy.getSchemas.and.returnValue(Promise.resolve([mock.schemas]));
     dmmServiceSpy.getSources.and.returnValue(Promise.resolve([mock.sources]));
     dmmServiceSpy.getConfig.and.returnValue(Promise.resolve(mock.config));
+
+
+    //await component.ngOnInit();
+
     fixture.detectChanges();
   });
 
@@ -92,6 +99,26 @@ describe('DMMComponent', () => {
   it('set source', () => {
     component.source.inputType = "CSV"
     expect(component.source.inputType).toBe("CSV");
+  });
+
+  it('should simulate click event on button', () => {
+    spyOn(component.source, 'onUpdatePathForDataMap');
+
+    const buttonDebugElement = fixture.debugElement.query(By.css('#onUpdatePathForDataMap'));
+    buttonDebugElement.triggerEventHandler('click', null);
+
+    expect(component.source.onUpdatePathForDataMap).toHaveBeenCalled();
+  });
+
+  it('preview', () => {
+    spyOn(component, 'testMapperRecord');
+
+    const buttonDebugElement = fixture.debugElement.query(By.css('#preview'));
+    //console.log(component)
+    buttonDebugElement.triggerEventHandler('click', null);
+    //console.log(component)
+
+    expect(component.testMapperRecord).toHaveBeenCalled();
   });
 
   // Other tests...

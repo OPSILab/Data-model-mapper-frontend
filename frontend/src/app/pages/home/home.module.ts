@@ -10,6 +10,7 @@ import { DetailsComponent } from './details/details.component';
 import { StatusComponent } from './status/status.component';
 import { TransformComponent } from './transform/transform.component';
 import { ImportComponent } from './import/import.component';
+import { TestDmmEditorComponent } from './testDmmEditor/testDmmEditor.component';
 
 
 
@@ -19,7 +20,8 @@ import { ImportComponent } from './import/import.component';
     DetailsComponent,
     StatusComponent,
     TransformComponent,
-    ImportComponent
+    ImportComponent,
+    TestDmmEditorComponent
   ],
   imports: [
     CommonModule,
