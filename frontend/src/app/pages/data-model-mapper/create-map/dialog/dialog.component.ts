@@ -6,34 +6,30 @@ import { ErrorDialogMapperRecordService } from '../../../error-dialog/error-dial
 @Component({
   selector: 'dialog',
   templateUrl: './dialog.component.html',
-  styleUrls: ['./dialog.component.scss']
+  styleUrls: ['./dialog.component.scss'],
 })
 export class DialogComponent implements OnInit {
-message
+  message;
   constructor(
     protected ref: NbDialogRef<DialogComponent>,
     private errorService: ErrorDialogMapperRecordService,
-    protected dialogService: NbDialogService,
-
-  ) { }
-  confirm(){
-    this.ref.close(true)
+    protected dialogService: NbDialogService
+  ) {}
+  confirm() {
+    this.ref.close(true);
   }
 
-  test(){
-    this.dialogService.open(DialogComponent)
+  test() {
+    this.dialogService.open(DialogComponent);
   }
 
-  error(){
-    this.errorService.openErrorDialog({error:"example"})
+  error() {
+    this.errorService.openErrorDialog({ error: 'example' });
   }
 
-
-  cancel(){
-    this.ref.close(false)
+  cancel() {
+    this.ref.close(false);
   }
 
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

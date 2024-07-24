@@ -1,6 +1,14 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { NbMenuItem, NbMenuService, NbDialogService, NbToastrService, NbComponentStatus, NbGlobalPhysicalPosition, NbToastrConfig } from '@nebular/theme';
+import {
+  NbMenuItem,
+  NbMenuService,
+  NbDialogService,
+  NbToastrService,
+  NbComponentStatus,
+  NbGlobalPhysicalPosition,
+  NbToastrConfig,
+} from '@nebular/theme';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -14,26 +22,25 @@ import { DMMComponent } from '../../data-model-mapper/dmm.component';
 @Component({
   selector: 'actions',
   templateUrl: './actions.component.html',
-  styleUrls: ['./actions.component.scss']
+  styleUrls: ['./actions.component.scss'],
 })
 export class ActionsComponent implements OnInit, OnDestroy {
-
   @Input() value;
   @Output() updateResult = new EventEmitter<unknown>();
   @Input() editedValue;
   @Output() outValue = new EventEmitter<unknown>();
-  name
-  description
-  status
-  map
-  dataModel
-  id
-  ref
-  dialogRef
+  name;
+  description;
+  status;
+  map;
+  dataModel;
+  id;
+  ref;
+  dialogRef;
   service;
-  services: any[]
-  mapperRecords: MapperRecordEntry[]
-  mapperRecordsTypeModel: MapperRecordEntry[] = []
+  services: any[];
+  mapperRecords: MapperRecordEntry[];
+  mapperRecordsTypeModel: MapperRecordEntry[] = [];
 
   private unsubscribe: Subject<void> = new Subject();
   actions: NbMenuItem[];
@@ -55,8 +62,8 @@ export class ActionsComponent implements OnInit, OnDestroy {
     private errorDialogService: ErrorDialogService,
     private toastrService: NbToastrService,
     private dialogService: NbDialogService,
-    private translateService: TranslateService,
-  ) { }
+    private translateService: TranslateService
+  ) {}
 
   get registered(): boolean {
     return this.value.status == StatusComponent.Enum.COMPLETED ? true : false;
@@ -64,13 +71,13 @@ export class ActionsComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     try {
-      this.name = this.value.name
-      this.description = this.value.description
-      this._id = this.value._id
-      this.map = this.value.map
-      this.dataModel = this.value.dataModel
-      this.status = this.value.status
-      if (this.ref) this.ref.close()
+      this.name = this.value.name;
+      this.description = this.value.description;
+      this._id = this.value._id;
+      this.map = this.value.map;
+      this.dataModel = this.value.dataModel;
+      this.status = this.value.status;
+      if (this.ref) this.ref.close();
       this.actions = this.translatedActionLabels();
       this.menuService
         .onItemClick()
@@ -79,7 +86,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
         .subscribe((event) => {
           switch (event.item.data) {
             case 'edit':
-              this.router.navigate(['/pages/dmm-editor', { inputID: this.value._id }])
+              this.router.navigate(['/pages/dmm-editor', { inputID: this.value._id }]);
               break;
             case 'delete':
               this.openDeleteFromRegistryDialog();
@@ -91,23 +98,20 @@ export class ActionsComponent implements OnInit, OnDestroy {
               this.openDeRegisterDialog();
               break;
             case 'view record':
-              this.router.navigate(['/pages/dmm-editor', { inputID: this.value._id, readOnly: true }])
+              this.router.navigate(['/pages/dmm-editor', { inputID: this.value._id, readOnly: true }]);
               break;
             case 'transform':
-              this.dialogService
-                .open(TransformComponent, {
-                  context: { inputID: this.value._id, dialog : true },
-                })
+              this.dialogService.open(TransformComponent, {
+                context: { inputID: this.value._id, dialog: true },
+              });
             default:
-              console.log("default")
+              console.log('default');
               break;
           }
         });
+    } catch (error) {
+      console.error(error);
     }
-    catch (error) {
-      console.error(error)
-    }
-
   }
 
   showRecordInfoModal(): void {
@@ -119,7 +123,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
           id: this.value._id,
           map: this.value.map,
           dataModel: this.value.dataModel,
-          status: this.value.status
+          status: this.value.status,
         },
         hasScroll: true,
       });
@@ -127,18 +131,18 @@ export class ActionsComponent implements OnInit, OnDestroy {
   }
 
   cancel(): void {
-    if (this.ref) this.ref.close()
-    this.ref.Subscriber.closed = true
+    if (this.ref) this.ref.close();
+    this.ref.Subscriber.closed = true;
   }
 
   ngOnDestroy(): void {
-    if (this.ref) this.ref.closed = true
+    if (this.ref) this.ref.closed = true;
     this.unsubscribe.next();
     this.unsubscribe.complete();
   }
 
   translatedActionLabels(): NbMenuItem[] {
-    if (this.ref) this.ref.closed = true
+    if (this.ref) this.ref.closed = true;
     if (this.registered)
       return [
         {
@@ -148,8 +152,8 @@ export class ActionsComponent implements OnInit, OnDestroy {
         {
           title: this.translate.instant('general.dmm.deregister') as string,
           data: 'deregister',
-        }
-      ]
+        },
+      ];
     return [
       {
         title: this.translate.instant('general.dmm.edit') as string,
@@ -162,7 +166,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
       {
         title: this.translate.instant('general.dmm.delete') as string,
         data: 'delete',
-      }
+      },
     ];
   }
 
@@ -194,8 +198,26 @@ export class ActionsComponent implements OnInit, OnDestroy {
 
   onRegister = async (): Promise<void> => {
     try {
-      this.value.status = this.value.status == "Completed" ? "Under development" : "Completed";
-      this.value = await this.dmmService.updateMap(this.value._id, this.name, this.value.status, this.description, this.value.map, this.value.dataModel, this.value.sourceDataType, this.value.config, this.value.sourceDataURL, this.value.dataModelURL, this.value.dataModelID, this.value.sourceData, this.value.sourceDataID, this.value.minioObjName, this.value.bucket, this.value.etag, this.value.path)
+      this.value.status = this.value.status == 'Completed' ? 'Under development' : 'Completed';
+      this.value = await this.dmmService.updateMap(
+        this.value._id,
+        this.name,
+        this.value.status,
+        this.description,
+        this.value.map,
+        this.value.dataModel,
+        this.value.sourceDataType,
+        this.value.config,
+        this.value.sourceDataURL,
+        this.value.dataModelURL,
+        this.value.dataModelID,
+        this.value.sourceData,
+        this.value.sourceDataID,
+        this.value.minioObjName,
+        this.value.bucket,
+        this.value.etag,
+        this.value.path
+      );
       this.showToast('primary', this.translate.instant('general.dmm.record_registered_message', { recordName: this.value.name }), '');
       this.updateResult.emit(this.value);
     } catch (error) {
@@ -205,8 +227,26 @@ export class ActionsComponent implements OnInit, OnDestroy {
 
   onDeRegister = async (): Promise<void> => {
     try {
-      this.value.status = this.value.status == "Completed" ? "Under development" : "Completed";
-      this.value = await this.dmmService.updateMap(this.value._id, this.name, this.value.status, this.description, this.value.map, this.value.dataModel, this.value.sourceDataType, this.value.config, this.value.sourceDataURL, this.value.dataModelURL, this.value.dataModelID, this.value.sourceData, this.value.sourceDataID, this.value.minioObjName, this.value.bucket, this.value.etag, this.value.path)
+      this.value.status = this.value.status == 'Completed' ? 'Under development' : 'Completed';
+      this.value = await this.dmmService.updateMap(
+        this.value._id,
+        this.name,
+        this.value.status,
+        this.description,
+        this.value.map,
+        this.value.dataModel,
+        this.value.sourceDataType,
+        this.value.config,
+        this.value.sourceDataURL,
+        this.value.dataModelURL,
+        this.value.dataModelID,
+        this.value.sourceData,
+        this.value.sourceDataID,
+        this.value.minioObjName,
+        this.value.bucket,
+        this.value.etag,
+        this.value.path
+      );
       this.showToast('primary', this.translate.instant('general.dmm.record_deregistered_message', { recordName: this.value.name }), '');
       this.updateResult.emit(this.value);
     } catch (error) {
@@ -221,11 +261,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
         callback: async () => {
           try {
             await this.dmmService.deleteMap(this.value._id);
-            this.showToast(
-              'primary',
-              this.translateService.instant('general.dmm.record_deleted_message', { recordName: this.value.name }),
-              ''
-            );
+            this.showToast('primary', this.translateService.instant('general.dmm.record_deleted_message', { recordName: this.value.name }), '');
             ref.close();
             this.updateResult.emit(this.value._id);
           } catch (error) {

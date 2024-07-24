@@ -13,14 +13,12 @@ import { Component, Inject, OnInit } from '@angular/core';
   //styleUrls: ['./import.component.css']
 })
 export class ImportComponent extends DialogImportComponent {
-
   constructor(
     public http: HttpClient,
     public ref: NbDialogRef<DialogImportComponent>,
     public errorService: ErrorDialogService,
-    @Inject(DOCUMENT) public document: Document,
+    @Inject(DOCUMENT) public document: Document
   ) {
-    super(http, ref, errorService, document)
+    super(http, ref, errorService, document);
   }
-
 }

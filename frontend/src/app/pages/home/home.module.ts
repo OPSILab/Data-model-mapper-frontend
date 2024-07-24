@@ -1,7 +1,22 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HomeRoutingModule } from './home-routing.module';
-import { NbAccordionModule, NbAutocompleteModule, NbButtonModule, NbCardModule, NbCheckboxModule, NbContextMenuModule, NbIconModule, NbInputModule, NbRadioModule, NbSelectModule, NbSpinnerModule, NbTabsetModule, NbTagModule, NbToastrModule } from '@nebular/theme';
+import {
+  NbAccordionModule,
+  NbAutocompleteModule,
+  NbButtonModule,
+  NbCardModule,
+  NbCheckboxModule,
+  NbContextMenuModule,
+  NbIconModule,
+  NbInputModule,
+  NbRadioModule,
+  NbSelectModule,
+  NbSpinnerModule,
+  NbTabsetModule,
+  NbTagModule,
+  NbToastrModule,
+} from '@nebular/theme';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -12,17 +27,8 @@ import { TransformComponent } from './transform/transform.component';
 import { ImportComponent } from './import/import.component';
 import { TestDmmEditorComponent } from './testDmmEditor/testDmmEditor.component';
 
-
-
 @NgModule({
-  declarations: [
-    ActionsComponent,
-    DetailsComponent,
-    StatusComponent,
-    TransformComponent,
-    ImportComponent,
-    TestDmmEditorComponent
-  ],
+  declarations: [ActionsComponent, DetailsComponent, StatusComponent, TransformComponent, ImportComponent, TestDmmEditorComponent],
   imports: [
     CommonModule,
     HomeRoutingModule,
@@ -43,7 +49,7 @@ import { TestDmmEditorComponent } from './testDmmEditor/testDmmEditor.component'
     TranslateModule.forChild({}),
     FormsModule,
     ReactiveFormsModule,
-    NbAutocompleteModule
-  ]
+    NbAutocompleteModule,
+  ],
 })
-export class HomeModule { }
+export class HomeModule {}

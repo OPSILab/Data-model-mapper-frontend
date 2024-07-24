@@ -16,7 +16,6 @@ export class UserClaims {
     roles: string[];
   };
   resource_access?: any;
-
 }
 
 export interface AccessTokenPayload {

@@ -24,7 +24,7 @@ export class PagesComponent implements OnInit, OnDestroy {
   private hideManageMenu: boolean;
   private unsubscribe: Subject<void> = new Subject();
 
-  constructor(private translateService: TranslateService, private cdr: ChangeDetectorRef){}//, private accessChecker: NbAccessChecker) { }
+  constructor(private translateService: TranslateService, private cdr: ChangeDetectorRef) {} //, private accessChecker: NbAccessChecker) { }
 
   ngOnInit(): void {
     /*
@@ -49,7 +49,6 @@ export class PagesComponent implements OnInit, OnDestroy {
         this.hideManageMenu = !granted;
       });*/
 
-
     const MENU_ITEMS: NbMenuItem[] = [
       {
         title: 'general.menu.home',
@@ -59,8 +58,8 @@ export class PagesComponent implements OnInit, OnDestroy {
       {
         title: 'general.menu.editor',
         icon: 'edit-outline',
-        link: '/pages/dmm-editor'
-      }
+        link: '/pages/dmm-editor',
+      },
     ];
 
     // if put on constructor it will doing twice when refresh a page.

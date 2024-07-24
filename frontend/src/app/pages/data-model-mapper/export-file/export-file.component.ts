@@ -4,28 +4,26 @@ import { NbDialogRef } from '@nebular/theme';
 @Component({
   selector: 'export-file',
   templateUrl: './export-file.component.html',
-  styleUrls: ['./export-file.component.css']
+  styleUrls: ['./export-file.component.css'],
 })
 export class ExportFileComponent implements OnInit {
-  name
-  mapperRecordId
-  mode
+  name;
+  mapperRecordId;
+  mode;
 
-  constructor(protected ref: NbDialogRef<ExportFileComponent>) { }
+  constructor(protected ref: NbDialogRef<ExportFileComponent>) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   fixBrokenPageBug() {
-    document.getElementsByTagName('html')[0].className = ""
+    document.getElementsByTagName('html')[0].className = '';
   }
 
-  save(){
-    this.ref.close(this.mode)
+  save() {
+    this.ref.close(this.mode);
   }
 
-  close(){
-    this.ref.close()
+  close() {
+    this.ref.close();
   }
-
 }

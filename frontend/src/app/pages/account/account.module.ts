@@ -22,7 +22,6 @@ import { NgbDropdownModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap
 import { AccountService } from './account.service';
 import { HttpClient } from '@angular/common/http';
 
-
 @NgModule({
   imports: [
     CommonModule,

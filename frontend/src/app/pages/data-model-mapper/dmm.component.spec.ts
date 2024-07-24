@@ -10,7 +10,7 @@ import { ErrorDialogMapperRecordService } from '../error-dialog/error-dialog-map
 import { createTranslateLoader } from '../../app.module';
 import { HttpClient } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import mock from '../../../assets/tests/mock.js'
+import mock from '../../../assets/tests/mock.js';
 import { By } from '@angular/platform-browser';
 //import { FormsModule } from '@angular/forms';
 
@@ -50,12 +50,8 @@ describe('DMMComponent', () => {
         NbCardModule,
         //FormsModule,
         NbAccordionModule,
-
       ],
-      declarations: [
-        DMMComponent,
-        TranslatePipe
-      ],
+      declarations: [DMMComponent, TranslatePipe],
       providers: [
         TranslateService,
         { provide: DMMService, useValue: dmmSpy },
@@ -64,8 +60,8 @@ describe('DMMComponent', () => {
         { provide: NgxConfigureService, useValue: configSpy },
         { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } },
         { provide: ErrorDialogMapperRecordService, useValue: errorDialogSpy },
-        TranslateService
-      ]
+        TranslateService,
+      ],
     }).compileComponents();
 
     dmmServiceSpy = TestBed.inject(DMMService) as jasmine.SpyObj<DMMService>;
@@ -80,12 +76,10 @@ describe('DMMComponent', () => {
     fixture = TestBed.createComponent(DMMComponent);
     component = fixture.componentInstance;
 
-
     dmmServiceSpy.getMaps.and.returnValue(Promise.resolve([mock.maps]));
     dmmServiceSpy.getSchemas.and.returnValue(Promise.resolve([mock.schemas]));
     dmmServiceSpy.getSources.and.returnValue(Promise.resolve([mock.sources]));
     dmmServiceSpy.getConfig.and.returnValue(Promise.resolve(mock.config));
-
 
     //await component.ngOnInit();
 
@@ -97,8 +91,8 @@ describe('DMMComponent', () => {
   });
 
   it('set source', () => {
-    component.source.inputType = "CSV"
-    expect(component.source.inputType).toBe("CSV");
+    component.source.inputType = 'CSV';
+    expect(component.source.inputType).toBe('CSV');
   });
 
   it('should simulate click event on button', () => {
@@ -122,5 +116,4 @@ describe('DMMComponent', () => {
   });
 
   // Other tests...
-
 });

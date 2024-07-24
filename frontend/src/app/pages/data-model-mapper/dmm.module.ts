@@ -56,7 +56,7 @@ import { HttpConfigInterceptor } from '../../http.interceptor';
     NbUserModule,
     NbSpinnerModule,
     TranslateModule.forChild({}),
-    NbAutocompleteModule
+    NbAutocompleteModule,
   ],
   declarations: [DialogImportComponent, DialogDataMapComponent, CreateMapComponent, ExportFileComponent, DMMComponent, DialogComponent],
   providers: [
@@ -65,11 +65,8 @@ import { HttpConfigInterceptor } from '../../http.interceptor';
       provide: HTTP_INTERCEPTORS,
       useClass: HttpConfigInterceptor,
       multi: true,
-    }],
-  entryComponents: [
-    DialogImportComponent,
-    DialogDataMapComponent
-
-  ]
+    },
+  ],
+  entryComponents: [DialogImportComponent, DialogDataMapComponent],
 })
-export class DMMModule { }
+export class DMMModule {}

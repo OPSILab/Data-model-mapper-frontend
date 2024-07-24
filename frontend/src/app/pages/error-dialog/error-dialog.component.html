@@ -3,21 +3,16 @@
     <nb-card>
       <nb-card-header>
         {{ 'general.error' | translate }}
-        <button nbButton outline status="info" class="close" (click)="closeModal(error)">{{ 'general.close' |
-          translate
-          }} </button>
+        <button nbButton outline status="info" class="close" (click)="closeModal(error)">{{ 'general.close' | translate }}</button>
       </nb-card-header>
       <nb-card-body>
-        <ng-container
-          *ngIf="error?.error != 'EDITOR_VALIDATION_ERROR'; then genericError; else validationError">
-        </ng-container>
+        <ng-container *ngIf="error?.error != 'EDITOR_VALIDATION_ERROR'; then genericError; else validationError"> </ng-container>
         <ng-template #genericError>
           {{ 'general.errors' | translate }}
           <!--
           {{error?.statusText}}
           {{error?.header}}
           {{error?.message}}-->
-
 
           <!--{{error?.error?.message}}-->
         </ng-template>
@@ -33,24 +28,20 @@
   <nb-card-back *ngIf="appConfig.system.detailedErrors">
     <nb-card>
       <nb-card-header>
-        {{ 'general.error' | translate }} <!--:
+        {{ 'general.error' | translate }}
+        <!--:
         {{error?.statusText}}
         {{error?.header}}-->
         <!--{{error?.error?.message}}-->
-        <button nbButton outline status="info" class="close" (click)="closeModal(error)">{{ 'general.close' |
-          translate
-          }} </button>
+        <button nbButton outline status="info" class="close" (click)="closeModal(error)">{{ 'general.close' | translate }}</button>
       </nb-card-header>
       <nb-card-body>
-        <ng-container
-          *ngIf="error?.error != 'EDITOR_VALIDATION_ERROR'; then genericErrorDetails; else validationErrorDetails">
-        </ng-container>
+        <ng-container *ngIf="error?.error != 'EDITOR_VALIDATION_ERROR'; then genericErrorDetails; else validationErrorDetails"> </ng-container>
         <ng-template #genericErrorDetails>
-          {{error?.status ? "Status : " + error?.status + "\n\n" : null }}
-          {{error?.statusText ? "Status text : " + error?.statusText + "\n\n" : null }}
-          {{error?.header ? "Header : " + error?.header + "\n" : null }}
-          {{error?.error?.message ? "Message : " + error?.error?.message + "\n\n" : error?.message ? "Message : " +
-          error?.message + "\n\n" : null }}
+          {{ error?.status ? 'Status : ' + error?.status + '\n\n' : null }}
+          {{ error?.statusText ? 'Status text : ' + error?.statusText + '\n\n' : null }}
+          {{ error?.header ? 'Header : ' + error?.header + '\n' : null }}
+          {{ error?.error?.message ? 'Message : ' + error?.error?.message + '\n\n' : error?.message ? 'Message : ' + error?.message + '\n\n' : null }}
         </ng-template>
         <ng-template #validationErrorDetails>
           <div class="row p-3">
@@ -80,24 +71,19 @@
   </nb-card-back>
 </nb-reveal-card>
 
-<nb-card *ngIf="!appConfig.system.detailedErrors" style="width:300px;height:300px">
+<nb-card *ngIf="!appConfig.system.detailedErrors" style="width: 300px; height: 300px">
   <nb-card-header>
     {{ 'general.error' | translate }}
-    <button nbButton outline status="info" class="close" (click)="closeModal(error)">{{ 'general.close' |
-      translate
-      }} </button>
+    <button nbButton outline status="info" class="close" (click)="closeModal(error)">{{ 'general.close' | translate }}</button>
   </nb-card-header>
   <nb-card-body>
-    <ng-container
-      *ngIf="error?.error && error?.error !== 'EDITOR_VALIDATION_ERROR'; then genericError; else validationError">
-    </ng-container>
+    <ng-container *ngIf="error?.error && error?.error !== 'EDITOR_VALIDATION_ERROR'; then genericError; else validationError"> </ng-container>
     <ng-template #genericError>
       {{ 'general.errors' | translate }}
       <!--
         {{error?.statusText}}
         {{error?.header}}
         {{error?.message}}-->
-
 
       <!--{{error?.error?.message}}-->
     </ng-template>

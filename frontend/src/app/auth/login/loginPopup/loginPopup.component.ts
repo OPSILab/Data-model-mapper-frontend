@@ -37,16 +37,14 @@ export class LoginPopupComponent implements AfterViewInit, OnDestroy {
   }
 
   async ngAfterViewInit(): Promise<void> {
-
-
     //if (!(await this.authService.isAuthenticatedOrRefresh().toPromise())) {
-      if (!(await this.authService.getToken().toPromise()).isValid() && !this.queryParams['code'])
-        sessionStorage.setItem('queryParamsBeforeLogin', JSON.stringify(this.queryParams));
-      const authResult = await this.authService.authenticate((this.configService.config as AppConfig).system.auth.authProfile).toPromise();
-      if (authResult.isSuccess() && authResult.getToken()?.isValid()) {
-        this.completeLogin(authResult.getToken() as OidcJWTToken);
-      } else if (authResult.getErrors().length > 0)
-        this.openDialog(this.errorDialogTemplateRef, { error: { message: authResult.getErrors().toString() } });
+    if (!(await this.authService.getToken().toPromise()).isValid() && !this.queryParams['code'])
+      sessionStorage.setItem('queryParamsBeforeLogin', JSON.stringify(this.queryParams));
+    const authResult = await this.authService.authenticate((this.configService.config as AppConfig).system.auth.authProfile).toPromise();
+    if (authResult.isSuccess() && authResult.getToken()?.isValid()) {
+      this.completeLogin(authResult.getToken() as OidcJWTToken);
+    } else if (authResult.getErrors().length > 0)
+      this.openDialog(this.errorDialogTemplateRef, { error: { message: authResult.getErrors().toString() } });
     //}
   }
 

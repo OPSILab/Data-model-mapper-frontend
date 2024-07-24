@@ -31,11 +31,13 @@ export class LoginService {
   logout = async (): Promise<void> => {
     localStorage.removeItem('accountId');
     localStorage.removeItem('accountEmail');
-    let token = await this.authService.getToken().toPromise() as NbAuthOAuth2JWTToken;
+    const token = (await this.authService.getToken().toPromise()) as NbAuthOAuth2JWTToken;
 
     const authResult = await this.authService.logout(this.authProfile).toPromise();
     if (authResult.isSuccess()) {
-      window.location.href = `${this.idmHost}/realms/${this.authRealm}/protocol/openid-connect/logout?id_token_hint=${token.getPayload().id_token}&post_logout_redirect_uri=${this.serviceEditorUrl}/login`;
+      window.location.href = `${this.idmHost}/realms/${this.authRealm}/protocol/openid-connect/logout?id_token_hint=${
+        token.getPayload().id_token
+      }&post_logout_redirect_uri=${this.serviceEditorUrl}/login`;
     } else {
       window.alert(this.translateService.instant('login.logout_error'));
       //this.router.navigateByUrl('/login/loginPopup');

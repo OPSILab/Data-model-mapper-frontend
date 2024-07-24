@@ -15,8 +15,8 @@ export interface System {
   editorSchemaPath: string;
   editorSchemaName: string;
   auth: Auth;
-  mailTo:string;
-  docsUrl:string;
+  mailTo: string;
+  docsUrl: string;
   detailedErrors: boolean;
 }
 
@@ -39,7 +39,7 @@ export interface DataModelMapper {
   minioBuckets: any;
   minioCache: any;
   default_mapper_base_url: string;
-  default_mapper_url: string,
-  default_map_ID: string,
-  connect: boolean
+  default_mapper_url: string;
+  default_map_ID: string;
+  connect: boolean;
 }

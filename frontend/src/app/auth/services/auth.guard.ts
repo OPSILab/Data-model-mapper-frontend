@@ -4,29 +4,20 @@ import { NbAuthService } from '@nebular/auth';
 import { ConfigService } from '@ngx-config/core';
 import { tap } from 'rxjs/operators';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-
-  constructor(private authService: NbAuthService, private router: Router) {
-  }
-
+  constructor(private authService: NbAuthService, private router: Router) {}
 
   canActivate() {
-
-
-      return this.authService.isAuthenticated()
-        .pipe(
-          tap(authenticated => {
-            if (!authenticated) {
-              this.router.navigateByUrl('/login/loginPopup');
-              //this.router.navigate(['login/loginPopup']);
-            }
-          }),
-        );
-    }
-
-
+    return this.authService.isAuthenticated().pipe(
+      tap((authenticated) => {
+        if (!authenticated) {
+          this.router.navigateByUrl('/login/loginPopup');
+          //this.router.navigate(['login/loginPopup']);
+        }
+      })
+    );
+  }
 }

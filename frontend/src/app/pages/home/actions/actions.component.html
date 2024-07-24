@@ -1,5 +1,4 @@
-<button nbButton outline aria-label="Name" status="basic" [nbContextMenu]="actions"
-  nbContextMenuTag="service-context-menu{{ value._id }}">
+<button nbButton outline aria-label="Name" status="basic" [nbContextMenu]="actions" nbContextMenuTag="service-context-menu{{ value._id }}">
   <nb-icon icon="settings-2"></nb-icon>
 </button>
 <!-- Register Record modal ng-template -->
@@ -11,8 +10,7 @@
         <i class="material-icons">close</i>
       </button>
     </nb-card-header>
-    <nb-card-body class="p-5 text-center"
-      [innerHTML]="'general.dmm.register_message' | translate: { recordName: value.name }"></nb-card-body>
+    <nb-card-body class="p-5 text-center" [innerHTML]="'general.dmm.register_message' | translate: { recordName: value.name }"></nb-card-body>
     <nb-card-footer class="d-flex justify-content-center">
       <button nbButton status="primary" size="small" (click)="ref.close(true)">
         {{ 'general.dmm.register' | translate }}
@@ -27,13 +25,12 @@
 <ng-template #confirmDeRegisterDialog let-data let-ref="dialogRef">
   <nb-card>
     <nb-card-header class="d-flex justify-content-between">
-      <h5>{{'general.dmm.deregister' | translate: {recordName: value.name} }}</h5>
+      <h5>{{ 'general.dmm.deregister' | translate: { recordName: value.name } }}</h5>
       <button nbButton ghost shape="rectangle" size="tiny" (click)="ref.close()">
         <i class="material-icons">close</i>
       </button>
     </nb-card-header>
-    <nb-card-body class="p-5 text-center"
-      [innerHTML]="'general.dmm.deregister_message' | translate: { recordName: value.name }"></nb-card-body>
+    <nb-card-body class="p-5 text-center" [innerHTML]="'general.dmm.deregister_message' | translate: { recordName: value.name }"></nb-card-body>
     <nb-card-footer class="d-flex justify-content-center">
       <button nbButton status="primary" size="small" (click)="ref.close(true)">
         {{ 'general.dmm.deregister' | translate }}
@@ -76,7 +73,7 @@
       font-weight: normal;
     }
 
-    input[type="text"] {
+    input[type='text'] {
       font-weight: normal;
       text-align: left;
     }
@@ -96,13 +93,12 @@
   </style>
   <nb-card>
     <nb-card-header class="d-flex justify-content-between">
-      <h5>{{ 'general.dmm.delete' | translate: {recordName: value.name} }}</h5>
+      <h5>{{ 'general.dmm.delete' | translate: { recordName: value.name } }}</h5>
       <button nbButton ghost shape="rectangle" size="tiny" (click)="ref.close()">
         <i class="material-icons">close</i>
       </button>
     </nb-card-header>
-    <nb-card-body class="p-5 text-center"
-      [innerHTML]="'general.dmm.delete_message' | translate: {recordName: value.name}"></nb-card-body>
+    <nb-card-body class="p-5 text-center" [innerHTML]="'general.dmm.delete_message' | translate: { recordName: value.name }"></nb-card-body>
     <nb-card-footer class="d-flex justify-content-center">
       <button nbButton status="danger" size="small" (click)="data.callback()">
         {{ 'general.editor.delete' | translate }}
@@ -126,8 +122,12 @@
       <nb-card-body>
         <div class="row justify-content-around align-items-sm-center">
           <div class="col-sm py-2">
-            <img style="width: 100px; height: 100px" src="{{ data.iconUrl }}" alt="{{ data.modalHeader }}"
-              onerror="this.onerror=null;this.src = 'favicon.png'" />
+            <img
+              style="width: 100px; height: 100px"
+              src="{{ data.iconUrl }}"
+              alt="{{ data.modalHeader }}"
+              onerror="this.onerror=null;this.src = 'favicon.png'"
+            />
           </div>
           <div class="col-sm">
             {{ data.description }}
@@ -147,14 +147,18 @@
           <div class="row justify-content-center">
             <div class="col-sm py-1">
               <div class="accent">
-                <i><b>{{ 'general.services.authority' | translate }}:</b> {{ data.competentAuthority.prefLabel }}</i>
+                <i
+                  ><b>{{ 'general.services.authority' | translate }}:</b> {{ data.competentAuthority.prefLabel }}</i
+                >
               </div>
             </div>
           </div>
           <div class="row justify-content-center">
             <div class="col-sm py-1">
               <div class="accent">
-                <i><b>{{ 'general.services.location' | translate }}:</b> {{ data.location }}</i>
+                <i
+                  ><b>{{ 'general.services.location' | translate }}:</b> {{ data.location }}</i
+                >
               </div>
             </div>
           </div>
@@ -164,8 +168,7 @@
                 <i>
                   <b>{{ 'general.services.channels' | translate }}: </b>
                 </i>
-                <div class="mx-1 p-1 badge badge-primary" *ngFor="let channel of data.channel; let i = index"
-                  [attr.data-index]="i">
+                <div class="mx-1 p-1 badge badge-primary" *ngFor="let channel of data.channel; let i = index" [attr.data-index]="i">
                   <i>{{ channel.type }}</i>
                 </div>
               </div>
@@ -177,8 +180,7 @@
                 <i>
                   <b>{{ 'general.services.sector' | translate }}: </b>
                 </i>
-                <div class="mx-1 p-1 badge badge-warning" *ngFor="let sector of data.sector; let i = index"
-                  [attr.data-index]="i">
+                <div class="mx-1 p-1 badge badge-warning" *ngFor="let sector of data.sector; let i = index" [attr.data-index]="i">
                   <i>{{ sector }}</i>
                 </div>
               </div>
@@ -190,8 +192,7 @@
                 <i>
                   <b>{{ 'general.services.event' | translate }}: </b>
                 </i>
-                <div class="mx-1 p-1 badge badge-success" *ngFor="let event of data.event; let i = index"
-                  [attr.data-index]="i">
+                <div class="mx-1 p-1 badge badge-success" *ngFor="let event of data.event; let i = index" [attr.data-index]="i">
                   <i>{{ event }}</i>
                 </div>
               </div>
@@ -200,9 +201,10 @@
           <div class="row justify-content-center">
             <div class="col-sm py-1">
               <div class="">
-                <i><b>{{ 'general.services.link' | translate }}: </b>
-                  <a href="{{ data.serviceUri }}" target="_blank"><nb-icon
-                      icon="external-link-outline"></nb-icon></a></i>
+                <i
+                  ><b>{{ 'general.services.link' | translate }}: </b>
+                  <a href="{{ data.serviceUri }}" target="_blank"><nb-icon icon="external-link-outline"></nb-icon></a
+                ></i>
               </div>
             </div>
           </div>
@@ -210,9 +212,15 @@
       </nb-card-body>
       <nb-card-footer>
         <div class="row justify-content-center">
-          <button nbButton class="mx-4" shape="rectangle" size="large" status="primary"
+          <button
+            nbButton
+            class="mx-4"
+            shape="rectangle"
+            size="large"
+            status="primary"
             [routerLink]="['/pages/services/service-editor', { serviceId: data.serviceId, readOnly: true }]"
-            (click)="ref.close()">
+            (click)="ref.close()"
+          >
             <i class="material-icons">info</i>&nbsp;{{ 'general.services.view_editor' | translate }}
           </button>
           <button nbButton class="mx-4" ghost shape="rectangle" size="large" status="primary" (click)="ref.close()">

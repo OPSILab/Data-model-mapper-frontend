@@ -1,5 +1,21 @@
 import { NgModule } from '@angular/core';
-import { NbAccordionModule, NbAutocompleteModule, NbButtonModule, NbCardModule, NbCheckboxModule, NbContextMenuModule, NbIconModule, NbInputModule, NbMenuModule, NbRadioModule, NbSelectModule, NbSpinnerModule, NbTabsetModule, NbTagModule, NbToastrModule } from '@nebular/theme';
+import {
+  NbAccordionModule,
+  NbAutocompleteModule,
+  NbButtonModule,
+  NbCardModule,
+  NbCheckboxModule,
+  NbContextMenuModule,
+  NbIconModule,
+  NbInputModule,
+  NbMenuModule,
+  NbRadioModule,
+  NbSelectModule,
+  NbSpinnerModule,
+  NbTabsetModule,
+  NbTagModule,
+  NbToastrModule,
+} from '@nebular/theme';
 
 import { ThemeModule } from '../@theme/theme.module';
 import { PagesComponent } from './pages.component';
@@ -37,7 +53,7 @@ import { DMMComponent } from './data-model-mapper/dmm.component';
     FormsModule,
     ReactiveFormsModule,
     NbAutocompleteModule,
-    NbSpinnerModule
+    NbSpinnerModule,
   ],
   declarations: [PagesComponent, HomeComponent],
   providers: [],

@@ -21,7 +21,6 @@ import { UserClaims } from '../../auth/model/oidc';
 import { NgxConfigureService } from 'ngx-configure';
 import { AppConfig } from '../../model/appConfig';
 
-
 @Component({
   selector: 'account-management',
   templateUrl: './account.component.html',
@@ -38,7 +37,6 @@ export class AccountComponent implements OnInit {
   docsUrl: string;
   //user
 
-
   @ViewChild('reportProblemWindowTemplate', { static: false })
   reportProblemWindowTemplate: TemplateRef<unknown>;
   languages = [
@@ -49,7 +47,6 @@ export class AccountComponent implements OnInit {
   private accountNotificationsEnum = AccountNotificationEnum;
   public accountNotificationsKeys: string[];
 
-
   constructor(
     private accountService: AccountService,
     private dialogService: NbDialogService,
@@ -58,15 +55,14 @@ export class AccountComponent implements OnInit {
     private translateService: TranslateService,
     private toastrService: NbToastrService,
     private userService: OidcUserInformationService,
-    private configService: NgxConfigureService,
+    private configService: NgxConfigureService
   ) {
     this.accountNotificationsKeys = Object.keys(this.accountNotificationsEnum);
     this.reportTitle = this.translateService.instant('general.account.report_the_problem') as string;
     this.config = this.configService.config as AppConfig;
 
-    this.docsUrl=this.config.system.docsUrl;
+    this.docsUrl = this.config.system.docsUrl;
   }
-
 
   passwordForm = this.formBuilder.group(
     {
@@ -94,9 +90,8 @@ export class AccountComponent implements OnInit {
 
   reportProblemForm = this.formBuilder.group({
     reportProblemText: [''],
-    reportTopicText:['']
+    reportTopicText: [''],
   });
-
 
   get newPassword(): AbstractControl {
     return this.passwordForm.get('newPassword');
@@ -109,28 +104,27 @@ export class AccountComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-
-    this.user=this.userService.user;
-
-
+    this.user = this.userService.user;
   }
 
   openReportProblem = (): void => {
-    this.windowRef =this.windowService.open(this.reportProblemWindowTemplate, {
+    this.windowRef = this.windowService.open(this.reportProblemWindowTemplate, {
       title: this.reportTitle,
       context: { text: 'some text to pass into template' },
     });
-
-
   };
 
   onSubmitReportProblem = (): void => {
-
-    var mailText = "mailto:"+this.config.system.mailTo+"?subject=[Data model mapper - Report problem]"+this.reportProblemForm.get('reportTopicText').value+"&body="+this.reportProblemForm.get('reportProblemText').value;
+    const mailText =
+      'mailto:' +
+      this.config.system.mailTo +
+      '?subject=[Data model mapper - Report problem]' +
+      this.reportProblemForm.get('reportTopicText').value +
+      '&body=' +
+      this.reportProblemForm.get('reportProblemText').value;
     console.log(mailText);
     this.windowRef.close();
     window.location.href = mailText;
-
   };
 
   openChangePassword = (changePasswordTemplate: TemplateRef<unknown>): void => {
@@ -143,16 +137,6 @@ export class AccountComponent implements OnInit {
     this.accountService.savePassword(this.accountId, this.passwordForm.get('newPassword').value);
     dialogRef.close();
   };
-
-
-
-
-
-
-
-
-
-
 
   private showToast(type: NbComponentStatus, title: string, body: string) {
     const config = {

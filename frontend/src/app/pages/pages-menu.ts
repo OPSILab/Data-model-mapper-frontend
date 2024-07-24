@@ -9,6 +9,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
   {
     title: 'general.menu.editor',
     icon: 'edit-outline',
-    link: '/pages/dmm-editor'
-  }
+    link: '/pages/dmm-editor',
+  },
 ];

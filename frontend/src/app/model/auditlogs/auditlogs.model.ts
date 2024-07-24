@@ -1,5 +1,3 @@
-
-
 export interface AuditLog {
   linkedServicesCount: number;
   givenConsentsCount: number;

@@ -12,7 +12,6 @@ export class AccountService {
 
   constructor(configService: NgxConfigureService, private http: HttpClient) {
     this.config = configService.config as AppConfig;
-   
   }
 
   createAccount(account: Account): Promise<Account> {

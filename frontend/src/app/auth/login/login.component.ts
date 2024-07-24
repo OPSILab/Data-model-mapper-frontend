@@ -13,7 +13,8 @@ import { OidcJWTToken } from '../model/oidc';
   styleUrls: ['./login.component.scss'],
   templateUrl: './login.component.html',
 })
-export class LoginComponent {//implements AfterViewInit, OnDestroy {
+export class LoginComponent {
+  //implements AfterViewInit, OnDestroy {
   private environment: System;
   serviceEditorUrl: string;
   locale: string;
@@ -143,8 +144,8 @@ export class LoginComponent {//implements AfterViewInit, OnDestroy {
     const height = window.innerHeight
       ? window.innerHeight
       : document.documentElement.clientHeight
-        ? document.documentElement.clientHeight
-        : screen.height;
+      ? document.documentElement.clientHeight
+      : screen.height;
 
     const systemZoom = width / window.screen.availWidth;
     const left = (width - w) / 2 / systemZoom + dualScreenLeft;

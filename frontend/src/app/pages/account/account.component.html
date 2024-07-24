@@ -1,24 +1,12 @@
 <!-- General Information -->
 
-  <nb-card>
-    <nb-card-header>{{ 'general.account.roles' | translate }}</nb-card-header>
-    <nb-card-body>
-      
-      <nb-user
-      [onlyPicture]="userPictureOnly"
-      [name]="user?.name"
-      [title]="user?.roles?.join(' | ')"
-      [picture]="'assets/images/app/default_user.png'"
-      
-    >
+<nb-card>
+  <nb-card-header>{{ 'general.account.roles' | translate }}</nb-card-header>
+  <nb-card-body>
+    <nb-user [onlyPicture]="userPictureOnly" [name]="user?.name" [title]="user?.roles?.join(' | ')" [picture]="'assets/images/app/default_user.png'">
     </nb-user>
-
-    </nb-card-body>
-    
-  </nb-card>
-
-
-
+  </nb-card-body>
+</nb-card>
 
 <!-- Change Password -->
 <ng-template #changePassword let-data let-ref="dialogRef">
@@ -81,8 +69,6 @@
   </form>
 </ng-template>
 
-
-
 <!-- Assistance and Support -->
 <nb-card>
   <nb-card-header>{{ 'general.account.assistance_and_support' | translate }}</nb-card-header>
@@ -94,21 +80,35 @@
         </button>
       </div>
       <div class="mb-1 col-sm-6 d-flex justify-content-center">
-        <a href={{docsUrl}} target="_blank">{{ 'general.account.tutorials_and_documentations' | translate }}</a>
+        <a href="{{ docsUrl }}" target="_blank">{{ 'general.account.tutorials_and_documentations' | translate }}</a>
       </div>
     </div>
 
     <ng-template #reportProblemWindowTemplate let-data>
       <form [formGroup]="reportProblemForm" (ngSubmit)="onSubmitReportProblem()">
-      
-        <nb-select name="topic" id="topic" formControlName="reportTopicText" placeholder="{{ 'general.account.report_subject' | translate }}" [(selected)]="selectedItem">
+        <nb-select
+          name="topic"
+          id="topic"
+          formControlName="reportTopicText"
+          placeholder="{{ 'general.account.report_subject' | translate }}"
+          [(selected)]="selectedItem"
+        >
           <nb-option value="General">General</nb-option>
           <nb-option value="Other">Other</nb-option>
         </nb-select>
-     
+
         <div class="row align-items-center justify-content-center mb-3 flex-column">
-          <br> 
-          <textarea nbInput type="text" id="textarea" name="textarea" rows="4" cols="50" formControlName="reportProblemText" placeholder="{{ 'general.account.report_message' | translate }}"></textarea>
+          <br />
+          <textarea
+            nbInput
+            type="text"
+            id="textarea"
+            name="textarea"
+            rows="4"
+            cols="50"
+            formControlName="reportProblemText"
+            placeholder="{{ 'general.account.report_message' | translate }}"
+          ></textarea>
         </div>
         <div class="row justify-content-center">
           <button nbButton type="submit" status="primary" size="medium">

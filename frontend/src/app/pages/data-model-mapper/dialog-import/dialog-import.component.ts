@@ -14,13 +14,13 @@ import { HttpClient } from '@angular/common/http';
 export class DialogImportComponent {
   //private appConfig: AppConfig;
   selectedFile: File;
-  file: String;
-  fileOutput: String;
+  file: string;
+  fileOutput: string;
   json: Record<string, unknown>;
-  selectedItem //= 'Json';
+  selectedItem; //= 'Json';
   dataUrl: string;
-  extension: String;
-  map
+  extension: string;
+  map;
   //mapSettings
 
   @Input() type: string;
@@ -29,15 +29,15 @@ export class DialogImportComponent {
     public http: HttpClient,
     public ref: NbDialogRef<DialogImportComponent>,
     public errorService: ErrorDialogService,
-    @Inject(DOCUMENT) public document: Document,
-  ) { }
+    @Inject(DOCUMENT) public document: Document
+  ) {}
 
   cancel(): void {
     this.ref.close();
   }
 
   fixBrokenPageBug() {
-    document.getElementsByTagName('html')[0].className = ""
+    document.getElementsByTagName('html')[0].className = '';
   }
 
   onFileChanged(event: Event): void {
@@ -49,8 +49,8 @@ export class DialogImportComponent {
       fileReader.readAsText(this.selectedFile, 'UTF-8');
       fileReader.onload = () => {
         try {
-          this.file = fileReader.result as String
-          this.extension = (<HTMLInputElement>event.target).files[0].name.split('.').pop().toLowerCase()
+          this.file = fileReader.result as string;
+          this.extension = (<HTMLInputElement>event.target).files[0].name.split('.').pop().toLowerCase();
         } catch (error) {
           this.errorService.openErrorDialog(error);
           this.ref.close();
@@ -66,22 +66,19 @@ export class DialogImportComponent {
   }
 
   async onUpload(type: string): Promise<void> {
-    if (type == "url") {
+    if (type == 'url') {
       try {
-        this.file = await this.http.get<any>(this.dataUrl, { responseType: 'text' as 'json' }).toPromise();
+        this.file = await this.http
+          .get<any>(this.dataUrl, { responseType: 'text' as 'json' })
+          .toPromise();
+      } catch (error) {
+        console.error(error);
+        this.errorService.openErrorDialog(error);
       }
-      catch (error) {
-        console.error(error)
-        this.errorService.openErrorDialog(error)
-      }
-      if (this.map)
-        this.ref.close({ mapSettings: this.file, source: this.selectedFile?.name, format: "file" })
-      else
-        this.ref.close({ content: this.file, source: this.dataUrl, format: "url" });
+      if (this.map) this.ref.close({ mapSettings: this.file, source: this.selectedFile?.name, format: 'file' });
+      else this.ref.close({ content: this.file, source: this.dataUrl, format: 'url' });
     } else if (this.map) {
-      this.ref.close({ mapSettings: this.file, source: this.selectedFile.name, format: "file" })
-    }
-    else
-      this.ref.close({ content: this.file, source: this.selectedFile.name, format: "file" });
+      this.ref.close({ mapSettings: this.file, source: this.selectedFile.name, format: 'file' });
+    } else this.ref.close({ content: this.file, source: this.selectedFile.name, format: 'file' });
   }
 }

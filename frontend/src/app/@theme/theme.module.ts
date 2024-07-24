@@ -56,7 +56,9 @@ const COMPONENTS = [
 const PIPES = [CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithCommasPipe];
 
 @NgModule({
-  imports: [CommonModule, ...NB_MODULES,
+  imports: [
+    CommonModule,
+    ...NB_MODULES,
 
     TranslateModule.forChild({
       loader: {
@@ -64,7 +66,8 @@ const PIPES = [CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithComm
         useFactory: createTranslateLoader,
         deps: [HttpClient],
       },
-    })],
+    }),
+  ],
   exports: [CommonModule, ...PIPES, ...COMPONENTS],
   declarations: [...COMPONENTS, ...PIPES],
 })

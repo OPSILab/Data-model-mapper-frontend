@@ -3,21 +3,19 @@ import { Component, Input, OnInit } from '@angular/core';
 @Component({
   selector: 'status',
   templateUrl: './status.component.html',
-  styleUrls: ['./status.component.scss']
+  styleUrls: ['./status.component.scss'],
 })
 export class StatusComponent implements OnInit {
-
   public static Enum = {
-    COMPLETED : "Completed",
-    UNDER_DEVELOMPENT : "Under development"
-  }
+    COMPLETED: 'Completed',
+    UNDER_DEVELOMPENT: 'Under development',
+  };
 
-  completed: boolean = false;
+  completed = false;
 
-  @Input() value: String;
+  @Input() value: string;
 
   ngOnInit() {
-    this.completed = this.value == "Completed";
+    this.completed = this.value == 'Completed';
   }
-
 }

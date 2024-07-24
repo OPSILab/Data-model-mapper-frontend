@@ -18,10 +18,9 @@ import { TestDmmEditorComponent } from './testDmmEditor/testDmmEditor.component'
 @Component({
   selector: 'home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
-
   @Input() value;
   @Output() updateResult = new EventEmitter<unknown>();
   schemaDir: string;
@@ -53,11 +52,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private configService: NgxConfigureService,
     private dialogService: NbDialogService,
-    public route: ActivatedRoute,
-    //@Inject(DOCUMENT) public document: Document,
-
+    public route: ActivatedRoute //@Inject(DOCUMENT) public document: Document,
   ) {
-    this.test = this.route.snapshot.queryParams['testing']
+    this.test = this.route.snapshot.queryParams['testing'];
     this.config = this.configService.config as AppConfig;
     this.systemConfig = this.config.system;
     this.systemLocale = this.config.i18n.locale;
@@ -75,20 +72,19 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   automated() {
     this.dialogService.open(TestDmmEditorComponent, {
-    //context: {dialog : true}
-  })
+      //context: {dialog : true}
+    });
   }
 
   async ngOnInit() {
-
     try {
       this.mapRecords = await this.dmmService.getMaps();
       void this.source.load(this.mapRecords);
     } catch (error) {
-      console.error(error)
-      if (error.status == 0 || error.error.status == 0){
-        error.statusText = undefined
-        error.message = error.error.message = "Unable to reach server"
+      console.error(error);
+      if (error.status == 0 || error.error.status == 0) {
+        error.statusText = undefined;
+        error.message = error.error.message = 'Unable to reach server';
       }
       this.errorService.openErrorDialog(error);
     }
@@ -101,11 +97,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   async addNew(): Promise<void> {
     try {
-      this.router.navigate(['/pages/dmm-editor'])
-    }
-    catch (error) {
-      console.error("error in addNew")
-      console.error("error:<\n", error, ">\n")
+      this.router.navigate(['/pages/dmm-editor']);
+    } catch (error) {
+      console.error('error in addNew');
+      console.error('error:<\n', error, '>\n');
       this.errorService.openErrorDialog(error);
     }
   }
@@ -126,7 +121,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         add: false,
         edit: false,
         delete: false,
-        editService: false
+        editService: false,
       },
       columns: {
         name: {
@@ -174,7 +169,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unused-vars
             instance?.updateResult?.pipe(takeUntil(this.unsubscribe)).subscribe(() => this.ngOnInit());
           },
-        }
+        },
       },
     };
   }

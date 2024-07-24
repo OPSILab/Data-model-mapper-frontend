@@ -100,8 +100,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpConfigInterceptor,
       multi: true,
-    }
-
+    },
   ],
   bootstrap: [AppComponent],
 })

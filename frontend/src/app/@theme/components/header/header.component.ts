@@ -9,7 +9,6 @@ import { UserClaims } from '../../../auth/model/oidc';
 import { NgxConfigureService } from 'ngx-configure';
 import { AppConfig } from '../../../model/appConfig';
 
-
 @Component({
   selector: 'ngx-header',
   styleUrls: ['./header.component.scss'],
@@ -43,12 +42,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   currentTheme = 'dmm';
 
-  loggedUserMenu = [{ title: 'Profile', link: 'pages/account' },{title: 'Help', link: 'pages/account'}];
+  loggedUserMenu = [
+    { title: 'Profile', link: 'pages/account' },
+    { title: 'Help', link: 'pages/account' },
+  ];
   //loggedUserMenu = [];
   userMenu = [{ title: 'Log in', link: '/login' }];
 
-  public languages=[];
-  public userLanguage : String;
+  public languages = [];
+  public userLanguage: string;
 
   constructor(
     private sidebarService: NbSidebarService,
@@ -64,16 +66,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const lan = this.config.i18n.languages;
 
-    let lan = this.config.i18n.languages;
+    this.userLanguage = this.config.i18n.locale;
 
-    this.userLanguage=this.config.i18n.locale
-
-    lan.forEach(x=>{
-        let f=x;
-         //this.languages.push({lan:x,flag: `flag-icon flag-icon-${f} flag-icon-squared` })
-       this.languages.push({lan:x,flag: f,picture:`assets/flags/${f}.svg` })
-      })
+    lan.forEach((x) => {
+      const f = x;
+      //this.languages.push({lan:x,flag: `flag-icon flag-icon-${f} flag-icon-squared` })
+      this.languages.push({ lan: x, flag: f, picture: `assets/flags/${f}.svg` });
+    });
 
     this.loggedUserMenu.push({ title: this.translateService.instant('login.logout_button') as string, link: '' });
     this.currentTheme = this.themeService.currentTheme;
@@ -105,11 +106,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  getDefLang(){
+  getDefLang() {
     return this.translateService.getDefaultLang();
   }
 
-  changeLang(event){
+  changeLang(event) {
     this.translateService.use(event);
   }
 
