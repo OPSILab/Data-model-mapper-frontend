@@ -1,13 +1,14 @@
+import { Observable } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnChanges, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NbDialogService, NbWindowService, NbToastrService, NbDialogRef } from '@nebular/theme';
 import { NgxConfigureService } from 'ngx-configure';
-import { AppConfig } from '../../../model/appConfig';
-import { DMMComponent } from '../../data-model-mapper/dmm.component';
-import { DMMService } from '../../data-model-mapper/dmm.service';
-import { ErrorDialogMapperRecordService } from '../../error-dialog/error-dialog-mapperRecord.service';
-import editor from '../../data-model-mapper/mapperEditor';
+import { AppConfig } from '../../model/appConfig';
+import { DMMComponent } from './dmm.component';
+import { DMMService } from './dmm.service';
+import { ErrorDialogMapperRecordService } from '../error-dialog/error-dialog-mapperRecord.service';
+import editor from './mapperEditor';
 
 function click(id){
   const button = document.getElementById(id);
@@ -18,11 +19,11 @@ function click(id){
 }
 
 @Component({
-  selector: 'app-testDmmEditor',
-  templateUrl: '../../data-model-mapper/dmm.component.html',
-  styleUrls: ['./testDmmEditor.component.scss'],
+  selector: 'dmm-test',
+  templateUrl: './dmm.component.html',
+  styleUrls: ['./dmm.component.scss']
 })
-export class TestDmmEditorComponent extends DMMComponent implements OnInit, OnChanges {
+export class DmmTestComponent extends DMMComponent implements OnInit, OnChanges {
   constructor(
     @Inject(DOCUMENT) public document: Document,
     public dialogService: NbDialogService,
@@ -32,7 +33,7 @@ export class TestDmmEditorComponent extends DMMComponent implements OnInit, OnCh
     public toastrService: NbToastrService,
     public route: ActivatedRoute,
     public configService: NgxConfigureService,
-    public ref: NbDialogRef<TestDmmEditorComponent>
+    //public ref: NbDialogRef<DmmTestComponent>
   ) {
     super(document, dialogService, windowService, errorService, dmmService, toastrService, route, configService);
     this.config = configService.config as AppConfig;
@@ -71,11 +72,17 @@ export class TestDmmEditorComponent extends DMMComponent implements OnInit, OnCh
         },
       })
     );
+
+    /*
     const generateMapperButton = document.getElementById('generateMapper');
     if (generateMapperButton) {
       const event = new MouseEvent('click', { bubbles: true });
       generateMapperButton.dispatchEvent(event);
     }
+      */
+
+
+    click("generateMapper")
     // rawMap(map)
     editor.mapperEditor.setText(JSON.stringify({ e: 'key1', f: 'key2', entitySourceId: 'key1', type: 'key1' }));
     // exportFile()
@@ -85,25 +92,14 @@ export class TestDmmEditorComponent extends DMMComponent implements OnInit, OnCh
     // getCurl()
     // preview()
     click("preview")
-    /*
-    const previewButton = document.getElementById('preview');
-    if (previewButton) {
-      const event = new MouseEvent('click', { bubbles: true });
-      previewButton.dispatchEvent(event);
-    }
-      */
-    let output = JSON.parse(this.outputEditor.getText())
-    console.assert(output.e == "value1" && output.f == "value2")
+    let output = await this.getOutput()
+    console.log(output)
+    console.assert(output[0].e == "value1" && output[0].f == "value2")
     // transform()
     click("transform")
-    /*
-    const transformwButton = document.getElementById('preview');
-    if (transformwButton) {
-      const event = new MouseEvent('click', { bubbles: true });
-      transformwButton.dispatchEvent(event);
-    }*/
-    output = JSON.parse(this.outputEditor.getText())
-    console.assert(output.e == "value1" && output.f == "value2")
+    output = await this.getOutput()
+    console.log(output)
+    console.assert(output[0].e == "value1" && output[0].f == "value2")
     // save()
     // modifySourceSchemaAndMap()
     // exportFile()
@@ -115,4 +111,10 @@ export class TestDmmEditorComponent extends DMMComponent implements OnInit, OnCh
     // update()
     // saveAsNew()
   }
+  async getOutput() {
+    while(this.loading)
+      await this.sleep(1)
+    return JSON.parse(this.outputEditor.getText())
+  }
 }
+

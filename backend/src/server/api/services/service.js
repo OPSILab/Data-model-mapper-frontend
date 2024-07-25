@@ -183,13 +183,14 @@ module.exports = {
         }
 
         if (
-            !(
-                source.name
-                ||
+            (
+                !source.name
+                &&
                 (
-                    source.type &&
+                    !source.type
+                    ||
                     (
-                        source.data || source.url || source.id || source.minioObjName
+                        !source.data && !source.url && !source.id && !source.minioObjName
                     )
                 )
             )
@@ -197,11 +198,27 @@ module.exports = {
             (
                 !map
                 ||
-                !(
-                    dataModel.id || dataModel.data || dataModel.name || dataModel.url || configIn.noSchema == undefined ? config.noSchema : configIn.noSchema
+                (
+                    !dataModel.id && !dataModel.data && !dataModel.name && !dataModel.url && !config.noSchema && !configIn.noSchema
                 )
             )
         ) {
+
+            logger.debug({
+                sourceName: source.name,
+                sourceType: source.type,
+                sourceData: source.data,
+                sourceUrl: source.url,
+                sourceId: source.id,
+                sourceMinioObjName: source.minioObjName,
+                map,
+                dataModelId: dataModel.id,
+                dataModelData: dataModel.data,
+                dataModelName: dataModel.name,
+                dataModelUrl: dataModel.url,
+                configNoSchema: config.noSchema,
+                configInNoSchema: configIn.noSchema
+            })
 
             throw {
                 message: "Missing fields",

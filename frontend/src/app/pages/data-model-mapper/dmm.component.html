@@ -3,7 +3,7 @@
     <nb-card-header class="h3">
       Data Model Mapper
 
-      <button *ngIf="dialog" style="float: right" nbButton appearance="outline" shape="semi-round" size="tiny" status="info" (click)="ref?.close()">
+      <button *ngIf="dialog || test" style="float: right" nbButton appearance="outline" shape="semi-round" size="tiny" status="info" (click)="ref?.close()">
         <i class="material-icons">close</i>
       </button>
     </nb-card-header>
@@ -15,11 +15,11 @@
       <div style="margin-top: 30px"></div>
       <div *ngIf="backendDown">Unable to reach server</div>
       <div class="row justify-content-center">
-        <button nbButton class="mx-4" shape="rectangle" size="medium" status="info" (click)="reset()">
+        <button id="reset" nbButton class="mx-4" shape="rectangle" size="medium" status="info" (click)="reset()">
           {{ 'general.dmm.create_new' | translate }}
           <i class="mx-1 material-icons">create</i>
         </button>
-        <button *ngIf="!backendDown" nbButton class="mx-4" shape="rectangle" size="medium" status="primary" (click)="saveRecord()">
+        <button id="save" *ngIf="!backendDown" nbButton class="mx-4" shape="rectangle" size="medium" status="primary" (click)="saveRecord()">
           {{ 'general.dmm.save_as_new' | translate }}
           <i class="mx-1 material-icons">save</i>
         </button>
@@ -28,15 +28,15 @@
           {{ 'general.editor.update' | translate }}
           <i class="mx-1 material-icons">update</i>
         </button>-->
-        <button nbButton class="mx-4" shape="rectangle" size="medium" status="primary" (click)="updateRecord()" hidden="true" id="updateButton">
+        <button id="update" nbButton class="mx-4" shape="rectangle" size="medium" status="primary" (click)="updateRecord()" hidden="true" id="updateButton">
           {{ 'general.editor.update' | translate }}
           <i class="mx-1 material-icons">update</i>
         </button>
-        <button nbButton class="mx-4" shape="rectangle" size="medium" status="warning" (click)="saveAsFile()">
+        <button id="saveAsFile" nbButton class="mx-4" shape="rectangle" size="medium" status="warning" (click)="saveAsFile()">
           {{ 'general.editor.export' | translate }}
           <i class="mx-1 fas fa-file-export fa-lg"></i>
         </button>
-        <button nbButton class="mx-4" shape="rectangle" size="medium" status="danger" (click)="import('map', 'json')">
+        <button id="import" nbButton class="mx-4" shape="rectangle" size="medium" status="danger" (click)="import('map', 'json')">
           {{ 'general.editor.upload' | translate }}
           <i class="mx-1 fas fa-file-import fa-lg"></i>
         </button>
@@ -301,7 +301,7 @@
               <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button>
             &nbsp;
-            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="transform()">
+            <button id="transform" nbButton class="mr-2" shape="rectangle" size="small" (click)="transform()">
               {{ 'general.dmm.transform' | translate }}
               <i class="mx-1 fas fa-file-import fa-lg"></i>
             </button>

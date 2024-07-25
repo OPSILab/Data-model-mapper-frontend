@@ -85,6 +85,7 @@ export class DMMComponent implements OnInit, OnChanges {
   schemaRefFormat: string;
   schemaOptions: any;
   importedSchema: any;
+  test
 
   openDialog = editor.openDialog;
   exampleSchema = {
