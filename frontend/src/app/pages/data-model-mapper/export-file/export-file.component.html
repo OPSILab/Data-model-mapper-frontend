@@ -13,7 +13,7 @@
       <form>
         <label for="Mode" fullWidth>{{ 'general.dmm.mode' | translate }}</label>
         <br />
-        <nb-select fullWidth placeholder="Snippet" [(ngModel)]="mode" (click)="fixBrokenPageBug()" [ngModelOptions]="{ standalone: true }">
+        <nb-select id="mode-select" fullWidth placeholder="Snippet" [(ngModel)]="mode" (click)="fixBrokenPageBug()" [ngModelOptions]="{ standalone: true }">
           <nb-option value="snippet">Snippet</nb-option>
           <nb-option value="file">File</nb-option>
         </nb-select>
@@ -24,7 +24,7 @@
   </nb-card-body>
   <div class="center">
     <br />
-    <button nbButton appearance="outline" shape="semi-round" size="medium" status="info" (click)="save()">
+    <button id="export-save" nbButton appearance="outline" shape="semi-round" size="medium" status="info" (click)="save()">
       <i class="mx-1">{{ 'general.dmm.confirmSave' | translate }}</i>
     </button>
   </div>

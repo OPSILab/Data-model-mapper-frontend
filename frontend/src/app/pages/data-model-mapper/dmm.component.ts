@@ -73,6 +73,7 @@ export class DMMComponent implements OnInit, OnChanges {
   dataModelURL: any;
 
   snippet: any;
+  ExportFileComponent = ExportFileComponent
   config: AppConfig;
   NGSI: boolean;
   savedSchema: any;
@@ -122,6 +123,7 @@ export class DMMComponent implements OnInit, OnChanges {
   etag: string;
   loading = false;
   loaded = true;
+  dialogClosed: boolean;
 
   constructor(
     @Inject(DOCUMENT) public document: Document,
@@ -1139,13 +1141,16 @@ export class DMMComponent implements OnInit, OnChanges {
     return body;
   }
 
-  saveAsFile(): void {
+  saveAsFile(component): void {
     const source = JSON.parse(this.source.sourceEditor.getText());
-
-    this.dialogService.open(ExportFileComponent).onClose.subscribe((content) => {
+    this.dialogClosed  = false
+    this.dialogService.open(component).onClose.subscribe((content) => {
+      console.debug(content)
+      console.assert(content)
       if (content == 'file') this.saveFile(JSON.stringify(this.bodyBuilder(source)), 'json');
       else if (content == 'snippet') this.saveFile(this.buildSnippet(), 'bash');
-    });
+      this.dialogClosed  = true
+    })
   }
 
   download() {

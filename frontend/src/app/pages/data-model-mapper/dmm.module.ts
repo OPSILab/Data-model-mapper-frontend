@@ -31,6 +31,7 @@ import { DialogComponent } from './create-map/dialog/dialog.component';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { HttpConfigInterceptor } from '../../http.interceptor';
 import { DmmTestComponent } from './dmm-test.component';
+import { ExportFileTestComponent } from './export-file/export-file-test.component';
 
 @NgModule({
   imports: [
@@ -59,7 +60,7 @@ import { DmmTestComponent } from './dmm-test.component';
     TranslateModule.forChild({}),
     NbAutocompleteModule,
   ],
-  declarations: [DialogImportComponent, DialogDataMapComponent, CreateMapComponent, ExportFileComponent, DMMComponent, DialogComponent, DmmTestComponent],
+  declarations: [DialogImportComponent, DialogDataMapComponent, CreateMapComponent, ExportFileComponent, DMMComponent, DialogComponent, DmmTestComponent, ExportFileTestComponent],
   providers: [
     DMMService,
     {

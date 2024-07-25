@@ -9,6 +9,7 @@ import { DMMComponent } from './dmm.component';
 import { DMMService } from './dmm.service';
 import { ErrorDialogMapperRecordService } from '../error-dialog/error-dialog-mapperRecord.service';
 import editor from './mapperEditor';
+import { ExportFileTestComponent } from './export-file/export-file-test.component';
 
 function click(id){
   const button = document.getElementById(id);
@@ -42,6 +43,7 @@ export class DmmTestComponent extends DMMComponent implements OnInit, OnChanges 
 
   async ngOnInit(): Promise<void> {
     await super.ngOnInit();
+    this.ExportFileComponent = ExportFileTestComponent
     this.test=true
     // rawSource(source)
     this.source.inputType = 'json';
@@ -72,33 +74,25 @@ export class DmmTestComponent extends DMMComponent implements OnInit, OnChanges 
         },
       })
     );
-
-    /*
-    const generateMapperButton = document.getElementById('generateMapper');
-    if (generateMapperButton) {
-      const event = new MouseEvent('click', { bubbles: true });
-      generateMapperButton.dispatchEvent(event);
-    }
-      */
-
-
     click("generateMapper")
     // rawMap(map)
     editor.mapperEditor.setText(JSON.stringify({ e: 'key1', f: 'key2', entitySourceId: 'key1', type: 'key1' }));
     // exportFile()
     click("saveAsFile")
+    while(!this.dialogClosed)
+      await this.sleep(1)
     // exportBash()
     // getPayload()
     // getCurl()
     // preview()
     click("preview")
     let output = await this.getOutput()
-    console.log(output)
+    console.debug(output)
     console.assert(output[0].e == "value1" && output[0].f == "value2")
     // transform()
     click("transform")
     output = await this.getOutput()
-    console.log(output)
+    console.debug(output)
     console.assert(output[0].e == "value1" && output[0].f == "value2")
     // save()
     // modifySourceSchemaAndMap()
