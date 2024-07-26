@@ -11,6 +11,7 @@ const log = require("../../../utils/logger")
 const { Logger } = log
 const logger = new Logger(__filename)
 const common = require("../../../utils/common")
+const minioWriter = require("../../../writers/minioWriter")
 
 function parseJwt(token) {
     return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
@@ -85,25 +86,35 @@ module.exports = {
 
                     if ((decodedToken.azp == authConfig.clientId) && ((decodedToken.exp * 1000) > Date.now())) {
 
-                        try {
-                            if (common.isMinioWriterActive()) {
-                                let data = (await axios.get(config.authConfig.userInfoEndpoint, { headers: { "Authorization": authHeader } })).data
-                                let { pilot, username, email } = data
-                                config.orionWriter.fiwareService = req.body.bucketName = pilot.toLowerCase() //+ "/" + email + "/" + config.minioWriter.defaultInputFolderName//{pilot, email}
-                                req.body.prefix = (email || username) + "/" + config.minioWriter.defaultInputFolderName
-                                config.group = email || username
-                                config.orionWriter.fiwareServicePath = "/" + pilot.toLowerCase()
+
+                        if (common.isMinioWriterActive()) {
+                            try {
+                                var data = (await axios.get(config.authConfig.userInfoEndpoint, { headers: { "Authorization": authHeader } })).data
                             }
-                            else
-                                req.body.prefix = decodedToken.email
-                            logger.debug(req.body.prefix)
+                            catch (error) {
+                                logger.error(error?.toString())
+                                logger.error(error?.response?.data || error?.response)
+                                //req.body.prefix = decodedToken.email
+                                //config.group = decodedToken.email
+                                try {
+                                    data = await minioWriter.getUserData(decodedToken.email)
+                                }
+                                catch (error) {
+                                    logger.error(error)
+                                    res.status(500).send(error || error.toString())
+                                }
+                            }
+                            let { pilot, username, email } = data
+                            config.orionWriter.fiwareService = req.body.bucketName = pilot.toLowerCase() //+ "/" + email + "/" + config.minioWriter.defaultInputFolderName//{pilot, email}
+                            req.body.prefix = (email || username) + "/" + config.minioWriter.defaultInputFolderName
+                            config.group = email || username
+                            config.orionWriter.fiwareServicePath = "/" + pilot.toLowerCase()
                         }
-                        catch (error) {
-                            logger.error(error?.toString())
-                            logger.error(error?.response?.data || error?.response)
+                        else
                             req.body.prefix = decodedToken.email
-                            config.group = decodedToken.email
-                        }
+                        logger.debug(req.body.prefix)
+
+
 
                         //logger.debug(req.body, req.params, req.query)
 
@@ -112,7 +123,7 @@ module.exports = {
 
                         if ((!req.params.bucketName || !req.params.objectName) || (req.body.bucketName == req.params.bucketName && req.body.prefix == req.params.objectName.split("/")[0] + "/" + req.params.objectName.split("/")[1]))
                             next()
-                        else 
+                        else
                             res.status(403).send("Available bucketname is " + req.body.bucketName + " and you tried to access " + req.params.bucketName + ".\nAvailable prefix is " + req.body.prefix + " and you tried to access this object " + req.params.objectName);
                     }
                     else

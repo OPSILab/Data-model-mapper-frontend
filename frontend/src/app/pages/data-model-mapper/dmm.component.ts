@@ -210,8 +210,11 @@ export class DMMComponent implements OnInit, OnChanges {
     onUpdatePathForDataMap: ($event, root) => {
       if ($event == '.root$$$') $event = '';
       this.confirmMapping();
-      this.paths = this.selectMapJsonOptions(this.source.sourceEditor.getText(), '');
+      console.debug({ $event, root })
+      this.source.paths = this.selectMapJsonOptions(this.source.sourceEditor.getText(), '');
+      console.debug(this.paths)
       mapOptionsGl = this.selectMapJsonOptions(this.source.sourceEditor.getText(), $event);
+      console.debug(mapOptionsGl)
       //if (!$event && !root)
       //  mapOptionsGl[0] = "---no keys for selected path---"
       if (!mapOptionsGl[0]) mapOptionsGl[0] = '---no keys for selected path---';
@@ -261,10 +264,12 @@ export class DMMComponent implements OnInit, OnChanges {
     },
 
     setSource: (source, limit) => {
+      console.debug({sourceIsArray: Array.isArray(source) , typeOfSource : (typeof source), limit, input: this.source.inputType, path : this.selectedPath})
       if ((Array.isArray(source) || typeof source == 'object') && limit && this.source.inputType == 'json')
-        if (this.selectedPath && this.selectedPath != '.root$$$') {
-          source[this.selectedPath] = source[this.selectedPath].slice(0, 3);
-        } else source = source.slice(0, 3);
+        if (this.source.selectedPath && this.source.selectedPath != '.root$$$')
+          source[this.source.selectedPath] = source[this.source.selectedPath].slice(0, 3);
+        else
+          source = source.slice(0, 3);
       else if (limit) {
         this.partialCsv = '';
         this.displayCSV(this.source.csvSourceData, this.csvtable, this.separatorItem);
@@ -312,13 +317,13 @@ export class DMMComponent implements OnInit, OnChanges {
     this.source.sourceOptions = {
       mode: 'view',
       modes: ['view', 'code'], // allowed modes
-      onModeChange: function (newMode, oldMode) {},
+      onModeChange: function (newMode, oldMode) { },
     };
 
     this.schemaOptions = {
       mode: 'view',
       modes: ['view', 'code'], // allowed modes
-      onModeChange: function (newMode, oldMode) {},
+      onModeChange: function (newMode, oldMode) { },
     };
 
     this.source.sourceJson = [
@@ -350,13 +355,13 @@ export class DMMComponent implements OnInit, OnChanges {
     this.outputEditorOptions = {
       mode: 'view',
       modes: ['view', 'preview'], // allowed modes
-      onModeChange: function (newMode, oldMode) {},
+      onModeChange: function (newMode, oldMode) { },
     };
 
     this.bodyEditorOptions = {
       mode: 'preview',
       modes: ['view', 'preview'], // allowed modes
-      onModeChange: function (newMode, oldMode) {},
+      onModeChange: function (newMode, oldMode) { },
     };
 
     if (this.selectedSchema) this.schemaJson = this.selectFilteredSchema();
@@ -419,9 +424,9 @@ export class DMMComponent implements OnInit, OnChanges {
       source: this.config.data_model_mapper.alwaysPromptSaveSchema
         ? true
         : this.differences(
-            this.source.sourceBeforeChanges,
-            this.source.inputType == 'json' ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData
-          ),
+          this.source.sourceBeforeChanges,
+          this.source.inputType == 'json' ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData
+        ),
     };
   }
 
@@ -472,10 +477,10 @@ export class DMMComponent implements OnInit, OnChanges {
         this.source.sourceEditor.getText() == ''
           ? 'Empty source'
           : editor.mapperEditor.getText() == ''
-          ? 'Empty mapper'
-          : this.schemaEditor.getText() == ''
-          ? 'Empty schema'
-          : 'Error loading JSON'
+            ? 'Empty mapper'
+            : this.schemaEditor.getText() == ''
+              ? 'Empty schema'
+              : 'Error loading JSON'
       );
     }
   }
@@ -525,10 +530,10 @@ export class DMMComponent implements OnInit, OnChanges {
         this.source.sourceEditor.getText() == ''
           ? 'Empty source'
           : editor.mapperEditor.getText() == ''
-          ? 'Empty mapper'
-          : this.schemaEditor.getText() == ''
-          ? 'Empty schema'
-          : 'Error loading JSON'
+            ? 'Empty mapper'
+            : this.schemaEditor.getText() == ''
+              ? 'Empty schema'
+              : 'Error loading JSON'
       );
     }
   }
@@ -760,7 +765,7 @@ export class DMMComponent implements OnInit, OnChanges {
       const m = JSON.parse(editor.mapperEditor.getText());
       m['targetDataModel'] = 'DataModelTemp';
       let source = this.source.setSource(JSON.parse(this.source.sourceEditor.getText()), true);
-      if (source[this.selectedPath]) source = source[this.selectedPath];
+      if (source[this.source.selectedPath]) source = source[this.source.selectedPath];
       output = await this.dmmService.transform(
         this.source.inputType,
         this.minioObjName,
@@ -809,7 +814,7 @@ export class DMMComponent implements OnInit, OnChanges {
       m['targetDataModel'] = 'DataModelTemp';
       let source = this.source.setSource(JSON.parse(this.source.sourceEditor.getText()), false);
 
-      if (source[this.selectedPath]) source = source[this.selectedPath];
+      if (source[this.source.selectedPath]) source = source[this.source.selectedPath];
 
       output = await this.dmmService.transform(
         this.source.inputType,
@@ -846,7 +851,8 @@ export class DMMComponent implements OnInit, OnChanges {
     this.loading = false; //, 3000);
     this.loaded = true;
     try {
-      output = output?.filter((e) => e != null && e != undefined) || { error: 'some errors occurred' };
+      if (Array.isArray(output))
+        output.filter((e) => e != null && e != undefined) || { error: 'some errors occurred' };
     } catch (error) {
       console.error(error);
       //output = { error: "some errors occurred" }
@@ -1005,7 +1011,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.options2 = {
         mode: 'tree',
         modes: ['tree', 'code', 'view', 'preview'], // allowed modes
-        onModeChange: function (newMode, oldMode) {},
+        onModeChange: function (newMode, oldMode) { },
 
         onCreateMenu: function (items, node) {
           const path = node.path;
@@ -1088,9 +1094,9 @@ export class DMMComponent implements OnInit, OnChanges {
 
     const body = this.isNotNew
       ? {
-          sourceData: source,
-          mapID: this.mapperRecord.mapperRecordId,
-        }
+        sourceData: source,
+        mapID: this.mapperRecord.mapperRecordId,
+      }
       : this.bodyBuilder(source);
 
     return (
@@ -1143,13 +1149,13 @@ export class DMMComponent implements OnInit, OnChanges {
 
   saveAsFile(component): void {
     const source = JSON.parse(this.source.sourceEditor.getText());
-    this.dialogClosed  = false
+    this.dialogClosed = false
     this.dialogService.open(component).onClose.subscribe((content) => {
       console.debug(content)
       console.assert(content)
       if (content == 'file') this.saveFile(JSON.stringify(this.bodyBuilder(source)), 'json');
       else if (content == 'snippet') this.saveFile(this.buildSnippet(), 'bash');
-      this.dialogClosed  = true
+      this.dialogClosed = true
     })
   }
 
@@ -1462,9 +1468,9 @@ export class DMMComponent implements OnInit, OnChanges {
     this.bodyEditor.update(
       this.isNotNew
         ? {
-            sourceData: this.source.inputType == 'json' ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData,
-            mapID: this.mapperRecord.mapperRecordId,
-          }
+          sourceData: this.source.inputType == 'json' ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData,
+          mapID: this.mapperRecord.mapperRecordId,
+        }
         : this.bodyBuilder(this.source.inputType == 'json' ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData)
     );
   }
@@ -1499,6 +1505,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   selectMapJsonOptions(content: string, path: string): string[] {
+    console.debug("selectJsonMapOptions")
     let options = [];
     let allMapOptions = [];
     let arrayTemp;
