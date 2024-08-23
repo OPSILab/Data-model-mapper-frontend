@@ -45,3 +45,6 @@ Thumbs.db
 
 .gitignore
 .git
+
+**/config.json
+**/config.js

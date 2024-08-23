@@ -3,11 +3,11 @@ WORKDIR /app
 COPY ./backend/dataModels ./dataModels
 COPY ./backend/docs ./docs
 COPY ./backend/src ./src
-COPY ./backend/config*.js ./
+#COPY ./backend/config*.js ./
 COPY ./backend/mapper.js ./
 COPY ./backend/LICENSE ./
 COPY ./backend/package*.json ./
 RUN npm install
 RUN date > /app/date.txt
-RUN sed -i 's/localhost/host.docker.internal/g' /app/config.js
+#RUN sed -i 's/localhost/host.docker.internal/g' /app/config.js
 CMD ["node", "mapper"]

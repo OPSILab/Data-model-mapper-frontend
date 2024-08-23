@@ -56,3 +56,6 @@ backend/dataModels/schema1.json
 backend/dataModels/schema2.json
 backend/dataModels/nonNgsi.json
 backend/docs/tests/NonNGSI/NonNGSI - Copia.bat
+
+**/config.json
+**/config.js
