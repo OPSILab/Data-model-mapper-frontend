@@ -5,8 +5,12 @@ WORKDIR /app
 COPY package.json /app
 
 RUN npm install
+RUN date > /app/date.txt
 COPY . /app
 RUN npm run build -- --prod --aot --base-href $BASE_HREF
+RUN mkdir -p /app/dist/$BASE_HREF/assets/
+RUN date > /app/dist/$BASE_HREF/assets/date.txt
+RUN date > /app/dist/assets/date.txt
 
 FROM nginx
 EXPOSE 80

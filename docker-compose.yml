@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   data-model-mapper-gui:
-    image: data-model-mapper-gui
+    image: engineeringopsilab/data-model-mapper-gui
     build:
       context: https://github.com/OPSILab/data-model-mapper.git#frontend_dev
       dockerfile: ./gui
@@ -19,7 +19,7 @@ services:
       - ./config.prod.json:/app/data-model-mapper-gui/login/assets/config.json
       - ./config.prod.json:/app/data-model-mapper-gui/login/loginPopup/assets/config.json
   data-model-mapper-backend:
-    image: data-model-mapper-backend
+    image: engineeringopsilab/data-model-mapper-backend
     build: 
       context: https://github.com/OPSILab/data-model-mapper.git#frontend_dev
       dockerfile: ./server

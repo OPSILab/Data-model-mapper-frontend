@@ -45,6 +45,16 @@ module.exports = {
         }
     },
 
+    version: async (req, res) => {
+        try {
+            res.send(await service.getVersion())
+        }
+        catch (error) {
+            logger.error(error)
+            res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
+    },
+
     getSourcesFromMinio: async (req, res) => {
         process.res = res;
         try {

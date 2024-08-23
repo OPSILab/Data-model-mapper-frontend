@@ -5,8 +5,12 @@ WORKDIR /app
 COPY ./frontend/package.json /app
 
 RUN npm install
+RUN date > /app/date.txt
 COPY ./frontend/. /app
 RUN npm run build -- --prod --aot --base-href $BASE_HREF
+RUN mkdir -p /app/dist/$BASE_HREF/assets/
+RUN date > /app/dist/$BASE_HREF/assets/date.txt
+RUN date > /app/dist/assets/date.txt
 
 FROM node:14.17.0-alpine as server
 EXPOSE 12345
@@ -14,6 +18,7 @@ RUN mkdir -p /app
 WORKDIR /app
 RUN npm init -y
 RUN npm install http-server
+COPY --from=builder /app/date.txt /app/dist/assets/date.txt
 COPY --from=builder /app/dist /app
 COPY --from=builder /app/dist /app/data-model-mapper-gui
 COPY --from=builder /app/dist /app/data-model-mapper-gui/pages
@@ -25,4 +30,4 @@ COPY --from=builder /app/dist /app/data-model-mapper-gui/login/loginPopup
 WORKDIR /app/node_modules/http-server
 RUN npm install
 WORKDIR /app/node_modules/http-server/bin
-CMD ["node", "http-server", "../../../", "-p", "12345"]
+CMD ["node", "http-server", "../../../", "-p", "12345", " --cors"]

@@ -1,0 +1,46 @@
+version: "3.8"
+services:
+  data-model-mapper-gui:
+    image: engineeringopsilab/data-model-mapper-gui
+    build:
+      context: .
+      dockerfile: ./gui
+      args:
+        BASE_HREF: /data-model-mapper-gui/
+    ports:
+      - "127.0.0.1:12345:12345"
+    volumes:
+      - ./frontend/src/assets/config.json:/app/assets/config.json
+      - ./frontend/src/assets/config.json:/app/data-model-mapper-gui/assets/config.json
+      - ./frontend/src/assets/config.json:/app/data-model-mapper-gui/pages/assets/config.json
+      - ./frontend/src/assets/config.json:/app/data-model-mapper-gui/pages/home/assets/config.json
+      - ./frontend/src/assets/config.json:/app/data-model-mapper-gui/pages/account/assets/config.json
+      - ./frontend/src/assets/config.json:/app/data-model-mapper-gui/pages/dmm-editor/assets/config.json
+      - ./frontend/src/assets/config.json:/app/data-model-mapper-gui/login/assets/config.json
+      - ./frontend/src/assets/config.json:/app/data-model-mapper-gui/login/loginPopup/assets/config.json
+  data-model-mapper-backend:
+    image: engineeringopsilab/data-model-mapper-backend
+    build: 
+      context: .
+      dockerfile: ./server
+    container_name: data-model-mapper-backend
+    depends_on:
+      - db     
+    ports:
+     - 127.0.0.1:5500:5500
+    restart: always
+    volumes:
+      - ./backend/config.js:/app/config.js
+    #command: >
+    #  sh -c "sed -i 's/localhost/host.docker.internal/g' /app/config.js && npm start"
+  db:
+    image: mongo:4.4
+    container_name: data-model-mapper-db
+       #ports:
+       #  - 27017:27017
+    volumes:
+         - db_data:/data/db
+    restart: unless-stopped
+
+volumes:
+  db_data:

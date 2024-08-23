@@ -1214,6 +1214,24 @@
           }
         }
       }
+    },
+    "/version": {
+      "get": {
+        "tags": [
+          "Version"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Get version",
+        "responses": {
+          "200": {
+            "description": "Version"
+          }
+        }
+      }
     }
   },
   "definitions": {

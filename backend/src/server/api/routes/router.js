@@ -27,10 +27,11 @@ router.get(encodeURI("/dataModels"), auth, controller.getDataModels)
 //
 router.get(encodeURI("/bearer"), controller.getToken)
 router.get(encodeURI("/logs"), auth, controller.getLogs)
+router.get(encodeURI("/version"), controller.version)
 
 router.put(encodeURI("/map"), upload.none(), auth, controller.modifyMap)
 router.put(encodeURI("/source"), upload.none(), auth, controller.modifySource)
-router.put(encodeURI("/dataModel"), upload.none(), auth, controller.modifyDataModel)
+router.put(encodeURI("/dataModel"), upload.none(), auth, controller.modifyDataModel) 
 
 /* temporary disabled endpoints
 router.put(encodeURI("/source/assign"), upload.none(), auth, controller.assignSource)

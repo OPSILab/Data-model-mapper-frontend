@@ -1,0 +1,58 @@
+# compiled output
+frontend/dist
+/dist
+/tmp
+/out-tsc
+
+
+# dependencies
+/node_modules
+frontend/node_modules
+backend/node_modules
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vs/
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+testem.log
+/typings
+/docs
+
+# e2e
+/e2e
+*.zip
+*.md
+
+# System Files
+.DS_Store
+Thumbs.db
+
+.gitignore
+.git
+
+backend/dataModels/DataModelTemp.json
+backend/dataModels/test_nested_datamodel.json
+backend/dataModels/schema.json
+backend/dataModels/schema1.json
+backend/dataModels/schema2.json
+backend/dataModels/nonNgsi.json
+backend/docs/tests/NonNGSI/NonNGSI - Copia.bat

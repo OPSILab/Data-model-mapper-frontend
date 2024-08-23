@@ -51,3 +51,8 @@ backend/log*.json
 backend/src/utils/threads.js
 minio-storage/
 minio.yml
+config.beopen.js
+config.prod.json
+deploy_server-linux
+mongo.yml
+docker-compose-always-pull.yml

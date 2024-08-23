@@ -369,6 +369,10 @@ module.exports = {
         }
     },
 
+    getVersion() {
+        return fs.readFileSync("/app/date.txt", 'utf8');
+    },
+
     async getMinioObjectsFromBucket(bucket, prefix, format, sources) {//, postMessage) {
         let minioObjectList = await minioWriter.listObjects(bucket, undefined, undefined)//, postMessage)
         //sources.push(...minioObjectList)
