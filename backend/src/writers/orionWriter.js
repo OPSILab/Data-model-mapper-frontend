@@ -68,10 +68,10 @@ const writeObject = async (objNumber, obj, modelSchema) => {
             rejectUnauthorized: false
         };
 
-        logger.debug("Options")
-        logger.debug(JSON.stringify(options))
+        logger.trace("Options")
+        logger.trace(JSON.stringify(options))
         logger.debug("Orioned obj")
-        logger.debug(JSON.stringify(orionedObj))
+        logger.debug(JSON.stringify(orionedObj).substring(0, 20) + "...")
 
         try {
             // Wait for Create Response
@@ -111,7 +111,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                         if (config.orionWriter.keyValues && config.orionWriter.protocol == "v2")
                             options.body.id = undefined
 
-                        logger.debug(JSON.stringify(options))
+                        logger.trace(JSON.stringify(options))
 
                         var updateResponse = await rp(options);
 

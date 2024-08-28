@@ -20,7 +20,7 @@ module.exports = {
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         service.error = null
-        logger.info("service.mapData end");
+        logger.info("controller.mapData end");
     },
 
     getSources: async (req, res) => {

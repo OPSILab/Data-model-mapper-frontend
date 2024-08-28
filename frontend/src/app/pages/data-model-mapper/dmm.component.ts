@@ -264,7 +264,7 @@ export class DMMComponent implements OnInit, OnChanges {
     },
 
     setSource: (source, limit) => {
-      console.debug({sourceIsArray: Array.isArray(source) , typeOfSource : (typeof source), limit, input: this.source.inputType, path : this.selectedPath})
+      console.debug({ sourceIsArray: Array.isArray(source), typeOfSource: (typeof source), limit, input: this.source.inputType, path: this.selectedPath })
       if ((Array.isArray(source) || typeof source == 'object') && limit && this.source.inputType == 'json')
         if (this.source.selectedPath && this.source.selectedPath != '.root$$$')
           source[this.source.selectedPath] = source[this.source.selectedPath].slice(0, 3);
@@ -765,6 +765,9 @@ export class DMMComponent implements OnInit, OnChanges {
       const m = JSON.parse(editor.mapperEditor.getText());
       m['targetDataModel'] = 'DataModelTemp';
       let source = this.source.setSource(JSON.parse(this.source.sourceEditor.getText()), true);
+      if (this.source.selectedPath == "features" && source.crs?.properties?.name?.includes("EPSG"))
+        this.transformSettings.EPSG_code = source.crs.properties.name.split(":").pop()
+      console.debug(this.transformSettings.EPSG_code)
       if (source[this.source.selectedPath]) source = source[this.source.selectedPath];
       output = await this.dmmService.transform(
         this.source.inputType,
@@ -813,7 +816,9 @@ export class DMMComponent implements OnInit, OnChanges {
       const m = JSON.parse(editor.mapperEditor.getText()) || this.map;
       m['targetDataModel'] = 'DataModelTemp';
       let source = this.source.setSource(JSON.parse(this.source.sourceEditor.getText()), false);
-
+      if (this.source.selectedPath == "features" && source.crs?.properties?.name?.includes("EPSG"))
+        this.transformSettings.EPSG_code = parseInt(source.crs.properties.name.split(":").pop())
+      console.debug(this.transformSettings.EPSG_code)
       if (source[this.source.selectedPath]) source = source[this.source.selectedPath];
 
       output = await this.dmmService.transform(

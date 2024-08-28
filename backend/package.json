@@ -7,8 +7,7 @@
     "name": "Ermanno Mastrosimone"
   },
   "dependencies": {
-    "JSONStream": "^1.3.3",
-    "axios": "^1.3.6",
+    "axios": "^1.7.5",
     "body-parser": "^1.20.1",
     "chai": "^4.3.7",
     "connect-busboy": "0.0.2",
@@ -22,6 +21,7 @@
     "js-base64": "^3.7.5",
     "json-mapper": "0.0.12",
     "json-schema-ref-parser": "^5.1.2",
+    "JSONStream": "^1.3.3",
     "jsonwebtoken": "^9.0.2",
     "minio": "^7.1.3",
     "mocha": "^10.2.0",
@@ -31,6 +31,7 @@
     "node-request-queue": "^1.0.2",
     "nodemon": "^2.0.20",
     "parse-filepath": "^1.0.2",
+    "proj4": "^2.12.0",
     "promise-queue": "^2.2.5",
     "promise-request-retry": "^1.0.1",
     "readline-sync": "^1.4.10",
@@ -40,6 +41,8 @@
     "stream-to-string": "^1.1.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.0",
+    "terraformer": "^1.0.12",
+    "terraformer-proj4js": "^0.2.2",
     "unorm": "^1.4.1",
     "winston": "^3.0.0",
     "winston-daily-rotate-file": "^3.3.0"

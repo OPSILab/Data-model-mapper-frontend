@@ -11,7 +11,9 @@ const axios = require('axios')
 const RefParser = require('json-schema-ref-parser');
 const minioWriter = require('../../../writers/minioWriter')
 const common = require('../../../utils/common');
+const { finish } = common
 const { type } = require('os');
+const { convertGeoJSON } = require("../../../utils/common.js")
 
 if (!config.idVersion)
     config.idVersion = 2
@@ -222,9 +224,9 @@ module.exports = {
 
             throw {
                 message: "Missing fields",
-                source: source,
-                map: map,
-                dataModel: dataModel
+                source,
+                map,
+                dataModel
             }
         }
 
@@ -255,6 +257,8 @@ module.exports = {
                     config[configKey] = configIn[configKey]
             }
         }
+
+        logger.debug("config.EPSG_code : ", config.EPSG_code)
 
         config.delimiter = configIn ? configIn.delimiter : config.delimiter || ','
         if (config.NGSI_entity != undefined) this.NGSI_entity = config.NGSI_entity
@@ -306,14 +310,23 @@ module.exports = {
             //sourceFileTemp2 = true
         }
 
+        let EPSG_code = config.EPSG_code
+        if (config.onlyEPSG4326 && EPSG_code != 4326 && (EPSG_code < 0 || EPSG_code > 0 || EPSG_code == 0))
+            for (let i in source.data)
+                source.data[i] = await convertGeoJSON(source.data[i], EPSG_code)
+
+        if (source.data && source.path)
+            source.data = source.data[source.path]
+
         if (source.data) {
+            let sourceDataTempWriting = {}
             fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
                 if (err) throw err;
                 logger.debug('File sourceData temp is created successfully.');
+                sourceDataTempWriting.value = 'File sourceData temp is created successfully.'
             })
+            await finish(sourceDataTempWriting)
         }
-
-        if (source.data && source.path) source.data = source.data[source.path]
 
         if (dataModel.url) {
             dataModel.download = await axios.get(dataModel.url)
@@ -321,6 +334,7 @@ module.exports = {
         }
 
         if (dataModel.data) {
+            let dataModelTempWriting = {}
             logger.info(this.dataModelDeClean(dataModel.data))
             common.schema = JSON.parse(JSON.stringify(dataModel.data))
             fs.writeFile(
@@ -328,7 +342,9 @@ module.exports = {
                 "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
                     if (err) throw err;
                     logger.debug('File dataModel temp is created successfully.');
+                    dataModelTempWriting.value = 'File dataModel temp is created successfully.'
                 })
+            await finish(dataModelTempWriting)
         }
 
         if (configIn.noSchema || (configIn.noSchema == undefined) && config.noSchema) {
@@ -344,12 +360,15 @@ module.exports = {
                 schema.properties[key] = {
                     type: "object"
                 }
+            dataModelTempWriting = {}
             fs.writeFile(
                 //dataModel.schema_id || 
                 "dataModels/DataModelTemp.json", JSON.stringify(schema), function (err) {
                     if (err) throw err;
                     logger.debug('File dataModel temp is created successfully.');
+                    dataModelTempWriting.value = 'File dataModel temp is created successfully.'
                 })
+            await finish(dataModelTempWriting)
         }
 
         if (common.isMinioWriterActive())

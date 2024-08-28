@@ -46,11 +46,11 @@ module.exports = () => {
     exec('pwd', (error, stdout, stderr) => {
       if (error) {
         logger.error(`Error: ${error}`);
-        return;
+        //return;
       }
       if (stderr) {
         logger.error(`Stderr: ${stderr}`);
-        return;
+        //return;
       }
 
       const currentDirectory = stdout.trim();

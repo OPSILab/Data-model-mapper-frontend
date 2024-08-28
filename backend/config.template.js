@@ -35,7 +35,8 @@ var config = {
     mappingReport: false, // disable output mapping report
     logSaveInterval: 30000, // log backup interval
     idVersion: 2, // 1 for 2023 version compatibility mode, 2 for newest version
-    noSchema: false,
+    noSchema: false, // experimental mode with no schema provided
+    onlyEPSG4326 : false, // allows only geojson with EPSG4326 coordinates
 
     /********************** 3 INPUTS CONFIGURATION ************************
     * Followings are related to Mapping MANDATORY inputs (source, map, data model).
