@@ -314,6 +314,7 @@ module.exports = {
         if (config.onlyEPSG4326 && EPSG_code != 4326 && (EPSG_code < 0 || EPSG_code > 0 || EPSG_code == 0))
             for (let i in source.data)
                 source.data[i] = await convertGeoJSON(source.data[i], EPSG_code)
+        config.EPSG_code = undefined
 
         if (source.data && source.path)
             source.data = source.data[source.path]

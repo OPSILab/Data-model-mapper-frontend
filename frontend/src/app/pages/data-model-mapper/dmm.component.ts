@@ -766,7 +766,7 @@ export class DMMComponent implements OnInit, OnChanges {
       m['targetDataModel'] = 'DataModelTemp';
       let source = this.source.setSource(JSON.parse(this.source.sourceEditor.getText()), true);
       if (this.source.selectedPath == "features" && source.crs?.properties?.name?.includes("EPSG"))
-        this.transformSettings.EPSG_code = source.crs.properties.name.split(":").pop()
+        this.transformSettings.EPSG_code = parseInt(source.crs.properties.name.split(":").pop())
       console.debug(this.transformSettings.EPSG_code)
       if (source[this.source.selectedPath]) source = source[this.source.selectedPath];
       output = await this.dmmService.transform(
