@@ -1118,6 +1118,11 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   bodyBuilder(source) {
+
+    console.debug(this.source.selectedPath, source.crs?.properties?.name)
+    if (this.source.selectedPath == "features" && source.crs?.properties?.name?.includes("EPSG"))
+      this.transformSettings.EPSG_code = parseInt(source.crs.properties.name.split(":").pop())
+
     const body = {
       sourceDataType: this.source.inputType,
       path: this.selectedPath,
