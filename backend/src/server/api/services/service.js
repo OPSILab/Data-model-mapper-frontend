@@ -529,11 +529,19 @@ module.exports = {
         if (path == "")
             path = undefined
         if (mapRef) {
-            map = (await Map.findOne({ name }))
+            map = (await Map.findOne({ name, user: (prefix?.split("/")[0] || "shared") }))
             mapRef = map?._id
         }
-        logger.debug(prefix)
-        if ((mapRef || !await Source.findOne({ name })) && !await Source.findOne({ mapRef: mapRef?.toString() })) {
+        else
+            throw ({ error: "no map with this mapref found" })
+        logger.debug(prefix, "\n", mapRef, "\n", await Source.findOne({
+            name,
+            user: (prefix?.split("/")[0] || "shared")
+        }), "\n", await Source.findOne({ mapRef: mapRef?.toString() }))
+        if ((mapRef || !await Source.findOne({
+            name,
+            user: (prefix?.split("/")[0] || "shared")
+        })) && !await Source.findOne({ mapRef: mapRef?.toString() })) {
             insertedSource = (await Source.insertMany([typeof source === 'string' ? {
                 name: name,
                 id: id,
@@ -610,7 +618,10 @@ module.exports = {
             await minioWriter.stringUpload(bucketName, minioName, JSON.stringify(newMapper))
         }
 
-        if (!await Map.findOne({ name })) {
+        if (!await Map.findOne({
+            name,
+            user: (prefix?.split("/")[0] || "shared")
+        })) {
             let insertedMap = (await Map.insertMany([newMapper]))[0]
             if (sourceDataID)
                 try {
@@ -644,10 +655,21 @@ module.exports = {
         //if (typeof mapRef == "string")
         //    mapRef = (await Map.findOne({ name }))?._id
         if (mapRef) {
-            map = await Map.findOne({ name })
+            map = await Map.findOne({ name, user: (prefix?.split("/")[0] || "shared") })
             mapRef = map?._id
         }
-        if ((mapRef || !await DataModel.findOne({ name })) && !await DataModel.findOne({ mapRef: mapRef?.toString() })) {
+        else
+            throw ({ error: "no map with this mapref found" })
+        logger.debug(mapRef)
+        logger.debug(await DataModel.findOne({
+            name,
+            user: (prefix?.split("/")[0] || "shared")
+        }))
+        logger.debug(await DataModel.findOne({ mapRef: mapRef?.toString() }))
+        if ((mapRef || !await DataModel.findOne({
+            name,
+            user: (prefix?.split("/")[0] || "shared")
+        })) && !await DataModel.findOne({ mapRef: mapRef?.toString() })) {
             insertedDataModel = (await DataModel.insertMany([{ name: name, id: id, dataModel: dataModel, user: (prefix?.split("/")[0] || "shared"), mapRef: mapRef?.toString() }]))[0]
             if (mapRef) {
                 //map.dataModelID = insertedDataModel._id.toString()
@@ -673,10 +695,10 @@ module.exports = {
             throw { error: "source is required" }
         if (path == "") path = undefined
         if (mapRef) {
-            map = (await Map.findOne({ name }))
+            map = (await Map.findOne({ name, user: prefix?.split("/")[0] || "shared" }))
             mapRef = map?._id.toString()
         }
-        insertedSource = await Source.findOneAndReplace(mapRef ? { mapRef } : { name }, typeof source === 'string' ?
+        insertedSource = await Source.findOneAndReplace(mapRef ? { mapRef } : { name, user: prefix?.split("/")[0] || "shared" }, typeof source === 'string' ?
             { name: name, id: id, sourceCSV: source, user: (prefix?.split("/")[0] || "shared"), mapRef: mapRef?.toString() } :
             { name: name, id: id, source: source, path: path, user: (prefix?.split("/")[0] || "shared"), mapRef: mapRef?.toString() })
         if (mapRef) {
@@ -847,7 +869,7 @@ module.exports = {
             minioName = minioName + ".json"
             await minioWriter.stringUpload(bucketName, minioName, JSON.stringify(newMapper))
         }
-        let oldMap = await Map.findOneAndReplace({ name }, newMapper)
+        let oldMap = await Map.findOneAndReplace({ name, user: prefix?.split("/")[0] || "shared" }, newMapper)
         logger.debug(oldMap)
         if (oldMap.sourceDataID)
             await this.deAssignSource(oldMap._id)
@@ -864,10 +886,10 @@ module.exports = {
             throw { error: "schema is required" }
         dataModel = this.dataModelClean(dataModel, {})
         if (mapRef) {
-            map = (await Map.findOne({ name }))
+            map = (await Map.findOne({ name, user: prefix?.split("/")[0] || "shared" }))
             mapRef = map?._id.toString()
         }
-        insertedDataModel = await DataModel.findOneAndReplace(mapRef ? { mapRef } : { name },
+        insertedDataModel = await DataModel.findOneAndReplace(mapRef ? { mapRef } : { name, user: prefix?.split("/")[0] || "shared" },
             { name: name, id: id, dataModel: dataModel, user: (prefix?.split("/")[0] || "shared"), mapRef: mapRef?.toString() })
         if (mapRef) {
             map.dataModelID = insertedDataModel._id.toString()
