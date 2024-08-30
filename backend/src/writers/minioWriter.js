@@ -304,5 +304,10 @@ module.exports = {
     if (resultMessage)
       return resultMessage
     //})
+  },
+
+  async deleteObject (bucket, name) {
+    logger.debug(bucket, name)
+    return await minioClient.removeObject(bucket, name)
   }
 }

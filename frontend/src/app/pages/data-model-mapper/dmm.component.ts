@@ -219,6 +219,7 @@ export class DMMComponent implements OnInit, OnChanges {
       //  mapOptionsGl[0] = "---no keys for selected path---"
       if (!mapOptionsGl[0]) mapOptionsGl[0] = '---no keys for selected path---';
       this.setMapEditor(true);
+      this.showToast('basic', 'Path for data map updated', '', false);
     },
 
     sourceChanged: ($event) => {
@@ -246,6 +247,7 @@ export class DMMComponent implements OnInit, OnChanges {
       } catch (error) {
         this.handleError(error, true, 'Error during importing source');
       }
+      this.showToast('primary', 'Source loaded', '', false);
     },
 
     sourceFromChanged: ($event) => {
@@ -265,11 +267,12 @@ export class DMMComponent implements OnInit, OnChanges {
 
     setSource: (source, limit) => {
       console.debug({ sourceIsArray: Array.isArray(source), typeOfSource: (typeof source), limit, input: this.source.inputType, path: this.selectedPath })
-      if ((Array.isArray(source) || typeof source == 'object') && limit && this.source.inputType == 'json')
+      if ((Array.isArray(source) || typeof source == 'object') && limit && this.source.inputType == 'json') {
         if (this.source.selectedPath && this.source.selectedPath != '.root$$$')
           source[this.source.selectedPath] = source[this.source.selectedPath].slice(0, 3);
-        else
+        else if (Array.isArray(source))
           source = source.slice(0, 3);
+      }
       else if (limit) {
         this.partialCsv = '';
         this.displayCSV(this.source.csvSourceData, this.csvtable, this.separatorItem);
@@ -593,6 +596,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.map = { error: 'Some errors occurred during generating map object' };
       this.schemaJson = this.exampleSchema;
     }
+    this.showToast('primary', 'Mapper generated', '', false);
   }
 
   async schemaChanged($event, from) {
@@ -630,6 +634,7 @@ export class DMMComponent implements OnInit, OnChanges {
       }
       this.tempSchema = undefined;
     }
+    this.showToast('primary', 'Schema loaded', '', false);
   }
 
   async reset() {
@@ -687,6 +692,7 @@ export class DMMComponent implements OnInit, OnChanges {
     this.displayCSV(this.source.csvSourceData, this.csvtable, this.separatorItem);
     await this.resetConfigSettings();
     this.source.onUpdatePathForDataMap('', true);
+    this.showToast('primary', 'Reset successful', '', false);
   }
 
   async setSchemaFromFile($event) {
@@ -696,6 +702,8 @@ export class DMMComponent implements OnInit, OnChanges {
     this.map = this.getAllNestedProperties(await this.dmmService.refParse(this.schemaJson));
     mapGl = this.map;
     editor.mapperEditor.update(this.map);
+
+    this.showToast('primary', 'Schema loaded', '', false);
   }
 
   selectFilteredSchema() {
@@ -730,6 +738,7 @@ export class DMMComponent implements OnInit, OnChanges {
   updateConfig($event) {
     if ($event) this.transformSettings.delimiter = $event;
     this.configEditor.update(this.transformSettings);
+    this.showToast('primary', 'Config updated', '', false);
   }
 
   async resetConfigSettings() {
@@ -746,6 +755,7 @@ export class DMMComponent implements OnInit, OnChanges {
       ? (this.configEditor = new JSONEditor(this.configEditorContainer, this.options2, this.transformSettings))
       : this.configEditor.update(this.transformSettings);
     this.separatorItem = this.transformSettings.delimiter;
+    //this.showToast('basic', 'Config reset', '', false);
   }
 
   setLoadingMessage(editor, editorContainer, editorOptions) {
@@ -788,7 +798,7 @@ export class DMMComponent implements OnInit, OnChanges {
     this.loaded = true;
     if (!this.outputEditor) this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
     else this.outputEditor.update(output);
-    this.showToast('primary', 'Transformed', '');
+    this.showToast('primary', 'Transformed', '', false);
   }
 
   sleep(delay) {
@@ -864,17 +874,17 @@ export class DMMComponent implements OnInit, OnChanges {
     }
     if (!this.outputEditor) this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
     else this.outputEditor.update(output);
-    this.showToast('primary', 'Transformed', '');
+    this.showToast('primary', 'Transformed', '', false);
   }
 
-  private showToast(type: NbComponentStatus, title: string, body: string) {
+  private showToast(type: NbComponentStatus, title: string, body: string, preventDuplicates) {
     const config = {
       status: type,
       destroyByClick: true,
-      duration: 2500,
+      duration: type == "basic" ? 1000 : 2500,
       hasIcon: true,
       position: NbGlobalPhysicalPosition.BOTTOM_RIGHT,
-      preventDuplicates: true,
+      preventDuplicates,
     } as Partial<NbToastrConfig>;
 
     this.toastrService.show(body, title, config);
@@ -1002,6 +1012,8 @@ export class DMMComponent implements OnInit, OnChanges {
       this.handleError(error, false, false);
       //editor.mapperEditor.update(map)
     }
+
+    this.showToast('primary', 'Mapper updated', '', false);
   }
 
   setMapEditor(justOptions) {
@@ -1119,8 +1131,8 @@ export class DMMComponent implements OnInit, OnChanges {
 
   bodyBuilder(source) {
 
-    console.debug(this.source.selectedPath, source.crs?.properties?.name)
-    if (this.source.selectedPath == "features" && source.crs?.properties?.name?.includes("EPSG"))
+    console.debug(this.source.selectedPath, source?.crs?.properties?.name)
+    if (this.source.selectedPath == "features" && source?.crs?.properties?.name?.includes("EPSG"))
       this.transformSettings.EPSG_code = parseInt(source.crs.properties.name.split(":").pop())
 
     const body = {
@@ -1154,6 +1166,7 @@ export class DMMComponent implements OnInit, OnChanges {
         };
       else body['sourceDataID'] = this.source.selectedSource;
     }
+    //this.showToast('primary', 'Body set', '', true);
     return body;
   }
 
@@ -1246,6 +1259,7 @@ export class DMMComponent implements OnInit, OnChanges {
       this.transformSettings = backSet;
       this.configEditor.update(this.transformSettings);
     }
+    //this.showToast('basic', 'Config updated', '', false);
   }
 
   async mapChanged($event, settingsFromFile) {
@@ -1374,6 +1388,8 @@ export class DMMComponent implements OnInit, OnChanges {
       //this.loading = false
       //this.loaded = true
     }
+
+    this.showToast('primary', 'Map changed', '', false);
   }
 
   newConfig(config: any) {
@@ -1463,6 +1479,7 @@ export class DMMComponent implements OnInit, OnChanges {
             this.schemaChanged(this.getSchema(), 'url');
           }
         }
+        //this.showToast('primary', 'Import done', '', false);
       });
   }
 
@@ -1483,12 +1500,14 @@ export class DMMComponent implements OnInit, OnChanges {
         }
         : this.bodyBuilder(this.source.inputType == 'json' ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData)
     );
+    //this.showToast('primary', 'Body set', '', true);
   }
 
   async updateCurl() {
     //while (curl != this.buildSnippet().replace("\\", " "))
     //curl = this.buildSnippet().replace("\\", " ")
     this.curl = await this.buildSnippet();
+    //this.showToast('primary', 'Curl set', '', false);
     //this.curlEditor.update(this.buildSnippet())
   }
 

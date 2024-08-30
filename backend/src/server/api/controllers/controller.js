@@ -281,7 +281,7 @@ module.exports = {
         const { id, name } = req.query
         process.res = res;
         try {
-            res.send(await service.deleteMap(id || req.params.id, name, req.body.prefix))
+            res.send(await service.deleteMap(id || req.params.id, name, req.body.prefix, req.body.bucketName))
         }
         catch (error) {
             logger.error(error)

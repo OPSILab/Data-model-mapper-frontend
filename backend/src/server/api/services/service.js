@@ -884,12 +884,13 @@ module.exports = {
         return await Source.deleteOne(id ? { _id: id, user: (prefix?.split("/")[0] || "shared") } : { name, user: (prefix?.split("/")[0] || "shared") })
     },
 
-    async deleteMap(id, name, prefix) {
+    async deleteMap(id, name, prefix, bucket) {
 
         let mapRef
         if (!id)
             mapRef = (await Map.findOne({ name, user: (prefix?.split("/")[0] || "shared") }))._id
         let map = await Map.findOne(id ? { _id: id, user: (prefix?.split("/")[0] || "shared") } : { name, user: (prefix?.split("/")[0] || "shared") })
+        await minioWriter.deleteObject(bucket, prefix.split("/")[0] + "/private generic data/" + map.name + ".json")
         if (map?.sourceDataID)
             await this.deAssignSource(map.sourceDataID, map._id)
         if (map?.dataModelID)
