@@ -4,7 +4,7 @@ const express = require("express")
 const controller = require("../controllers/controller.js")
 const router = express.Router()
 const multer = require('multer');
-const upload = multer();
+const upload = multer({ limits:{fieldSize: 25 * 1024 * 1024} });
 const { auth } = require("../middlewares/auth.js")
 
 router.post(encodeURI("/map/transform"), upload.none(), auth, controller.mapData)
