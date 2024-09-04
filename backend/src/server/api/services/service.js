@@ -12,7 +12,6 @@ const RefParser = require('json-schema-ref-parser');
 const minioWriter = require('../../../writers/minioWriter')
 const common = require('../../../utils/common');
 const { finish } = common
-const { type } = require('os');
 const { convertGeoJSON } = require("../../../utils/common.js")
 
 if (!config.idVersion)

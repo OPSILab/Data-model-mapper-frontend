@@ -233,7 +233,9 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
 const finalizeProcess = async () => {
 
     try {
-        await Promise.all(promises);
+        //await Promise.all(promises);
+        for (const promise of promises) 
+            await promise; 
 
         //WARNING: this indeed restore global env but brokes the orion request
         /* If server mode, restore current per request configuration to the default ones */

@@ -37,6 +37,7 @@ var config = {
     idVersion: 2, // 1 for 2023 version compatibility mode, 2 for newest version
     noSchema: false, // experimental mode with no schema provided
     onlyEPSG4326 : false, // allows only geojson with EPSG4326 coordinates
+    maxFileSize : 25, // max file size upload in MB
 
     /********************** 3 INPUTS CONFIGURATION ************************
     * Followings are related to Mapping MANDATORY inputs (source, map, data model).
