@@ -141,6 +141,8 @@ module.exports = {
                 config[configKey] = config.backup[configKey]
             config.orionUrl = undefined
             config.backup = undefined
+            config.orionWriter.details = undefined
+            config.EPSG_code = undefined
         }
         next()
     },

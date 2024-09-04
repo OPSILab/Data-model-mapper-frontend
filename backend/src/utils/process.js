@@ -234,8 +234,10 @@ const finalizeProcess = async () => {
 
     try {
         //await Promise.all(promises);
-        for (const promise of promises) 
-            await promise; 
+        for (let i; i< promises.length; i++) {
+            await promises[i]; 
+            //await (require('../utils/common.js')).sleep(100)
+        }
 
         //WARNING: this indeed restore global env but brokes the orion request
         /* If server mode, restore current per request configuration to the default ones */

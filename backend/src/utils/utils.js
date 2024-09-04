@@ -275,6 +275,8 @@ const printFinalReportAndSendResponse = async (loggerr) => {
             await sleep(1)
         }
 
+        logger.debug(config.orionWriter)
+
         apiOutput.outputFile[apiOutput.outputFile.length] = {
             MAPPING_REPORT: {
                 Processed_objects: config.rowNumber,
@@ -284,7 +286,8 @@ const printFinalReportAndSendResponse = async (loggerr) => {
             ORION_REPORT: isOrionWriterActive() ? {
                 "Object written to Orion Context Broker": config.orionWrittenCount.toString() + '/' + config.validCount.toString(),
                 "Object NOT written to Orion Context Broker": config.orionUnWrittenCount.toString() + '/' + config.validCount.toString(),
-                "Object SKIPPED": config.orionSkippedCount.toString() + '/' + config.validCount.toString()
+                "Object SKIPPED": config.orionSkippedCount.toString() + '/' + config.validCount.toString(),
+                details : config.orionWriter.details
             } : "Orion writer not enabled"
         }
 
