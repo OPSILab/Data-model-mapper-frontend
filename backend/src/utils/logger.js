@@ -23,6 +23,9 @@ const DailyRotateFile = require('winston-daily-rotate-file');
 const { createLogger, format, transports } = require('winston');
 const { combine, timestamp, label, printf } = format;
 // { error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }
+const fs = require('fs');
+const logFile = 'log.txt';
+const logStream = fs.createWriteStream(logFile, { flags: 'a' });
 
 
 const myFormat = printf(msg => {
@@ -174,7 +177,7 @@ const LEVEL = process.env.LEVEL?.toLowerCase() || config.logLevel || "trace"
 let logs = ""
 let busy = false
 async function saveLogs() {
-    if (logs[0]) {
+    if (logs && !busy) {
         busy = true
         //const newLog = new Log({
         //    messages: logs
@@ -186,6 +189,11 @@ async function saveLogs() {
                 return;
             }*/
         try {
+            /*for (let arg of logs)
+                if (arg && (Array.isArray(arg) || typeof arg == "object"))
+                    logStream.write(JSON.stringify(arg) + '\n');
+                else
+                    logStream.write(arg + '\n');*/
             await Log.insertMany([{ messages: logs, timestamp: parseInt(Date.now()) }])
             console.log("Logs saved");
         }
@@ -245,38 +253,65 @@ async function customLogger(level, fileName) {
 
 }
 
+let logging = 0
+
 function logBackup(...messages) {
     for (let m of messages)
         if (m != " ")
-            logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
+            try {
+                logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
+            }
+            catch (error) {
+                console.error(error)
+            }
     console.log(...messages)
 }
 
 function debugBackup(...messages) {
     for (let m of messages)
         if (m != " ")
-            logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
+            try {
+                logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
+            }
+            catch (error) {
+                console.error(error)
+            }
     console.debug(...messages)
 }
 
 function errorBackup(...messages) {
     for (let m of messages)
         if (m != " ")
-            logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
+            try {
+                logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
+            }
+            catch (error) {
+                console.error(error)
+            }
     console.error(...messages)
 }
 
 function warnBackup(...messages) {
     for (let m of messages)
         if (m != " ")
-            logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
+            try {
+                logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
+            }
+            catch (error) {
+                console.error(error)
+            }
     console.warn(...messages)
 }
 
 function infoBackup(...messages) {
     for (let m of messages)
         if (m != " ")
-            logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
+            try {
+                logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
+            }
+            catch (error) {
+                console.error(error)
+            }
     console.info(...messages)
 }
 
@@ -297,7 +332,7 @@ class Logger {
     //fileName = new Error()
 
     //customLogger : customLogger,
-    async saveLogs(){
+    async saveLogs() {
         await saveLogs();
     }
 

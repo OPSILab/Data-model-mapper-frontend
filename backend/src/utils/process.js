@@ -190,7 +190,7 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
         var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, config.idSite, config.idService, config.idGroup, config.entityNameField);
     }
     catch (error) {
-        logger.error(error.message)
+        logger.error(error, "\n", error.message)
     }
 
     logger.debug("Row: " + rowNumber + " - Object mapped correctly ");
@@ -200,6 +200,8 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
 };
 
 const processMappedObject = async (objNumber, obj, modelSchema) => {
+    if (!promises)
+        promises = []
     try {
         config.writers.forEach(async (writer) => {
 
@@ -208,7 +210,9 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
                 case 'orionWriter':
                     try {
                         logger.trace("obj : " + JSON.stringify(obj))
-                        promises.push(await orionWriter.writeObject(objNumber, obj, modelSchema));
+                        promises.push(
+                            async () => await orionWriter.writeObject(objNumber, obj, modelSchema)
+                        );
                     }
                     catch (error) {
                         logger.error(error.toString())
@@ -234,9 +238,15 @@ const finalizeProcess = async () => {
 
     try {
         //await Promise.all(promises);
-        for (let i; i< promises.length; i++) {
-            await promises[i]; 
-            //await (require('../utils/common.js')).sleep(100)
+        for (let i = 0; i < promises.length; i++) {
+            logger.debug("Promise ", i)
+            try {
+                await promises[i]();
+                //await (require('../utils/common.js')).sleep(100)
+            }
+            catch (error) {
+                logger.error(error, promises[i])
+            }
         }
 
         //WARNING: this indeed restore global env but brokes the orion request

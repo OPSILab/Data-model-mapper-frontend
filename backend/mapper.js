@@ -22,6 +22,7 @@ const log = require('./src/utils/logger')
 
 const {Logger} = log
 const logger = new Logger(__filename)
+process.dataModelMapper = {}
 
 try {
     const config = require('./config');

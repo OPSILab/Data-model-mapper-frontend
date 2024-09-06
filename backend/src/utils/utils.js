@@ -192,14 +192,74 @@ const parseFilePath = (pathString) => {
 };
 // Utility function that prints the final report by using the input logger
 
-function spaceCleaner(object) {
+/*function spaceCleaner(object) {//TODO IMPORTANT prevent stack overflow
     for (let sub in object)
         if (typeof object[sub] === "object" || typeof object[sub] === "array") object[sub] = spaceCleaner(object[sub]);
         else if (typeof object[sub] === "string" && object[sub][0] == " ") object[sub] = object[sub].substring(1, object[sub].length)
     return object
+}*/
+
+/*function spaceCleaner(object) {
+    stack = [object];
+
+    while (stack.length > 0) {
+        let current = stack.pop();
+
+        for (let sub in current) {
+            if (typeof current[sub] === "object" && current[sub] !== null) {
+                stack.push(current[sub]); 
+            } else if (typeof current[sub] === "string" && current[sub][0] === " ") {
+                current[sub] = current[sub].substring(1); 
+            }
+        }
+    }
+
+    return object; 
+}*/
+
+/*function spaceCleaner(object) {//TODO this is not done yet (it should clean just the values and not also the keys)
+    object = JSON.stringify(object)
+    while (field.replaceAll('" ', '"') != field) field = field.replaceAll('" ', '"')
+    while (field.replaceAll(' "', '"') != field) field = field.replaceAll(' "', '"')
+}*/
+
+let stackCalls = 0
+let called = false
+async function spaceCleaner(object) {
+
+    /*while (called){
+        await sleep(10)
+        logger.debug(stackCalls)
+    }
+    called = true
+    let r = spaceCleaner0(object)
+    called = false*/
+    //return r 
+
+    for (let o of object)
+        o = spaceCleaner0(o)
+    return object
 }
 
-
+function spaceCleaner0(object) {
+    stackCalls++
+    logger.debug("Stack calls ", stackCalls)
+    if (Array.isArray(object)) {
+        for (let sub of object)
+            if (typeof sub === "object")
+                sub = spaceCleaner0(sub);
+            else
+                if (typeof sub === "string" && sub[0] == " ") sub = sub.substring(1, sub.length)
+    }
+    else
+        for (let sub in object)
+            if (typeof object[sub] === "object")
+                object[sub] = spaceCleaner0(object[sub]);
+            else
+                if (typeof object[sub] === "string" && object[sub][0] == " ") object[sub] = object[sub].substring(1, object[sub].length)
+    stackCalls--
+    return object
+}
 
 const bodyMapper = (body) => {
 
@@ -248,11 +308,38 @@ const bodyMapper = (body) => {
 };
 
 const sendOutput = async () => {
-    if (config.deleteEmptySpaceAtBeginning) apiOutput.outputFile = spaceCleaner(apiOutput.outputFile)
+    try {
+        if (config.deleteEmptySpaceAtBeginning)
+            apiOutput.outputFile = await spaceCleaner(apiOutput.outputFile)
+    }
+    catch (error) {
+        logger.error(error)
+        try {
+            if (!apiOutput[apiOutput.outputFile.length - 2].details)
+                apiOutput[apiOutput.outputFile.length - 2].details = [{ error }]
+            else
+                apiOutput[apiOutput.outputFile.length - 2].details.push([{ error }])
+        }
+        catch (error) {
+            logger.error(error)
+        }
+    }
     //if (parseInt((apiOutput.outputFile[apiOutput.outputFile.length - 1].MAPPING_REPORT.Mapped_and_NOT_Validated_Objects)[0].charAt(0))) process.res.status(400).send({ errors: apiOutput.outputFile.errors || "Validation errors", report: apiOutput.outputFile[apiOutput.outputFile.length - 1] })
     //else 
-    if (!config.mappingReport) process.res.send(apiOutput.outputFile.slice(0, apiOutput.outputFile.length - 1));
-    else process.res.send(apiOutput.outputFile);
+    if (!config.mappingReport)
+        try {
+            process.res.send(apiOutput.outputFile.slice(0, apiOutput.outputFile.length - 1));
+        }
+        catch (error) {
+            logger.error(error)
+        }
+    else
+        try {
+            process.res.send(apiOutput.outputFile);
+        }
+        catch (error) {
+            logger.error(error)
+        }
     apiOutput.outputFile = [];
     logger.debug("Processing time : ", Date.now() - process.env.start)
 };
@@ -287,7 +374,7 @@ const printFinalReportAndSendResponse = async (loggerr) => {
                 "Object written to Orion Context Broker": config.orionWrittenCount.toString() + '/' + config.validCount.toString(),
                 "Object NOT written to Orion Context Broker": config.orionUnWrittenCount.toString() + '/' + config.validCount.toString(),
                 "Object SKIPPED": config.orionSkippedCount.toString() + '/' + config.validCount.toString(),
-                details : config.orionWriter.details
+                details: config.orionWriter.details
             } : "Orion writer not enabled"
         }
 
@@ -318,7 +405,8 @@ const printFinalReportAndSendResponse = async (loggerr) => {
             await sendOutput();
         }
         catch (error) {
-            logger.error(error.message)
+            logger.error(error)
+            //crash
             apiOutput.outputFile = [];
         }
     }
@@ -414,6 +502,11 @@ const encode = (encoding, value) => {
     return value
 };
 
+const waiting = async (flag) => {
+    while (process.dataModelMapper[flag])
+        await process.dataModelMapper.sleep(100)
+}
+
 module.exports = {
     cleanString: cleanString,
     cleanPair: cleanPair,
@@ -441,4 +534,5 @@ module.exports = {
     restoreDefaultConfs: restoreDefaultConfs,
     encode: encode,
     bodyMapper: bodyMapper,
+    waiting
 };

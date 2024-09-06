@@ -953,6 +953,17 @@ module.exports = {
     },
 
     async getLogs(from, to) {
+
+        if (from) {
+            let date = new Date(from);
+            from = date.getTime();
+        }
+
+        if (to) {
+            let date = new Date(to);
+            to = date.getTime();
+        }
+
         let logs = from && to ?
             await Log.find({ timestamp: { $gte: parseInt(from), $lte: parseInt(to) } }) :
             from ?
@@ -963,7 +974,12 @@ module.exports = {
         let stringifiedLogs = ""
         //return logs
         for (let log of logs) {
-            stringifiedLogs += log.messages
+            try {
+                stringifiedLogs += log.messages
+            }
+            catch (error) {
+                logger.error(error)
+            }
             //console.debug(log.timestamp)
             //console.debug(Date.now()-log.timestamp)
         }

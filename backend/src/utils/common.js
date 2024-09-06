@@ -8,6 +8,11 @@ const Terraformer = require('terraformer');
 const TerraformerProj4js = require('terraformer-proj4js');
 const axios = require('axios');
 
+process.dataModelMapper.sleep = (ms) =>  {
+    logger.debug("Waiting")
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function     sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
