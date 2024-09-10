@@ -191,7 +191,7 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
         }
     } else {
         logger.error('Incorrect source file path');
-        logger.info(sourcePath)
+        //logger.info(sourcePath)
         return false;
     }
 

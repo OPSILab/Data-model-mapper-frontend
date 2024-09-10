@@ -56,11 +56,11 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
         if (sourceData) {
 
             logger.trace("sourceData:");
-            logger.trace(sourceData);
+            //logger.trace(sourceData);
             logger.debug(typeof sourceData)
 
             if (typeof sourceData === 'object') sourceData = sourceData.toString()
-            logger.trace(sourceData);
+            //logger.trace(sourceData);
 
             if (typeof sourceData === 'string') {
 
@@ -194,7 +194,7 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
     }
 
     logger.debug("Row: " + rowNumber + " - Object mapped correctly ");
-    logger.trace("Result: " + JSON.stringify(result))
+    //logger.trace("Result: " + JSON.stringify(result))
     await mappedHandler(rowNumber, result, schema);
 
 };
@@ -209,7 +209,7 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
 
                 case 'orionWriter':
                     try {
-                        logger.trace("obj : " + JSON.stringify(obj))
+                        //logger.trace("obj : " + JSON.stringify(obj))
                         promises.push(
                             async () => await orionWriter.writeObject(objNumber, obj, modelSchema)
                         );

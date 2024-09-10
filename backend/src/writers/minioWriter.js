@@ -29,7 +29,7 @@ module.exports = {
         //return e(err)
       }
       resultMessage = 'Bucket created successfully in ' + location + '.'
-      logger.info(resultMessage)
+      //logger.info(resultMessage)
       return resultMessage
     })
 
@@ -77,7 +77,7 @@ module.exports = {
   getNotifications(bucketName) {
     const poller = minioClient.listenBucketNotification(bucketName, '', '', ['s3:ObjectCreated:*'])
     poller.on('notification', async (record) => {
-      logger.info('New object: %s/%s (size: %d)', record.s3.bucket.name, record.s3.object.key, record.s3.object.size)
+      //logger.info('New object: %s/%s (size: %d)', record.s3.bucket.name, record.s3.object.key, record.s3.object.size)
       const newObject = await this.getObject(record.s3.bucket.name, record.s3.object.key)
       let jsonParsed
       try {
@@ -150,9 +150,9 @@ module.exports = {
       if (!obj)
         logger.info("ListObjects ended returning an empty object")
       else
-        logger.info("Found object " + JSON.stringify(obj))
+        //logger.info("Found object " + JSON.stringify(obj))
       if (data[0])
-        logger.info(JSON.stringify(data))
+        //logger.info(JSON.stringify(data))
       resultMessage = data
       //process.res.send(data)
     })
@@ -223,7 +223,7 @@ module.exports = {
         //return e(err)
       }
       logger.info("Object Written.\n Result : ")
-      logger.info(JSON.stringify(res))
+      //logger.info(JSON.stringify(res))
       resultMessage = res
     })
 
@@ -268,7 +268,7 @@ module.exports = {
       });
 
       dataStream.on('end', function () {
-        logger.info('Object data: ', objectData);
+        //logger.info('Object data: ', objectData);
         try {
           resultMessage = format == 'json' ? JSON.parse(objectData) : objectData
         }
