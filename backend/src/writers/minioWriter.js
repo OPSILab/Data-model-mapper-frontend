@@ -149,9 +149,9 @@ module.exports = {
     stream.on('end', function (obj) {
       if (!obj)
         logger.info("ListObjects ended returning an empty object")
-      else
+      //else
         //logger.info("Found object " + JSON.stringify(obj))
-      if (data[0])
+      //if (data[0])
         //logger.info(JSON.stringify(data))
       resultMessage = data
       //process.res.send(data)
