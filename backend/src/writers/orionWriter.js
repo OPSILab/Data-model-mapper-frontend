@@ -31,6 +31,24 @@ const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 };
 
+/*
+const sendToOrion = async (options, retries) => {
+    let startTime = Date.now()
+    let response
+    rp(options).then(res => {
+        response = res
+    })
+    while (!response)
+        if ((Date.now() - startTime) > config.orionWriter.requestTimeout || 30000)
+            if (retries < config.orionWriter.maxRetry)
+                return await sendToOrion(options, retries ? retries++ : 1)
+            else
+                throw { error: "Orion did not sent yet any response" }
+        else
+            await sleep(1)
+    return response
+}*/
+
 const buildRequestHeaders = () => {
 
     var headerObject = {
@@ -74,6 +92,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
             simple: false,
             resolveWithFullResponse: true,
             retry: config.orionWriter.maxRetry,
+            timeout: config.orionWriter.requestTimeout,
             proxy: proxyConf,
             rejectUnauthorized: false
         };
