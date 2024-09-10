@@ -159,7 +159,7 @@ module.exports = {
             map = config.idVersion == 1 ? await Map.findOne({ id: map.id }) : await Map.findOne({ _id: map.id })
             if (!map)
                 throw { error: "No map found" }
-            logger.trace(map)
+            //logger.trace(map)
 
             if (!map.dataModel?.$schema && map.dataModel?.schema)
                 map.dataModel.$schema = map.dataModel.schema
@@ -273,7 +273,7 @@ module.exports = {
             source.data = source.data.source || source.data.sourceCSV
         }
 
-        logger.trace(source)
+        //logger.trace(source)
 
         if (!source.name && !source.url && !source.id && source.minioObjName && (!source.data || source.data && !source.data[0])) {
             // if (!source.name && source.minioObjName && (!source.data || source.data && !source.data[0])) {
@@ -337,7 +337,8 @@ module.exports = {
 
         if (dataModel.data) {
             let dataModelTempWriting = {}
-            logger.info(this.dataModelDeClean(dataModel.data))
+            this.dataModelDeClean(dataModel.data)
+            
             common.schema = JSON.parse(JSON.stringify(dataModel.data))
             fs.writeFile(
                 //dataModel.schema_id || 
