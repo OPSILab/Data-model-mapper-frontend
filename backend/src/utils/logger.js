@@ -138,8 +138,6 @@ const createAppLogger = (module) => {
 };
 
 
-
-
 //
 // Configure the logger for report
 //
@@ -163,156 +161,64 @@ winston.loggers.add('orionReport', {
 });
 
 
-/*module.exports = {
-    app: createAppLogger,
-    report: winston.loggers.get('report'),
-    orionReport: winston.loggers.get('orionReport')
-};*/
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 const LEVEL = process.env.LEVEL?.toLowerCase() || config.logLevel || "trace"
-let logs = ""
-let busy = false
-async function saveLogs() {
-    if (logs && !busy) {
-        busy = true
-        //const newLog = new Log({
-        //    messages: logs
-        //});
-        //await newLog.save
-        /*((err, insertedLog) => {
-            if (err) {
-                console.error("Errore during logs save:", err);
-                return;
-            }*/
-        try {
-            /*for (let arg of logs)
-                if (arg && (Array.isArray(arg) || typeof arg == "object"))
-                    logStream.write(JSON.stringify(arg) + '\n');
-                else
-                    logStream.write(arg + '\n');*/
-            await Log.insertMany([{ messages: logs, timestamp: parseInt(Date.now()) }])
-            console.log("Logs saved");
-        }
-        catch (error) {
-            console.log("Logs saving fail");
-            console.error(error)
-        }
-        logs = ""
-        busy = false
-        //});
-    }
-    //else
-    //    console.debug("No logs to save")
-}
 
-async function deleteLogs() {
+function saveLog(log) {
     try {
-        await Log.deleteMany({ timestamp: { $lt: parseInt(Date.now() - 2592000000) } })
-        console.log("Older logs deleted")
+        if (log && (Array.isArray(log) || typeof log == "object"))
+            logStream.write(JSON.stringify(log) + '\n');
+        else
+            logStream.write(log + '\n');
     }
     catch (error) {
-        console.log("Older logs deleting fail")
+        console.log("Logs saving fail");
         console.error(error)
     }
 }
 
-setInterval(deleteLogs, 86400000)
+function customLogger(level, fileName) {
 
-//setInterval(saveLogs, 600000);
-setInterval(saveLogs, config.logSaveInterval);
-
-async function customLogger(level, fileName) {
-    //console.debug(typeof fileName)
-    //console.debug(JSON.stringify(fileName))
     if (fileName.includes("backend"))
         fileName = fileName.split("backend")[1]
-    //const currentDate = new Date().toISOString();
-
-    // Ottieni la riga di codice
-    //const stackTrace = new Error().stack.split("\n")[2].trim().split(" ");
-    //const lineNumber = stackTrace[stackTrace.length - 1].split(":")[1];
-
-    // Ottieni il file di esecuzione (nome del file che importa il logger)
-    //const fileName = __filename
-    //return (`[${currentDate}] [${fileName}:${lineNumber}] [${level}]`)
-
     const currentDate = new Date().toISOString();
     const log = (`[${currentDate}] [${fileName}] [${level}]`)
-    while (busy && await sleep(1))
-        console.log("Wait for logs backup")
-    //logs.push(log)
     return log;
-    return (`[${currentDate}] [${fileName}] [${level}]`);
-    const stackTrace = fileName.stack.split("\n")[2].trim().split("(");
-    const filePath = stackTrace[stackTrace.length - 1]?.split(")")[0].split("backend")[1]
-    return (`[${currentDate}] [${filePath}] [${level}]`);
-
 }
 
-let logging = 0
 
 function logBackup(...messages) {
+    console.log(...messages)
     for (let m of messages)
         if (m != " ")
-            try {
-                logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
-            }
-            catch (error) {
-                console.error(error)
-            }
-    console.log(...messages)
+            saveLog(m)
 }
 
 function debugBackup(...messages) {
+    console.debug(...messages)
     for (let m of messages)
         if (m != " ")
-            try {
-                logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
-            }
-            catch (error) {
-                console.error(error)
-            }
-    console.debug(...messages)
+            saveLog(m)
 }
 
 function errorBackup(...messages) {
+    console.error(...messages)
     for (let m of messages)
         if (m != " ")
-            try {
-                logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
-            }
-            catch (error) {
-                console.error(error)
-            }
-    console.error(...messages)
+            saveLog(m)
 }
 
 function warnBackup(...messages) {
+    console.warn(...messages)
     for (let m of messages)
         if (m != " ")
-            try {
-                logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
-            }
-            catch (error) {
-                console.error(error)
-            }
-    console.warn(...messages)
+            saveLog(m)
 }
 
 function infoBackup(...messages) {
+    console.info(...messages)
     for (let m of messages)
         if (m != " ")
-            try {
-                logs += JSON.stringify(m instanceof Error ? m.toString() + "\n" + m.stack : m) + "\n"
-            }
-            catch (error) {
-                console.error(error)
-            }
-    console.info(...messages)
+            saveLog(m)
 }
 
 class Logger {
@@ -329,58 +235,29 @@ class Logger {
         return log;
     }
 
-    //fileName = new Error()
-
-    //customLogger : customLogger,
-    async saveLogs() {
-        await saveLogs();
+    trace(...message) {
+        if (LEVEL == "trace")
+            logBackup(customLogger("trace", this.fileName), " ", ...message)
     }
-
-    async trace(...message) {
-        if (LEVEL == "trace") {
-            // console.log(...
-            logBackup(await customLogger("trace", this.fileName), " ", ...message)
-            //   )
-
-        }
+    debug(...message) {
+        if (LEVEL == "trace" || LEVEL == "debug")
+            debugBackup(customLogger("debug", this.fileName), " ", ...message)
     }
-    async debug(...message) {
-        if (LEVEL == "trace" || LEVEL == "debug") {
-            //   console.debug(...
-            debugBackup(await customLogger("debug", this.fileName), " ", ...message)
-            //)
-
-        }
+    info(...message) {
+        if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info")
+            infoBackup(customLogger("info", this.fileName), " ", ...message)
     }
-    async info(...message) {
-        if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info") {
-            //  console.info(...
-            infoBackup(await customLogger("info", this.fileName), " ", ...message)
-            // )
-        }
+    warn(...message) {
+        if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn")
+            warnBackup(customLogger("warn", this.fileName), " ", ...message)
     }
-    async warn(...message) {
-        if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn") {
-            // console.warn(...
-            warnBackup(await customLogger("warn", this.fileName), " ", ...message)
-            //  )
-
-        }
+    error(...message) {
+        if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn" || LEVEL == "error")
+            errorBackup(customLogger("error", this.fileName), " ", ...message)
     }
-    async error(...message) {
-        if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn" || LEVEL == "error") {
-            // console.error(...
-            errorBackup(await customLogger("error", this.fileName), " ", ...message)
-            //  )
-
-        }
-    }
-    async err(...message) {
-        if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn" || LEVEL == "error") {
-            // console.error(...
-            errorBackup(await customLogger("error", this.fileName), " ", ...message)
-            // )
-        }
+    err(...message) {
+        if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info" || LEVEL == "warn" || LEVEL == "error")
+            errorBackup(customLogger("error", this.fileName), " ", ...message)
     }
 }
 
