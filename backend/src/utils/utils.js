@@ -244,6 +244,8 @@ async function spaceCleaner(object) {
 function spaceCleaner0(object) {
     stackCalls++
     logger.debug("Stack calls ", stackCalls)
+    if (stackCalls > 3000)
+        console.debug(object)
     if (Array.isArray(object)) {
         for (let sub of object)
             if (typeof sub === "object")
@@ -315,10 +317,10 @@ const sendOutput = async () => {
     catch (error) {
         logger.error(error)
         try {
-            if (!apiOutput[apiOutput.outputFile.length - 2].details)
-                apiOutput[apiOutput.outputFile.length - 2].details = [{ error }]
+            if (!apiOutput.outputFile[apiOutput.outputFile.length - 1]["MAPPING_REPORT"].details)
+                apiOutput.outputFile[apiOutput.outputFile.length - 1]["MAPPING_REPORT"].details = [{ error }]
             else
-                apiOutput[apiOutput.outputFile.length - 2].details.push([{ error }])
+                apiOutput.outputFile[apiOutput.outputFile.length - 1]["MAPPING_REPORT"].details.push([{ error }])
         }
         catch (error) {
             logger.error(error)
@@ -362,7 +364,7 @@ const printFinalReportAndSendResponse = async (loggerr) => {
             await sleep(1)
         }
 
-        logger.debug(config.orionWriter)
+        //logger.debug(config.orionWriter)
 
         apiOutput.outputFile[apiOutput.outputFile.length] = {
             MAPPING_REPORT: {

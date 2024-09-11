@@ -157,11 +157,11 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                         } else {
                             wrObj = false
                             if (!config.orionWriter.details)
-                                config.orionWriter.details = [{ count: objNumber.toString(), updateResponse }]
+                                config.orionWriter.details = [{ count: objNumber.toString(), response: updateResponse?.body, status: updateResponse?.statusCode }]
                             else
-                                config.orionWriter.details.push({ count: objNumber.toString(), updateResponse })
+                                config.orionWriter.details.push({ count: objNumber.toString(), response: updateResponse?.body, status: updateResponse?.statusCode })
                             logger.debug("Details ", objNumber, obj)
-                            logger.debug(config.orionWriter)
+                            //logger.debug(config.orionWriter)
                             logger.error('There was an error while writing Mapped Object: ')
                             //logger.error(error)
                             logger.debug("----Details ----")
@@ -169,11 +169,11 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                             return Promise.reject('Update Error').catch((error) => {
                                 wrObj = false
                                 if (!config.orionWriter.details)
-                                    config.orionWriter.details = [{ count: objNumber.toString(), updateResponse }]
+                                    config.orionWriter.details = [{ count: objNumber.toString(), repsonse: updateResponse?.body, status: updateResponse?.statusCode }]
                                 else
-                                    config.orionWriter.details.push({ count: objNumber.toString(), updateResponse })
+                                    config.orionWriter.details.push({ count: objNumber.toString(), repsonse: updateResponse?.body, status: updateResponse?.statusCode })
                                 logger.debug("Details ", objNumber, obj)
-                                logger.debug(config.orionWriter)
+                                //logger.debug(config.orionWriter)
                                 logger.error('There was an error while writing Mapped Object: ')
                                 logger.error(error)
                             });
@@ -189,18 +189,18 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                         logger.debug('error: ' + error);
 
                         if (error)
-                            report.info('statusCode: ' + error.statusCode); // Print the response status code if a response was received
+                            report.info('statusCode: ' + error?.statusCode); // Print the response status code if a response was received
                         report.info('body: ' + JSON.stringify(error) + "\n" + error.toString);
                         report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
                         logger.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
                         config.orionUnWrittenCount++;
                         wrObj = false
                         if (!config.orionWriter.details)
-                            config.orionWriter.details = [{ count: objNumber.toString(), error: { error, response : updateResponse ||createResponse } }]
+                            config.orionWriter.details = [{ count: objNumber.toString(), error: { error: error.message, response: updateResponse?.body || createResponse?.body, status: updateResponse?.statusCode || createResponse?.statusCode } }]
                         else
-                            config.orionWriter.details.push({ count: objNumber.toString(), error: { error, response : updateResponse ||createResponse } })
+                            config.orionWriter.details.push({ count: objNumber.toString(), error: { error: error.message, response: updateResponse?.body || createResponse?.body, status: updateResponse?.statusCode || createResponse?.statusCode } })
                         logger.debug("Details ", objNumber, obj)
-                        logger.debug(config.orionWriter)
+                        //logger.debug(config.orionWriter)
                         logger.error('There was an error while writing Mapped Object: ')
                         logger.error(error)
                         logger.debug("----Details ----")
@@ -208,11 +208,11 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                         return Promise.reject(error).catch((error) => {
                             wrObj = false
                             if (!config.orionWriter.details)
-                                config.orionWriter.details = [{ count: objNumber.toString(), error: { error, response : updateResponse ||createResponse } }]
+                                config.orionWriter.details = [{ count: objNumber.toString(), error: { error: error.message, response: updateResponse?.body || createResponse?.body, status: updateResponse?.statusCode || createResponse?.statusCode } }]
                             else
-                                config.orionWriter.details.push({ count: objNumber.toString(), error: { error, response : updateResponse ||createResponse } })
+                                config.orionWriter.details.push({ count: objNumber.toString(), error: { error: error.message, response: updateResponse?.body || createResponse?.body, status: updateResponse?.statusCode || createResponse?.statusCode } })
                             logger.debug("Details ", objNumber, obj)
-                            logger.debug(config.orionWriter)
+                            //logger.debug(config.orionWriter)
                             logger.error('There was an error while writing Mapped Object: ')
                             logger.error(error)
                         });
@@ -234,23 +234,23 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                 config.orionUnWrittenCount++;
                 wrObj = false
                 if (!config.orionWriter.details)
-                    config.orionWriter.details = [{ count: objNumber.toString(), response : createResponse  }]
+                    config.orionWriter.details = [{ count: objNumber.toString(), response: createResponse?.body, status: createResponse?.statusCode }]
                 else
-                    config.orionWriter.details.push({ count: objNumber.toString(), response : createResponse  })
+                    config.orionWriter.details.push({ count: objNumber.toString(), response: createResponse?.body, status: createResponse?.statusCode })
                 logger.debug("----Details ----")
                 logger.debug(objNumber)
                 logger.debug("Details ", objNumber, obj)
-                logger.debug(config.orionWriter)
+                //logger.debug(config.orionWriter)
                 logger.error('There was an error while writing Mapped Object: ')
                 //logger.error(error)
                 return Promise.reject('Error returned from Context Broker: ' + JSON.stringify(createResponse) + '\n').catch((error) => {
                     wrObj = false
                     if (!config.orionWriter.details)
-                        config.orionWriter.details = [{ count: objNumber.toString(), error: { error, response : createResponse } }]
+                        config.orionWriter.details = [{ count: objNumber.toString(), error: { error: error.message, response: createResponse?.body, status: createResponse?.statusCode } }]
                     else
-                        config.orionWriter.details.push({ count: objNumber.toString(), error: { error, response : createResponse } })
+                        config.orionWriter.details.push({ count: objNumber.toString(), error: { error: error.message, response: createResponse?.body, status: createResponse?.statusCode } })
                     logger.debug("Details ", objNumber, obj)
-                    logger.debug(config.orionWriter)
+                    //logger.debug(config.orionWriter)
                     logger.error('There was an error while writing Mapped Object: ')
                     logger.error(error)
                 });
@@ -267,18 +267,18 @@ const writeObject = async (objNumber, obj, modelSchema) => {
             logger.debug('error: ' + error);
 
             if (error)
-                report.info('statusCode: ' + error.statusCode);
+                report.info('statusCode: ' + error?.statusCode);
             report.info('body: ' + JSON.stringify(error));
             report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
             logger.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
             config.orionUnWrittenCount++;
             wrObj = false
             if (!config.orionWriter.details)
-                config.orionWriter.details = [{ count: objNumber.toString(), error: { error } }]
+                config.orionWriter.details = [{ count: objNumber.toString(), error: error.message }]
             else
-                config.orionWriter.details.push({ count: objNumber.toString(), error: { error } })
+                config.orionWriter.details.push({ count: objNumber.toString(), error: error.message })
             logger.debug("Details ", objNumber, obj)
-            logger.debug(config.orionWriter)
+            //logger.debug(config.orionWriter)
             logger.debug("----Details ----")
             logger.debug(objNumber)
             return Promise.reject(error);
@@ -288,7 +288,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
     } else {
         wrObj = false
         logger.debug("Details ", objNumber, obj)
-        logger.debug(config.orionWriter)
+        //logger.debug(config.orionWriter)
         logger.debug("----Details ----")
         logger.debug(objNumber)
         return new Promise((resolve, reject) => {
