@@ -45,6 +45,7 @@ var config = {
     **/
 
     sourceDataPath: "C:\\path\\to\\inputFile.csv (Windows) or /path/to/inputFile.csv (Mac/Linux)",
+    logPath: "logs/",
     mapPath: "C:\\path\\to\\map.json (Windows) or /path/to/map.json (Mac/Linux)",
     targetDataModel: "Data Model name, according to the related Schema contained in the DataModels folder",
 
