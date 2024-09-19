@@ -86,6 +86,10 @@ module.exports = {
         return await minioWriter.listObjects(bucketName)
     },
 
+    orionConfigInDisabled(key) {
+        return (key == "enableProxy" || key == "proxy")
+    },
+
     getConfig() {
 
         //console.log(config.backup)
@@ -93,8 +97,10 @@ module.exports = {
         let responseConfig = JSON.parse(JSON.stringify(config.backup || config))
         let configCopy = JSON.parse(JSON.stringify(responseConfig))
 
-        configCopy.orionUrl = JSON.parse(JSON.stringify(responseConfig.orionWriter.orionUrl))
-        configCopy.mongo =
+        //configCopy.orionUrl = JSON.parse(JSON.stringify(responseConfig.orionWriter.orionUrl))
+        configCopy.orionWriter.proxy =
+            configCopy.orionWriter.enableProxy =
+            configCopy.mongo =
             configCopy.host =
             configCopy.externalPort =
             configCopy.writers =
@@ -103,7 +109,6 @@ module.exports = {
             configCopy.fileWriter =
             configCopy.debugger =
             configCopy.group =
-            configCopy.orionWriter =
             configCopy.regexClean =
             configCopy.mapPath =
             configCopy.sourceDataPath =
@@ -252,7 +257,12 @@ module.exports = {
                 }
             }
             for (let configKey in configIn) {
-                if (configKey == "orionUrl")
+                if (configKey == "orionWriter") {
+                    for (let orionConfigKey in configIn[configKey])
+                        if (!this.orionConfigInDisabled(orionConfigKey))
+                            config[configKey][orionConfigKey] = configIn[configKey][orionConfigKey]
+                }
+                else if (configKey == "orionUrl")
                     config.orionWriter.orionUrl = configIn.orionUrl
                 else if (configIn[configKey] != "undefined")
                     config[configKey] = configIn[configKey]
@@ -265,11 +275,13 @@ module.exports = {
         if (config.NGSI_entity != undefined) this.NGSI_entity = config.NGSI_entity
 
         if (source.id && !source.data[0]) {
-            try { source.data = await Source.findOne({ _id: source.id }) }
-            catch (error) {
-                logger.error(error)
-                process.res.sendStatus(404)
-            }
+            //try { 
+                source.data = await Source.findOne({ _id: source.id }) 
+            //}
+            //catch (error) {
+            //    logger.error(error)
+            //    process.res.sendStatus(404)
+            //}
             source.data = source.data.source || source.data.sourceCSV
         }
 
@@ -289,11 +301,14 @@ module.exports = {
         }
 
         if (dataModel.id && !dataModel.data) {
-            try { dataModel.data = await DataModel.findOne({ _id: dataModel.id }) }
-            catch (error) {
-                logger.error(error)
-                process.res.sendStatus(404)
-            }
+            //try { 
+                dataModel.data = await DataModel.findOne({ _id: dataModel.id }) 
+            //}
+            //}
+            //catch (error) {
+            //    logger.error(error)
+            //    process.res.sendStatus(404)
+            //}
             dataModel.data = dataModel.data.dataModel
             dataModel.schema_id =
                 //dataModel.data.$id || 
@@ -320,6 +335,10 @@ module.exports = {
         if (source.data && source.path)
             source.data = source.data[source.path]
 
+        //if (config.rowStart){
+        //    source.data = source.data.splice(config.rowStart)
+        //}
+
         if (source.data) {
             let sourceDataTempWriting = {}
             fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
@@ -338,7 +357,7 @@ module.exports = {
         if (dataModel.data) {
             let dataModelTempWriting = {}
             this.dataModelDeClean(dataModel.data)
-            
+
             common.schema = JSON.parse(JSON.stringify(dataModel.data))
             fs.writeFile(
                 //dataModel.schema_id || 

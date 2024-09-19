@@ -45,9 +45,9 @@ var config = {
     **/
 
     sourceDataPath: "C:\\path\\to\\inputFile.csv (Windows) or /path/to/inputFile.csv (Mac/Linux)",
-    logPath: "logs/",
     mapPath: "C:\\path\\to\\map.json (Windows) or /path/to/map.json (Mac/Linux)",
     targetDataModel: "Data Model name, according to the related Schema contained in the DataModels folder",
+    logPath: "logs/",
 
     /************************** Rows/Objects proccesing range *************
     * Following indicates the start and end row/object of the input file to be proccessed
@@ -128,7 +128,16 @@ config.orionWriter = {
     keyValues: false, //If false, transforms Mapped object to an Orion Entity (explicit types in attributes)
     keyValuesOption : '?options=keyValues',
     relativeUrl : "/v2/entities",
-    protocol : "v1"
+    protocol : "v1",
+    delayBetweenRequests: 5000,
+    delayBetweenPostAndPut: 1000,
+    retryDelay : 1000,
+    avoidPut : true,
+    promiseRequestRetryExternalLibrary : {
+        retry : 0, // number or retries
+        retryDelay: 5000, // delay between retries
+        timeout: 10000 // timeout before socket hang up
+    }
 };
 
 /*************** File Wirter CONFIGURATION *******************************/

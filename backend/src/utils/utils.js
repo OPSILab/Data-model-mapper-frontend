@@ -311,6 +311,8 @@ const bodyMapper = (body) => {
 
 const sendOutput = async () => {
     try {
+        while(apiOutput?.outputFile && !apiOutput?.outputFile[0])
+            apiOutput.outputFile.shift()
         if (config.deleteEmptySpaceAtBeginning)
             apiOutput.outputFile = await spaceCleaner(apiOutput.outputFile)
     }
@@ -330,19 +332,20 @@ const sendOutput = async () => {
     //else 
     if (!config.mappingReport)
         try {
-            process.res.send(apiOutput.outputFile.slice(0, apiOutput.outputFile.length - 1));
+            await process.res.send(apiOutput.outputFile.slice(0, apiOutput.outputFile.length - 1));
         }
         catch (error) {
             logger.error(error)
         }
     else
         try {
-            process.res.send(apiOutput.outputFile);
+            await process.res.send(apiOutput.outputFile);
         }
         catch (error) {
             logger.error(error)
         }
     apiOutput.outputFile = [];
+    process.dataModelMapper.map = undefined
     logger.debug("Processing time : ", Date.now() - process.env.start)
 };
 
@@ -361,7 +364,7 @@ const printFinalReportAndSendResponse = async (loggerr) => {
         //Mapping report in output file
 
         while (isOrionWriterActive() && (config.orionWrittenCount + config.orionUnWrittenCount < config.validCount)) {
-            await sleep(1)
+            await sleep(1, "Orion writing progress :" + (config.orionWrittenCount + config.orionUnWrittenCount) + "/" + config.validCount)
         }
 
         //logger.debug(config.orionWriter)
