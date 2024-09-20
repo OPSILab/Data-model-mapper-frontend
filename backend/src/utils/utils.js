@@ -317,7 +317,8 @@ const sendOutput = async () => {
             apiOutput.outputFile = await spaceCleaner(apiOutput.outputFile)
     }
     catch (error) {
-        logger.error("error at " + error.stack)
+        logger.error(error)
+        logger.error("error at " + error?.stack)
         try {
             if (!apiOutput.outputFile[apiOutput.outputFile.length - 1]["MAPPING_REPORT"].details)
                 apiOutput.outputFile[apiOutput.outputFile.length - 1]["MAPPING_REPORT"].details = [{ error }]
@@ -325,7 +326,8 @@ const sendOutput = async () => {
                 apiOutput.outputFile[apiOutput.outputFile.length - 1]["MAPPING_REPORT"].details.push([{ error }])
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
         }
     }
     //if (parseInt((apiOutput.outputFile[apiOutput.outputFile.length - 1].MAPPING_REPORT.Mapped_and_NOT_Validated_Objects)[0].charAt(0))) process.res.status(400).send({ errors: apiOutput.outputFile.errors || "Validation errors", report: apiOutput.outputFile[apiOutput.outputFile.length - 1] })
@@ -335,14 +337,16 @@ const sendOutput = async () => {
             await process.res.send(apiOutput.outputFile.slice(0, apiOutput.outputFile.length - 1));
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
         }
     else
         try {
             await process.res.send(apiOutput.outputFile);
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
         }
     apiOutput.outputFile = [];
     process.dataModelMapper.map = undefined
@@ -401,7 +405,8 @@ const printFinalReportAndSendResponse = async (loggerr) => {
                             await minioWriter.stringUpload(bucketName, objectName, obj)
                     }
                     catch (error) {
-                        logger.error("error at " + error.stack)
+                        logger.error(error)
+                        logger.error("error at " + error?.stack)
                     }
                     logger.debug("minio writing done")
                 }
@@ -410,7 +415,8 @@ const printFinalReportAndSendResponse = async (loggerr) => {
             await sendOutput();
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             //crash
             apiOutput.outputFile = [];
         }

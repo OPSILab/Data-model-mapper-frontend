@@ -324,7 +324,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             try {
                 singleResult = converter(source);
             } catch (error) {
-                //logger.error("error at " + error.stack)
+                //logger.error("error at " + error?.stack)
                 logger.error(`There was an error: ${error} while processing ${parsedSourceKey} field`);
                 continue;
             }
@@ -379,7 +379,8 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             delete result[entityIdField];
             result.id = result.id.replaceAll(" ", "")
         } catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             logger.error("UnknownEntity")
         }
     }
@@ -390,7 +391,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
     * Despite single validations, the following one is mandatory to be successful
     **/
     if (checkResultWithDestModelSchema(result, mapDestKey, modelSchema, rowNumber)) {
-        //logger.debug('Mapped object, number: ' + rowNumber + ' is compliant with target Data Model');
+        logger.debug('Mapped object, number: ' + rowNumber + ' is compliant with target Data Model');
         report.info('Mapped object, number: ' + rowNumber + ' is compliant with target Data Model');
         config.validCount++;
         return result;
@@ -402,7 +403,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             JSON.stringify(result) +
             '\n--------------------------------------------------------------------------------\n');
 
-        //logger.debug('Mapped object, number: ' + rowNumber + ', id: ' + result.id + ' is not compliant the target Data Model! Skipping!');
+        logger.debug('Mapped object, number: ' + rowNumber + ', id: ' + result.id + ' is not compliant the target Data Model! Skipping!');
         config.unvalidCount++;
         return undefined;
     }
@@ -417,7 +418,7 @@ const checkPairWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNum
     //if (config.noSchema)
     //        return true
     var result = validator.validateSourceValue(mappedObject, modelSchema, true, rowNumber);
-    //("Validator result : ", result)
+    logger.debug("Validator result : ", result)
     return result;
 
 };

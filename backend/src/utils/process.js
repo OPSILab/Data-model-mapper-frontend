@@ -94,7 +94,8 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 logger.debug("map is the file map loaded")
             } catch (error) {
                 logger.error('There was an error while loading Map: ');
-                logger.error("error at " + error.stack)
+                logger.error(error)
+                logger.error("error at " + error?.stack)
                 return Promise.reject('There was an error while loading Map: ' + error);
             }
 
@@ -120,7 +121,8 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
                 } catch (error) {
                     logger.error('There was an error while processing Data Model schema: ');
-                    logger.error("error at " + error.stack)
+                    logger.error(error)
+                    logger.error("error at " + error?.stack)
                     if (common.schema)
                         loadedSchema = JSON.parse(JSON.stringify(common.schema))
                     else
@@ -190,7 +192,7 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
         var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, config.idSite, config.idService, config.idGroup, config.entityNameField);
     }
     catch (error) {
-        logger.error(error.message)
+        logger.error(error, "\n", error.message)
     }
 
     logger.debug("Row: " + rowNumber + " - Object mapped correctly ");
@@ -239,7 +241,7 @@ const finalizeProcess = async () => {
     try {
         //await Promise.all(promises);
         for (let i = 0; i < promises.length; i++) {
-            //logger.debug("Promise ", i)
+            logger.debug("Promise ", i)
             try {
                 await promises[i]();
                 if (config.orionWriter.delayBetweenRequests)
@@ -271,7 +273,8 @@ const finalizeProcess = async () => {
         //return await Promise.resolve();
 
     } catch (error) {
-        logger.error("error at " + error.stack)
+        logger.error(error)
+        logger.error("error at " + error?.stack)
         return await Promise.reject(error);
     }
 };

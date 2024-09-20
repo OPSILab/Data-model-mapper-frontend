@@ -19,7 +19,8 @@ module.exports = {
             if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         service.error = null
@@ -32,7 +33,8 @@ module.exports = {
             res.send(await service.getAllSources(req.query.bucketName || req.body.bucketName, req.body.prefix, req.query.format))
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -43,7 +45,8 @@ module.exports = {
             res.send(await service.getSourcesFromDB(req.body.prefix))
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -53,7 +56,8 @@ module.exports = {
             res.send(await service.getVersion())
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -64,7 +68,8 @@ module.exports = {
             res.send(await service.getMinioObjects(req.params.bucketName || req.query.bucketName, req.body.prefix, req.query.format, []))
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -75,7 +80,8 @@ module.exports = {
             res.send(await service.getMaps(req.body.prefix))
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -86,7 +92,8 @@ module.exports = {
             res.send(await service.getDataModels(req.body.prefix))
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -98,7 +105,8 @@ module.exports = {
             res.send(await service.getSource(id, name, mapRef, req.body.prefix))
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -110,7 +118,8 @@ module.exports = {
             res.send(await service.getMap(id, name, req.body.prefix))
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -121,7 +130,8 @@ module.exports = {
             res.send(await service.getConfig())
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -133,7 +143,8 @@ module.exports = {
             res.send(await service.getDataModel(id, name, mapRef, req.body.prefix))
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -149,7 +160,8 @@ module.exports = {
             logger.info("Source inserted");
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud = undefined
@@ -167,7 +179,8 @@ module.exports = {
             logger.info("Map inserted");
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud = undefined
@@ -199,7 +212,8 @@ module.exports = {
             logger.info("Source modified");
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud = undefined
@@ -215,7 +229,8 @@ module.exports = {
             logger.info("Source assigned");
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud = undefined
@@ -231,7 +246,8 @@ module.exports = {
             logger.info("Schema assigned");
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud = undefined
@@ -247,7 +263,8 @@ module.exports = {
             logger.info("Source deassigned");
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud = undefined
@@ -263,7 +280,8 @@ module.exports = {
             logger.info("Schema deassigned");
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud = undefined
@@ -281,7 +299,8 @@ module.exports = {
             logger.info("Map modified");
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud = undefined
@@ -297,7 +316,8 @@ module.exports = {
             logger.info("Schema modified");
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud = undefined
@@ -322,7 +342,8 @@ module.exports = {
             res.send(await service.deleteMap(id || req.params.id, name, req.body.prefix, req.body.bucketName))
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud = undefined
@@ -352,7 +373,8 @@ module.exports = {
             res.send(await service.dereferenceSchema(req.body))
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -368,7 +390,8 @@ module.exports = {
         }
 
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -381,7 +404,8 @@ module.exports = {
         }
         catch (error) {
             let errorStatusCode
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             if (error.code == "BucketAlreadyOwnedByYou" || error.name == "InvalidBucketNameError")
                 errorStatusCode = 400
             else
@@ -399,7 +423,8 @@ module.exports = {
         }
         catch (error) {
             let errorStatusCode
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             if (error.code == "NoSuchKey")
                 errorStatusCode = 400
             else
@@ -414,7 +439,8 @@ module.exports = {
             res.send(await service.minioListObjects(req.params.bucketName || req.query.bucketName))
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -425,7 +451,8 @@ module.exports = {
             res.send(await service.minioGetBuckets())
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -436,7 +463,8 @@ module.exports = {
             res.send(await service.minioSubscribe(req.params.bucketName))
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -448,7 +476,8 @@ module.exports = {
         }
         catch (error) {
             let errorStatusCode
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             if (error.message == 'third argument should be of type "stream.Readable" or "Buffer" or "string"')
                 errorStatusCode = 400
             else
@@ -462,7 +491,8 @@ module.exports = {
             res.send(req.headers.authorization.split(' ')[1])
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     },
@@ -472,7 +502,8 @@ module.exports = {
             res.send(await service.getLogs(req.query.from, req.query.to))
         }
         catch (error) {
-            logger.error("error at " + error.stack)
+            logger.error(error)
+            logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
     }

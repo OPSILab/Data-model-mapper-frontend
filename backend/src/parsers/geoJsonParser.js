@@ -89,7 +89,8 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
                 //utils.printFinalReportAndSendResponse(report);
             } catch (error) {
                 logger.error("Error While finalizing the streaming process: ");
-                logger.error("error at " + error.stack)
+                logger.error(error)
+                logger.error("error at " + error?.stack)
             }
 
         });
