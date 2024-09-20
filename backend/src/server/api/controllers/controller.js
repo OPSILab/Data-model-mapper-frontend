@@ -25,7 +25,6 @@ module.exports = {
         }
         service.error = null
         logger.info("controller.mapData end");
-        process.dataModelMapper.resetConfig = undefined
     },
 
     getSources: async (req, res) => {
