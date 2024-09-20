@@ -62,7 +62,7 @@ function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandle
         }
         catch (error) {
             logger.error('There was an error while getting buffer from source data: \n');
-            logger.error(error)
+            logger.error("error at " + error.stack)
         }
 
     // The Source Data is the file path
@@ -112,7 +112,7 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
 
             } catch (error) {
                 logger.error("Error While finalizing the streaming process: ");
-                logger.error(error)
+                logger.error("error at " + error.stack)
             }
         });
 }
@@ -153,7 +153,7 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
 
             } catch (error) {
                 logger.error("Error While finalizing the streaming process: ");
-                logger.error(error)
+                logger.error("error at " + error.stack)
             }
         });
 

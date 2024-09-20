@@ -55,9 +55,9 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
         if (sourceData) {
 
-            logger.trace("sourceData:");
+            //logger.trace("sourceData:");
             //logger.trace(sourceData);
-            logger.debug(typeof sourceData)
+            //logger.debug(typeof sourceData)
 
             if (typeof sourceData === 'object') sourceData = sourceData.toString()
             //logger.trace(sourceData);
@@ -94,7 +94,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 logger.debug("map is the file map loaded")
             } catch (error) {
                 logger.error('There was an error while loading Map: ');
-                logger.error(error)
+                logger.error("error at " + error.stack)
                 return Promise.reject('There was an error while loading Map: ' + error);
             }
 
@@ -120,7 +120,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
                 } catch (error) {
                     logger.error('There was an error while processing Data Model schema: ');
-                    logger.error(error)
+                    logger.error("error at " + error.stack)
                     if (common.schema)
                         loadedSchema = JSON.parse(JSON.stringify(common.schema))
                     else
@@ -190,7 +190,7 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
         var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, config.idSite, config.idService, config.idGroup, config.entityNameField);
     }
     catch (error) {
-        logger.error(error, "\n", error.message)
+        logger.error(error.message)
     }
 
     logger.debug("Row: " + rowNumber + " - Object mapped correctly ");
@@ -216,7 +216,7 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
                     }
                     catch (error) {
                         logger.error(error.toString())
-                        logger.debug(JSON.stringify(error))
+                        //logger.debug(JSON.stringify(error))
                     }
                     break;
                 case 'fileWriter':
@@ -230,7 +230,7 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
     }
     catch (error) {
         logger.error(error.toString())
-        logger.debug(JSON.stringify(error))
+        //logger.debug(JSON.stringify(error))
     }
 };
 
@@ -239,7 +239,7 @@ const finalizeProcess = async () => {
     try {
         //await Promise.all(promises);
         for (let i = 0; i < promises.length; i++) {
-            logger.debug("Promise ", i)
+            //logger.debug("Promise ", i)
             try {
                 await promises[i]();
                 //await (require('../utils/common.js')).sleep(100)
@@ -270,7 +270,7 @@ const finalizeProcess = async () => {
         return await Promise.resolve();
 
     } catch (error) {
-        logger.error(error)
+        logger.error("error at " + error.stack)
         return await Promise.reject(error);
     }
 };

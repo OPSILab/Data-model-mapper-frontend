@@ -26,7 +26,7 @@ async function loadEPSGDefinition(epsgCode) {
 }
 
 async function convertGeoJSON(inputGeoJSON, sourceEPSGCode) {
-    logger.debug("Converting geojson")
+    //logger.debug("Converting geojson")
     try {
         if (!proj4.defs[`EPSG:${sourceEPSGCode}`]) {
             await loadEPSGDefinition(sourceEPSGCode);
@@ -37,13 +37,12 @@ async function convertGeoJSON(inputGeoJSON, sourceEPSGCode) {
     }
     const geojson = new Terraformer.Primitive(inputGeoJSON);
     const convertedGeoJSON = geojson.toGeographic();
-    logger.debug("Converted geojson")
     return convertedGeoJSON;
 }
 
 module.exports = {
     e(error) {
-        logger.error(error)
+        logger.error("error at " + error.stack)
         let str = ""
         var util = require('util')
         for (let key in error) {
