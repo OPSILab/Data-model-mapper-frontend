@@ -43,7 +43,7 @@ async function convertGeoJSON(inputGeoJSON, sourceEPSGCode) {
 module.exports = {
     e(error) {
         logger.error(error)
-        logger.error("error at " + error.stack)
+        logger.error("error at " + error?.stack)
         let str = ""
         var util = require('util')
         for (let key in error) {

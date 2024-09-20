@@ -93,7 +93,7 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
             } catch (error) {
                 logger.error("Error While finalizing the streaming process: ");
                 logger.error(error);
-                logger.error("error at " + error.stack);
+                logger.error("error at " + error?.stack);
             }
 
         });

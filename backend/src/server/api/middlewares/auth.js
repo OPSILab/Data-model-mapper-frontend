@@ -49,7 +49,7 @@ module.exports = {
                 catch (error) {
 
                     logger.error(error)
-                    logger.error("error at " + error.stack)
+                    logger.error("error at " + error?.stack)
                     if (error.message == "invalid token" || error.message == "jwt expired" || error.message == "jwt malformed")
                         return res.sendStatus(403);
                     else
@@ -102,7 +102,7 @@ module.exports = {
                                 }
                                 catch (error) {
                                     logger.error(error)
-                                    logger.error("error at " + error.stack)
+                                    logger.error("error at " + error?.stack)
                                     res.status(500).send(error || error.toString())
                                 }
                             }
