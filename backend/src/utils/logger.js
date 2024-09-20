@@ -229,7 +229,7 @@ function saveLog(log) {
 function customLogger(level, fileName) {
   if (fileName.includes("backend")) fileName = fileName.split("backend")[1];
   const currentDate = new Date().toISOString();
-  const line = new Error().stack.split("\n")[3].substring(3)
+  const line = new Error().stack.split("\n")[3].split("  at").pop()
   const log = `[${currentDate}] [${line}] [${level}]\n`;
   //const log = `[${currentDate}] [${fileName}] [${level}]`;
   return log;

@@ -9,8 +9,8 @@ module.exports = {
 
     mapData: async (req, res) => {
 
-        process.res = res;
         await waiting("map")
+        process.res = res;
         process.dataModelMapper.map = "busy"
         let { sourceData, map, dataModel } = utils.bodyMapper(req.body)
 
@@ -151,8 +151,8 @@ module.exports = {
 
     insertSource: async (req, res) => {
 
-        process.res = res;
         await waiting("crud")
+        process.res = res;
         process.dataModelMapper.crud = "busy"
 
         try {
@@ -164,13 +164,14 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.crud = undefined
+        process.dataModelMapper.crud =
+            process.dataModelMapper.resetConfig = undefined
     },
 
     insertMap: async (req, res) => {
 
-        process.res = res;
         await waiting("crud")
+        process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.insertMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
@@ -183,13 +184,14 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.crud = undefined
+        process.dataModelMapper.crud =
+            process.dataModelMapper.resetConfig = undefined
     },
 
     insertDataModel: async (req, res) => {
 
-        process.res = res;
         await waiting("crud")
+        process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef, req.body.bucketName, req.body.prefix))
@@ -199,13 +201,14 @@ module.exports = {
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
             logger.error(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.crud = undefined
+        process.dataModelMapper.crud =
+            process.dataModelMapper.resetConfig = undefined
     },
 
     modifySource: async (req, res) => {
 
-        process.res = res;
         await waiting("crud")
+        process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef, req.body.bucketName, req.body.prefix))
@@ -216,13 +219,14 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.crud = undefined
+        process.dataModelMapper.crud =
+            process.dataModelMapper.resetConfig = undefined
     },
 
     assignSource: async (req, res) => {
 
-        process.res = res;
         await waiting("crud")
+        process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.assignSource(req.body.sourceDataID, req.body.mapRef))
@@ -233,13 +237,14 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.crud = undefined
+        process.dataModelMapper.crud =
+            process.dataModelMapper.resetConfig = undefined
     },
 
     assignSchema: async (req, res) => {
 
-        process.res = res;
         await waiting("crud")
+        process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.assignSchema(req.body.dataModelID, req.body.mapRef))
@@ -250,13 +255,14 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.crud = undefined
+        process.dataModelMapper.crud =
+            process.dataModelMapper.resetConfig = undefined
     },
 
     deAssignSource: async (req, res) => {
 
-        process.res = res;
         await waiting("crud")
+        process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.deAssignSource(req.body.sourceDataID, req.body.mapRef))
@@ -267,13 +273,14 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.crud = undefined
+        process.dataModelMapper.crud =
+            process.dataModelMapper.resetConfig = undefined
     },
 
     deAssignSchema: async (req, res) => {
 
-        process.res = res;
         await waiting("crud")
+        process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.deAssignSchema(req.body.dataModelID, req.body.mapRef))
@@ -284,13 +291,14 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.crud = undefined
+        process.dataModelMapper.crud =
+            process.dataModelMapper.resetConfig = undefined
     },
 
     modifyMap: async (req, res) => {
 
-        process.res = res;
         await waiting("crud")
+        process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
@@ -303,13 +311,14 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.crud = undefined
+        process.dataModelMapper.crud =
+            process.dataModelMapper.resetConfig = undefined
     },
 
     modifyDataModel: async (req, res) => {
 
-        process.res = res;
         await waiting("crud")
+        process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef, req.body.bucketName, req.body.prefix))
@@ -320,23 +329,25 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.crud = undefined
+        process.dataModelMapper.crud =
+            process.dataModelMapper.resetConfig = undefined
     },
 
     deleteSource: async (req, res) => {
         const { id, name } = req.query
-        process.res = res;
         await waiting("crud")
+        process.res = res;
         process.dataModelMapper.crud = "busy"
         try { res.send(await service.deleteSource(id, name, req.body.prefix)) }
         catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
-        process.dataModelMapper.crud = undefined
+        process.dataModelMapper.crud =
+            process.dataModelMapper.resetConfig = undefined
     },
 
     deleteMap: async (req, res) => {
         const { id, name } = req.query
-        process.res = res;
         await waiting("crud")
+        process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.deleteMap(id || req.params.id, name, req.body.prefix, req.body.bucketName))
@@ -346,13 +357,14 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.crud = undefined
+        process.dataModelMapper.crud =
+            process.dataModelMapper.resetConfig = undefined
     },
 
     deleteDataModel: async (req, res) => {
         const { id, name } = req.query
-        process.res = res;
         await waiting("crud")
+        process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.deleteDataModel(id, name, req.body.prefix))
@@ -360,7 +372,8 @@ module.exports = {
         catch (error) {
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.crud = undefined
+        process.dataModelMapper.crud =
+            process.dataModelMapper.resetConfig = undefined
     },
 
     dereferenceSchema: async (req, res) => {

@@ -68,7 +68,10 @@ module.exports = () => {
           logger.info("Server has started!");
           logger.info("listening on port: " + config.httpPort || 5500);
           config.backup = JSON.parse(JSON.stringify(config))
-          logger.info({ test: "test new logger" })
+          logger.info({ 
+            logLevel : config.logLevel,
+            activeWriters: config.writers
+          })
 
           /*if (config.writers.filter(writer => writer == "minioWriter")[0]) {
             const minioWriter = require('../writers/minioWriter')

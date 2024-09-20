@@ -316,8 +316,8 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             if (typeof parsedSourceKey == "string")
                 parsedSourceKey = parsedSourceKey.replaceAll('"', '')
 
-            logger.debug(parsedSourceKey)
-            logger.debug(typeof parsedSourceKey)
+            //logger.debug(parsedSourceKey)
+            //logger.debug(typeof parsedSourceKey)
 
             var converter = mapper.makeConverter({ [mapDestKey]: parsedSourceKey });
 

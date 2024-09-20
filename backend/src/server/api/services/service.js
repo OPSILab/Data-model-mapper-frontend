@@ -30,6 +30,11 @@ if (common.isMinioWriterActive())
     else for (let bucket of config.minioWriter.subscribe.buckets)
         minioWriter.getNotifications(bucket)
 
+const waiting = async (flag) => {
+    while (process.dataModelMapper[flag])
+        await process.dataModelMapper.sleep(100, "Waiting " + flag)
+}
+
 module.exports = {
 
     outputFile: [],
@@ -139,7 +144,10 @@ module.exports = {
         return configCopy
     },
 
-    resetConfig: (request, response, next) => {
+    resetConfig: async (request, response, next) => {
+
+        await waiting("resetConfig")
+        process.dataModelMapper.resetConfig = "locked"
         if (config.backup) {
             logger.info("There is a backup config", config.backup)
             for (let configKey in config.backup)
@@ -276,7 +284,7 @@ module.exports = {
 
         if (source.id && !source.data[0]) {
             //try { 
-                source.data = await Source.findOne({ _id: source.id }) 
+            source.data = await Source.findOne({ _id: source.id })
             //}
             //catch (error) {
             //    logger.error(error)
@@ -303,7 +311,7 @@ module.exports = {
 
         if (dataModel.id && !dataModel.data) {
             //try { 
-                dataModel.data = await DataModel.findOne({ _id: dataModel.id }) 
+            dataModel.data = await DataModel.findOne({ _id: dataModel.id })
             //}
             //}
             //catch (error) {

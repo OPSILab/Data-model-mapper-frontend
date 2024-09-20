@@ -350,6 +350,7 @@ const sendOutput = async () => {
         }
     apiOutput.outputFile = [];
     process.dataModelMapper.map = undefined
+    process.dataModelMapper.resetConfig = undefined
     logger.debug("Processing time : ", Date.now() - process.env.start)
 };
 
@@ -515,7 +516,7 @@ const encode = (encoding, value) => {
 
 const waiting = async (flag) => {
     while (process.dataModelMapper[flag])
-        await process.dataModelMapper.sleep(100)
+        await process.dataModelMapper.sleep(100, "Waiting " + flag)
 }
 
 module.exports = {
