@@ -25,6 +25,7 @@ module.exports = {
         }
         service.error = null
         logger.info("controller.mapData end");
+        process.dataModelMapper.resetConfig = undefined
     },
 
     getSources: async (req, res) => {
@@ -37,6 +38,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     getSourcesFromDB: async (req, res) => {
@@ -49,6 +51,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     version: async (req, res) => {
@@ -60,6 +63,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     getSourcesFromMinio: async (req, res) => {
@@ -72,6 +76,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     getMaps: async (req, res) => {
@@ -84,6 +89,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     getDataModels: async (req, res) => {
@@ -96,6 +102,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     getSource: async (req, res) => {
@@ -109,6 +116,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     getMap: async (req, res) => {
@@ -122,6 +130,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     getConfig: async (req, res) => {
@@ -134,6 +143,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     getDataModel: async (req, res) => {
@@ -147,6 +157,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     insertSource: async (req, res) => {
@@ -390,6 +401,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     cleanSchema: async (req, res) => {
@@ -407,6 +419,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
 
@@ -427,6 +440,7 @@ module.exports = {
                 error.details = "Use lower a case bucket name"
             res.status(errorStatusCode).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     minioGetObject: async (req, res) => {
@@ -444,6 +458,7 @@ module.exports = {
                 errorStatusCode = 500
             res.status(errorStatusCode).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     minioListObjects: async (req, res) => {
@@ -456,6 +471,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     minioGetBuckets: async (req, res) => {
@@ -468,6 +484,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     minioSubscribe: async (req, res) => {
@@ -480,6 +497,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     minioInsertObject: async (req, res) => {
@@ -497,6 +515,7 @@ module.exports = {
                 errorStatusCode = 500
             res.status(errorStatusCode).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     getToken: async (req, res) => {
@@ -508,6 +527,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     },
 
     getLogs: async (req, res) => {
@@ -519,5 +539,6 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
+        process.dataModelMapper.resetConfig = undefined
     }
 };
