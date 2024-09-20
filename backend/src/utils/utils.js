@@ -243,7 +243,7 @@ async function spaceCleaner(object) {
 
 function spaceCleaner0(object) {
     stackCalls++
-    logger.debug("Stack calls ", stackCalls)
+    //logger.debug("Stack calls ", stackCalls)
     if (stackCalls > 3000)
         console.debug(object)
     if (Array.isArray(object)) {
@@ -318,6 +318,7 @@ const sendOutput = async () => {
     }
     catch (error) {
         logger.error(error)
+        logger.error("error at " + error.stack)
         try {
             if (!apiOutput.outputFile[apiOutput.outputFile.length - 1]["MAPPING_REPORT"].details)
                 apiOutput.outputFile[apiOutput.outputFile.length - 1]["MAPPING_REPORT"].details = [{ error }]
@@ -326,6 +327,7 @@ const sendOutput = async () => {
         }
         catch (error) {
             logger.error(error)
+            logger.error("error at " + error.stack)
         }
     }
     //if (parseInt((apiOutput.outputFile[apiOutput.outputFile.length - 1].MAPPING_REPORT.Mapped_and_NOT_Validated_Objects)[0].charAt(0))) process.res.status(400).send({ errors: apiOutput.outputFile.errors || "Validation errors", report: apiOutput.outputFile[apiOutput.outputFile.length - 1] })
@@ -336,6 +338,7 @@ const sendOutput = async () => {
         }
         catch (error) {
             logger.error(error)
+            logger.error("error at " + error.stack)
         }
     else
         try {
@@ -343,6 +346,7 @@ const sendOutput = async () => {
         }
         catch (error) {
             logger.error(error)
+            logger.error("error at " + error.stack)
         }
     apiOutput.outputFile = [];
     process.dataModelMapper.map = undefined
@@ -402,6 +406,7 @@ const printFinalReportAndSendResponse = async (loggerr) => {
                     }
                     catch (error) {
                         logger.error(error)
+                        logger.error("error at " + error.stack)
                     }
                     logger.debug("minio writing done")
                 }
@@ -411,6 +416,7 @@ const printFinalReportAndSendResponse = async (loggerr) => {
         }
         catch (error) {
             logger.error(error)
+            logger.error("error at " + error.stack)
             //crash
             apiOutput.outputFile = [];
         }

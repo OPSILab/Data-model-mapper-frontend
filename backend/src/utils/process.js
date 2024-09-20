@@ -55,9 +55,9 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
         if (sourceData) {
 
-            logger.trace("sourceData:");
+            //logger.trace("sourceData:");
             //logger.trace(sourceData);
-            logger.debug(typeof sourceData)
+            //logger.debug(typeof sourceData)
 
             if (typeof sourceData === 'object') sourceData = sourceData.toString()
             //logger.trace(sourceData);
@@ -95,6 +95,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
             } catch (error) {
                 logger.error('There was an error while loading Map: ');
                 logger.error(error)
+                logger.error("error at " + error.stack)
                 return Promise.reject('There was an error while loading Map: ' + error);
             }
 
@@ -121,6 +122,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 } catch (error) {
                     logger.error('There was an error while processing Data Model schema: ');
                     logger.error(error)
+                    logger.error("error at " + error.stack)
                     if (common.schema)
                         loadedSchema = JSON.parse(JSON.stringify(common.schema))
                     else
@@ -216,7 +218,7 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
                     }
                     catch (error) {
                         logger.error(error.toString())
-                        logger.debug(JSON.stringify(error))
+                        //logger.debug(JSON.stringify(error))
                     }
                     break;
                 case 'fileWriter':
@@ -230,7 +232,7 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
     }
     catch (error) {
         logger.error(error.toString())
-        logger.debug(JSON.stringify(error))
+        //logger.debug(JSON.stringify(error))
     }
 };
 
@@ -272,6 +274,7 @@ const finalizeProcess = async () => {
 
     } catch (error) {
         logger.error(error)
+        logger.error("error at " + error.stack)
         return await Promise.reject(error);
     }
 };

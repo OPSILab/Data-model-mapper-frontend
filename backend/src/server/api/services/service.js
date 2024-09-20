@@ -295,6 +295,7 @@ module.exports = {
             //}
             //catch (error) {
             //    logger.error(error)
+            //    logger.error("error at " + error.stack)
             //    throw error
             //    process.res.sendStatus(404)
             //}
@@ -406,6 +407,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
+            logger.error("error at " + error.stack)
             return error.toString()
         }
     },
@@ -425,6 +427,7 @@ module.exports = {
                 }
                 catch (error) {
                     logger.error(error)
+                    logger.error("error at " + error.stack)
                 }
         }
     },
@@ -650,6 +653,7 @@ module.exports = {
                 }
                 catch (error) {
                     logger.error(error)
+                    logger.error("error at " + error.stack)
                     Map.deleteOne({ _id: insertedMap._id })
                     throw { error: "Error during source assignment" }
                 }
@@ -659,6 +663,7 @@ module.exports = {
                 }
                 catch (error) {
                     logger.error(error)
+                    logger.error("error at " + error.stack)
                     Map.deleteOne({ _id: insertedMap._id })
                     throw { error: "Error during schema assignment" }
                 }
@@ -999,6 +1004,7 @@ module.exports = {
             }
             catch (error) {
                 logger.error(error)
+                logger.error("error at " + error.stack)
             }
             //console.debug(log.timestamp)
             //console.debug(Date.now()-log.timestamp)

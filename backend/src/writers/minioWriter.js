@@ -85,6 +85,7 @@ module.exports = {
       }
       catch (error) {
         logger.error(error)
+        logger.error("error at " + error.stack)
       }
 
       let foundObject = (await Source.find({ name: record.s3.object.key }))[0]
@@ -115,6 +116,7 @@ module.exports = {
     })
     poller.on('error', (error) => {
       logger.error(error)
+      logger.error("error at " + error.stack)
       logger.debug("Creating bucket")
       this.creteBucket(bucketName, minioConfig.location).then(message => {
         logger.debug(message)
@@ -142,8 +144,8 @@ module.exports = {
     var stream = minioClient.listObjects(bucketName, '', true, { IncludeVersion: true })
     //var stream = minioClient.extensions.listObjectsV2WithMetadata(bucketName, '', true, '')
     stream.on('data', function (obj) {
-      logger.debug(bucketName)
-      logger.debug(obj)
+      //logger.debug(bucketName)
+      //logger.debug(obj)
       data.push(obj)
     })
     stream.on('end', function (obj) {
@@ -274,6 +276,7 @@ module.exports = {
         }
         catch (error) {
           logger.error(error)
+          logger.error("error at " + error.stack)
           resultMessage = format == 'json' ? [{ data: objectData }] : objectData
         }
       });
@@ -307,7 +310,7 @@ module.exports = {
   },
 
   async deleteObject (bucket, name) {
-    logger.debug(bucket, name)
+    //logger.debug(bucket, name)
     return await minioClient.removeObject(bucket, name)
   }
 }

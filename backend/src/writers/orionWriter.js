@@ -220,7 +220,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                             logger.debug("Details ", objNumber, obj)
                             //logger.debug(config.orionWriter)
                             logger.error('There was an error while writing Mapped Object: ')
-                            logger.error(updateResponse)
+                            logger.error(updateResponse?.body || updateResponse || "No response?", "\n", updateResponse?.statusCode)
                             logger.debug("----Details ----")
                             logger.debug(objNumber)
                             return Promise.reject('Update Error').catch((error) => {
@@ -233,11 +233,13 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                                 //logger.debug(config.orionWriter)
                                 logger.error('There was an error while writing Mapped Object: ')
                                 logger.error(error)
+                                logger.error("error at " + error.stack)
                             });
                         }
 
                     } catch (error) {
                         logger.error(error)
+                        logger.error("error at " + error.stack)
                         report.info('----------------------------------------------------------\n' +
                             'Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
                         logger.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
@@ -248,8 +250,8 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                         if (error)
                             report.info('statusCode: ' + error?.statusCode); // Print the response status code if a response was received
                         report.info('body: ' + JSON.stringify(error) + "\n" + error.toString);
-                        report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-                        logger.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
+                        report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj).substring(0, 30) + '\n ------------------------------\n');
+                        logger.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj).substring(0, 30) + '\n ------------------------------\n');
                         config.orionUnWrittenCount++;
                         wrObj = false
                         if (!config.orionWriter.details)
@@ -260,6 +262,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                         //logger.debug(config.orionWriter)
                         logger.error('There was an error while writing Mapped Object: ')
                         logger.error(error)
+                        logger.error("error at " + error.stack)
                         logger.debug("----Details ----")
                         logger.debug(objNumber)
                         return Promise.reject(error).catch((error) => {
@@ -272,6 +275,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                             //logger.debug(config.orionWriter)
                             logger.error('There was an error while writing Mapped Object: ')
                             logger.error(error)
+                            logger.error("error at " + error.stack)
                         });
 
                     }
@@ -310,12 +314,13 @@ const writeObject = async (objNumber, obj, modelSchema) => {
                     //logger.debug(config.orionWriter)
                     logger.error('There was an error while writing Mapped Object: ')
                     logger.error(error)
+                    logger.error("error at " + error.stack)
                 });
             }
 
         } catch (error) {
             logger.error(error)
-            //process.res.send({error, e : error.error, message: error.message, strin: error.toString()})
+            logger.error("error at " + error.stack)
 
             report.info('----------------------------------------------------------\n' +
                 'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT CREATED in the Context Broker');
@@ -327,8 +332,8 @@ const writeObject = async (objNumber, obj, modelSchema) => {
             if (error)
                 report.info('statusCode: ' + error?.statusCode);
             report.info('body: ' + JSON.stringify(error));
-            report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-            logger.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
+            report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj).substring(0,30) + '\n ------------------------------\n');
+            logger.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj).substring(0,30) + '\n ------------------------------\n');
             config.orionUnWrittenCount++;
             wrObj = false
             if (!config.orionWriter.details)
