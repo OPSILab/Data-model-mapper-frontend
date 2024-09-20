@@ -85,8 +85,8 @@ function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizePro
             try {
                 finalizeProcess();
                 logger.debug("urlToRowStream: request(url).pipe(geo.parse()).on(end)");
-                utils.printFinalReportAndSendResponse(log);
-                utils.printFinalReportAndSendResponse(report);
+                //utils.printFinalReportAndSendResponse(log);
+                //utils.printFinalReportAndSendResponse(report);
             } catch (error) {
                 logger.error("Error While finalizing the streaming process: ");
                 logger.error("error at " + error.stack)
@@ -129,8 +129,8 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
 
             finalizeProcess();
             logger.debug("fileToRowStream: inputData.pipe(geo.parse()).on(end)");
-            utils.printFinalReportAndSendResponse(log);
-            utils.printFinalReportAndSendResponse(report);
+            //utils.printFinalReportAndSendResponse(log);
+            //utils.printFinalReportAndSendResponse(report);
 
         });
 

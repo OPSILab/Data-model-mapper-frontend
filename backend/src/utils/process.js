@@ -223,7 +223,7 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
                     promises.push(await fileWriter.writeObject(objNumber, obj, config.fileWriter.addBlankLine));
                     break;
                 default:
-                    promises.push(await common.sleep(0));
+                    //promises.push(await common.sleep(0));
                     break;
             }
         });
@@ -242,7 +242,8 @@ const finalizeProcess = async () => {
             //logger.debug("Promise ", i)
             try {
                 await promises[i]();
-                //await (require('../utils/common.js')).sleep(100)
+                if (config.orionWriter.delayBetweenRequests)
+                    await (require('../utils/common.js')).sleep(config.orionWriter.delayBetweenRequests)
             }
             catch (error) {
                 logger.error(error, promises[i])
@@ -265,9 +266,9 @@ const finalizeProcess = async () => {
         }
 
         await utils.printFinalReportAndSendResponse(log);
-        await utils.printFinalReportAndSendResponse(report);
+        //await utils.printFinalReportAndSendResponse(report);
 
-        return await Promise.resolve();
+        //return await Promise.resolve();
 
     } catch (error) {
         logger.error("error at " + error.stack)

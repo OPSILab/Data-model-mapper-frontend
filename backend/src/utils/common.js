@@ -64,8 +64,8 @@ module.exports = {
 
         return error
     },
-    sleep(ms) {
-        logger.info("waiting")
+    sleep(ms, message) {
+        logger.info(message || "waiting")
         return new Promise(resolve => setTimeout(resolve, ms));
     },
     isMinioWriterActive() {

@@ -88,8 +88,8 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
 
                 await finalizeProcess();
                 logger.debug("urlToRowStream: request(url).pipe(geo.parse()).on(end)");
-                await utils.printFinalReportAndSendResponse(log);
-                await utils.printFinalReportAndSendResponse(report);
+                //await utils.printFinalReportAndSendResponse(log);
+                //await utils.printFinalReportAndSendResponse(report);
             } catch (error) {
                 logger.error("Error While finalizing the streaming process: ");
                 logger.error("error at " + error.stack);
@@ -131,8 +131,8 @@ async function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler
            
             await finalizeProcess();
             logger.debug("fileToRowStream: inputData.pipe(geo.parse()).on(end)");
-            await utils.printFinalReportAndSendResponse(log);
-            await utils.printFinalReportAndSendResponse(report);
+            //await utils.printFinalReportAndSendResponse(log);
+            //await utils.printFinalReportAndSendResponse(report);
 
         });
 
