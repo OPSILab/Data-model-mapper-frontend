@@ -17,6 +17,21 @@ function parseJwt(token) {
     return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 }
 
+function send(res, status, body) {
+    try {
+        if (!body)
+            res.sendStatus(status)
+        else if (status)
+            res.status(status).send(body)
+        else
+            res.send(body)
+    }
+    catch (error) {
+        logger.error(error)
+    }
+    process.dataModelMapper.resetConfig = undefined
+}
+
 module.exports = {
     auth: async (req, res, next) => {
 
@@ -51,9 +66,9 @@ module.exports = {
                     logger.error(error)
                     logger.error("error at " + error?.stack)
                     if (error.message == "invalid token" || error.message == "jwt expired" || error.message == "jwt malformed")
-                        return res.sendStatus(403);
+                        return send(res, 403);
                     else
-                        return res.sendStatus(500);
+                        return send(res, 500);
                 }
 
 
@@ -72,13 +87,13 @@ module.exports = {
                                 next();
                             } else {
                                 logger.error('Token not valid.');
-                                res.sendStatus(403);
+                                send(res, 403)
                             }
                         })
                         .catch(error => {
                             logger.error(error.response.data)
                             logger.error('Errore during token verify:', error.message);
-                            res.sendStatus(500);
+                            send(res, 500)
                         });
                 }
                 else {
@@ -103,7 +118,7 @@ module.exports = {
                                 catch (error) {
                                     logger.error(error)
                                     logger.error("error at " + error?.stack)
-                                    res.status(500).send(error || error.toString())
+                                    send(res, 500, error || error.toString())
                                 }
                             }
                             let { pilot, username, email } = data
@@ -126,14 +141,14 @@ module.exports = {
                         if ((!req.params.bucketName || !req.params.objectName) || (req.body.bucketName == req.params.bucketName && req.body.prefix == req.params.objectName.split("/")[0] + "/" + req.params.objectName.split("/")[1]))
                             next()
                         else
-                            res.status(403).send("Available bucketname is " + req.body.bucketName + " and you tried to access " + req.params.bucketName + ".\nAvailable prefix is " + req.body.prefix + " and you tried to access this object " + req.params.objectName);
+                            send(res, 403, "Available bucketname is " + req.body.bucketName + " and you tried to access " + req.params.bucketName + ".\nAvailable prefix is " + req.body.prefix + " and you tried to access this object " + req.params.objectName)
                     }
                     else
-                        res.sendStatus(403);
+                        send(res, 403)
                 }
             }
             else
-                res.sendStatus(401);
+                send(res, 401)
         }
     }
 };

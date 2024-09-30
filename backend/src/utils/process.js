@@ -245,7 +245,7 @@ const finalizeProcess = async () => {
             try {
                 await promises[i]();
                 if (config.orionWriter.delayBetweenRequests)
-                    await (require('../utils/common.js')).sleep(config.orionWriter.delayBetweenRequests)
+                    await common.sleep(config.orionWriter.delayBetweenRequests)
             }
             catch (error) {
                 logger.error(error, promises[i])
