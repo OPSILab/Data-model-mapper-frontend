@@ -8,12 +8,12 @@ const Terraformer = require('terraformer');
 const TerraformerProj4js = require('terraformer-proj4js');
 const axios = require('axios');
 
-process.dataModelMapper.sleep = (ms, message) =>  {
+process.dataModelMapper.sleep = (ms, message) => {
     logger.info(message || "waiting")
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function     sleep(ms) {
+function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -41,6 +41,41 @@ async function convertGeoJSON(inputGeoJSON, sourceEPSGCode) {
 }
 
 module.exports = {
+
+    async transformCoordinates(sourceEpsgCode, targetEpsgCode, data, key) {
+        logger.debug("----------------------------------------------------------------------------")
+        logger.debug(data)
+        if (Array.isArray(data[0])){
+            for (let i in data)
+                data[i] = await this.transformCoordinates(sourceEpsgCode, targetEpsgCode, data[i], key)
+            return data
+        }
+        else {
+            let result = (await axios.get('https://api.maptiler.com/coordinates/transform/' + data[0] + ',' + data[1] + '.json', {
+                params: {
+                    key: key || 'g0y01TmlRNajMPkic9lG',
+                    s_srs: sourceEpsgCode,
+                    t_srs: targetEpsgCode
+                },
+                headers: {
+                    'accept': '*/*',
+                    'accept-language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
+                    'Referer': 'https://epsg.io/',
+                    'Referrer-Policy': 'strict-origin-when-cross-origin',
+                    'sec-fetch-mode': 'cors',
+                    'sec-fetch-site': 'cross-site'
+                }
+            })).data
+            logger.debug(data)
+            data = [
+                result.results[0].x,
+                result.results[0].y
+            ]
+            logger.debug(data)
+            return data
+        }
+    },
+
     e(error) {
         logger.error(error)
         logger.error("error at " + error?.stack)
@@ -89,5 +124,5 @@ module.exports = {
             return obj.value
 
     },
-    convertGeoJSON : convertGeoJSON
+    convertGeoJSON: convertGeoJSON
 }

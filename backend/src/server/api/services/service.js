@@ -338,7 +338,7 @@ module.exports = {
         let EPSG_code = config.EPSG_code
         if (config.onlyEPSG4326 && EPSG_code != 4326 && (EPSG_code < 0 || EPSG_code > 0 || EPSG_code == 0))
             for (let i in source.data)
-                source.data[i] = await convertGeoJSON(source.data[i], EPSG_code)
+                source.data[i].geometry.coordinates = await common.transformCoordinates(EPSG_code, 4326, source.data[i].geometry.coordinates)//await convertGeoJSON(source.data[i], EPSG_code)
         config.EPSG_code = undefined
 
         if (source.data && source.path)

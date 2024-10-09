@@ -26,6 +26,7 @@ const { combine, timestamp, label, printf } = format;
 const fs = require("fs");
 let registredDay = 0;
 let logStream = fs.createWriteStream(setLogDate(), { flags: "a" });
+const { inspect } = require('util')
 
 setInterval(checkDate, 6000);
 setInterval(deleteOldLogs, 24 * 60 * 60 * 1000);
@@ -218,7 +219,12 @@ const LEVEL = process.env.LEVEL?.toLowerCase() || config.logLevel || "trace";
 function saveLog(log) {
   try {
     if (log && (Array.isArray(log) || typeof log == "object"))
-      logStream.write(JSON.stringify(log) + "\n");
+      try {
+        logStream.write(JSON.stringify(log) + "\n");
+      }
+      catch (error) {
+        logStream.write(JSON.stringify(inspect(log)) + "\n");
+      }
     else logStream.write(log + "\n");
   } catch (error) {
     console.log("Logs saving fail");

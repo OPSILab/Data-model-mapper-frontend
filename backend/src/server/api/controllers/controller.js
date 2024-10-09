@@ -21,7 +21,13 @@ module.exports = {
         catch (error) {
             logger.error(error)
             logger.error("error at " + error?.stack)
-            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+            if (error.response) {
+                logger.error(error.response.data)
+                logger.error(error.request)
+                res.status(error.response.status).send(error.response.data)
+            }
+            else
+                res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         service.error = null
         logger.info("controller.mapData end");
