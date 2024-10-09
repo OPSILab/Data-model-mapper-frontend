@@ -112,6 +112,11 @@ export class DMMService {
     return this.http.post<any>(this.config.data_model_mapper.default_mapper_base_url + '/cleanSchema', schema).toPromise();
   }
 
+  downloadGeoJson(properties) {
+    console.log('wait backend');
+    return this.http.post<any>(this.config.data_model_mapper.default_mapper_base_url + '/buildGeojson', properties).toPromise();
+  }
+
   getRemoteSource(url, type) {
     return type == 'csv'
       ? this.http

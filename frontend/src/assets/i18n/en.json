@@ -150,7 +150,8 @@
       "name" : "Name",
       "dataModel" : "Data model",
       "view_editor" : "View on editor",
-      "update": "Update"
+      "update": "Update",
+      "download_geojson":"Download geojson"
     }
   },
   "login": {

@@ -427,6 +427,24 @@ module.exports = {
         process.dataModelMapper.resetConfig = undefined
     },
 
+    buildGeoJson: async (req, res) => {
+
+        process.res = res;
+        if (req.body.bucketName) req.body.bucketName = undefined
+        if (req.body.prefix) req.body.prefix = undefined
+
+        try {
+            res.send(await service.buildGeoJson(req.body))
+        }
+
+        catch (error) {
+            logger.error(error)
+            logger.error("error at " + error?.stack)
+            res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
+        }
+        process.dataModelMapper.resetConfig = undefined
+    },
+
 
     minioCreateBucket: async (req, res) => {
         process.res = res;

@@ -62,6 +62,8 @@ module.exports = {
         return id;
     },
 
+    buildGeoJson : common.buildGeoJson,
+
     async minioCreateBucket(bucketName) {
         let createdResult = await minioWriter.creteBucket(bucketName, config.minioWriter.location)
         logger.debug("created result:\t" + createdResult)

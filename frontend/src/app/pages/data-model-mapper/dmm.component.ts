@@ -290,6 +290,15 @@ export class DMMComponent implements OnInit, OnChanges {
     },
   };
 
+  async downloadGeoJson(){
+    try {
+      this.saveFile(JSON.stringify(await this.dmmService.downloadGeoJson(JSON.parse(this.outputEditor.getText()))), 'json');
+    }
+    catch (error) {
+      this.handleError(error, false, false);
+    }
+  }
+
   async ngOnInit(): Promise<void> {
     editor.mapperEditor = undefined;
 

@@ -298,17 +298,22 @@
             <br />
             <button id="preview" *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small" (click)="testMapperRecord()">
               {{ 'general.dmm.preview' | translate }}
-              <i class="mx-1 fas fa-file-import fa-lg"></i>
+              <i class="mx-1 fas fa fa-play fa-lg"></i>
             </button>
             &nbsp;
             <button id="transform" nbButton class="mr-2" shape="rectangle" size="small" (click)="transform()">
               {{ 'general.dmm.transform' | translate }}
-              <i class="mx-1 fas fa-file-import fa-lg"></i>
+              <i class="mx-1 fas fa fa-play fa-lg"></i>
             </button>
             &nbsp;
             <button nbButton class="mr-2" shape="rectangle" size="small" (click)="download()">
               {{ 'general.dmm.export' | translate }}
-              <i class="mx-1 fas fa-file-import fa-lg"></i>
+              <i class="mx-1 fas fa-download fa-lg"></i>
+            </button>
+            &nbsp;
+            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="downloadGeoJson()">
+              {{ 'general.dmm.download_geojson' | translate }}
+              <i class="mx-1 fas fa fa-globe fa-lg"></i>
             </button>
             <!--<nb-card [nbSpinner]="true" nbSpinnerStatus="basic">
               <nb-card-body>

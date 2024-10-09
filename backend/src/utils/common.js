@@ -40,12 +40,25 @@ async function convertGeoJSON(inputGeoJSON, sourceEPSGCode) {
     return convertedGeoJSON;
 }
 
+function featureMapper(properties) {
+    let id = properties.id
+    delete properties.id
+    return {
+        id,
+        type: "Feature",
+        properties,
+        "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld",
+        geometry: properties.location
+    }
+
+}
+
 module.exports = {
 
     async transformCoordinates(sourceEpsgCode, targetEpsgCode, data, key) {
         logger.debug("----------------------------------------------------------------------------")
         logger.debug(data)
-        if (Array.isArray(data[0])){
+        if (Array.isArray(data[0])) {
             for (let i in data)
                 data[i] = await this.transformCoordinates(sourceEpsgCode, targetEpsgCode, data[i], key)
             return data
@@ -73,6 +86,16 @@ module.exports = {
             ]
             logger.debug(data)
             return data
+        }
+    },
+
+    buildGeoJson(properties) {
+        logger.debug(properties)
+        if (properties[properties.length - 1].MAPPING_REPORT.Processed_objects)
+            properties.pop()
+        return {
+            type: "FeatureCollection",
+            features: properties.map(property => featureMapper(property))
         }
     },
 
