@@ -26,6 +26,8 @@ const { combine, timestamp, label, printf } = format;
 const fs = require("fs");
 let registredDay = 0;
 const logPath = config.logPath || "logs/"
+if (!fs.existsSync(logPath)) 
+  fs.mkdirSync(logPath, { recursive: true });
 let logStream = fs.createWriteStream(setLogDate(), { flags: "a" });
 const { inspect } = require('util')
 
