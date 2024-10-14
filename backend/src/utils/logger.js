@@ -25,9 +25,9 @@ const { combine, timestamp, label, printf } = format;
 // { error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }
 const fs = require("fs");
 let registredDay = 0;
+const logPath = config.logPath || "logs/"
 let logStream = fs.createWriteStream(setLogDate(), { flags: "a" });
 const { inspect } = require('util')
-const logPath = config.logPath || "logs/"
 
 setInterval(checkDate, 6000);
 setInterval(deleteOldLogs, 24 * 60 * 60 * 1000);
