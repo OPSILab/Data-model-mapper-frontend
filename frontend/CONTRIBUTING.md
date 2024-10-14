@@ -219,3 +219,4 @@ The rest of the commit message is then used for this.
 [issues]: https://github.com/akveo/ngx-admin/issues
 [new_issue]: https://github.com/akveo/ngx-admin/issues/new
 [pulls]: https://github.com/akveo/ngx-admin/pulls
+
