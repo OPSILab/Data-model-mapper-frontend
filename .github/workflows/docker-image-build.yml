@@ -57,6 +57,6 @@ jobs:
               uses: docker/build-push-action@v5
               with:
                 context: .
-                file: ./Dockerfile
+                file: ./server
                 push: true
                 tags: ${{ secrets.DOCKER_USERNAME }}/data-model-mapper-backend:latest
