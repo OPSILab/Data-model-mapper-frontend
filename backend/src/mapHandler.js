@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
+
 const mapper = require('json-mapper');
 const fs = require('fs');
 const config = require('../config');
