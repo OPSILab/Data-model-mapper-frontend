@@ -1,0 +1,62 @@
+name: Build Docker Image
+
+on:
+  push:
+    branches:
+      - frontend_dev
+      - frontend
+  pull_request:
+    branches:
+      - frontend_dev
+      - frontend
+
+jobs:
+  build-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./gui
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/data-model-mapper-gui:latest
+        build-args: | 
+            BASE_HREF = /data-model-mapper-gui/
+    
+  build-backend:
+            runs-on: ubuntu-latest
+        
+            steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+        
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v2
+        
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v2
+              with:
+                username: ${{ secrets.DOCKER_USERNAME }}
+                password: ${{ secrets.DOCKER_PASSWORD }}
+        
+            - name: Build and push Docker image
+              uses: docker/build-push-action@v5
+              with:
+                context: .
+                file: ./Dockerfile
+                push: true
+                tags: ${{ secrets.DOCKER_USERNAME }}/data-model-mapper-backend:latest

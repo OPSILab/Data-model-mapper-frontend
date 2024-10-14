@@ -27,6 +27,7 @@ const fs = require("fs");
 let registredDay = 0;
 let logStream = fs.createWriteStream(setLogDate(), { flags: "a" });
 const { inspect } = require('util')
+const logPath = config.logPath || "logs/"
 
 setInterval(checkDate, 6000);
 setInterval(deleteOldLogs, 24 * 60 * 60 * 1000);
@@ -39,7 +40,7 @@ function setLogDate() {
   const day = String(date.getDate()).padStart(2, "0");
   registredDay = day;
 
-  return config.logPath + `${year}-${month}-${day}` + ".txt";
+  return logPath + `${year}-${month}-${day}` + ".txt";
 }
 
 function checkDate() {
@@ -68,14 +69,14 @@ function isOlderThan30Days(filePath) {
 
 // Funzione per eliminare i file
 function deleteOldLogs() {
-  fs.readdir(config.logPath + "", (err, files) => {
+  fs.readdir(logPath + "", (err, files) => {
     if (err) {
       console.error("Errore durante la lettura della directory:", err);
       return;
     }
 
     files.forEach((file) => {
-      const filePath = path.join(config.logPath, file);
+      const filePath = path.join(logpath, file);
       if (isOlderThan30Days(filePath)) {
         fs.unlinkSync(filePath, (err) => {
           if (err) {
