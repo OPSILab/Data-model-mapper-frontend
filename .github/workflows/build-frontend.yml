@@ -7,7 +7,7 @@ on:
       - frontend
     paths:
       - 'frontend/**'
-      - 'gui'
+      - 'gui**'
     #  - '.github/**'
   pull_request:
     branches:
@@ -15,7 +15,7 @@ on:
       - frontend
     paths:
         - 'frontend/**'
-        - 'gui'
+        - 'gui**'
     #    - '.github/**'
 
 jobs:
@@ -39,7 +39,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        file: ./gui
+        file: ./gui-beopen
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/data-model-mapper-gui:latest
         build-args: | 
