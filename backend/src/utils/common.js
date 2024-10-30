@@ -147,5 +147,9 @@ module.exports = {
             return obj.value
 
     },
-    convertGeoJSON: convertGeoJSON
+    convertGeoJSON: convertGeoJSON,
+
+    lock(key) {
+        process.dataModelMapper[key] = "locked"
+    }
 }

@@ -175,7 +175,7 @@ const NGSI_entity = () => {
  * @param {"Map file"} map The input map file
  * @param {"Destination schema"} modelSchema The destination schema/data model 
  */
-const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service, group, entityIdField) => {
+const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service, group, entityIdField, NGSI_entity, minioObj, config, res) => {
 
     var result = {};
     // If the destKey is entityIdField and has only "static:" fields, the pair value indicates only an ID prefix
@@ -359,7 +359,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
         }
     }
 
-    if (((NGSI_entity() == undefined) && config.NGSI_entity || NGSI_entity()).toString() === 'true') {
+    if (((NGSI_entity == undefined) && config.NGSI_entity || NGSI_entity).toString() === 'true') {
 
         // Append type field, according to the Data Model Schema
         try {
@@ -376,7 +376,10 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 group,// || "",
                 result ? result[entityIdField] : "",
                 isIdPrefix || "",
-                rowNumber);
+                rowNumber,
+                NGSI_entity,
+                config
+            );
             delete result[entityIdField];
             result.id = result.id.replaceAll(" ", "")
         } catch (error) {
@@ -415,10 +418,10 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 *  and checks if constraints present in the destination Model object are met by the source value
 **/
 const checkPairWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNumber) => {
-    
+
     //if (config.noSchema)
     //        return true
-    var result = validator.validateSourceValue(mappedObject, modelSchema, true, rowNumber);
+    var result = validator.validateSourceValue(mappedObject, modelSchema, true, rowNumber, config, res);
     logger.debug("Validator result : ", result)
     return result;
 
@@ -430,7 +433,7 @@ const checkResultWithDestModelSchema = (mappedObject, destKey, modelSchema, rowN
 
     //if (config.noSchema)
     //    return true
-    return validator.validateSourceValue(mappedObject, modelSchema, false, rowNumber);
+    return validator.validateSourceValue(mappedObject, modelSchema, false, rowNumber, config, res);
 
 };
 

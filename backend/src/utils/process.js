@@ -33,21 +33,24 @@ const common = require('../utils/common.js');
 const config = require("../../config.js");
 const { load } = require('nconf');
 
+//var promises = [];
 
-config.validCount = 0;
-config.unvalidCount = 0;
-config.orionWrittenCount = 0;
-config.orionUnWrittenCount = 0;
-config.orionSkippedCount = 0;
-config.fileWrittenCount = 0;
-config.fileUnWrittenCount = 0;
-config.rowNumber = 0;
+const processSource = async (sourceData, sourceDataType, mapData, dataModelSchemaPath, schema, NGSI_entity, minioObj, config, res) => {
 
-var promises = [];
+    res.dmm.promises = []
 
-const processSource = async (sourceData, sourceDataType, mapData, dataModelSchemaPath) => {
+    config.validCount = 0;
+    config.unvalidCount = 0;
+    config.orionWrittenCount = 0;
+    config.orionUnWrittenCount = 0;
+    config.orionSkippedCount = 0;
+    config.fileWrittenCount = 0;
+    config.fileUnWrittenCount = 0;
+    config.rowNumber = 0;
 
-    reinitializeProcessStatus();
+    res.dmm.config = config
+
+    //reinitializeProcessStatus();
 
     if (dataModelSchemaPath && mapData) {
 
@@ -111,7 +114,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                         /* Check if provided TargetDataModel is valid, otherwise return error */
                         if ((dataModelSchemaPath = utils.getDataModelPath(targetDataModel)) === undefined) {
                             logger.error("Incorrect target Data Model name: " + targetDataModel);
-                            process.res?.status(400).json({ "error": "Incorrect target Data Model name: " + targetDataModel })
+                            res?.status(400).json({ "error": "Incorrect target Data Model name: " + targetDataModel })
                             return Promise.reject("Incorrect target Data Model name");
                         }
                     }
@@ -123,8 +126,8 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                     logger.error('There was an error while processing Data Model schema: ');
                     logger.error(error)
                     logger.error("error at " + error?.stack)
-                    if (common.schema)
-                        loadedSchema = JSON.parse(JSON.stringify(common.schema))
+                    if (schema)
+                        loadedSchema = JSON.parse(JSON.stringify(schema))
                     else
                         return Promise.reject(error);
                 }
@@ -135,19 +138,19 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
                     case '.txt':
                     case 'txt':
-                        csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
+                        csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess, NGSI_entity, minioObj, config, res);
                         break;
                     case '.csv':
                     case 'csv':
-                        csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
+                        csvParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess, NGSI_entity, minioObj, config, res);
                         break;
                     case '.json':
                     case 'json':
-                        await jsonParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
+                        await jsonParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess, NGSI_entity, minioObj, config, res);
                         break;
                     case '.geojson':
                     case 'geojson':
-                        geoParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess);
+                        geoParser.sourceDataToRowStream(sourceData, map, loadedSchema, processRow, processMappedObject, finalizeProcess, NGSI_entity, minioObj, config, res);
                         break;
                     default:
                         break;
@@ -176,7 +179,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 };
 
 
-const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
+const processRow = async (rowNumber, row, map, schema, mappedHandler, NGSI_entity, minioObj, config, res) => {//TODO this can confict with command line mode: fix
 
     /** If any, extract site, service and group for Id Pattern from Map and 
      * set globally for each row of this mapping, otherwise use the ones initialized in the Global Vars 
@@ -189,7 +192,7 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
     delete map['idService'];
     delete map['idGroup'];
     try {
-        var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row), map, schema, config.idSite, config.idService, config.idGroup, config.entityNameField);
+        var result = mapHandler.mapObjectToDataModel(rowNumber, utils.cleanRow(row, NGSI_entity), map, schema, config.idSite, config.idService, config.idGroup, config.entityNameField, NGSI_entity, minioObj, config, res);
     }
     catch (error) {
         logger.error(error, "\n", error.message)
@@ -197,11 +200,11 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler) => {
 
     logger.debug("Row: " + rowNumber + " - Object mapped correctly ");
     //logger.trace("Result: " + JSON.stringify(result))
-    await mappedHandler(rowNumber, result, schema);
+    await mappedHandler(rowNumber, result, schema, res.dmm.promises);
 
 };
 
-const processMappedObject = async (objNumber, obj, modelSchema) => {
+const processMappedObject = async (objNumber, obj, modelSchema, promises) => {
     if (!promises)
         promises = []
     try {
@@ -213,7 +216,7 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
                     try {
                         //logger.trace("obj : " + JSON.stringify(obj))
                         promises.push(
-                            async () => await orionWriter.writeObject(objNumber, obj, modelSchema)
+                            async () => await orionWriter.writeObject(objNumber, obj, modelSchema, config)
                         );
                     }
                     catch (error) {
@@ -222,7 +225,7 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
                     }
                     break;
                 case 'fileWriter':
-                    promises.push(await fileWriter.writeObject(objNumber, obj, config.fileWriter.addBlankLine));
+                    promises.push(await fileWriter.writeObject(objNumber, obj, config.fileWriter.addBlankLine, config));
                     break;
                 default:
                     //promises.push(await common.sleep(0));
@@ -236,7 +239,9 @@ const processMappedObject = async (objNumber, obj, modelSchema) => {
     }
 };
 
-const finalizeProcess = async () => {
+const finalizeProcess = async (minioObj, config, res) => {
+
+    let promises = res.dmm.promises
 
     try {
         //await Promise.all(promises);
@@ -259,15 +264,15 @@ const finalizeProcess = async () => {
 
         // Wait until all promises resolve (defined and pushed in processMappedObject handler)
         if (utils.isFileWriterActive()) {
-            await fileWriter.finalize(); // Finalize file in case of using fileWriter
-            await fileWriter.checkAndPrintFinalReport();
+            await fileWriter.finalize(config); // Finalize file in case of using fileWriter
+            await fileWriter.checkAndPrintFinalReport(config);
         }
 
         if (utils.isOrionWriterActive()) {
-            await orionWriter.checkAndPrintFinalReport();
+            await orionWriter.checkAndPrintFinalReport(config);
         }
 
-        await utils.printFinalReportAndSendResponse(log);
+        await utils.printFinalReportAndSendResponse(log, minioObj, config, res);
         //await utils.printFinalReportAndSendResponse(report);
 
         //return await Promise.resolve();

@@ -177,7 +177,7 @@ async function parseDataModelSchema(schemaPath) {
 * If the input data isSingleField, removes from Schema the required part, 
 * in order to check only that field and not if there are required fields
 */
-function validateSourceValue(data, schema, isSingleField, rowNumber) {
+function validateSourceValue(data, schema, isSingleField, rowNumber, config, res) {
 
     var ajv = new Ajv({ allErrors: true });
     var required = undefined;
@@ -248,7 +248,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber) {
         }
     }
 
-    if (config.mode == "server") apiOutput.outputFile[rowNumber - 1] = data;
+    if (config.mode == "server") res.dmm.outputFile[rowNumber - 1] = data;
     //if (config.mode == "server") apiOutput.outputFile.push(data);
 
     // Recover the required field, if removed in case of single field

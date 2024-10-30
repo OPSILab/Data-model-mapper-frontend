@@ -15,6 +15,13 @@ services:
     command: -dbhost mongo
     ports:
       - "1026:1026"
+    environment:
+        - DB_POOL_SIZE=50
+        - REQ_POOL_SIZE=100
+        - IN_REQ_PAYLOAD_MAX_SIZE=1048576
+        - LOG_LEVEL=DEBUG
+    volumes:
+        - ./orion-ld.conf:/etc/sysconfig/contextBroker
     labels:
       - traefik.http.routers.context-broker.rule=Host(`orion.localhost`) 
       - traefik.http.routers.context-broker.tls=true

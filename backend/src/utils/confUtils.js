@@ -160,7 +160,7 @@ const help = () => {
 /* Check if mandatory configuration parameters are set either via CLI args or config file 
  * 
  **/
-const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
+const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath, config) => {
 
     /************ MAPPING CONFIGURATION PARAMETERS ************/
     var mapPath = mapPathIn || nconf.get('mapPath');
@@ -197,7 +197,7 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
     }
 
     var dataModel = dataModelPath || nconf.get('targetDataModel');
-    if (!utils.checkInputDataModel(config.modelSchemaFolder, dataModel)) {
+    if (!utils.checkInputDataModel(config.modelSchemaFolder, dataModel, config)) {
         logger.error('Incorrect target Data Model name: '+ dataModel);
         return false;
     } else
@@ -303,9 +303,9 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
     return true;
 };
 
-function init(sourceDataIn, mapPathIn, dataModelPath) {
+function init(sourceDataIn, mapPathIn, dataModelPath, config) {
     help();
-    return checkAndInitConf(sourceDataIn, mapPathIn, dataModelPath);
+    return checkAndInitConf(sourceDataIn, mapPathIn, dataModelPath, config);
 };
 
 const getParam = (par) => {

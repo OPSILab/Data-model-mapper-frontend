@@ -11,7 +11,7 @@ const axios = require('axios')
 const RefParser = require('json-schema-ref-parser');
 const minioWriter = require('../../../writers/minioWriter')
 const common = require('../../../utils/common');
-const { finish } = common
+const { finish, lock } = common
 const { convertGeoJSON } = require("../../../utils/common.js")
 
 if (!config.idVersion)
@@ -149,7 +149,7 @@ module.exports = {
     resetConfig: async (request, response, next) => {
 
         await waiting("resetConfig")
-        process.dataModelMapper.resetConfig = "locked"
+        lock("resetConfig")
         if (config.backup) {
             logger.info("There is a backup config", config.backup)
             for (let configKey in config.backup)
@@ -162,12 +162,14 @@ module.exports = {
         next()
     },
 
-    async mapData(source, map, dataModel, configIn) {
+    async mapData(source, map, dataModel, configIn, res) {
 
         //this.restoreDefaultConfs()
 
         const cli = require('../../../cli/setup');
-        common.schema = undefined
+        //common.schema = undefined
+        let schema, NGSI_entity, minioObj
+        let config = JSON.parse(JSON.stringify(config))
 
         if (map?.id) {
 
@@ -249,13 +251,16 @@ module.exports = {
         if (!Array.isArray(source.data) && (source.type == "json" || source.type == ".json" || source.type == "JSON" || source.type == ".JSON"))
             source.data = [source.data]
 
+        /*
         if (config.backup) {
             for (let configKey in config.backup)
                 config[configKey] = config.backup[configKey]
             config.backup = undefined
-        }
+        }*/
 
         if (configIn) {
+
+            /*
             for (let key in config) {
                 if (!config.backup)
                     config.backup = {}
@@ -265,7 +270,8 @@ module.exports = {
                     else
                         config.backup[key] = config[key]
                 }
-            }
+            }*/
+
             for (let configKey in configIn) {
                 if (configKey == "orionWriter") {
                     for (let orionConfigKey in configIn[configKey])
@@ -282,7 +288,7 @@ module.exports = {
         logger.debug("config.EPSG_code : ", config.EPSG_code)
 
         config.delimiter = configIn ? configIn.delimiter : config.delimiter || ','
-        if (config.NGSI_entity != undefined) this.NGSI_entity = config.NGSI_entity
+        if (config.NGSI_entity != undefined) NGSI_entity = config.NGSI_entity
 
         if (source.id && !source.data[0]) {
             //try { 
@@ -369,7 +375,7 @@ module.exports = {
             let dataModelTempWriting = {}
             this.dataModelDeClean(dataModel.data)
 
-            common.schema = JSON.parse(JSON.stringify(dataModel.data))
+            schema = JSON.parse(JSON.stringify(dataModel.data))
             fs.writeFile(
                 //dataModel.schema_id || 
                 "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
@@ -405,14 +411,15 @@ module.exports = {
         }
 
         if (common.isMinioWriterActive())
-            this.minioObj = { name: source.minioObjName, bucket: source.minioBucketName }
+            minioObj = { name: source.minioObjName, bucket: source.minioBucketName }
 
         try {
             await cli(
                 //source.name ? config.sourceDataPath + source.name : config.sourceDataPath + sourceFileTemp2 ? 'sourceFileTemp2.' + source.type : 'sourceFileTemp.' + source.type,
                 source.name ? config.sourceDataPath + source.name : config.sourceDataPath + 'sourceFileTemp.' + source.type,
                 map,
-                dataModel.name ? dataModel.name : dataModel.schema_id ? this.getFilename(dataModel.schema_id) : "DataModelTemp"
+                dataModel.name ? dataModel.name : dataModel.schema_id ? this.getFilename(dataModel.schema_id) : "DataModelTemp",
+                schema, NGSI_entity, minioObj, config, res
             );
         }
         catch (error) {

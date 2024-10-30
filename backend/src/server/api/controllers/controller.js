@@ -9,13 +9,25 @@ module.exports = {
 
     mapData: async (req, res) => {
 
-        await waiting("map")
-        process.res = res;
-        process.dataModelMapper.map = "busy"
+        //await waiting("map")
+        //process.res = res;
+        //process.dataModelMapper.map = "busy"
         let { sourceData, map, dataModel } = utils.bodyMapper(req.body)
 
         try {
-            await service.mapData(sourceData, map, dataModel, req.body.config)
+            this[
+                req.body.config.group +
+                (req.body.reqId ||
+                    Date.now().toString()
+                        .concat(
+                            Math.floor(
+                                Math.random() * 1000
+                            )
+                        ).toString(
+                    )
+                )
+            ] = { req, res }//TODO .push instead?
+            await service.mapData(sourceData, map, dataModel, req.body.config, res)
             if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")
         }
         catch (error) {

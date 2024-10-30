@@ -32,23 +32,23 @@ const log = require('./logger')
 const { Logger } = log
 const logger = new Logger(__filename)
 
-function ngsi() {
-    return (((apiOutput.NGSI_entity == undefined) && config.NGSI_entity || apiOutput.NGSI_entity).toString() === 'true')
+function ngsi(NGSI_entity) {
+    return (((NGSI_entity == undefined) && config.NGSI_entity || NGSI_entity).toString() === 'true')
 }
 
-const cleanString = (string) => {
+const cleanString = (string,NGSI_entity, config) => {
     var result = '';
     if (typeof string === 'string')
-        result = string.replace(config.regexClean[ngsi() ? "default" : "custom"], ' ');
+        result = string.replace(config.regexClean[ngsi(NGSI_entity) ? "default" : "custom"], ' ');
 
     return result;
 
 };
 
-const cleanIdString = (string) => {
+const cleanIdString = (string, NGSI_entity, config) => {
     var result = '';
     if (typeof string === 'string')
-        result = string.replace(config.regexClean[ngsi() ? "default" : "custom"], ' ')
+        result = string.replace(config.regexClean[ngsi(NGSI_entity) ? "default" : "custom"], ' ')
             .replace(/à/g, 'a')
             .replace(/ù/g, 'u')
             .replace(/é|è/g, 'e')
@@ -62,7 +62,7 @@ const cleanNumber = (number) => {
     return number;
 };
 
-const cleanPair = (key, value) => {
+const cleanPair = (key, value, NGSI_entity) => {
 
 
     if (value instanceof Array) {
@@ -71,9 +71,9 @@ const cleanPair = (key, value) => {
         for (var i = 0; i < value.length; i++) {
             var elem = value[i];
 
-            arrayValues[i] = cleanPair(key, elem).value;
+            arrayValues[i] = cleanPair(key, elem, NGSI_entity).value;
         }
-        arrayResult.key = cleanString(key);
+        arrayResult.key = cleanString(key,NGSI_entity, config);
         arrayResult.value = arrayValues;
         return arrayResult;
 
@@ -81,21 +81,21 @@ const cleanPair = (key, value) => {
         var result = {};
         var objResult = {};
         Object.keys(value).forEach(function (objKey) {
-            var aux = cleanPair(objKey, value[objKey]);
+            var aux = cleanPair(objKey, value[objKey], NGSI_entity);
             objResult[aux.key] = aux.value;
         });
-        result.key = cleanString(key);
+        result.key = cleanString(key, NGSI_entity, config);
         result.value = objResult;
         return result;
 
     } else {
 
         var result = {};
-        result.key = cleanString(key);
+        result.key = cleanString(key, NGSI_entity, config);
         if (typeof value === 'string')
-            result.value = cleanString(value);
+            result.value = cleanString(value, NGSI_entity, config);
         else if (value !== null) {
-            result.value = cleanNumber(value);
+            result.value = cleanNumber(value, NGSI_entity);
         }
         else
             result.value = '';
@@ -104,13 +104,13 @@ const cleanPair = (key, value) => {
     }
 };
 
-const cleanRow = (row) => {
+const cleanRow = (row, NGSI_entity) => {
 
     var result = {};
 
     Object.keys(row).forEach(function (key) {
         var value = row[key];
-        var newPair = cleanPair(key, value);
+        var newPair = cleanPair(key, value, NGSI_entity);
         result[newPair.key] = newPair.value;
     });
 
@@ -141,7 +141,7 @@ const uuid = () => {
  * 
  * 
  */
-const createSynchId = (type, site, service, group, entityName, isIdPrefix, rowNumber) => {
+const createSynchId = (type, site, service, group, entityName, isIdPrefix, rowNumber, NGSI_entity, config) => {
     if (type === undefined)
         type = "SomeType"
     if (entityName) {
@@ -154,7 +154,7 @@ const createSynchId = (type, site, service, group, entityName, isIdPrefix, rowNu
     }
 
     // Group field is optional
-    return "urn:ngsi-ld:" + type + ":" + (site ? site + ":" : "") + (service ? service + ":" : "") + (group ? group + ":" : "") + cleanIdString(entityName);
+    return "urn:ngsi-ld:" + type + ":" + (site ? site + ":" : "") + (service ? service + ":" : "") + (group ? group + ":" : "") + cleanIdString(entityName, NGSI_entity, config);
 };
 
 
@@ -309,32 +309,32 @@ const bodyMapper = (body) => {
     }
 };
 
-const sendOutput = async () => {
+const sendOutput = async (config, res) => {
     try {
-        while(apiOutput?.outputFile && !apiOutput?.outputFile[0])
-            apiOutput.outputFile.shift()
+        while(res?.dmm?.outputFile && !res?.dmm?.outputFile[0])
+            res.dmm.outputFile.shift()
         if (config.deleteEmptySpaceAtBeginning)
-            apiOutput.outputFile = await spaceCleaner(apiOutput.outputFile)
+            res.dmm.outputFile = await spaceCleaner(res.dmm.outputFile)
     }
     catch (error) {
         logger.error(error)
         logger.error("error at " + error?.stack)
         try {
-            if (!apiOutput.outputFile[apiOutput.outputFile.length - 1]["MAPPING_REPORT"].details)
-                apiOutput.outputFile[apiOutput.outputFile.length - 1]["MAPPING_REPORT"].details = [{ error }]
+            if (!res.dmm.outputFile[res.dmm.outputFile.length - 1]["MAPPING_REPORT"].details)
+                res.dmm.outputFile[res.dmm.outputFile.length - 1]["MAPPING_REPORT"].details = [{ error }]
             else
-                apiOutput.outputFile[apiOutput.outputFile.length - 1]["MAPPING_REPORT"].details.push([{ error }])
+                res.dmm.outputFile[res.dmm.outputFile.length - 1]["MAPPING_REPORT"].details.push([{ error }])
         }
         catch (error) {
             logger.error(error)
             logger.error("error at " + error?.stack)
         }
     }
-    //if (parseInt((apiOutput.outputFile[apiOutput.outputFile.length - 1].MAPPING_REPORT.Mapped_and_NOT_Validated_Objects)[0].charAt(0))) process.res.status(400).send({ errors: apiOutput.outputFile.errors || "Validation errors", report: apiOutput.outputFile[apiOutput.outputFile.length - 1] })
+    //if (parseInt((res.dmm.outputFile[res.dmm.outputFile.length - 1].MAPPING_REPORT.Mapped_and_NOT_Validated_Objects)[0].charAt(0))) process.res.status(400).send({ errors: res.dmm.outputFile.errors || "Validation errors", report: res.dmm.outputFile[res.dmm.outputFile.length - 1] })
     //else 
     if (!config.mappingReport)
         try {
-            await process.res.send(apiOutput.outputFile.slice(0, apiOutput.outputFile.length - 1));
+            await process.res.send(res.dmm.outputFile.slice(0, res.dmm.outputFile.length - 1));
         }
         catch (error) {
             logger.error(error)
@@ -342,19 +342,19 @@ const sendOutput = async () => {
         }
     else
         try {
-            await process.res.send(apiOutput.outputFile);
+            await process.res.send(res.dmm.outputFile);
         }
         catch (error) {
             logger.error(error)
             logger.error("error at " + error?.stack)
         }
-    apiOutput.outputFile = [];
+    res.dmm.outputFile = [];
     process.dataModelMapper.map = undefined
     process.dataModelMapper.resetConfig = undefined
     logger.debug("Processing time : ", Date.now() - process.env.start)
 };
 
-const printFinalReportAndSendResponse = async (loggerr) => {
+const printFinalReportAndSendResponse = async (loggerr, minioObj, config, res) => {
 
     await logger.info('\n--------  MAPPING REPORT ----------\n' +
         '\t Processed objects: ' + config.rowNumber + '\n' +
@@ -374,7 +374,7 @@ const printFinalReportAndSendResponse = async (loggerr) => {
 
         //logger.debug(config.orionWriter)
 
-        apiOutput.outputFile[apiOutput.outputFile.length] = {
+        res.dmm.outputFile[res.dmm.outputFile.length] = {
             MAPPING_REPORT: {
                 Processed_objects: config.rowNumber,
                 Mapped_and_Validated_Objects: config.validCount + '-' + config.rowNumber,
@@ -391,13 +391,13 @@ const printFinalReportAndSendResponse = async (loggerr) => {
         try {
             /*if (isMinioWriterActive()) {
                 logger.debug("minio is enabled")
-                for (let obj of apiOutput.outputFile) {
+                for (let obj of res.dmm.outputFile) {
                     logger.debug("minio writing")
                     try {
-                        logger.debug("apiOutput.minioObj.name")
-                        logger.debug(apiOutput.minioObj.name)
-                        let bucketName = apiOutput.minioObj.bucket || config.minioWriter.defaultOutputFolderName || "output"
-                        let objectName = (obj[apiOutput.minioObj.name]?.concat(obj[config.entityNameField] || obj.id || Date.now().toString()) || apiOutput.minioObj.name.concat("/output_processed_").concat(Date.now().toString()) || Date.now().toString())//.toLowerCase()
+                        logger.debug("minioObj.name")
+                        logger.debug(minioObj.name)
+                        let bucketName = minioObj.bucket || config.minioWriter.defaultOutputFolderName || "output"
+                        let objectName = (obj[minioObj.name]?.concat(obj[config.entityNameField] || obj.id || Date.now().toString()) || minioObj.name.concat("/output_processed_").concat(Date.now().toString()) || Date.now().toString())//.toLowerCase()
                         logger.debug("bucket name")
                         logger.debug(bucketName)
                         logger.debug("object name")
@@ -413,13 +413,13 @@ const printFinalReportAndSendResponse = async (loggerr) => {
                 }
                 logger.debug("written to minio")
             }*/
-            await sendOutput();
+            await sendOutput(config, res);
         }
         catch (error) {
             logger.error(error)
             logger.error("error at " + error?.stack)
             //crash
-            apiOutput.outputFile = [];
+            res.dmm.outputFile = [];
         }
     }
 };
