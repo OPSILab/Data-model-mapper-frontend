@@ -62,7 +62,7 @@ module.exports = {
         return id;
     },
 
-    buildGeoJson : common.buildGeoJson,
+    buildGeoJson: common.buildGeoJson,
 
     async minioCreateBucket(bucketName) {
         let createdResult = await minioWriter.creteBucket(bucketName, config.minioWriter.location)
@@ -345,8 +345,10 @@ module.exports = {
 
         let EPSG_code = config.EPSG_code
         if (config.onlyEPSG4326 && EPSG_code != 4326 && (EPSG_code < 0 || EPSG_code > 0 || EPSG_code == 0))
-            for (let i in source.data)
-                source.data[i].geometry.coordinates = await common.transformCoordinates(EPSG_code, 4326, source.data[i].geometry.coordinates)//await convertGeoJSON(source.data[i], EPSG_code)
+            for (let i in source.data) {
+                logger.debug(i, " / ", source.data.length)
+                source.data[i].geometry.coordinates = await common.transformCoordinates(EPSG_code, 4326, source.data[i].geometry.coordinates, config.mapTilerKey)//await convertGeoJSON(source.data[i], EPSG_code)
+            }
         config.EPSG_code = undefined
 
         if (source.data && source.path)
