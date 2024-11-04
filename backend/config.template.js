@@ -38,6 +38,7 @@ var config = {
     noSchema: false, // experimental mode with no schema provided
     onlyEPSG4326 : false, // allows only geojson with EPSG4326 coordinates
     maxFileSize : 25, // max file size upload in MB
+    mapTilerKey : "8JYNjx8UQfefRRQUEjwZ",
 
     /********************** 3 INPUTS CONFIGURATION ************************
     * Followings are related to Mapping MANDATORY inputs (source, map, data model).
