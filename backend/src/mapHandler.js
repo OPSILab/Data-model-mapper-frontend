@@ -422,7 +422,8 @@ const checkPairWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNum
     //if (config.noSchema)
     //        return true
     var result = validator.validateSourceValue(mappedObject, modelSchema, true, rowNumber, config, res);
-    logger.debug("Validator result : ", result)
+    logger.debug("Object number : ", rowNumber)
+    logger.trace("Validator result : ", result)
     return result;
 
 };

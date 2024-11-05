@@ -30,12 +30,13 @@ const { isMinioWriterActive, sleep, createRandId } = require('./common')
 const log = require('./logger')
 const { Logger } = log
 const logger = new Logger(__filename)
+const fs = require("fs");
 
 function ngsi(NGSI_entity) {
     return (((NGSI_entity == undefined) && config.NGSI_entity || NGSI_entity).toString() === 'true')
 }
 
-const cleanString = (string,NGSI_entity, config) => {
+const cleanString = (string, NGSI_entity, config) => {
     var result = '';
     if (typeof string === 'string')
         result = string.replace(config.regexClean[ngsi(NGSI_entity) ? "default" : "custom"], ' ');
@@ -72,7 +73,7 @@ const cleanPair = (key, value, NGSI_entity) => {
 
             arrayValues[i] = cleanPair(key, elem, NGSI_entity).value;
         }
-        arrayResult.key = cleanString(key,NGSI_entity, config);
+        arrayResult.key = cleanString(key, NGSI_entity, config);
         arrayResult.value = arrayValues;
         return arrayResult;
 
@@ -310,7 +311,7 @@ const bodyMapper = (body) => {
 
 const sendOutput = async (config, res) => {
     try {
-        while(res?.dmm?.outputFile && !res?.dmm?.outputFile[0])
+        while (res?.dmm?.outputFile && !res?.dmm?.outputFile[0])
             res.dmm.outputFile.shift()
         if (config.deleteEmptySpaceAtBeginning)
             res.dmm.outputFile = await spaceCleaner(res.dmm.outputFile)
@@ -334,6 +335,26 @@ const sendOutput = async (config, res) => {
     if (!config.mappingReport)
         try {
             await res.send(res.dmm.outputFile.slice(0, res.dmm.outputFile.length - 1));
+            await fs.unlinkSync(res.dmm.schemaTempName, (err) => {
+                if (err) {
+                    console.error(
+                        `Errore durante l'eliminazione del file ${file}:`,
+                        err
+                    );
+                } else {
+                    console.log(`File ${file} eliminato.`);
+                }
+            })
+            await fs.unlinkSync(res.dmm.sourceTempName, (err) => {
+                if (err) {
+                    console.error(
+                        `Errore durante l'eliminazione del file ${file}:`,
+                        err
+                    );
+                } else {
+                    console.log(`File ${file} eliminato.`);
+                }
+            })
         }
         catch (error) {
             logger.error(error)
@@ -342,6 +363,26 @@ const sendOutput = async (config, res) => {
     else
         try {
             await res.send(res.dmm.outputFile);
+            await fs.unlinkSync(res.dmm.schemaTempName, (err) => {
+                if (err) {
+                    console.error(
+                        `Errore durante l'eliminazione del file ${file}:`,
+                        err
+                    );
+                } else {
+                    console.log(`File ${file} eliminato.`);
+                }
+            })
+            await fs.unlinkSync(res.dmm.sourceTempName, (err) => {
+                if (err) {
+                    console.error(
+                        `Errore durante l'eliminazione del file ${file}:`,
+                        err
+                    );
+                } else {
+                    console.log(`File ${file} eliminato.`);
+                }
+            })
         }
         catch (error) {
             logger.error(error)

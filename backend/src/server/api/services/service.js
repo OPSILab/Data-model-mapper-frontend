@@ -366,9 +366,9 @@ module.exports = {
 
         if (source.data) {
             let sourceDataTempWriting = {}
-            sourceTempId = 'sourceFileTemp.' + + source.type //common.createRandId() + source.type
-            fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
-            //fs.writeFile(config.sourceDataPath + sourceTempId, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
+            sourceTempId = common.createRandId() //common.createRandId() + source.type
+            fs.writeFile(config.sourceDataPath + 'sourceFileTemp' + sourceTempId + "." + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
+                //fs.writeFile(config.sourceDataPath + sourceTempId, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
                 if (err) throw err;
                 logger.debug('File sourceData temp is created successfully.');
                 sourceDataTempWriting.value = 'File sourceData temp is created successfully.'
@@ -386,11 +386,11 @@ module.exports = {
             this.dataModelDeClean(dataModel.data)
 
             schema = JSON.parse(JSON.stringify(dataModel.data))
-            //schemaTempId = common.createRandId()
+            schemaTempId = common.createRandId()
             fs.writeFile(
                 //dataModel.schema_id || 
-                "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
-                    //"dataModels/DataModelTemp" + schemaTempId + ".json", JSON.stringify(dataModel.data), function (err) {
+                //"dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
+                "dataModels/DataModelTemp" + schemaTempId + ".json", JSON.stringify(dataModel.data), function (err) {
                     if (err) throw err;
                     logger.debug('File dataModel temp is created successfully.');
                     dataModelTempWriting.value = 'File dataModel temp is created successfully.'
@@ -415,8 +415,8 @@ module.exports = {
             dataModelTempWriting = {}
             fs.writeFile(
                 //dataModel.schema_id || 
-                "dataModels/DataModelTemp.json", JSON.stringify(schema), function (err) {
-                    //"dataModels/DataModelTemp" + schemaTempId + ".json", JSON.stringify(schema), function (err) {
+                //"dataModels/DataModelTemp.json", JSON.stringify(schema), function (err) {
+                "dataModels/DataModelTemp" + schemaTempId + ".json", JSON.stringify(schema), function (err) {
                     if (err) throw err;
                     logger.debug('File dataModel temp is created successfully.');
                     dataModelTempWriting.value = 'File dataModel temp is created successfully.'
@@ -427,12 +427,17 @@ module.exports = {
         if (common.isMinioWriterActive())
             minioObj = { name: source.minioObjName, bucket: source.minioBucketName }
 
+        res.dmm = {
+            sourceTempName : config.sourceDataPath + 'sourceFileTemp' + sourceTempId + "." + source.type,
+            schemaTempName : "dataModels/DataModelTemp" + schemaTempId + ".json"
+        }
+
         try {
             await cli(
                 //source.name ? config.sourceDataPath + source.name : config.sourceDataPath + sourceFileTemp2 ? 'sourceFileTemp2.' + source.type : 'sourceFileTemp.' + source.type,
-                source.name ? config.sourceDataPath + source.name : config.sourceDataPath + 'sourceFileTemp.' + source.type,
+                source.name ? config.sourceDataPath + source.name : config.sourceDataPath + 'sourceFileTemp' + sourceTempId + "." + source.type,
                 map,
-                dataModel.name ? dataModel.name : dataModel.schema_id ? this.getFilename(dataModel.schema_id) : "DataModelTemp",
+                dataModel.name ? dataModel.name : dataModel.schema_id ? this.getFilename(dataModel.schema_id) : "DataModelTemp" + schemaTempId,
                 schema, NGSI_entity, minioObj, config, res
             );
         }
