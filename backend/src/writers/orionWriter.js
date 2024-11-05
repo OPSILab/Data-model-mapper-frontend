@@ -19,13 +19,13 @@
 const rp = require('promise-request-retry');
 
 //let orionReport = {}
-const config = require('../../config')
+//const config = require('../../config')
 //const orionConfig = config.orionWriter;
 const report = require('../utils/logger').orionReport;
 const log = require('../utils/logger')//.app(module);
 const { Logger } = log
 const logger = new Logger(__filename)
-const proxyConf = config.orionWriter.enableProxy ? config.orionWriter.proxy : undefined;
+//const proxyConf = config.orionWriter.enableProxy ? config.orionWriter.proxy : undefined;
 const axios = require("axios")
 
 const sleep = (ms) => {
@@ -50,7 +50,7 @@ const sendToOrion = async (options, retries) => {
     return response
 }*/
 
-const buildRequestHeaders = () => {
+const buildRequestHeaders = (config) => {
 
     var headerObject = {
         'Fiware-Service': config.fiwareService || config.orionWriter.fiwareService,
@@ -67,7 +67,9 @@ const buildRequestHeaders = () => {
 //let wrObj = false
 
 
-const writeObject = async (objNumber, obj, modelSchema) => {
+const writeObject = async (objNumber, obj, modelSchema, config) => {
+
+    let proxyConf = config.orionWriter.enableProxy ? config.orionWriter.proxy : undefined;
 
     //if (!wrObj)
     //    wrObj = true
@@ -78,6 +80,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
     //    }
 
     let orionUrl = config.mode == "server" ? config.orionWriter.orionUrl : config.orionUrl
+    logger.debug(config.orionWriter.orionUrl)
 
     if (obj) {
         logger.debug('Sending to Orion CB object number: ' + objNumber + ' , id: ' + obj.id);
@@ -86,7 +89,7 @@ const writeObject = async (objNumber, obj, modelSchema) => {
 
         var options = {
             method: 'POST',
-            headers: buildRequestHeaders(),
+            headers: buildRequestHeaders(config),
             uri: !config.orionWriter.keyValues ? orionUrl + config.orionWriter.relativeUrl : orionUrl + config.orionWriter.relativeUrl + config.orionWriter.keyValuesOption,
             body: orionedObj,
             json: true,
@@ -361,144 +364,6 @@ const writeObject = async (objNumber, obj, modelSchema) => {
     }
 }
 
-
-
-/* OLD - TO BE REMOVED **/
-//function writeObject(objNumber, obj, modelSchema, retryNum = 0) {
-
-//    if (obj) {
-//        logger.debug('Sending to Orion object number: ' + objNumber + ' , id: ' + obj.id);
-
-//        var orionedObj = undefined;
-//        if (retryNum == 0)
-//            orionedObj = toOrionObject(obj, modelSchema);
-//        else
-//            orionedObj = obj;
-
-//        sleep(5);
-
-//        // Proxy config
-//        if (config.proxy) {
-//            request = request.defaults({ 'proxy': config.proxy });
-//        }
-
-
-//        request.post({
-//            headers: { 'content-type': 'application/json' },
-//            url: config.orionUrl + '/v2/entities',
-//            body: orionedObj,
-//            json: true
-//        }, function (error, response, body) {
-
-//            // Entity is new
-//            if (response && response.statusCode == 201) {
-//                report.info('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly CREATED in the Context Broker');
-//                logger.debug('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' correctly CREATED in the Context Broker');
-//                config.orionWrittenCount++;
-//                checkAndPrintFinalReport();
-//            } else if (response && response.statusCode == 422 && response.body && response.body.description == 'Already Exists') {
-
-//                // UPDATE EXISTING ENTITIES
-//                if (!config.skipExisting) {
-
-//                    // If entity already exists, try to update it
-//                    var existingId = orionedObj.id;
-//                    delete orionedObj.id;
-//                    delete orionedObj.type;
-//                    request.post({
-//                        headers: { 'content-type': 'application/json' },
-//                        url: config.orionUrl + '/v2/entities/' + existingId + '/attrs',
-//                        body: orionedObj,
-//                        json: true
-//                    }, function (error, response, body) {
-//                        if (response && response.statusCode == 204) {
-
-//                            report.info('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
-//                            logger.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
-//                            config.orionWrittenCount++;
-//                            checkAndPrintFinalReport();
-//                        } else {
-
-//                            report.info('----------------------------------------------------------\n' +
-//                                'Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
-//                            logger.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
-
-//                            report.info('error: ' + error); // Print the error if one occurred
-//                            logger.debug('error: ' + error);
-
-//                            if (response)
-//                                report.info('statusCode: ' + response.statusCode); // Print the response status code if a response was received
-//                            report.info('body: ' + JSON.stringify(body));
-
-//                            if (error && (retryNum < config.maxRetry)) {
-//                                retryNum++;
-//                                report.info('Retrying num:' + retryNum + ' to send Object: ' + objNumber + ' with Id: ' + existingId);
-//                                logger.debug('Retrying num:' + retryNum + ' to send Object: ' + objNumber + ' with Id: ' + existingId);
-
-//                                sleep(2);
-//                                writeObject(objNumber, obj, modelSchema, retryNum);
-
-//                            } else {
-
-//                                report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-//                                logger.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-//                                config.orionUnWrittenCount++;
-//                                checkAndPrintFinalReport();
-
-//                            }
-
-//                        }
-
-//                    });
-
-//                } else {
-
-//                    // SKIP EXISTING ENTITIES
-//                    report.info('Entity Number: ' + objNumber + ' with Id: ' + orionedObj.id + ' SKIPPED');
-//                    logger.debug('Entity Number: ' + objNumber + ' with Id: ' + orionedObj.id + ' SKIPPED');
-//                    config.orionSkippedCount++;
-//                    checkAndPrintFinalReport();
-
-//                }
-
-//            } else {
-//                report.info('----------------------------------------------------------\n' +
-//                    'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT CREATED in the Context Broker');
-//                logger.debug('Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT CREATED in the Context Broker');
-
-//                report.info('error: ' + error); // Print the error if one occurred
-//                if (response)
-//                    report.info('statusCode: ' + response.statusCode);
-//                report.info('body: ' + JSON.stringify(body));
-
-//                //if (error && (typeof error == 'string') && (error == 'Error: read ECONNRESET' || error == 'Error: socket hang up' || error.startsWith('Error: connect ETIMEDOUT')) && (retryNum < config.maxRetry)) {
-
-//                if (error && (retryNum < config.maxRetry)) {
-
-//                    retryNum++;
-//                    report.info('Retrying num: ' + retryNum + ' to send Object: ' + objNumber + ' with Id: ' + orionedObj.id);
-//                    logger.debug('Retrying num: ' + retryNum + ' to send Object: ' + objNumber + ' with Id: ' + orionedObj.id);
-
-//                    sleep(2);
-//                    writeObject(objNumber, obj, modelSchema, retryNum);
-
-//                } else {
-
-//                    report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-//                    logger.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj) + '\n ------------------------------\n');
-//                    logger.debug("PRE ORION OBJECT:\n" + JSON.stringify(obj) + '\n ------------------------------\n');
-//                    config.orionUnWrittenCount++;
-//                    checkAndPrintFinalReport();
-//                }
-//            }
-//        });
-//    } else {
-//        logger.debug("Mapped Object is undefined!, nothing to send to Orion Context Broker");
-//    }
-
-//}
-
-
 function toOrionObject(obj, schema) {
 
     // logger.debug("Transforming Mapped object to an Orion Entity (explicit types in attributes)");
@@ -579,7 +444,7 @@ function toOrionObject(obj, schema) {
 }
 
 
-async function printOrionFinalReport(loggerr) {
+async function printOrionFinalReport(loggerr, config) {
 
     await logger.info('\t\n--------ORION REPORT----------\n' +
         '\t Object written to Orion Context Broker: ' + config.orionWrittenCount + '/' + config.validCount + '\n' +
@@ -591,10 +456,10 @@ async function printOrionFinalReport(loggerr) {
 }
 
 /// Use Events?
-async function checkAndPrintFinalReport() {
+async function checkAndPrintFinalReport(config) {
     if ((parseInt(config.orionWrittenCount) + parseInt(config.orionSkippedCount) + parseInt(config.orionUnWrittenCount)) == parseInt(config.validCount)) {
-        await printOrionFinalReport(log);
-        await printOrionFinalReport(report);
+        await printOrionFinalReport(log, config);
+        await printOrionFinalReport(report, config);
     }
 
     let orionReport = {

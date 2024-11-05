@@ -28,11 +28,11 @@ module.exports = () => {
   */
   let path = "/minio/getObject/{bucketName}/{objectName}"
   swaggerDocument.paths[path] = minioDocument.paths[path]
-
+  dmmServer.use(express.json({ limit: '50mb' }));
+  dmmServer.use(express.urlencoded({ limit: '50mb', extended: false }));
   dmmServer.use(cors());
   dmmServer.use(express.json());
-  dmmServer.use(express.urlencoded({ extended: false }));
-  dmmServer.use(service.resetConfig)
+  //dmmServer.use(service.resetConfig)
   dmmServer.use(config.basePath || "/api", routes);
   dmmServer.use(
     '/api-docs',
@@ -67,9 +67,9 @@ module.exports = () => {
         dmmServer.listen(config.httpPort || 5500, () => {
           logger.info("Server has started!");
           logger.info("listening on port: " + config.httpPort || 5500);
-          config.backup = JSON.parse(JSON.stringify(config))
-          logger.info({ 
-            logLevel : config.logLevel,
+          //config.backup = JSON.parse(JSON.stringify(config))
+          logger.info({
+            logLevel: config.logLevel,
             activeWriters: config.writers
           })
 

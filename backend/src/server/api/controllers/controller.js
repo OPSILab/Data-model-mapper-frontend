@@ -1,5 +1,6 @@
 const service = require("../services/service.js")
 const utils = require("../../../utils/utils.js")
+const common = require("../../../utils/common.js")
 const { waiting } = utils
 const log = require('../../../utils/logger')//.app(module);
 const { Logger } = log
@@ -17,15 +18,7 @@ module.exports = {
         try {
             this[
                 req.body.config.group +
-                (req.body.reqId ||
-                    Date.now().toString()
-                        .concat(
-                            Math.floor(
-                                Math.random() * 1000
-                            )
-                        ).toString(
-                    )
-                )
+                (req.body.reqId || common.createRandId())
             ] = { req, res }//TODO .push instead?
             await service.mapData(sourceData, map, dataModel, req.body.config, res)
             if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")

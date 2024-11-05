@@ -248,7 +248,13 @@ function validateSourceValue(data, schema, isSingleField, rowNumber, config, res
         }
     }
 
-    if (config.mode == "server") res.dmm.outputFile[rowNumber - 1] = data;
+    if (config.mode == "server")
+        if (res.dmm.outputFile)
+            res.dmm.outputFile[rowNumber - 1] = data;
+        else
+            res.dmm.outputFile = [data]
+    logger.debug("-------------------SCHEMA HANDLER----------------------")
+    logger.debug(res.dmm.outputFile)
     //if (config.mode == "server") apiOutput.outputFile.push(data);
 
     // Recover the required field, if removed in case of single field

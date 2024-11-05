@@ -162,5 +162,15 @@ module.exports = {
 
     lock(key) {
         process.dataModelMapper[key] = "locked"
+    },
+
+    createRandId() {
+        return Date.now().toString()
+            .concat(
+                Math.floor(
+                    Math.random() * 1000
+                )
+            ).toString(
+        )
     }
 }

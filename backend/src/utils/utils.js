@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-const apiOutput = require('../server/api/services/service')
 const config = require('../../config');
 const base64 = require('./encoders/base64');
 const path = require('path');
@@ -27,7 +26,7 @@ const extensionPattern = /\.[0-9a-z]+$/i;
 const httpPattern = /http:\/\//g;
 const filenameFromPathPattern = /^(.:)?\\(.+\\)*(.+)\.(.+)$/;
 const minioWriter = require("../writers/minioWriter")
-const { isMinioWriterActive, sleep } = require('./common')
+const { isMinioWriterActive, sleep, createRandId } = require('./common')
 const log = require('./logger')
 const { Logger } = log
 const logger = new Logger(__filename)
@@ -334,7 +333,7 @@ const sendOutput = async (config, res) => {
     //else 
     if (!config.mappingReport)
         try {
-            await process.res.send(res.dmm.outputFile.slice(0, res.dmm.outputFile.length - 1));
+            await res.send(res.dmm.outputFile.slice(0, res.dmm.outputFile.length - 1));
         }
         catch (error) {
             logger.error(error)
@@ -342,7 +341,7 @@ const sendOutput = async (config, res) => {
         }
     else
         try {
-            await process.res.send(res.dmm.outputFile);
+            await res.send(res.dmm.outputFile);
         }
         catch (error) {
             logger.error(error)
@@ -369,7 +368,7 @@ const printFinalReportAndSendResponse = async (loggerr, minioObj, config, res) =
         //Mapping report in output file
 
         while (isOrionWriterActive() && (config.orionWrittenCount + config.orionUnWrittenCount < config.validCount)) {
-            await sleep(1, "Orion writing progress :" + (config.orionWrittenCount + config.orionUnWrittenCount) + "/" + config.validCount)
+            await sleep(1000, "Orion writing progress :" + (config.orionWrittenCount + config.orionUnWrittenCount) + "/" + config.validCount)
         }
 
         //logger.debug(config.orionWriter)
@@ -546,5 +545,6 @@ module.exports = {
     restoreDefaultConfs: restoreDefaultConfs,
     encode: encode,
     bodyMapper: bodyMapper,
-    waiting
+    waiting,
+    createRandId
 };

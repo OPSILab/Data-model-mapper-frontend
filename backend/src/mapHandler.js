@@ -337,7 +337,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             if (emptyObject) singleResult[mapDestKey] = extractFromNestedField(source, normSourceKey)
 
             if (singleResult && Object.entries(singleResult).length !== 0
-                && (mapDestKey == entityIdField || checkPairWithDestModelSchema(singleResult, mapDestKey, modelSchema, rowNumber))) {
+                && (mapDestKey == entityIdField || checkPairWithDestModelSchema(singleResult, mapDestKey, modelSchema, rowNumber, config, res))) {
 
                 // Additional processing of sourceValue (e.g. filtering or concatenation with other fields)
                 // .....
@@ -394,7 +394,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
     /** Once we added only valid mapped single entries, let's do a final validation against the whole final mapped object
     * Despite single validations, the following one is mandatory to be successful
     **/
-    if (checkResultWithDestModelSchema(result, mapDestKey, modelSchema, rowNumber)) {
+    if (checkResultWithDestModelSchema(result, mapDestKey, modelSchema, rowNumber, config, res)) {
         logger.debug('Mapped object, number: ' + rowNumber + ' is compliant with target Data Model');
         report.info('Mapped object, number: ' + rowNumber + ' is compliant with target Data Model');
         config.validCount++;
@@ -417,7 +417,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 /* This function takes in input the source value to be mapped with a destination object, coming from the Data Model Schema
 *  and checks if constraints present in the destination Model object are met by the source value
 **/
-const checkPairWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNumber) => {
+const checkPairWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNumber, config, res) => {
 
     //if (config.noSchema)
     //        return true
@@ -429,7 +429,7 @@ const checkPairWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNum
 
 /* This function takes in input the final whole mapped object and validate it against the destination Data Model Schema
  **/
-const checkResultWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNumber) => {
+const checkResultWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNumber, config, res) => {
 
     //if (config.noSchema)
     //    return true

@@ -1,5 +1,5 @@
 const fs = require('fs');
-const config = require('../../../../config')
+const configGlobal = require('../../../../config')
 const Source = require("../models/source.js")
 const Map = require("../models/map.js")
 const DataModel = require("../models/dataModel.js")
@@ -13,12 +13,13 @@ const minioWriter = require('../../../writers/minioWriter')
 const common = require('../../../utils/common');
 const { finish, lock } = common
 const { convertGeoJSON } = require("../../../utils/common.js")
+const cli = require('../../../cli/setup');
 
-if (!config.idVersion)
-    config.idVersion = 2
+if (!configGlobal.idVersion)
+    configGlobal.idVersion = 2
 
 if (common.isMinioWriterActive())
-    if (config.minioWriter.subscribe.all)
+    if (configGlobal.minioWriter.subscribe.all)
         minioWriter.listBuckets().then((buckets) => {
             let a = 0
             for (let bucket of buckets) {
@@ -27,7 +28,7 @@ if (common.isMinioWriterActive())
                 logger.debug((a++) + " " + buckets.length)
             }
         })
-    else for (let bucket of config.minioWriter.subscribe.buckets)
+    else for (let bucket of configGlobal.minioWriter.subscribe.buckets)
         minioWriter.getNotifications(bucket)
 
 const waiting = async (flag) => {
@@ -65,7 +66,7 @@ module.exports = {
     buildGeoJson: common.buildGeoJson,
 
     async minioCreateBucket(bucketName) {
-        let createdResult = await minioWriter.creteBucket(bucketName, config.minioWriter.location)
+        let createdResult = await minioWriter.creteBucket(bucketName, configGlobal.minioWriter.location)
         logger.debug("created result:\t" + createdResult)
         return createdResult
     },
@@ -101,7 +102,7 @@ module.exports = {
 
         //console.log(config.backup)
 
-        let responseConfig = JSON.parse(JSON.stringify(config.backup || config))
+        let responseConfig = JSON.parse(JSON.stringify(configGlobal))
         let configCopy = JSON.parse(JSON.stringify(responseConfig))
 
         //configCopy.orionUrl = JSON.parse(JSON.stringify(responseConfig.orionWriter.orionUrl))
@@ -143,9 +144,11 @@ module.exports = {
             configCopy.SUPPRESS_NO_CONFIG_WARNING =
             configCopy.logSaveInterval =
             configCopy.env = undefined
+        logger.debug(configCopy)
         return configCopy
     },
 
+    /*
     resetConfig: async (request, response, next) => {
 
         await waiting("resetConfig")
@@ -161,15 +164,15 @@ module.exports = {
         }
         next()
     },
+    */
 
     async mapData(source, map, dataModel, configIn, res) {
 
         //this.restoreDefaultConfs()
 
-        const cli = require('../../../cli/setup');
         //common.schema = undefined
         let schema, NGSI_entity, minioObj
-        let config = JSON.parse(JSON.stringify(config))
+        let config = JSON.parse(JSON.stringify(configGlobal))
 
         if (map?.id) {
 
@@ -285,6 +288,7 @@ module.exports = {
             }
         }
 
+        logger.debug(config.orionWriter.orionUrl)
         logger.debug("config.EPSG_code : ", config.EPSG_code)
 
         config.delimiter = configIn ? configIn.delimiter : config.delimiter || ','
@@ -358,9 +362,13 @@ module.exports = {
         //    source.data = source.data.splice(config.rowStart)
         //}
 
+        let sourceTempId, schemaTempId
+
         if (source.data) {
             let sourceDataTempWriting = {}
+            sourceTempId = 'sourceFileTemp.' + + source.type //common.createRandId() + source.type
             fs.writeFile(config.sourceDataPath + 'sourceFileTemp.' + source.type, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
+            //fs.writeFile(config.sourceDataPath + sourceTempId, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
                 if (err) throw err;
                 logger.debug('File sourceData temp is created successfully.');
                 sourceDataTempWriting.value = 'File sourceData temp is created successfully.'
@@ -378,9 +386,11 @@ module.exports = {
             this.dataModelDeClean(dataModel.data)
 
             schema = JSON.parse(JSON.stringify(dataModel.data))
+            //schemaTempId = common.createRandId()
             fs.writeFile(
                 //dataModel.schema_id || 
                 "dataModels/DataModelTemp.json", JSON.stringify(dataModel.data), function (err) {
+                    //"dataModels/DataModelTemp" + schemaTempId + ".json", JSON.stringify(dataModel.data), function (err) {
                     if (err) throw err;
                     logger.debug('File dataModel temp is created successfully.');
                     dataModelTempWriting.value = 'File dataModel temp is created successfully.'
@@ -390,6 +400,7 @@ module.exports = {
 
         if (configIn.noSchema || (configIn.noSchema == undefined) && config.noSchema) {
             logger.info("No schema mode")
+            //schemaTempId = common.createRandId()
             let schema = {
                 "$schema": "http://json-schema.org/schema#",
                 "$id": "dataModels/DataModelTemp.json",
@@ -405,6 +416,7 @@ module.exports = {
             fs.writeFile(
                 //dataModel.schema_id || 
                 "dataModels/DataModelTemp.json", JSON.stringify(schema), function (err) {
+                    //"dataModels/DataModelTemp" + schemaTempId + ".json", JSON.stringify(schema), function (err) {
                     if (err) throw err;
                     logger.debug('File dataModel temp is created successfully.');
                     dataModelTempWriting.value = 'File dataModel temp is created successfully.'
@@ -647,7 +659,7 @@ module.exports = {
 
             let objectName = (
                 //sourceDataMinio?.name || 
-                (prefix + "/" + name)).replace(config.minioWriter.defaultInputFolderName, config.minioWriter.defaultOutputFolderName) //.toLowerCase()
+                (prefix + "/" + name)).replace(configGlobal.minioWriter.defaultInputFolderName, configGlobal.minioWriter.defaultOutputFolderName) //.toLowerCase()
             if (objectName.substring(objectName.length - 5) != ".json")
                 objectName = objectName + ".json"
 
@@ -838,7 +850,7 @@ module.exports = {
             if (Array.isArray(dataModel[key]) || typeof dataModel[key] == "object")
                 dataModel[key] = this.dataModelRefFix(dataModel[key])
             else if (key.startsWith("$") && !dataModel[key].startsWith("http"))
-                dataModel[key] = config.modelSchemaFolder + "//" + JSON.parse(JSON.stringify(dataModel[key]))
+                dataModel[key] = configGlobal.modelSchemaFolder + "//" + JSON.parse(JSON.stringify(dataModel[key]))
         }
         return dataModel
     },
@@ -901,7 +913,7 @@ module.exports = {
 
             let objectName = (
                 //sourceDataMinio?.name || 
-                (prefix + "/" + name)).replace(config.minioWriter.defaultInputFolderName, config.minioWriter.defaultOutputFolderName) //.toLowerCase()
+                (prefix + "/" + name)).replace(configGlobal.minioWriter.defaultInputFolderName, configGlobal.minioWriter.defaultOutputFolderName) //.toLowerCase()
             if (objectName.substring(objectName.length - 5) != ".json")
                 objectName = objectName + ".json"
 

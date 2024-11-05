@@ -37,6 +37,8 @@ const { load } = require('nconf');
 
 const processSource = async (sourceData, sourceDataType, mapData, dataModelSchemaPath, schema, NGSI_entity, minioObj, config, res) => {
 
+    if (!res.dmm)
+        res.dmm = {}
     res.dmm.promises = []
 
     config.validCount = 0;
@@ -200,11 +202,11 @@ const processRow = async (rowNumber, row, map, schema, mappedHandler, NGSI_entit
 
     logger.debug("Row: " + rowNumber + " - Object mapped correctly ");
     //logger.trace("Result: " + JSON.stringify(result))
-    await mappedHandler(rowNumber, result, schema, res.dmm.promises);
+    await mappedHandler(rowNumber, result, schema, res.dmm.promises, config);
 
 };
 
-const processMappedObject = async (objNumber, obj, modelSchema, promises) => {
+const processMappedObject = async (objNumber, obj, modelSchema, promises, config) => {
     if (!promises)
         promises = []
     try {
