@@ -23,13 +23,13 @@ const utils = require('../utils/utils.js');
 const log = require('../utils/logger')//.app(module);
 const { Logger } = log
 const logger = new Logger(__filename)
-const config = require('../../config');
+const configGlobal = require('../../config');
 
 
 // All of these arguments are optional.
 var options = {
-    delimiter: config.delimiter || ',', // default is ,
-    endLine: config.endLine || '\n', // default is \n,
+    delimiter: configGlobal.delimiter || ',', // default is ,
+    endLine: configGlobal.endLine || '\n', // default is \n,
     //columns: ['columnName1', 'columnName2'], // by default read the first line and use values found as columns
     columnOffset: 0, // default is 0
     escapeChar: '', // default is an empty string
@@ -38,6 +38,8 @@ var options = {
 
 
 function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess, NGSI_entity, minioObj, config, res) {
+
+    logger.debug(config.rowStart, " ", config.rowEnd)
 
     if (config.delimiter) options.delimiter = config.delimiter;
 
@@ -126,6 +128,7 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
     var rowNumber = Number(config.rowNumber);
     var rowStart = Number(config.rowStart);
     var rowEnd = Number(config.rowEnd);
+    logger.debug(rowStart, "------------ftrs------------", rowEnd)
 
     inputData.pipe(csvStream)
         .on('error', function (err) {

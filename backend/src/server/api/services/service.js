@@ -13,7 +13,7 @@ const minioWriter = require('../../../writers/minioWriter')
 const common = require('../../../utils/common');
 const { finish, lock } = common
 const { convertGeoJSON } = require("../../../utils/common.js")
-const cli = require('../../../cli/setup');
+const cliGl = require('../../../cli/setup');
 
 if (!configGlobal.idVersion)
     configGlobal.idVersion = 2
@@ -167,6 +167,8 @@ module.exports = {
     */
 
     async mapData(source, map, dataModel, configIn, res) {
+
+        const cli = require('../../../cli/setup');
 
         //this.restoreDefaultConfs()
 
@@ -358,6 +360,13 @@ module.exports = {
         if (source.data && source.path)
             source.data = source.data[source.path]
 
+        /*logger.debug(config.rowStart, " ", config.rowEnd)
+
+        if (config.rowStart && Array.isArray(source.data))
+            source.data = config.rowEnd < source.data.length ?
+                source.data.slice(config.rowStart - 1, config.rowEnd) :
+                source.data.slice(config.rowStart - 1)*/
+
         //if (config.rowStart){
         //    source.data = source.data.splice(config.rowStart)
         //}
@@ -428,8 +437,13 @@ module.exports = {
             minioObj = { name: source.minioObjName, bucket: source.minioBucketName }
 
         res.dmm = {
-            sourceTempName : config.sourceDataPath + 'sourceFileTemp' + sourceTempId + "." + source.type,
-            schemaTempName : "dataModels/DataModelTemp" + schemaTempId + ".json"
+            sourceTempName: config.sourceDataPath + 'sourceFileTemp' + sourceTempId + "." + source.type,
+            schemaTempName: "dataModels/DataModelTemp" + schemaTempId + ".json"
+        }
+
+        if (Array.isArray(map)) {
+            logger.debug(map[0].targetDataModel)
+            map[0].targetDataModel = "DataModelTemp" + schemaTempId
         }
 
         try {

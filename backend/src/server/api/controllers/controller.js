@@ -39,7 +39,7 @@ module.exports = {
     },
 
     getSources: async (req, res) => {
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.getAllSources(req.query.bucketName || req.body.bucketName, req.body.prefix, req.query.format))
         }
@@ -48,11 +48,11 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     getSourcesFromDB: async (req, res) => {
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.getSourcesFromDB(req.body.prefix))
         }
@@ -61,7 +61,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     version: async (req, res) => {
@@ -73,11 +73,11 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     getSourcesFromMinio: async (req, res) => {
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.getMinioObjects(req.params.bucketName || req.query.bucketName, req.body.prefix, req.query.format, []))
         }
@@ -86,11 +86,11 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     getMaps: async (req, res) => {
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.getMaps(req.body.prefix))
         }
@@ -99,11 +99,11 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     getDataModels: async (req, res) => {
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.getDataModels(req.body.prefix))
         }
@@ -112,12 +112,12 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     getSource: async (req, res) => {
         const { id, name, mapRef } = req.query
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.getSource(id, name, mapRef, req.body.prefix))
         }
@@ -126,12 +126,12 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     getMap: async (req, res) => {
         const { id, name } = req.query
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.getMap(id, name, req.body.prefix))
         }
@@ -140,11 +140,11 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     getConfig: async (req, res) => {
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.getConfig())
         }
@@ -153,12 +153,12 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     getDataModel: async (req, res) => {
         const { id, name, mapRef } = req.query
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.getDataModel(id, name, mapRef, req.body.prefix))
         }
@@ -167,13 +167,13 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     insertSource: async (req, res) => {
 
         await waiting("crud")
-        process.res = res;
+        //process.res = res;
         process.dataModelMapper.crud = "busy"
 
         try {
@@ -192,7 +192,7 @@ module.exports = {
     insertMap: async (req, res) => {
 
         await waiting("crud")
-        process.res = res;
+        //process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.insertMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
@@ -212,7 +212,7 @@ module.exports = {
     insertDataModel: async (req, res) => {
 
         await waiting("crud")
-        process.res = res;
+        //process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef, req.body.bucketName, req.body.prefix))
@@ -229,7 +229,7 @@ module.exports = {
     modifySource: async (req, res) => {
 
         await waiting("crud")
-        process.res = res;
+        //process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef, req.body.bucketName, req.body.prefix))
@@ -247,7 +247,7 @@ module.exports = {
     assignSource: async (req, res) => {
 
         await waiting("crud")
-        process.res = res;
+        //process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.assignSource(req.body.sourceDataID, req.body.mapRef))
@@ -265,7 +265,7 @@ module.exports = {
     assignSchema: async (req, res) => {
 
         await waiting("crud")
-        process.res = res;
+        //process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.assignSchema(req.body.dataModelID, req.body.mapRef))
@@ -283,7 +283,7 @@ module.exports = {
     deAssignSource: async (req, res) => {
 
         await waiting("crud")
-        process.res = res;
+        //process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.deAssignSource(req.body.sourceDataID, req.body.mapRef))
@@ -301,7 +301,7 @@ module.exports = {
     deAssignSchema: async (req, res) => {
 
         await waiting("crud")
-        process.res = res;
+        //process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.deAssignSchema(req.body.dataModelID, req.body.mapRef))
@@ -319,7 +319,7 @@ module.exports = {
     modifyMap: async (req, res) => {
 
         await waiting("crud")
-        process.res = res;
+        //process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
@@ -339,7 +339,7 @@ module.exports = {
     modifyDataModel: async (req, res) => {
 
         await waiting("crud")
-        process.res = res;
+        //process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef, req.body.bucketName, req.body.prefix))
@@ -357,7 +357,7 @@ module.exports = {
     deleteSource: async (req, res) => {
         const { id, name } = req.query
         await waiting("crud")
-        process.res = res;
+        //process.res = res;
         process.dataModelMapper.crud = "busy"
         try { res.send(await service.deleteSource(id, name, req.body.prefix)) }
         catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
@@ -368,7 +368,7 @@ module.exports = {
     deleteMap: async (req, res) => {
         const { id, name } = req.query
         await waiting("crud")
-        process.res = res;
+        //process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.deleteMap(id || req.params.id, name, req.body.prefix, req.body.bucketName))
@@ -385,7 +385,7 @@ module.exports = {
     deleteDataModel: async (req, res) => {
         const { id, name } = req.query
         await waiting("crud")
-        process.res = res;
+        //process.res = res;
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.deleteDataModel(id, name, req.body.prefix))
@@ -399,7 +399,7 @@ module.exports = {
 
     dereferenceSchema: async (req, res) => {
 
-        process.res = res;
+        //process.res = res;
         if (req.body.bucketName) req.body.bucketName = undefined
         if (req.body.prefix) req.body.prefix = undefined
 
@@ -411,12 +411,12 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     cleanSchema: async (req, res) => {
 
-        process.res = res;
+        //process.res = res;
         if (req.body.bucketName) req.body.bucketName = undefined
         if (req.body.prefix) req.body.prefix = undefined
 
@@ -429,12 +429,12 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     buildGeoJson: async (req, res) => {
 
-        process.res = res;
+        //process.res = res;
         if (req.body.bucketName) req.body.bucketName = undefined
         if (req.body.prefix) req.body.prefix = undefined
 
@@ -447,12 +447,12 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
 
     minioCreateBucket: async (req, res) => {
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.minioCreateBucket(req.params.bucketName))
         }
@@ -468,11 +468,11 @@ module.exports = {
                 error.details = "Use lower a case bucket name"
             res.status(errorStatusCode).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     minioGetObject: async (req, res) => {
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.minioGetObject(req.params.bucketName, req.params.objectName, req.query.format))
         }
@@ -486,11 +486,11 @@ module.exports = {
                 errorStatusCode = 500
             res.status(errorStatusCode).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     minioListObjects: async (req, res) => {
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.minioListObjects(req.params.bucketName || req.query.bucketName))
         }
@@ -499,11 +499,11 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     minioGetBuckets: async (req, res) => {
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.minioGetBuckets())
         }
@@ -512,11 +512,11 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     minioSubscribe: async (req, res) => {
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.minioSubscribe(req.params.bucketName))
         }
@@ -525,11 +525,11 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     minioInsertObject: async (req, res) => {
-        process.res = res;
+        //process.res = res;
         try {
             res.send(await service.minioInsertObject(req.params.bucketName, req.params.objectName, req.body))
         }
@@ -543,7 +543,7 @@ module.exports = {
                 errorStatusCode = 500
             res.status(errorStatusCode).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     getToken: async (req, res) => {
@@ -555,7 +555,7 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     },
 
     getLogs: async (req, res) => {
@@ -567,6 +567,6 @@ module.exports = {
             logger.error("error at " + error?.stack)
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        process.dataModelMapper.resetConfig = undefined
+        //process.dataModelMapper.resetConfig = undefined
     }
 };

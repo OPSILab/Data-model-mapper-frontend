@@ -101,7 +101,13 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
         };
 
         let postOptions = JSON.parse(JSON.stringify(options))
-        let id = JSON.parse(JSON.stringify(obj.id))
+        try{
+        var id = JSON.parse(JSON.stringify(obj.id))
+        }
+        catch(e){
+            logger.error(e)
+            id = "ID" + Date.now().toString()
+        }
 
         //logger.trace("Options")
         //logger.trace(JSON.stringify(options))

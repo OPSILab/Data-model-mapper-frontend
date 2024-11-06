@@ -309,12 +309,70 @@ const bodyMapper = (body) => {
     }
 };
 
+const init = () => {
+    let deletedCount = 0
+    fs.readdir("dataModels/", (err, files) => {
+        if (err) {
+            console.error("Errore durante la lettura della directory:", err);
+            return;
+        }
+
+        files.forEach((file) => {
+            const filePath = path.join("dataModels/", file);
+            if (file.includes("DataModelTemp")) {
+                fs.unlinkSync(filePath, (err) => {
+                    if (err) {
+                        console.error(
+                            `Errore durante l'eliminazione del file ${file}:`,
+                            err
+                        );
+                    } else {
+                        console.log(`File ${file} eliminato.`);
+                    }
+                });
+            }
+            else
+                deletedCount++
+        });
+    });
+    fs.readdir(config.sourceDataPath || "", (err, files) => {
+        if (err) {
+            console.error("Errore durante la lettura della directory:", err);
+            return;
+        }
+
+        files.forEach((file) => {
+            const filePath = path.join(config.sourceDataPath || "", file);
+            if (file.includes("sourceFileTemp")) {
+                fs.unlinkSync(filePath, (err) => {
+                    if (err) {
+                        console.error(
+                            `Errore durante l'eliminazione del file ${file}:`,
+                            err
+                        );
+                    } else {
+                        console.log(`File ${file} eliminato.`);
+                    }
+                });
+            }
+            else
+                deletedCount++
+        });
+    });
+    logger.debug("Deleted trash files ", deletedCount)
+}
+
+const hasNull = (obj) => Object.values(obj).some(value => value === null);
+const hasNumberKeys = (obj) => Object.keys(obj).some(key => Number.isFinite(parseInt(key)));
+
 const sendOutput = async (config, res) => {
     try {
         while (res?.dmm?.outputFile && !res?.dmm?.outputFile[0])
             res.dmm.outputFile.shift()
         if (config.deleteEmptySpaceAtBeginning)
             res.dmm.outputFile = await spaceCleaner(res.dmm.outputFile)
+        if (config.rowStart)// && hasNull(res?.dmm?.outputFile[0] && hasNumberKeys(res?.dmm?.outputFile[0])))
+            res.dmm.outputFile = res.dmm.outputFile.slice(config.rowStart-1)
     }
     catch (error) {
         logger.error(error)
@@ -335,7 +393,7 @@ const sendOutput = async (config, res) => {
     if (!config.mappingReport)
         try {
             await res.send(res.dmm.outputFile.slice(0, res.dmm.outputFile.length - 1));
-            await fs.unlinkSync(res.dmm.schemaTempName, (err) => {
+            fs.unlinkSync(res.dmm.schemaTempName, (err) => {
                 if (err) {
                     console.error(
                         `Errore durante l'eliminazione del file ${file}:`,
@@ -345,7 +403,7 @@ const sendOutput = async (config, res) => {
                     console.log(`File ${file} eliminato.`);
                 }
             })
-            await fs.unlinkSync(res.dmm.sourceTempName, (err) => {
+            fs.unlinkSync(res.dmm.sourceTempName, (err) => {
                 if (err) {
                     console.error(
                         `Errore durante l'eliminazione del file ${file}:`,
@@ -363,7 +421,7 @@ const sendOutput = async (config, res) => {
     else
         try {
             await res.send(res.dmm.outputFile);
-            await fs.unlinkSync(res.dmm.schemaTempName, (err) => {
+            fs.unlinkSync(res.dmm.schemaTempName, (err) => {
                 if (err) {
                     console.error(
                         `Errore durante l'eliminazione del file ${file}:`,
@@ -373,7 +431,7 @@ const sendOutput = async (config, res) => {
                     console.log(`File ${file} eliminato.`);
                 }
             })
-            await fs.unlinkSync(res.dmm.sourceTempName, (err) => {
+            fs.unlinkSync(res.dmm.sourceTempName, (err) => {
                 if (err) {
                     console.error(
                         `Errore durante l'eliminazione del file ${file}:`,
@@ -587,5 +645,6 @@ module.exports = {
     encode: encode,
     bodyMapper: bodyMapper,
     waiting,
-    createRandId
+    createRandId,
+    init
 };

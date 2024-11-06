@@ -1,3 +1,5 @@
+const utils = require("../utils/utils.js")
+utils.init()
 module.exports = () => {
   const routes = require("./api/routes/router.js")
   const express = require("express");
@@ -7,7 +9,7 @@ module.exports = () => {
   const swaggerUi = require('swagger-ui-express');
   let swaggerDocument = require('./swagger/swagger.json');
   let minioDocument = require('./swagger/minio.json');
-  const service = require("./api/services/service.js")
+ // const service = require("./api/services/service.js")
   const log = require('../utils/logger')//.app(module);
   //const {trace, debug, info, warn, err} = log
   //const e = log.error

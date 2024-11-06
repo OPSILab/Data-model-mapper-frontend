@@ -33,6 +33,7 @@ const { inspect } = require('util')
 
 setInterval(checkDate, 6000);
 setInterval(deleteOldLogs, 24 * 60 * 60 * 1000);
+deleteOldLogs()
 
 function setLogDate() {
   const date = new Date();
@@ -56,9 +57,16 @@ function checkDate() {
 function isOlderThan30Days(filePath) {
   try {
     const fileStats = fs.statSync(filePath);
-    const fileTime = fileStats.birthtimeMs; // Tempo di creazione in millisecondi
+    const {mtimeMs, birthtimeMs} = fileStats
+    //console.debug(fileStats)
+    const fileTime = (birthtimeMs > mtimeMs) && birthtimeMs || (mtimeMs > birthtimeMs) && mtimeMs
+    //console.debug(fileTime)
     const currentDate = Date.now();
+    //console.debug(currentDate)
     const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
+    //console.debug(currentDate - fileTime)
+    //console.debug(thirtyDaysInMilliseconds)
+    //console.debug(currentDate - fileTime > thirtyDaysInMilliseconds)
     return currentDate - fileTime > thirtyDaysInMilliseconds;
   } catch (err) {
     if (err.code === "EPERM") {
@@ -78,7 +86,7 @@ function deleteOldLogs() {
     }
 
     files.forEach((file) => {
-      const filePath = path.join(logpath, file);
+      const filePath = path.join(logPath, file);
       if (isOlderThan30Days(filePath)) {
         fs.unlinkSync(filePath, (err) => {
           if (err) {

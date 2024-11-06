@@ -120,6 +120,10 @@ const objectHandler = (parsedSourceKey, normSourceKey, schemaDestKey, source) =>
             let mapSourceSubField = normSourceKey[key];
 
             parsedSourceKey[key] = {};
+            //logger.debug("{",key,"}")
+            logger.debug("{")
+            logger.debug(mapSourceSubField)
+            logger.debug("}")
             if (schemaFieldType === 'number' || schemaFieldType === 'integer' && mapSourceSubField.split('.').length == 1)
                 parsedSourceKey[key] = new Function("input", "return Number(input['" + mapSourceSubField + "']);");
             else if (schemaFieldType === 'boolean')

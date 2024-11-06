@@ -29,6 +29,7 @@ let service = require ("../server/api/services/service")
 
 module.exports = async (sourceDataIn, mapPathIn, dataModelIn, schema, NGSI_entity, minioObj, config, res) => {
     logger.info("Initializing Mapper in " + (config.mode == "commandLine" ? "Command Line " : "Server ") + "Mode");
+    logger.debug(config.rowStart)
 
     if (Array.isArray(sourceDataIn)) sourceDataIn = sourceDataIn[0]
 
