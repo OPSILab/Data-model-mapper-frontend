@@ -18,8 +18,9 @@
 
 const nconf = require('nconf');
 const config = require('../../config');
+const configGl = config
 const log = require('./logger')//.app(module);
-const {Logger} = log
+const { Logger } = log
 const logger = new Logger(__filename)
 const path = require('path');
 const pathPattern = /^.+(\/|\\)[^\/|\\]+$/g;
@@ -160,7 +161,7 @@ const help = () => {
 /* Check if mandatory configuration parameters are set either via CLI args or config file 
  * 
  **/
-const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
+const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath, config) => {
 
     /************ MAPPING CONFIGURATION PARAMETERS ************/
     var mapPath = mapPathIn || nconf.get('mapPath');
@@ -180,7 +181,7 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
     }
     //if (sourcePath && !sourcePath.match(pathPattern)) {
     if (Array.isArray(sourcePath)) sourcePath = JSON.stringify(sourcePath[0])
-    
+
     if (sourcePath && utils.isValidPath(sourcePath)) {
         try {
             sourcePath = path.normalize(sourcePath);
@@ -197,8 +198,8 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
     }
 
     var dataModel = dataModelPath || nconf.get('targetDataModel');
-    if (!utils.checkInputDataModel(config.modelSchemaFolder, dataModel)) {
-        logger.error('Incorrect target Data Model name: '+ dataModel);
+    if (!utils.checkInputDataModel(config.modelSchemaFolder, dataModel, config)) {
+        logger.error('Incorrect target Data Model name: ' + dataModel);
         return false;
     } else
         nconf.set('targetDataModel', path.join(config.modelSchemaFolder, dataModel + '.json'));
@@ -283,29 +284,30 @@ const checkAndInitConf = (sourceDataIn, mapPathIn, dataModelPath) => {
 
 
     /******* Set initialized confs as Global variables ***************/
-
-    config.orionUrl = nconf.get('orionUrl');
-    config.updateMode = nconf.get('updateMode');
-    config.fiwareService = nconf.get('fiwareService');
-    config.fiwareServicePath = nconf.get('fiwareServicePath');
-    config.orionAuthHeaderName = nconf.get('orionAuthHeaderName');
-    config.orionAuthToken = nconf.get('orionAuthToken');
-    config.outFilePath = nconf.get('outFilePath');
-    config.rowStart = nconf.get('rowStart');
-    config.rowEnd = nconf.get('rowEnd');
-    config.idSite = nconf.get('site');
-    config.idService = nconf.get('service');
-    config.idGroup = nconf.get('group');
-    config.NGSI_entity = nconf.get('NGSI_entity');
+    if (configGl.mode == "commandLine") {
+        config.orionUrl = nconf.get('orionUrl');
+        config.updateMode = nconf.get('updateMode');
+        config.fiwareService = nconf.get('fiwareService');
+        config.fiwareServicePath = nconf.get('fiwareServicePath');
+        config.orionAuthHeaderName = nconf.get('orionAuthHeaderName');
+        config.orionAuthToken = nconf.get('orionAuthToken');
+        config.outFilePath = nconf.get('outFilePath');
+        config.rowStart = nconf.get('rowStart');
+        config.rowEnd = nconf.get('rowEnd');
+        config.idSite = nconf.get('site');
+        config.idService = nconf.get('service');
+        config.idGroup = nconf.get('group');
+        config.NGSI_entity = nconf.get('NGSI_entity');
+    }
 
     /** Global variables for Source Data, Map and Target Data Model are set in the specific setup.js **/
 
     return true;
 };
 
-function init(sourceDataIn, mapPathIn, dataModelPath) {
+function init(sourceDataIn, mapPathIn, dataModelPath, config) {
     help();
-    return checkAndInitConf(sourceDataIn, mapPathIn, dataModelPath);
+    return checkAndInitConf(sourceDataIn, mapPathIn, dataModelPath, config);
 };
 
 const getParam = (par) => {

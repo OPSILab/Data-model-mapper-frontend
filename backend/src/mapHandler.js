@@ -175,7 +175,7 @@ const NGSI_entity = () => {
  * @param {"Map file"} map The input map file
  * @param {"Destination schema"} modelSchema The destination schema/data model 
  */
-const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service, group, entityIdField) => {
+const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service, group, entityIdField, NGSI_entity, minioObj, config, res) => {
 
     var result = {};
     // If the destKey is entityIdField and has only "static:" fields, the pair value indicates only an ID prefix
@@ -337,7 +337,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             if (emptyObject) singleResult[mapDestKey] = extractFromNestedField(source, normSourceKey)
 
             if (singleResult && Object.entries(singleResult).length !== 0
-                && (mapDestKey == entityIdField || checkPairWithDestModelSchema(singleResult, mapDestKey, modelSchema, rowNumber))) {
+                && (mapDestKey == entityIdField || checkPairWithDestModelSchema(singleResult, mapDestKey, modelSchema, rowNumber, config, res))) {
 
                 // Additional processing of sourceValue (e.g. filtering or concatenation with other fields)
                 // .....
@@ -359,7 +359,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
         }
     }
 
-    if (((NGSI_entity() == undefined) && config.NGSI_entity || NGSI_entity()).toString() === 'true') {
+    if (((NGSI_entity == undefined) && config.NGSI_entity || NGSI_entity).toString() === 'true') {
 
         // Append type field, according to the Data Model Schema
         try {
@@ -376,7 +376,10 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
                 group,// || "",
                 result ? result[entityIdField] : "",
                 isIdPrefix || "",
-                rowNumber);
+                rowNumber,
+                NGSI_entity,
+                config
+            );
             delete result[entityIdField];
             result.id = result.id.replaceAll(" ", "")
         } catch (error) {
@@ -391,7 +394,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
     /** Once we added only valid mapped single entries, let's do a final validation against the whole final mapped object
     * Despite single validations, the following one is mandatory to be successful
     **/
-    if (checkResultWithDestModelSchema(result, mapDestKey, modelSchema, rowNumber)) {
+    if (checkResultWithDestModelSchema(result, mapDestKey, modelSchema, rowNumber, config, res)) {
         logger.debug('Mapped object, number: ' + rowNumber + ' is compliant with target Data Model');
         report.info('Mapped object, number: ' + rowNumber + ' is compliant with target Data Model');
         config.validCount++;
@@ -414,23 +417,24 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
 /* This function takes in input the source value to be mapped with a destination object, coming from the Data Model Schema
 *  and checks if constraints present in the destination Model object are met by the source value
 **/
-const checkPairWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNumber) => {
-    
+const checkPairWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNumber, config, res) => {
+
     //if (config.noSchema)
     //        return true
-    var result = validator.validateSourceValue(mappedObject, modelSchema, true, rowNumber);
-    logger.debug("Validator result : ", result)
+    var result = validator.validateSourceValue(mappedObject, modelSchema, true, rowNumber, config, res);
+    logger.debug("Object number : ", rowNumber)
+    logger.trace("Validator result : ", result)
     return result;
 
 };
 
 /* This function takes in input the final whole mapped object and validate it against the destination Data Model Schema
  **/
-const checkResultWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNumber) => {
+const checkResultWithDestModelSchema = (mappedObject, destKey, modelSchema, rowNumber, config, res) => {
 
     //if (config.noSchema)
     //    return true
-    return validator.validateSourceValue(mappedObject, modelSchema, false, rowNumber);
+    return validator.validateSourceValue(mappedObject, modelSchema, false, rowNumber, config, res);
 
 };
 

@@ -7,6 +7,10 @@ const proj4 = require('proj4');
 const Terraformer = require('terraformer');
 const TerraformerProj4js = require('terraformer-proj4js');
 const axios = require('axios');
+const maptilerClient = require("@maptiler/client");
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+maptilerClient.config.fetch = fetch;
+const batchSize = 50
 
 process.dataModelMapper.sleep = (ms, message) => {
     logger.info(message || "waiting")
@@ -56,36 +60,43 @@ function featureMapper(properties) {
 module.exports = {
 
     async transformCoordinates(sourceEpsgCode, targetEpsgCode, data, key) {
-        logger.debug("----------------------------------------------------------------------------")
-        logger.debug(data)
-        if (Array.isArray(data[0])) {
+        maptilerClient.config.apiKey = key || "8JYNjx8UQfefRRQUEjwZ";
+
+        //logger.debug("----------------------------------------------------------------------------")
+        //logger.debug(data)
+        if (Array.isArray(data[0]) && Array.isArray(data[0][0])) {
             for (let i in data)
                 data[i] = await this.transformCoordinates(sourceEpsgCode, targetEpsgCode, data[i], key)
             return data
         }
         else {
-            let result = (await axios.get('https://api.maptiler.com/coordinates/transform/' + data[0] + ',' + data[1] + '.json', {
-                params: {
-                    key: key || 'g0y01TmlRNajMPkic9lG',
-                    s_srs: sourceEpsgCode,
-                    t_srs: targetEpsgCode
-                },
-                headers: {
-                    'accept': '*/*',
-                    'accept-language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
-                    'Referer': 'https://epsg.io/',
-                    'Referrer-Policy': 'strict-origin-when-cross-origin',
-                    'sec-fetch-mode': 'cors',
-                    'sec-fetch-site': 'cross-site'
-                }
-            })).data
-            logger.debug(data)
-            data = [
+            let result = []
+            //for (let i = 0; i < data.length; i += batchSize) {
+            for (let coords of data) {
+                //const batch = data.slice(i, i + batchSize);
+                //let coordinates = await maptilerClient.coordinates.transform(batch, { targetCrs: 4326, sourceCrs: 32633 })
+                //logger.debug(data)
+                //logger.debug("EPSG:" + sourceEpsgCode.toString(), "EPSG:" + targetEpsgCode.toString(), [coords[0], coords[1]])
+                let coordinates = proj4("EPSG:" + sourceEpsgCode.toString(), "EPSG:" + targetEpsgCode.toString(), [coords[0], coords[1]])
+                //logger.debug(coordinates)
+                result.push(coordinates);
+                //logger.debug(result)
+                //result.push(...(coordinates.results));
+            }
+            //let result = await maptilerClient.coordinates.transform(data, { targetCrs: 4326, sourceCrs: 32633 })
+            //logger.debug(result)
+
+            /*data = result.map(r => [
+                r.x,
+                r.y
+            ])*/
+
+            /*[
                 result.results[0].x,
                 result.results[0].y
-            ]
-            logger.debug(data)
-            return data
+            ]*/
+            //logger.debug(data)
+            return result //data
         }
     },
 
@@ -147,5 +158,19 @@ module.exports = {
             return obj.value
 
     },
-    convertGeoJSON: convertGeoJSON
+    convertGeoJSON: convertGeoJSON,
+
+    lock(key) {
+        process.dataModelMapper[key] = "locked"
+    },
+
+    createRandId() {
+        return Date.now().toString()
+            .concat(
+                Math.floor(
+                    Math.random() * 1000
+                )
+            ).toString(
+        )
+    }
 }

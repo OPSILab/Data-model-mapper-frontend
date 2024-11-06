@@ -27,12 +27,12 @@ const utils = require('../utils/utils');
 
 let service = require ("../server/api/services/service")
 
-module.exports = async (sourceDataIn, mapPathIn, dataModelIn) => {
+module.exports = async (sourceDataIn, mapPathIn, dataModelIn, schema, NGSI_entity, minioObj, config, res) => {
     logger.info("Initializing Mapper in " + (config.mode == "commandLine" ? "Command Line " : "Server ") + "Mode");
 
     if (Array.isArray(sourceDataIn)) sourceDataIn = sourceDataIn[0]
 
-    if (commandLine.init(sourceDataIn, mapPathIn, dataModelIn)) {
+    if (commandLine.init(sourceDataIn, mapPathIn, dataModelIn, config)) {
 
         logger.debug("commandLine.init()");
 
@@ -42,7 +42,7 @@ module.exports = async (sourceDataIn, mapPathIn, dataModelIn) => {
         var dataModelPath = utils.getDataModelPath(dataModelIn) || commandLine.getParam('targetDataModel');
 
         try {
-            await process.processSource(sourceData, "", mapPath, dataModelPath);
+            await process.processSource(sourceData, "", mapPath, dataModelPath, schema, NGSI_entity, minioObj, config, res)
         } catch (error) {
             logger.error(error)
             logger.error("error at " + error?.stack)

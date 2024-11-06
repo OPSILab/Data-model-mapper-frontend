@@ -122,10 +122,14 @@ module.exports = {
                                 }
                             }
                             let { pilot, username, email } = data
-                            config.orionWriter.fiwareService = req.body.bucketName = pilot.toLowerCase() //+ "/" + email + "/" + config.minioWriter.defaultInputFolderName//{pilot, email}
+                            if (!req.body.config)
+                                req.body.config = {
+                                    orionWriter: {}
+                                }
+                            req.body.config.orionWriter.fiwareService = req.body.bucketName = pilot.toLowerCase() //+ "/" + email + "/" + config.minioWriter.defaultInputFolderName//{pilot, email}
                             req.body.prefix = (email || username) + "/" + config.minioWriter.defaultInputFolderName
-                            config.group = email || username
-                            config.orionWriter.fiwareServicePath = "/" + pilot.toLowerCase()
+                            req.body.config.group = email || username
+                            req.body.config.orionWriter.fiwareServicePath = "/" + pilot.toLowerCase()
                         }
                         else
                             req.body.prefix = decodedToken.email

@@ -28,13 +28,13 @@ const config = require('./../../config');
 
 
 
-async function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
+async function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess, NGSI_entity, minioObj, config, res) {
 
     // The source Data is the file content itself
     if (sourceData && !sourceData.ext) {
 
         try {
-            await fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
+            await fileToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess, NGSI_entity, minioObj, config, res);
         }
         catch (err) {
             logger.error('There was an error while getting buffer from source data: ');
@@ -45,17 +45,17 @@ async function sourceDataToRowStream(sourceData, map, schema, rowHandler, mapped
 
     // The source Data is the file URL
     else if (utils.httpPattern.test(sourceData.path))
-        await urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess);
+        await urlToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess, NGSI_entity, minioObj, config, res);
 
     // The Source Data is the file path
     else if (sourceData.ext)
-        await fileToRowStream(fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess);
+        await fileToRowStream(fs.createReadStream(sourceData.absolute), map, schema, rowHandler, mappedHandler, finalizeProcess, NGSI_entity, minioObj, config, res);
     else
         logger.error("No valid Source Data was provided");
 
 }
 
-async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizeProcess) {
+async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, finalizeProcess, NGSI_entity, minioObj, config, res) {
 
     var rowNumber = Number(config.rowNumber);
     var rowStart = Number(config.rowStart);
@@ -75,7 +75,7 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
             // outputs an object containing a set of key/value pair representing a line found in the csv file.
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {
 
-                rowHandler(rowNumber, row, map, schema, mappedHandler);
+                rowHandler(rowNumber, row, map, schema, mappedHandler, NGSI_entity, minioObj, config, res);
 
             }
         })
@@ -86,7 +86,7 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
         .on('end', async function () {
             try {
 
-                await finalizeProcess();
+                await             finalizeProcess(minioObj, config, res);
                 logger.debug("urlToRowStream: request(url).pipe(geo.parse()).on(end)");
                 //await utils.printFinalReportAndSendResponse(log);
                 //await utils.printFinalReportAndSendResponse(report);
@@ -100,7 +100,7 @@ async function urlToRowStream(url, map, schema, rowHandler, mappedHandler, final
 }
 
 
-async function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, finalizeProcess) {
+async function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, finalizeProcess, NGSI_entity, minioObj, config, res) {
 
     var rowNumber = Number(config.rowNumber);
     var rowStart = Number(config.rowStart);
@@ -120,7 +120,7 @@ async function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler
             // outputs an object containing a set of key/value pair representing a line found in the csv file.
             if (rowNumber >= rowStart && rowNumber <= rowEnd) {
 
-                rowHandler(rowNumber, row, map, schema, mappedHandler);
+                rowHandler(rowNumber, row, map, schema, mappedHandler, NGSI_entity, minioObj, config, res);
 
             }
 
@@ -130,7 +130,8 @@ async function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler
         })
         .on('end', async function () {
            
-            await finalizeProcess();
+            await             finalizeProcess(minioObj, config, res);
+
             logger.debug("fileToRowStream: inputData.pipe(geo.parse()).on(end)");
             //await utils.printFinalReportAndSendResponse(log);
             //await utils.printFinalReportAndSendResponse(report);

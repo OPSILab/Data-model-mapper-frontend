@@ -1,5 +1,5 @@
 var Minio = require('minio')
-let minioConfig = require('../../config').minioWriter
+let minioConfig = JSON.parse(JSON.stringify(require('../../config').minioWriter))
 const { sleep } = require('../utils/common')
 const Source = require("../server/api/models/source.js")
 const log = require('../utils/logger')//.app(module);
