@@ -39,8 +39,6 @@ var options = {
 
 function sourceDataToRowStream(sourceData, map, schema, rowHandler, mappedHandler, finalizeProcess, NGSI_entity, minioObj, config, res) {
 
-    logger.debug(config.rowStart, " ", config.rowEnd)
-
     if (config.delimiter) options.delimiter = config.delimiter;
 
     // The Source Data is the File Stream
@@ -128,7 +126,6 @@ function fileToRowStream(inputData, map, schema, rowHandler, mappedHandler, fina
     var rowNumber = Number(config.rowNumber);
     var rowStart = Number(config.rowStart);
     var rowEnd = Number(config.rowEnd);
-    logger.debug(rowStart, "------------ftrs------------", rowEnd)
 
     inputData.pipe(csvStream)
         .on('error', function (err) {
