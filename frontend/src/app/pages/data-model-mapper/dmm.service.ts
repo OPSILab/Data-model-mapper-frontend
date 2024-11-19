@@ -310,7 +310,7 @@ export class DMMService {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  async transform(sourceDataType: string, minioObjName, bucket, etag, source, mapData, dataModel, config): Promise<any[]> {
+  async transform(sourceDataType: string, minioObjName, bucket, etag, source, mapData, dataModel, config, streamMode): Promise<any[]> {
     if (dataModel && dataModel[0] && !dataModel.properties && !dataModel.allOf)
       //TODO dataModel must not be an array. Once you are sure of that, remove this
       dataModel = dataModel[0]; //TODO dataModel must not be an array. Once you are sure of that, remove this
@@ -319,7 +319,7 @@ export class DMMService {
 
     return this.http
       .post<any[]>(
-        this.config.data_model_mapper.default_mapper_url,
+        this.config.data_model_mapper.default_mapper_url + (streamMode ? "?streamMode=true" : ""),
         this.formDataBuilder({
           sourceDataType,
           sourceDataMinio: {

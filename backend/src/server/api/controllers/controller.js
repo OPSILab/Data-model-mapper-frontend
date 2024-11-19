@@ -8,6 +8,7 @@ const { Logger } = log
 const logger = new Logger(__filename)
 const fs = require("fs");
 const EventEmitter = require('events');
+const globalConfig = require("../../../../config.js")
 
 module.exports = {
 
@@ -89,8 +90,9 @@ module.exports = {
                 //}))
                 logger.debug(output)
                 //if (jsonOutput || output)
-                    res.write(`data: ${JSON.stringify({message: (jsonOutput.outputFile || output || "Strange, no data")})}\n\n`)
-                    //res.write(JSON.stringify(jsonOutput.outputFile) || output)
+                res.write(`data: ${JSON.stringify({ message: (jsonOutput.outputFile || output || "Strange, no data") })}\n\n`)
+                res.write(`data: ${JSON.stringify({ close: "now closing" })}\n\n`)
+                //res.write(JSON.stringify(jsonOutput.outputFile) || output)
                 //else
                 //    res.write(JSON.stringify({ data: "Strange, no data" }))
                 res.end()
@@ -102,7 +104,7 @@ module.exports = {
                 let config = this[req.query.id]?.res.dmm.config
                 if (!config)
                     res.write(JSON.stringify({ data: "No data" }))
-                else{
+                else {
                     let message = {
                         MAPPING_REPORT: {
                             Processed_objects: config.rowNumber,
@@ -116,7 +118,7 @@ module.exports = {
                             details: config.orionWriter.details
                         } : "Orion writer not enabled"
                     }
-                    res.write(`data: ${JSON.stringify({ message})}\n\n`)
+                    res.write(`data: ${JSON.stringify({ message })}\n\n`)
                 }
             }
         }
@@ -142,7 +144,8 @@ module.exports = {
             ] = { res }//TODO .push instead?
             res.dmm = { outputID: id }
             res.dmm.deleteSession = deleteSession
-            res.send({ id })
+            if (req.query.streamMode)
+                res.send({ id })
             //res.send(id)
             await service.mapData(sourceData, map, dataModel, req.body.config, res)
             if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")
@@ -160,9 +163,14 @@ module.exports = {
         }
         service.error = null
         emitter.on('message', (message) => {
-            if (message == "delete")
+            if (message == "delete") {
                 //this[id] = null
+                if (!req.query.streamMode) {
+                    let outputFile = globalConfig.mappingReport ? res.dmm.outputFile : res.dmm.outputFile.slice(0, res.dmm.outputFile.length - 1)
+                    res.send(outputFile);
+                }
                 delete this[id]
+            }
             logger.info(message, " ", id)
         });
 

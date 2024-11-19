@@ -796,7 +796,8 @@ export class DMMComponent implements OnInit, OnChanges {
         source,
         m,
         this.schemaJson,
-        this.transformSettings
+        this.transformSettings,
+        false
       );
     } catch (error) {
       if (!output) output = !error?.status ? { error: 'Service unreachable' } : error.error;
@@ -828,9 +829,9 @@ export class DMMComponent implements OnInit, OnChanges {
   async transform() {
     this.updateConfigSettings(false);
     let output;
-    //this.loading = true;
-    //this.loaded = false;
-    //this.setLoadingMessage(this.outputEditor, this.outputEditorContainer, this.outputEditorOptions);
+    this.loading = true;
+    this.loaded = false;
+    this.setLoadingMessage(this.outputEditor, this.outputEditorContainer, this.outputEditorOptions);
     try {
       const m = JSON.parse(editor.mapperEditor.getText()) || this.map;
       m['targetDataModel'] = 'DataModelTemp';
@@ -848,7 +849,8 @@ export class DMMComponent implements OnInit, OnChanges {
         source,
         m,
         this.schemaJson,
-        this.transformSettings
+        this.transformSettings,
+        true
       );
       let token;
       try {
@@ -860,19 +862,35 @@ export class DMMComponent implements OnInit, OnChanges {
       const eventSource = new EventSource(this.config.data_model_mapper.default_mapper_base_url + "/report?authorization=" + token +
         "&id=" + output.id
       );
+
+      let close
       eventSource.onmessage = (event) => {
-        console.log('Nuovo messaggio dal server:', event.data);
-        let report = JSON.parse(event.data).message
-        if (!this.outputEditor) this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, report);
-        else this.outputEditor.update(report);
+        this.loading = false;
+        this.loaded = true;
+        console.log(event)
+        if (JSON.parse(event.data).close) {
+          eventSource.close();
+          close = true
+          this.showToast('primary', 'Transformed', '', false);
+        }
+        else {
+          console.log(event.data);
+          let report = JSON.parse(event.data).message
+          if (!this.outputEditor)
+            this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, report);
+          else
+            this.outputEditor.update(report);
+        }
       };
 
       eventSource.onerror = (error) => {
-        console.error('Errore con SSE:', error);
+        console.error(error);
         console.error("NOW CLOSING")
-        eventSource.close();  // Chiude la connessione in caso di errore
-        //this.loading = false; //, 3000);
-        //this.loaded = true;
+        eventSource.close();
+        this.loading = false;
+        this.loaded = true;
+        if (!close)
+          this.showToast('primary', 'Error during transform', '', false);
       };
 
     } catch (error) {
@@ -888,7 +906,8 @@ export class DMMComponent implements OnInit, OnChanges {
               { url: this.source.sourceDataURL },
               JSON.parse(editor.mapperEditor.getText()),
               this.schemaJson,
-              this.transformSettings
+              this.transformSettings,
+              true
             );
           } catch (error) {
             console.error(error.message);
