@@ -1,3 +1,4 @@
+//TODO add stream in mapData
 const service = require("../services/service.js")
 const utils = require("../../../utils/utils.js")
 const common = require("../../../utils/common.js")
@@ -5,8 +6,122 @@ const { waiting } = utils
 const log = require('../../../utils/logger')//.app(module);
 const { Logger } = log
 const logger = new Logger(__filename)
+const fs = require("fs");
+const EventEmitter = require('events');
 
 module.exports = {
+
+    getSessions: (req, res) => {
+        let sessions = []
+        for (let key in this)
+            if (this[key]?.res)
+                sessions.push(key)
+        res.send(sessions)
+    },
+
+    getSession: async (req, res) => {
+        let session = this[req.query.id]?.res.dmm
+        if (!session) {
+            //    res.send({ data: "No data" })
+            //else
+            let output, jsonOutput //JSON.parse(await new Promise(function (resolve, reject) {
+            try {
+                //resolve(
+                output = fs.readFileSync("./output/output" + req.query.id + ".json", 'utf-8')
+                jsonOutput = JSON.parse(output)//);
+            }
+            catch (error) {
+                logger.error(error)
+                //    reject(error)
+            }
+            //}))
+            console.log(output)
+            if (jsonOutput || output)
+                res.send(jsonOutput || output)
+            else
+                res.send({ data: "No data" })
+        }
+        else
+            res.send(session)
+    },
+
+    getReportSync: async (req, res) => {
+        let config = this[req.query.id]?.res.dmm.config
+        if (!config)
+            res.send({ data: "No data" })
+        else
+            res.send({
+                MAPPING_REPORT: {
+                    Processed_objects: config.rowNumber,
+                    Mapped_and_Validated_Objects: config.validCount + '-' + config.rowNumber,
+                    Mapped_and_NOT_Validated_Objects: config.unvalidCount + '-' + config.rowNumber,
+                },
+                ORION_REPORT: utils.isOrionWriterActive() ? {
+                    "Object written to Orion Context Broker": config.orionWrittenCount.toString() + '/' + config.validCount.toString(),
+                    "Object NOT written to Orion Context Broker": config.orionUnWrittenCount.toString() + '/' + config.validCount.toString(),
+                    "Object SKIPPED": config.orionSkippedCount.toString() + '/' + config.validCount.toString(),
+                    details: config.orionWriter.details
+                } : "Orion writer not enabled"
+            }) //[this[req.query.id].res.dmm.outputFile.length -1]})
+        //res.send({id:this[req.query.id].res.dmm.outputFile}) //[this[req.query.id].res.dmm.outputFile.length -1]})
+    },
+
+    getReport: async (req, res) => {
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+        let end = false
+        while (!end) {
+            await common.sleep(1000, "Report")
+            //const intervalId = setInterval(() => {
+
+            if (!this[req.query.id]) {
+                let output, jsonOutput //JSON.parse(await new Promise(function (resolve, reject) {
+                try {
+                    //resolve(
+                    output = fs.readFileSync("./output/output" + req.query.id + ".json", 'utf-8')
+                    jsonOutput = JSON.parse(output)//);
+                }
+                catch (error) {
+                    logger.error(error)
+                    //    reject(error)
+                }
+                //}))
+                logger.debug(output)
+                //if (jsonOutput || output)
+                    res.write(`data: ${JSON.stringify({message: (jsonOutput.outputFile || output || "Strange, no data")})}\n\n`)
+                    //res.write(JSON.stringify(jsonOutput.outputFile) || output)
+                //else
+                //    res.write(JSON.stringify({ data: "Strange, no data" }))
+                res.end()
+                end = true
+                logger.info("res end")
+                //clearInterval(intervalId);
+            }
+            else {
+                let config = this[req.query.id]?.res.dmm.config
+                if (!config)
+                    res.write(JSON.stringify({ data: "No data" }))
+                else{
+                    let message = {
+                        MAPPING_REPORT: {
+                            Processed_objects: config.rowNumber,
+                            Mapped_and_Validated_Objects: config.validCount + '-' + config.rowNumber,
+                            Mapped_and_NOT_Validated_Objects: config.unvalidCount + '-' + config.rowNumber,
+                        },
+                        ORION_REPORT: utils.isOrionWriterActive() ? {
+                            "Object written to Orion Context Broker": config.orionWrittenCount.toString() + '/' + config.validCount.toString(),
+                            "Object NOT written to Orion Context Broker": config.orionUnWrittenCount.toString() + '/' + config.validCount.toString(),
+                            "Object SKIPPED": config.orionSkippedCount.toString() + '/' + config.validCount.toString(),
+                            details: config.orionWriter.details
+                        } : "Orion writer not enabled"
+                    }
+                    res.write(`data: ${JSON.stringify({ message})}\n\n`)
+                }
+            }
+        }
+        //}, 1000); // Eseguito ogni 1 secondo
+    },
 
     mapData: async (req, res) => {
 
@@ -14,12 +129,21 @@ module.exports = {
         //process.res = res;
         //process.dataModelMapper.map = "busy"
         let { sourceData, map, dataModel } = utils.bodyMapper(req.body)
-
+        const emitter = new EventEmitter();
+        let id
         try {
-            this[
-                req.body.config.group +
+            function deleteSession() {
+                emitter.emit('message', "delete");
+            }
+            id = req.body.config.group +
                 (req.body.reqId || common.createRandId())
-            ] = { req, res }//TODO .push instead?
+            this[
+                id
+            ] = { res }//TODO .push instead?
+            res.dmm = { outputID: id }
+            res.dmm.deleteSession = deleteSession
+            res.send({ id })
+            //res.send(id)
             await service.mapData(sourceData, map, dataModel, req.body.config, res)
             if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")
         }
@@ -35,6 +159,13 @@ module.exports = {
                 res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         service.error = null
+        emitter.on('message', (message) => {
+            if (message == "delete")
+                //this[id] = null
+                delete this[id]
+            logger.info(message, " ", id)
+        });
+
         logger.info("controller.mapData end");
     },
 

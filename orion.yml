@@ -37,9 +37,9 @@ services:
         limits:
           memory: 7G
 
-    volumes:
+    #volumes:
 
-      - ./orion-ld.conf:/etc/sysconfig/contextBroker
+    #  - ./orion-ld.conf:/etc/sysconfig/contextBroker/orion-ld.conf
  
     labels:
       - traefik.http.routers.context-broker.rule=Host(`orion.localhost`) 

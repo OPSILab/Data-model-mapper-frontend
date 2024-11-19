@@ -43,7 +43,7 @@ module.exports = {
         if (authConfig.disableAuth)
             next()
         else {
-            let authHeader = req.headers.authorization;
+            let authHeader = req.headers.authorization || req.query.authorization;
 
             if (authHeader) {
                 if (authHeader && !authHeader.startsWith("Bearer"))
@@ -147,8 +147,12 @@ module.exports = {
                         else
                             send(res, 403, "Available bucketname is " + req.body.bucketName + " and you tried to access " + req.params.bucketName + ".\nAvailable prefix is " + req.body.prefix + " and you tried to access this object " + req.params.objectName)
                     }
-                    else
+                    else{
+                        logger.debug(decodedToken.azp)
+                        logger.debug(authConfig.clientId)
+                        logger.debug((decodedToken.exp * 1000) - Date.now())
                         send(res, 403)
+                    }
                 }
             }
             else
