@@ -290,7 +290,7 @@ export class DMMComponent implements OnInit, OnChanges {
     },
   };
 
-  async downloadGeoJson(){
+  async downloadGeoJson() {
     try {
       this.saveFile(JSON.stringify(await this.dmmService.downloadGeoJson(JSON.parse(this.outputEditor.getText()))), 'json');
     }
@@ -796,7 +796,8 @@ export class DMMComponent implements OnInit, OnChanges {
         source,
         m,
         this.schemaJson,
-        this.transformSettings
+        this.transformSettings,
+        false
       );
     } catch (error) {
       if (!output) output = !error?.status ? { error: 'Service unreachable' } : error.error;
@@ -848,8 +849,50 @@ export class DMMComponent implements OnInit, OnChanges {
         source,
         m,
         this.schemaJson,
-        this.transformSettings
+        this.transformSettings,
+        true
       );
+      let token;
+      try {
+        token = await this.dmmService.getToken();
+      } catch (error) {
+        console.error(error);
+        token = error.error.text;
+      }
+      const eventSource = new EventSource(this.config.data_model_mapper.default_mapper_base_url + "/report?authorization=" + token +
+        "&id=" + output.id
+      );
+
+      let close
+      eventSource.onmessage = (event) => {
+        this.loading = false;
+        this.loaded = true;
+        console.log(event)
+        if (JSON.parse(event.data).close) {
+          eventSource.close();
+          close = true
+          this.showToast('primary', 'Transformed', '', false);
+        }
+        else {
+          console.log(event.data);
+          let report = JSON.parse(event.data).message
+          if (!this.outputEditor)
+            this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, report);
+          else
+            this.outputEditor.update(report);
+        }
+      };
+
+      eventSource.onerror = (error) => {
+        console.error(error);
+        console.error("NOW CLOSING")
+        eventSource.close();
+        this.loading = false;
+        this.loaded = true;
+        if (!close)
+          this.showToast('primary', 'Error during transform', '', false);
+      };
+
     } catch (error) {
       if (!output)
         if (!error?.status && error?.name == 'HttpErrorResponse') output = { error: 'Service unreachable' };
@@ -863,7 +906,8 @@ export class DMMComponent implements OnInit, OnChanges {
               { url: this.source.sourceDataURL },
               JSON.parse(editor.mapperEditor.getText()),
               this.schemaJson,
-              this.transformSettings
+              this.transformSettings,
+              true
             );
           } catch (error) {
             console.error(error.message);
@@ -872,8 +916,8 @@ export class DMMComponent implements OnInit, OnChanges {
       this.handleError(error, false, false);
     }
     //setTimeout(() =>
-    this.loading = false; //, 3000);
-    this.loaded = true;
+    //this.loading = false; //, 3000);
+    //this.loaded = true;
     try {
       if (Array.isArray(output))
         output.filter((e) => e != null && e != undefined) || { error: 'some errors occurred' };
@@ -881,9 +925,9 @@ export class DMMComponent implements OnInit, OnChanges {
       console.error(error);
       //output = { error: "some errors occurred" }
     }
-    if (!this.outputEditor) this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
-    else this.outputEditor.update(output);
-    this.showToast('primary', 'Transformed', '', false);
+    //if (!this.outputEditor) this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, output);
+    //else this.outputEditor.update(output);
+    //this.showToast('primary', 'Transformed', '', false);
   }
 
   private showToast(type: NbComponentStatus, title: string, body: string, preventDuplicates) {

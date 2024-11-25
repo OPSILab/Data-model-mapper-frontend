@@ -76,8 +76,8 @@ export class DMMService {
     return this.http
       .get<any>(
         this.config.data_model_mapper.default_mapper_base_url +
-          '/source?' +
-          (id ? 'id=' + urlencode(id) : name ? 'name=' + urlencode(name) : mapRef ? 'mapRef=' + urlencode(mapRef) : '')
+        '/source?' +
+        (id ? 'id=' + urlencode(id) : name ? 'name=' + urlencode(name) : mapRef ? 'mapRef=' + urlencode(mapRef) : '')
       )
       .toPromise();
   }
@@ -90,8 +90,8 @@ export class DMMService {
     return this.http
       .get<any>(
         this.config.data_model_mapper.default_mapper_base_url +
-          '/dataModel?' +
-          (id ? 'id=' + urlencode(id) : name ? 'name=' + urlencode(name) : mapRef ? 'mapRef=' + urlencode(mapRef) : '')
+        '/dataModel?' +
+        (id ? 'id=' + urlencode(id) : name ? 'name=' + urlencode(name) : mapRef ? 'mapRef=' + urlencode(mapRef) : '')
       )
       .toPromise();
   }
@@ -120,8 +120,8 @@ export class DMMService {
   getRemoteSource(url, type) {
     return type == 'csv'
       ? this.http
-          .get<any>(url, { responseType: 'text' as 'json' })
-          .toPromise()
+        .get<any>(url, { responseType: 'text' as 'json' })
+        .toPromise()
       : this.http.get<any>(url).toPromise();
   }
 
@@ -306,15 +306,20 @@ export class DMMService {
       .toPromise();
   }
 
-  transform(sourceDataType: string, minioObjName, bucket, etag, source, mapData, dataModel, config): Promise<any[]> {
+  delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async transform(sourceDataType: string, minioObjName, bucket, etag, source, mapData, dataModel, config, streamMode): Promise<any[]> {
     if (dataModel && dataModel[0] && !dataModel.properties && !dataModel.allOf)
       //TODO dataModel must not be an array. Once you are sure of that, remove this
       dataModel = dataModel[0]; //TODO dataModel must not be an array. Once you are sure of that, remove this
     if (dataModel?.$id) dataModel.$id = undefined;
 
+
     return this.http
       .post<any[]>(
-        this.config.data_model_mapper.default_mapper_url,
+        this.config.data_model_mapper.default_mapper_url + (streamMode ? "?streamMode=true" : ""),
         this.formDataBuilder({
           sourceDataType,
           sourceDataMinio: {
@@ -330,5 +335,52 @@ export class DMMService {
         })
       )
       .toPromise();
+
+  }
+
+
+
+  async alternateVersion(sourceDataType: string, minioObjName, bucket, etag, source, mapData, dataModel, config): Promise<any[]>{
+    let res
+    let token
+    try {
+      token = await this.getToken()
+    }
+    catch (error) {
+      console.error(error)
+      token = error.error.text;
+    }
+    fetch(
+      this.config.data_model_mapper.default_mapper_url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}` // Aggiungi il JWT manualmente
+      },
+      body: this.formDataBuilder({
+        sourceDataType,
+        sourceDataMinio: {
+          name: minioObjName,
+          bucket: bucket,
+          etag: etag,
+        }
+      })
+    }
+    ).then(async (response) => {
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder('utf-8');
+
+      let result = '';
+      while (true) {
+        const { done, value } = await reader?.read()!;
+        if (done) break;
+        result += decoder.decode(value);
+        console.log('Chunk ricevuto:', decoder.decode(value));
+      }
+      console.log('Risposta completa:', result);
+      res = result
+    }).catch(err => console.error('Errore:', err));
+    while (!res)
+      await this.delay(10)
+    return res//.toPromise()
   }
 }

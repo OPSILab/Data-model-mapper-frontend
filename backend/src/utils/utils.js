@@ -26,7 +26,7 @@ const extensionPattern = /\.[0-9a-z]+$/i;
 const httpPattern = /http:\/\//g;
 const filenameFromPathPattern = /^(.:)?\\(.+\\)*(.+)\.(.+)$/;
 const minioWriter = require("../writers/minioWriter")
-const { isMinioWriterActive, sleep, createRandId } = require('./common')
+const { isMinioWriterActive, sleep, createRandId, finish } = require('./common')
 const log = require('./logger')
 const { Logger } = log
 const logger = new Logger(__filename)
@@ -372,7 +372,7 @@ const sendOutput = async (config, res) => {
         if (config.deleteEmptySpaceAtBeginning)
             res.dmm.outputFile = await spaceCleaner(res.dmm.outputFile)
         if (config.rowStart)// && hasNull(res?.dmm?.outputFile[0] && hasNumberKeys(res?.dmm?.outputFile[0])))
-            res.dmm.outputFile = res.dmm.outputFile.slice(config.rowStart-1)
+            res.dmm.outputFile = res.dmm.outputFile.slice(config.rowStart - 1)
     }
     catch (error) {
         logger.error(error)
@@ -392,7 +392,9 @@ const sendOutput = async (config, res) => {
     //else 
     if (!config.mappingReport)
         try {
-            await res.send(res.dmm.outputFile.slice(0, res.dmm.outputFile.length - 1));
+            //await res.write(res.dmm.outputFile.slice(0, res.dmm.outputFile.length - 1));
+            //await res.end()
+            //await res.send(res.dmm.outputFile.slice(0, res.dmm.outputFile.length - 1));
             fs.unlinkSync(res.dmm.schemaTempName, (err) => {
                 if (err) {
                     console.error(
@@ -420,7 +422,9 @@ const sendOutput = async (config, res) => {
         }
     else
         try {
-            await res.send(res.dmm.outputFile);
+            //await res.write(res.dmm.outputFile);
+            //await res.end()
+            //await res.send(res.dmm.outputFile);
             fs.unlinkSync(res.dmm.schemaTempName, (err) => {
                 if (err) {
                     console.error(
@@ -446,7 +450,20 @@ const sendOutput = async (config, res) => {
             logger.error(error)
             logger.error("error at " + error?.stack)
         }
-    res.dmm.outputFile = [];
+    let outputDataTempWriting = {}
+    let outputId = res.dmm.outputID //common.createRandId() + source.type
+    fs.writeFile('./output/output' + outputId + ".json", JSON.stringify(res.dmm), function (err) {
+        //fs.writeFile(config.sourceDataPath + sourceTempId, source.type == "csv" ? source.data : JSON.stringify(source.data), function (err) {
+        if (err) throw err;
+        logger.debug('File output is created successfully.');
+        outputDataTempWriting.value = 'File output is created successfully.'
+    })
+    await finish(outputDataTempWriting)
+    //const deleteSession = 
+    res.dmm.deleteSession()
+    //res = null
+    //res.dmm = {};
+    //res.dmm.finished = true
     process.dataModelMapper.map = undefined
     process.dataModelMapper.resetConfig = undefined
     logger.debug("Processing time : ", Date.now() - process.env.start)

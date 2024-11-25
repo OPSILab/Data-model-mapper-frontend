@@ -436,7 +436,11 @@ module.exports = {
         if (common.isMinioWriterActive())
             minioObj = { name: source.minioObjName, bucket: source.minioBucketName }
 
+        if (!res.dmm)
+            res.dmm = {}
+
         res.dmm = {
+            ...res.dmm,
             sourceTempName: config.sourceDataPath + 'sourceFileTemp' + sourceTempId + "." + source.type,
             schemaTempName: "dataModels/DataModelTemp" + schemaTempId + ".json"
         }
@@ -445,6 +449,10 @@ module.exports = {
             logger.debug(map[0].targetDataModel)
             map[0].targetDataModel = "DataModelTemp" + schemaTempId
         }
+
+        res.dmm.source = source
+        res.dmm.mapData = map[0]
+        res.dmm.schema = schema
 
         try {
             await cli(
