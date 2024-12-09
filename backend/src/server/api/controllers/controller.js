@@ -667,9 +667,14 @@ module.exports = {
     },
 
     minioInsertObject: async (req, res) => {
+        logger.info("Insert object in minio")
         //process.res = res;
         try {
-            res.send(await service.minioInsertObject(req.params.bucketName, req.params.objectName, req.body))
+            await service.minioInsertObject(req.body.pilot.toLowerCase(), req.query.email + "/PRIVATE GENERIC Data/" + req.query.fileName, req.body.file)
+            res.send({id: req.query.email, fileName: req.query.fileName})
+            //res.send(await service.minioInsertObject(req.body.pilot.toLowerCase(), req.query.email + "/PRIVATE GENERIC Data/" + req.query.fileName, req.body.file))
+            //res.send(await service.minioInsertObject(req.body.pilot, req.params.objectName, req.body))
+            //res.send(await service.minioInsertObject(req.params.bucketName, req.params.objectName, req.body))
         }
         catch (error) {
             let errorStatusCode

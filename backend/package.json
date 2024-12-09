@@ -51,6 +51,7 @@
   },
   "scripts": {
     "start": "node ./mapper.js",
+    "node16": "C:\\Users\\gabri\\AppData\\Roaming\\nvm\\v16.20.1\\node.exe ./mapper.js",
     "start:ignore": "nodemon --ignore 'dataModels/*.*' --ignore 'input/*.*' ./mapper.js",
     "start:dev": "nodemon ./mapper.js",
     "test": "node ./node_modules/mocha/bin/mocha --timeout 0"

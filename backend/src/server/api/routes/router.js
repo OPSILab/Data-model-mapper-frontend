@@ -38,6 +38,8 @@ router.put(encodeURI("/map"), upload.none(), auth, controller.modifyMap)
 router.put(encodeURI("/source"), upload.none(), auth, controller.modifySource)
 router.put(encodeURI("/dataModel"), upload.none(), auth, controller.modifyDataModel) 
 
+router.post(encodeURI("/minio/insertObject"),  upload.single('file'), auth, controller.minioInsertObject)
+
 /* temporary disabled endpoints
 router.put(encodeURI("/source/assign"), upload.none(), auth, controller.assignSource)
 router.put(encodeURI("/dataModel/assign"), upload.none(), auth, controller.assignSchema)
