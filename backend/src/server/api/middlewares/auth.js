@@ -39,6 +39,12 @@ module.exports = {
 
         if (req.body.file)
             req.body = JSON.parse(req.body.file)
+        else
+            if (req.file)
+                if (req.body)
+                    req.body.file = req.file.buffer.toString('utf8');
+                else
+                    req.body = { file: req.file.buffer.toString('utf8') }
 
         if (authConfig.disableAuth)
             next()
@@ -100,6 +106,7 @@ module.exports = {
 
                     const decodedToken = verifiedToken || parseJwt(jwtToken)
 
+                    logger.debug("Token valid ", (decodedToken.azp == authConfig.clientId) && ((decodedToken.exp * 1000) > Date.now()))
                     if ((decodedToken.azp == authConfig.clientId) && ((decodedToken.exp * 1000) > Date.now())) {
 
 
@@ -130,9 +137,17 @@ module.exports = {
                             req.body.prefix = (email || username) + "/" + config.minioWriter.defaultInputFolderName
                             req.body.config.group = email || username
                             req.body.config.orionWriter.fiwareServicePath = "/" + pilot.toLowerCase()
+                            req.body.pilot = pilot
+                            req.body.email = email
                         }
-                        else
-                            req.body.prefix = decodedToken.email
+                        else {//TODO test this
+                            req.body.config.orionWriter.fiwareService = req.body.bucketName = decodedToken.pilot.toLowerCase() //+ "/" + email + "/" + config.minioWriter.defaultInputFolderName//{pilot, email}
+                            req.body.prefix = (decodedToken.email || decodedToken.username) + "/" + config.minioWriter.defaultInputFolderName
+                            req.body.config.group = decodedToken.email || decodedToken.username
+                            req.body.config.orionWriter.fiwareServicePath = "/" + decodedToken.pilot.toLowerCase()
+                            req.body.pilot = decodedToken.pilot
+                            req.body.email = decodedToken.email
+                        }
                         logger.debug(req.body.prefix)
 
 
@@ -142,12 +157,14 @@ module.exports = {
                         //if (req.params.bucketName && req.params.objectName)
                         //    logger.debug(req.body.bucketName , req.params.bucketName , req.body.prefix , req.params.objectName.split("/")[0] + "/" + req.params.objectName.split("/")[1])
 
-                        if ((!req.params.bucketName || !req.params.objectName) || (req.body.bucketName == req.params.bucketName && req.body.prefix == req.params.objectName.split("/")[0] + "/" + req.params.objectName.split("/")[1]))
+                        if ((!req.params.bucketName || !req.params.objectName) || (req.body.bucketName == req.params.bucketName))// && req.body.prefix == req.params.objectName.split("/")[0] + "/" + req.params.objectName.split("/")[1]))
                             next()
-                        else
-                            send(res, 403, "Available bucketname is " + req.body.bucketName + " and you tried to access " + req.params.bucketName + ".\nAvailable prefix is " + req.body.prefix + " and you tried to access this object " + req.params.objectName)
+                        else {
+                            logger.debug("Available bucketname is " + req.body.bucketName + " and you tried to access " + req.params.bucketName)// + ".\nAvailable prefix is " + req.body.prefix + " and you tried to access this object " + req.params.objectName)
+                            send(res, 403, "Available bucketname is " + req.body.bucketName + " and you tried to access " + req.params.bucketName)// + ".\nAvailable prefix is " + req.body.prefix + " and you tried to access this object " + req.params.objectName)
+                        }
                     }
-                    else{
+                    else {
                         logger.debug(decodedToken.azp)
                         logger.debug(authConfig.clientId)
                         logger.debug((decodedToken.exp * 1000) - Date.now())

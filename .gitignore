@@ -22,7 +22,7 @@ backend/result.json
 backend/dataModels/DataModelTemp.json
 backend/testing/
 backend/input/
-backend/output/
+#backend/output/
 
 # History
 backend/.history/

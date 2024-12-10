@@ -6,7 +6,7 @@ import { MapperRecordEntry } from '../../model/mapperRecord/mapperRecordEntry';
 const urlencode = require('urlencode');
 const multiPartOptions = {
   headers: new HttpHeaders({
-    'Content-Type': 'multipart/form-data', // 👈
+    'Content-Type': 'multipart/form-data',
   }),
 };
 
