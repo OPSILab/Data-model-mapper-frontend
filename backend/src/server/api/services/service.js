@@ -82,7 +82,13 @@ module.exports = {
         return 'subscribed'
     },
 
-    async minioInsertObject(bucketName, objectName, object) {
+    async minioInsertObject(bucketName, objectName, object, scope) {
+        if (scope == "shared")
+            objectName = bucketName.toUpperCase() + " SHARED Data" + objectName.split("/").splice(1).join("/")
+        else if (scope == "public"){
+            bucketName = "public-data"
+            objectName = objectName.split("/").pop()
+        }
         return await minioWriter.stringUpload(bucketName, objectName, object)
     },
 
