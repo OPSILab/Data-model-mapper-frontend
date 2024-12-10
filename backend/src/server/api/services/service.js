@@ -84,7 +84,7 @@ module.exports = {
 
     async minioInsertObject(bucketName, objectName, object, scope) {
         if (scope == "shared")
-            objectName = bucketName.toUpperCase() + " SHARED Data" + objectName.split("/").splice(1).join("/")
+            objectName = bucketName.toUpperCase() + " SHARED Data/" + objectName.split("/").pop() // objectName.split("/").splice(1).join("/")
         else if (scope == "public"){
             bucketName = "public-data"
             objectName = objectName.split("/").pop()
