@@ -87,7 +87,7 @@ module.exports = {
                     //    reject(error)
                 }
                 //}))
-                logger.debug(output)
+                logger.trace(output)
                 //if (jsonOutput || output)
                 res.write(`data: ${JSON.stringify({ message: (jsonOutput.outputFile || output || "Strange, no data") })}\n\n`)
                 res.write(`data: ${JSON.stringify({ close: "now closing" })}\n\n`)

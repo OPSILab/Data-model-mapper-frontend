@@ -27,10 +27,103 @@ const { Logger } = log
 const logger = new Logger(__filename)
 //const proxyConf = config.orionWriter.enableProxy ? config.orionWriter.proxy : undefined;
 const axios = require("axios")
+const mongoose = require("mongoose");
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 };
+
+const fixVertices = (obj, first, second) => {
+    //TODO this is is incorrect because works only if the duplicates vertice is the first
+    logger.debug(obj)
+    obj.productBbox.coordinates[0][0].shift()
+    obj.location.coordinates[0][0].shift()
+    return obj
+}
+
+const lines = "--------_----------_-----------------|-------------------_----------------|----------------_-------------------|--------------_----------------------"
+
+
+const insertLargeFiles = async (id, obj, config, modelSchema) => {
+    logger.debug("insertLargeFiles")
+    const uri = "mongodb://" + config.orionWriter.mongoHost + ":" + config.orionWriter.mongoPort + "/orion-" + (config.fiwareService || config.orionWriter.fiwareService);
+    const orionDB = await mongoose.createConnection(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    const Entity = await orionDB.model("Entity", new mongoose.Schema({}, { strict: false, _id: false }), "entities");
+    let update, del
+    try {
+        //del = await Entity.findOneAndDelete({
+        //    "_id.id": id
+        //})
+        //logger.debug(del)
+        //update = await Entity.insertMany([{...toMongoOrionObject(obj)}])
+        //logger.debug(await Entity.collection.getIndexes())
+        for (const index of Object.keys(await Entity.collection.getIndexes())) {
+            if (index !== '_id_') {
+                await Entity.collection.dropIndex(index);
+                console.log(`Removed index: ${index}`);
+            }
+        }
+
+        update = await Entity.findOneAndUpdate(
+            {
+                "_id.id": id
+            },
+            {
+
+                ...toMongoOrionObject(obj)
+            }
+        )
+    }
+    catch (error) {
+        if (error.toString().includes("Duplicate vertices:"))
+            try {
+                update = await Entity.findOneAndUpdate(
+                    {
+                        "_id.id": id
+                    },
+                    {
+
+                        ...toMongoOrionObject(fixVertices(obj))
+                    }
+                )
+            }
+            catch (error) {
+                logger.error(error)
+                logger.error(error.toString())
+                logger.debug("Now closing connection to orion mongo")
+                await orionDB.close();
+                logger.debug("Now closed connection to orion mongo")
+                throw { error: "no entity updated" }
+            }
+        logger.error(error)
+        logger.error(error.toString())
+        logger.debug("Now closing connection to orion mongo")
+        await orionDB.close();
+        logger.debug("Now closed connection to orion mongo")
+        throw { error: "no entity updated" }
+    }
+    //console.log({
+    //    update,
+    //    obj
+    //})
+    //const entities = await Entity.find()//{ "_id.id": id })
+    //let ent = entities.pop()
+    //await console.debug({uri})
+    //await console.debug("ENTITIES", entities, id)
+    //await new Promise(resolve => setTimeout(resolve, 10000))
+    //if (ent){
+    //    console.debug({ent}, "-_-")
+    //    await ent.update({ ...(!config.orionWriter.keyValues && obj || toOrionObject(obj, modelSchema)) });
+    //}
+    //else {
+    //    const newEntity = new Entity({ "_id.id": id, ...(toOrionObject(obj, modelSchema)) });
+    //    await newEntity.save();
+    //    console.log(`Entity con ID ${id} creata.`);
+    //}
+    logger.debug("Now closing connection to orion mongo")
+    await orionDB.close();
+    logger.debug("Now closed connection to orion mongo")
+}
 
 /*
 const sendToOrion = async (options, retries) => {
@@ -101,10 +194,10 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
         };
 
         let postOptions = JSON.parse(JSON.stringify(options))
-        try{
-        var id = JSON.parse(JSON.stringify(obj.id))
+        try {
+            var id = JSON.parse(JSON.stringify(obj.id))
         }
-        catch(e){
+        catch (e) {
             logger.error(e)
             id = "ID" + Date.now().toString()
         }
@@ -154,7 +247,8 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
                 return Promise.resolve(config.orionWrittenCount++);
 
             }
-            else if (createResponse?.statusCode == 409 || (createResponse?.statusCode == 422 && createResponse.body && createResponse.body.description == 'Already Exists')) {
+            else if (createResponse?.statusCode == 409 || (createResponse?.statusCode == 400 && createResponse.body.detail == 'Error from Mongo-DB backend') || (createResponse?.statusCode == 422 && createResponse.body && createResponse.body.description == 'Already Exists' || createResponse.body.detail == 'Error from Mongo-DB backend')) {
+                logger.debug("I have to update the entity")
 
                 // Update existing entity
                 if (!config.orionWriter.skipExisting) {
@@ -187,7 +281,7 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
                         attempts = 0
                         while (//(
                             (attempts < config.orionWriter.maxRetry) && !updateResponse)// (
-                            //    (updateResponse && !(199 < updateResponse.statusCode < 400)) || !updateResponse
+                            //    (updateResponse && !(199 < updateResponse.statusCode && updateResponse.statusCode < 400)) || !updateResponse
                             //))) {
                             try {
                                 //if (attempts)
@@ -206,21 +300,79 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
                             catch (error) {
                                 attempts++;
                                 logger.error(error)
-                                if ((attempts < config.orionWriter.maxRetry))// && !(199 < updateResponse?.statusCode < 400))
+                                if ((attempts < config.orionWriter.maxRetry))// && !(199 < updateResponse?.statusCode && updateResponse?.statusCode < 400))
                                     await sleep(config.orionWriter.retryDelay * attempts)
                                 else
                                     throw error
                             }
                         //}
-
-                        if (199 < updateResponse?.statusCode < 300) {
-
+                        logger.debug("I tried to update the entity and orion replied with statuscode ", updateResponse?.statusCode)
+                        if ((199 < updateResponse?.statusCode) && (updateResponse?.statusCode < 300)) {
+                            logger.debug(199, "<", updateResponse?.statusCode, "<", 300)
                             report.info('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
                             logger.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
                             wrObj = false
                             return Promise.resolve(config.orionWrittenCount++);
 
-                        } else {
+                        }
+                        else if (updateResponse?.statusCode == 400) {
+                            attempts = 0
+                            updateResponse = undefined
+                            let id = options.body.id
+                            let type = options.body.type
+                            options.body = { id, type }
+                            logger.debug("Now another orion call ? ", ((attempts < config.orionWriter.maxRetry) && !updateResponse))
+                            while ((attempts < config.orionWriter.maxRetry) && !updateResponse)
+                                try {
+                                    updateResponse = await rp(options);
+                                    logger.debug("Response updated ", objNumber, " ", id, " ", existingId)
+                                }
+                                catch (error) {
+                                    attempts++;
+                                    logger.error(error)
+                                    if ((attempts < config.orionWriter.maxRetry))// && !(199 < updateResponse?.statusCode && updateResponse?.statusCode< 400))
+                                        await sleep(config.orionWriter.retryDelay * attempts)
+                                    else
+                                        throw error
+                                }
+                            logger.debug({
+                                id: options.body.id
+                            })
+                            if ((199 < updateResponse?.statusCode) && (updateResponse?.statusCode < 300)) {
+
+                                report.info('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
+                                logger.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' already exists! Correctly UPDATED in the Context Broker');
+                                wrObj = false
+                                await insertLargeFiles(options.body.id, obj, config, modelSchema)
+                                return Promise.resolve(config.orionWrittenCount++);
+                            }
+                            else {
+                                wrObj = false
+                                if (!config.orionWriter.details)
+                                    config.orionWriter.details = [{ count: objNumber.toString(), updateResponse: updateResponse?.body, status: updateResponse?.statusCode }]
+                                else
+                                    config.orionWriter.details.push({ count: objNumber.toString(), updateResponse: updateResponse?.body, status: updateResponse?.statusCode })
+                                logger.debug("Details ", objNumber, obj)
+                                //logger.debug(config.orionWriter)
+                                logger.error('There was an error while writing Mapped Object: ')
+                                logger.error(updateResponse?.body || updateResponse || "No response?", "\n", updateResponse?.statusCode)
+                                logger.debug("----Details ----")
+                                logger.debug(objNumber)
+                                return Promise.reject('Update Error').catch((error) => {
+                                    wrObj = false
+                                    if (!config.orionWriter.details)
+                                        config.orionWriter.details = [{ count: objNumber.toString(), updateResponse: updateResponse?.body, status: updateResponse?.statusCode }]
+                                    else
+                                        config.orionWriter.details.push({ count: objNumber.toString(), updateResponse: updateResponse?.body, status: updateResponse?.statusCode })
+                                    logger.debug("Details ", objNumber, obj)
+                                    //logger.debug(config.orionWriter)
+                                    logger.error('There was an error while writing Mapped Object: ')
+                                    logger.error(error)
+                                    //logger.error("error at " + error?.stack)
+                                });
+                            }
+                        }
+                        else {
                             wrObj = false
                             if (!config.orionWriter.details)
                                 config.orionWriter.details = [{ count: objNumber.toString(), updateResponse: updateResponse?.body, status: updateResponse?.statusCode }]
@@ -242,13 +394,13 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
                                 //logger.debug(config.orionWriter)
                                 logger.error('There was an error while writing Mapped Object: ')
                                 logger.error(error)
-                                logger.error("error at " + error?.stack)
+                                //logger.error("error at " + error?.stack)
                             });
                         }
 
                     } catch (error) {
                         logger.error(error)
-                        logger.error("error at " + error?.stack)
+                        //logger.error("error at " + error?.stack)
                         report.info('----------------------------------------------------------\n' +
                             'Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
                         logger.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
@@ -271,7 +423,7 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
                         //logger.debug(config.orionWriter)
                         logger.error('There was an error while writing Mapped Object: ')
                         logger.error(error)
-                        logger.error("error at " + error?.stack)
+                        //logger.error("error at " + error?.stack)
                         logger.debug("----Details ----")
                         logger.debug(objNumber)
                         return Promise.reject(error).catch((error) => {
@@ -284,7 +436,7 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
                             //logger.debug(config.orionWriter)
                             logger.error('There was an error while writing Mapped Object: ')
                             logger.error(error)
-                            logger.error("error at " + error?.stack)
+                            //logger.error("error at " + error?.stack)
                         });
 
                     }
@@ -323,13 +475,13 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
                     //logger.debug(config.orionWriter)
                     logger.error('There was an error while writing Mapped Object: ')
                     logger.error(error)
-                    logger.error("error at " + error?.stack)
+                    //logger.error("error at " + error?.stack)
                 });
             }
 
         } catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            //logger.error("error at " + error?.stack)
 
             report.info('----------------------------------------------------------\n' +
                 'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT CREATED in the Context Broker');
@@ -341,8 +493,8 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
             if (error)
                 report.info('statusCode: ' + error?.statusCode);
             report.info('body: ' + JSON.stringify(error));
-            report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj).substring(0,30) + '\n ------------------------------\n');
-            logger.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj).substring(0,30) + '\n ------------------------------\n');
+            report.info('Mapped and unwritten object:\n' + JSON.stringify(orionedObj).substring(0, 30) + '\n ------------------------------\n');
+            logger.debug('Mapped and unwritten object:\n' + JSON.stringify(orionedObj).substring(0, 30) + '\n ------------------------------\n');
             config.orionUnWrittenCount++;
             wrObj = false
             if (!config.orionWriter.details)
@@ -447,6 +599,31 @@ function toOrionObject(obj, schema) {
     }
 
     return obj;
+}
+
+function mapItem(item) {
+
+}
+
+function toMongoOrionObject(obj) {
+    let attrs = {}
+    for (let key in obj)
+        attrs["https://uri=etsi=org/ngsi-ld/default-context/" + key] = {
+            type: "Property",
+            creDate: Date.now(),
+            modDate: Date.now(),
+            value: obj[key],
+            mdNames: []
+        }
+    const attrNames = [...Object.keys(attrs)]
+    console.log({
+        attrs,
+        attrNames
+    })
+    return {
+        attrs,
+        attrNames
+    }
 }
 
 

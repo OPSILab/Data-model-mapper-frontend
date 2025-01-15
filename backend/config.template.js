@@ -39,6 +39,7 @@ var config = {
     onlyEPSG4326 : false, // allows only geojson with EPSG4326 coordinates
     maxFileSize : 25, // max file size upload in MB
     mapTilerKey : "8JYNjx8UQfefRRQUEjwZ",
+    truncateLogs : false,
 
     /********************** 3 INPUTS CONFIGURATION ************************
     * Followings are related to Mapping MANDATORY inputs (source, map, data model).
@@ -116,6 +117,8 @@ var config = {
 config.orionWriter = {
 
     orionUrl: "https://orionUrl", // The Context Broker endpoint (baseUrl) where mapped entities will be stored (/v2/entities POST)
+    mongoHost : "localhost",
+    mongoPort : "27077",
     orionAuthHeaderName: "", // Authorization Header name (e.g. X-Auth-Token or Authorization) for Orion request // Leave blank if any
     orionAuthToken: "", // Authorization token name for Orion request (e.g. Bearer XXX) // Leave blank if any
     fiwareService: "", // Fiware-Service header to be put in the Orion request
@@ -130,8 +133,8 @@ config.orionWriter = {
     keyValuesOption : '?options=keyValues',
     relativeUrl : "/v2/entities",
     protocol : "v1",
-    delayBetweenRequests: 5000,
-    delayBetweenPostAndPut: 1000,
+    delayBetweenRequests: 1,
+    delayBetweenPostAndPut: 1,
     retryDelay : 1000,
     avoidPut : true,
     promiseRequestRetryExternalLibrary : {
