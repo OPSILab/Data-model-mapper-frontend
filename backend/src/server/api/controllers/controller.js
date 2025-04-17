@@ -672,7 +672,7 @@ module.exports = {
         try {
             let result = await service.minioInsertObject(req.body.pilot.toLowerCase(), req.query.email + "/PRIVATE GENERIC Data/" + req.query.fileName, req.body.file, req.query.scope)
             logger.debug(result)
-            res.send({id: req.query.email, fileName: req.query.fileName, etag : result.etag, path : result.objectName})
+            res.send({id: req.query.email, fileName: req.query.fileName, etag : result.etag, path : result.objectName, bucketName : result.bucketName})
             //res.send(await service.minioInsertObject(req.body.pilot.toLowerCase(), req.query.email + "/PRIVATE GENERIC Data/" + req.query.fileName, req.body.file))
             //res.send(await service.minioInsertObject(req.body.pilot, req.params.objectName, req.body))
             //res.send(await service.minioInsertObject(req.params.bucketName, req.params.objectName, req.body))
