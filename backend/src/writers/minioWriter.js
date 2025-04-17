@@ -244,7 +244,7 @@ module.exports = {
     if (errorMessage)
       throw errorMessage
     if (resultMessage)
-      return resultMessage
+      return {...resultMessage, objectName}
     // })
 
   },
