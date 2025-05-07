@@ -31,8 +31,24 @@ services:
     restart: always
     volumes:
       - ./backend/config.js:/app/config.js
+    entrypoint: >
+      sh -c "if [ ! -f /app/config.js ]; then touch /app/config.js; echo 'config.js creato'; fi"
+    command: >
+      sh -c ls
+    stdin_open: true
+    tty: true
+    ##comment the following on linux, keep on windows
     #command: >
-    #  sh -c "sed -i 's/localhost/host.docker.internal/g' /app/config.js && npm start"
+    #  ls && node
+    #command: ls
+    #command: "touch /app/config.js" 
+
+
+          ##comment the following on linux, keep on windows
+              #command: >
+    #sh -c "[ -f /app/config.js ] && sed -i 's/localhost/host.docker.internal/g' /app/config.js || echo '⚠️ config.js non trovato'; npm start"
+      
+    #sh -c "sed -i 's/localhost/host.docker.internal/g' /app/config.js && npm start"
   db:
     image: mongo:4.4
     container_name: data-model-mapper-db

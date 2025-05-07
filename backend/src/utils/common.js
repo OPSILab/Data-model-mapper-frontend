@@ -12,6 +12,7 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fet
 maptilerClient.config.fetch = fetch;
 const batchSize = 50
 
+if (!process.dataModelMapper) process.dataModelMapper = {}
 process.dataModelMapper.sleep = (ms, message) => {
     logger.info(message || "waiting")
     return new Promise(resolve => setTimeout(resolve, ms));
