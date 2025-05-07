@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
+
+
 const config = require("../../config");
 const winston = require("winston");
 const path = require("path");
@@ -26,7 +28,7 @@ const { combine, timestamp, label, printf } = format;
 const fs = require("fs");
 let registredDay = 0;
 const logPath = config.logPath || "logs/"
-if (!fs.existsSync(logPath)) 
+if (!fs.existsSync(logPath))
   fs.mkdirSync(logPath, { recursive: true });
 let logStream = fs.createWriteStream(setLogDate(), { flags: "a" });
 const { inspect } = require('util')
@@ -57,7 +59,7 @@ function checkDate() {
 function isOlderThan30Days(filePath) {
   try {
     const fileStats = fs.statSync(filePath);
-    const {mtimeMs, birthtimeMs} = fileStats
+    const { mtimeMs, birthtimeMs } = fileStats
     //console.debug(fileStats)
     const fileTime = (birthtimeMs > mtimeMs) && birthtimeMs || (mtimeMs > birthtimeMs) && mtimeMs
     //console.debug(fileTime)
@@ -277,6 +279,42 @@ function infoBackup(...messages) {
   for (let m of messages) if (m != " ") saveLog(m);
 }
 
+function minifyMessages(...messages) {
+  let messagesArray = [...messages]
+  for (let i = 0; i < messagesArray.length; i++) {
+    messagesArray[i] = minifyMessage(messagesArray[i]);
+    //messagesArray[i] = minifyMessage(...messagesArray[i]);
+  }
+  return messagesArray
+}
+
+function minifyMessage(messag) {
+  let message = messag//[0]
+  let start = 500, end = 800
+  try {
+    if (message && (Array.isArray(message) || typeof message == "object"))
+      try {
+        if (JSON.stringify(message).length < (start + end))
+          return message
+        return JSON.stringify(message).substring(0, start).concat("...").concat(JSON.stringify(message).substring(JSON.stringify(message).length - end))//, JSON.stringify(message).length - 1))
+      }
+      catch (error) {
+        if (JSON.stringify(inspect(message)).length < 400)
+          return message
+        return JSON.stringify(inspect(message)).substring(0, start).concat("...").concat(JSON.stringify(inspect(message)).substring(JSON.stringify(inspect(message)) - end))//, JSON.stringify(inspect(message)).length - 1))
+      }
+    if (typeof message == "string")
+      if (message.length < 400)
+        return message
+      else
+        return message.substring(0, start).concat("...").concat(message.length - end)//, message.length - 1)
+    return message
+  } catch (error) {
+    console.log("Logs minifying fail", error, message);
+    return message
+  }
+}
+
 class Logger {
   constructor(fileName) {
     this.fileName = fileName;
@@ -290,17 +328,71 @@ class Logger {
     return log;
   }
 
+  truncate = {
+    trace: (...message) => {
+      if (LEVEL == "trace")
+        logBackup(customLogger("trace", this.fileName), " ", ...minifyMessages(message));
+    },
+    debug: (...message) => {
+      if (LEVEL == "trace" || LEVEL == "debug")
+        debugBackup(customLogger("debug", this.fileName), " ", ...minifyMessages(message));
+    },
+    info: (...message) => {
+      if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info")
+        infoBackup(customLogger("info", this.fileName), " ", ...minifyMessages(message));
+    },
+    warn: (...message) => {
+      if (
+        LEVEL == "trace" ||
+        LEVEL == "debug" ||
+        LEVEL == "info" ||
+        LEVEL == "warn"
+      )
+        warnBackup(customLogger("warn", this.fileName), " ", ...minifyMessages(message));
+    },
+    error: (...message) => {
+      if (
+        LEVEL == "trace" ||
+        LEVEL == "debug" ||
+        LEVEL == "info" ||
+        LEVEL == "warn" ||
+        LEVEL == "error"
+      )
+        errorBackup(customLogger("error", this.fileName), " ", ...minifyMessages(message));
+    },
+    err: (...message) => {
+      if (
+        LEVEL == "trace" ||
+        LEVEL == "debug" ||
+        LEVEL == "info" ||
+        LEVEL == "warn" ||
+        LEVEL == "error"
+      )
+        errorBackup(customLogger("error", this.fileName), " ", ...minifyMessages(message));
+    }
+  }
+
   trace(...message) {
     if (LEVEL == "trace")
-      logBackup(customLogger("trace", this.fileName), " ", ...message);
+      if (config.truncateLogs)
+        logBackup(customLogger("trace", this.fileName), " ", ...minifyMessages(message));
+      else
+        logBackup(customLogger("trace", this.fileName), " ", ...message);
   }
   debug(...message) {
     if (LEVEL == "trace" || LEVEL == "debug")
-      debugBackup(customLogger("debug", this.fileName), " ", ...message);
+      if (config.truncateLogs)
+        debugBackup(customLogger("debug", this.fileName), " ", ...minifyMessages(message));
+      else
+        debugBackup(customLogger("debug", this.fileName), " ", ...message);
   }
   info(...message) {
     if (LEVEL == "trace" || LEVEL == "debug" || LEVEL == "info")
-      infoBackup(customLogger("info", this.fileName), " ", ...message);
+      if (config.truncateLogs)
+        infoBackup(customLogger("info", this.fileName), " ", ...minifyMessages(message));
+      else
+        infoBackup(customLogger("info", this.fileName), " ", ...message);
+
   }
   warn(...message) {
     if (
@@ -309,7 +401,10 @@ class Logger {
       LEVEL == "info" ||
       LEVEL == "warn"
     )
-      warnBackup(customLogger("warn", this.fileName), " ", ...message);
+      if (config.truncateLogs)
+        warnBackup(customLogger("warn", this.fileName), " ", ...minifyMessages(message));
+      else
+        warnBackup(customLogger("warn", this.fileName), " ", ...message);
   }
   error(...message) {
     if (
@@ -319,7 +414,10 @@ class Logger {
       LEVEL == "warn" ||
       LEVEL == "error"
     )
-      errorBackup(customLogger("error", this.fileName), " ", ...message);
+      if (config.truncateLogs)
+        errorBackup(customLogger("error", this.fileName), " ", ...minifyMessages(message));
+      else
+        errorBackup(customLogger("error", this.fileName), " ", ...message);
   }
   err(...message) {
     if (
@@ -329,7 +427,10 @@ class Logger {
       LEVEL == "warn" ||
       LEVEL == "error"
     )
-      errorBackup(customLogger("error", this.fileName), " ", ...message);
+      if (config.truncateLogs)
+        errorBackup(customLogger("error", this.fileName), " ", ...minifyMessages(message));
+      else
+        errorBackup(customLogger("error", this.fileName), " ", ...message);
   }
 }
 

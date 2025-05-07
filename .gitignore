@@ -60,3 +60,4 @@ backend/src/utils/common_dev.js
 frontend/src/app/pages/data-model-mapper/next/
 frontend/src/app/pages/data-model-mapper/testModule.ts
 backend/src/writers/orionWriter.old.js
+backend/output/

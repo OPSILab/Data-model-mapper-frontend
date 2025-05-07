@@ -211,12 +211,12 @@ module.exports = {
 
   async stringUpload(bucketName, objectName, object) {
 
-    logger.debug(bucketName + " " + " " + objectName + " " + JSON.stringify(object))
+    //logger.debug(bucketName + " " + " " + objectName + " " + JSON.stringify(object))
 
     let resultMessage
     let errorMessage
 
-    minioClient.putObject(bucketName, objectName, Buffer.from(object), function (err, res) {
+    minioClient.putObject(bucketName, objectName, object.buffer, function (err, res) {
       if (err) {
         logger.error("An error occurred while writing object")
         errorMessage = err
@@ -244,7 +244,7 @@ module.exports = {
     if (errorMessage)
       throw errorMessage
     if (resultMessage)
-      return resultMessage
+      return {...resultMessage, objectName, bucketName}
     // })
 
   },
