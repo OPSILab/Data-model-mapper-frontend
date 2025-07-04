@@ -25,6 +25,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   @Output() updateResult = new EventEmitter<unknown>();
   schemaDir: string;
   loading = false;
+  pageSize = 10
   public isNotNew = false;
   private systemConfig: System;
   private systemLocale: string;
@@ -76,6 +77,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
+  onPageSizeChange(newSize: number) {
+    let page = Math.round(this.source.getPaging().page * this.source.getPaging().perPage / newSize)
+    this.source.setPaging(page, newSize, true);
+    console.log(this.source.getPaging().page)
+    //this.loadTableSettings(); // ricarica settings con nuovo pageSize
+  }
+
   async ngOnInit() {
     try {
       this.mapRecords = await this.dmmService.getMaps();
@@ -88,6 +96,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
       this.errorService.openErrorDialog(error);
     }
+    //this.source.setPaging(1, 100, true);
   }
 
   ngOnDestroy(): void {
@@ -115,7 +124,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     return {
       mode: 'external',
       attr: {
-        class: 'custom-table',
+        class: 'table table-bordered',
+      },
+      pagination: {
+        perPage: 50, // variabile che puoi aggiornare dinamicamente
       },
       actions: {
         add: false,

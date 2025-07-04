@@ -1,7 +1,8 @@
 <nb-card>
   <nb-card-header class="h3">
     {{ 'general.menu.map_records' | translate }}
-    <button *ngIf="test" style="float: right" nbButton appearance="outline" shape="semi-round" size="tiny" status="info" (click)="automated()">
+    <button *ngIf="test" style="float: right" nbButton appearance="outline" shape="semi-round" size="tiny" status="info"
+      (click)="automated()">
       <i class="material-icons">star</i>
     </button>
   </nb-card-header>
@@ -26,5 +27,9 @@
       </div>
     </div>
     <ng2-smart-table [settings]="settings" [source]="source"> </ng2-smart-table>
+    <nb-select [(selected)]="pageSize" (selectedChange)="onPageSizeChange($event)">
+      <nb-option *ngFor="let size of [5, 10, 20, 50]" [value]="size">{{ size }}</nb-option>
+    </nb-select>
+
   </nb-card-body>
 </nb-card>
