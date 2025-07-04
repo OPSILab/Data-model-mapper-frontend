@@ -38,8 +38,6 @@ const waiting = async (flag) => {
 
 module.exports = {
 
-    outputFile: [],
-
     minioObj: undefined,
 
     bucketName: undefined,

@@ -31,7 +31,6 @@ const { Logger } = log
 const logger = new Logger(__filename)
 const Debugger = require('./utils/debugger');
 const report = require('./utils/logger').report;
-const service = require("./server/api/services/service")
 
 const loadMap = (mapData) => {
 
@@ -161,11 +160,6 @@ const extractFromNestedField = (source, field) => {
     }
     return value
 };
-
-const NGSI_entity = () => {
-    //I actually don't understand why mapObjectToDataModel fails while reading service.NGSI_entity, so I wrote this getter function
-    return service.NGSI_entity
-}
 
 /**
  *

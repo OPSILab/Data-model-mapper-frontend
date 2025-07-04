@@ -17,15 +17,13 @@
  ******************************************************************************/
 
 const commandLine = require('../utils/confUtils');
-const process = require('../utils/process');
+const dmmProcess = require('../utils/process');
 const config = require('../../config')
 
 const log = require('../utils/logger')//.app(module);
 const {Logger} = log
 const logger = new Logger(__filename)
 const utils = require('../utils/utils');
-
-let service = require ("../server/api/services/service")
 
 module.exports = async (sourceDataIn, mapPathIn, dataModelIn, schema, NGSI_entity, minioObj, config, res) => {
     logger.info("Initializing Mapper in " + (config.mode == "commandLine" ? "Command Line " : "Server ") + "Mode");
@@ -42,11 +40,10 @@ module.exports = async (sourceDataIn, mapPathIn, dataModelIn, schema, NGSI_entit
         var dataModelPath = utils.getDataModelPath(dataModelIn) || commandLine.getParam('targetDataModel');
 
         try {
-            await process.processSource(sourceData, "", mapPath, dataModelPath, schema, NGSI_entity, minioObj, config, res)
+            await dmmProcess.processSource(sourceData, "", mapPath, dataModelPath, schema, NGSI_entity, minioObj, config, res)
         } catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
-            service.error = error
+            dmmProcess.dataModelMapper.setupError = error
             return error
         }
 
@@ -54,9 +51,8 @@ module.exports = async (sourceDataIn, mapPathIn, dataModelIn, schema, NGSI_entit
 
     } else {
         logger.error(error)
-        logger.error("error at " + error?.stack)
         logger.error("There was an error while initializing Mapper configuration");
-        service.error = "There was an error while initializing Mapper configuration"
+        dmmProcess.dataModelMapper.setupError = "There was an error while initializing Mapper configuration"
     }
 };
 

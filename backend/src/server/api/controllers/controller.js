@@ -127,7 +127,6 @@ module.exports = {
     mapData: async (req, res) => {
 
         //await waiting("map")
-        //process.res = res;
         //process.dataModelMapper.map = "busy"
         let { sourceData, map, dataModel } = utils.bodyMapper(req.body)
         const emitter = new EventEmitter();
@@ -147,7 +146,7 @@ module.exports = {
                 res.send({ id })
             //res.send(id)
             await service.mapData(sourceData, map, dataModel, req.body.config, res)
-            if (service.error) res.status(404).send(service.error + ".\nMaybe the files name you specified are not correct.")
+            if (process.dataModelMapper.setupError) res.status(404).send(process.dataModelMapper.setupError + ".\nMaybe the files name you specified are not correct.")
         }
         catch (error) {
             logger.error(error)
@@ -160,7 +159,7 @@ module.exports = {
             else
                 res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
-        service.error = null
+        process.dataModelMapper.setupError = null
         emitter.on('message', (message) => {
             if (message == "delete") {
                 //this[id] = null
@@ -177,7 +176,7 @@ module.exports = {
     },
 
     getSources: async (req, res) => {
-        //process.res = res;
+  
         try {
             res.send(await service.getAllSources(req.query.bucketName || req.body.bucketName, req.body.prefix, req.query.format))
         }
@@ -190,7 +189,7 @@ module.exports = {
     },
 
     getSourcesFromDB: async (req, res) => {
-        //process.res = res;
+        
         try {
             res.send(await service.getSourcesFromDB(req.body.prefix))
         }
@@ -215,7 +214,7 @@ module.exports = {
     },
 
     getSourcesFromMinio: async (req, res) => {
-        //process.res = res;
+        
         try {
             res.send(await service.getMinioObjects(req.params.bucketName || req.query.bucketName, req.body.prefix, req.query.format, []))
         }
@@ -228,7 +227,7 @@ module.exports = {
     },
 
     getMaps: async (req, res) => {
-        //process.res = res;
+        
         try {
             res.send(await service.getMaps(req.body.prefix))
         }
@@ -241,7 +240,7 @@ module.exports = {
     },
 
     getDataModels: async (req, res) => {
-        //process.res = res;
+        
         try {
             res.send(await service.getDataModels(req.body.prefix))
         }
@@ -255,7 +254,7 @@ module.exports = {
 
     getSource: async (req, res) => {
         const { id, name, mapRef } = req.query
-        //process.res = res;
+        
         try {
             res.send(await service.getSource(id, name, mapRef, req.body.prefix))
         }
@@ -269,7 +268,7 @@ module.exports = {
 
     getMap: async (req, res) => {
         const { id, name } = req.query
-        //process.res = res;
+        
         try {
             res.send(await service.getMap(id, name, req.body.prefix))
         }
@@ -282,7 +281,7 @@ module.exports = {
     },
 
     getConfig: async (req, res) => {
-        //process.res = res;
+        
         try {
             res.send(await service.getConfig())
         }
@@ -296,7 +295,7 @@ module.exports = {
 
     getDataModel: async (req, res) => {
         const { id, name, mapRef } = req.query
-        //process.res = res;
+        
         try {
             res.send(await service.getDataModel(id, name, mapRef, req.body.prefix))
         }
@@ -311,7 +310,7 @@ module.exports = {
     insertSource: async (req, res) => {
 
         await waiting("crud")
-        //process.res = res;
+        
         process.dataModelMapper.crud = "busy"
 
         try {
@@ -330,7 +329,7 @@ module.exports = {
     insertMap: async (req, res) => {
 
         await waiting("crud")
-        //process.res = res;
+        
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.insertMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
@@ -350,7 +349,7 @@ module.exports = {
     insertDataModel: async (req, res) => {
 
         await waiting("crud")
-        //process.res = res;
+        
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.insertDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef, req.body.bucketName, req.body.prefix))
@@ -367,7 +366,7 @@ module.exports = {
     modifySource: async (req, res) => {
 
         await waiting("crud")
-        //process.res = res;
+        
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.modifySource(req.body.name, req.body.id, req.body.source, req.body.path, req.body.mapRef, req.body.bucketName, req.body.prefix))
@@ -385,7 +384,7 @@ module.exports = {
     assignSource: async (req, res) => {
 
         await waiting("crud")
-        //process.res = res;
+        
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.assignSource(req.body.sourceDataID, req.body.mapRef))
@@ -403,7 +402,7 @@ module.exports = {
     assignSchema: async (req, res) => {
 
         await waiting("crud")
-        //process.res = res;
+        
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.assignSchema(req.body.dataModelID, req.body.mapRef))
@@ -421,7 +420,7 @@ module.exports = {
     deAssignSource: async (req, res) => {
 
         await waiting("crud")
-        //process.res = res;
+        
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.deAssignSource(req.body.sourceDataID, req.body.mapRef))
@@ -439,7 +438,7 @@ module.exports = {
     deAssignSchema: async (req, res) => {
 
         await waiting("crud")
-        //process.res = res;
+        
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.deAssignSchema(req.body.dataModelID, req.body.mapRef))
@@ -457,7 +456,7 @@ module.exports = {
     modifyMap: async (req, res) => {
 
         await waiting("crud")
-        //process.res = res;
+        
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.modifyMap(req.body.name, req.body.id, req.body.map, req.body.dataModel, req.body.status, req.body.description,
@@ -477,7 +476,7 @@ module.exports = {
     modifyDataModel: async (req, res) => {
 
         await waiting("crud")
-        //process.res = res;
+        
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.modifyDataModel(req.body.name, req.body.id, req.body.dataModel, req.body.mapRef, req.body.bucketName, req.body.prefix))
@@ -495,7 +494,7 @@ module.exports = {
     deleteSource: async (req, res) => {
         const { id, name } = req.query
         await waiting("crud")
-        //process.res = res;
+        
         process.dataModelMapper.crud = "busy"
         try { res.send(await service.deleteSource(id, name, req.body.prefix)) }
         catch (error) { res.status(400).send(error.toString() == "[object Object]" ? error : error.toString()) }
@@ -506,7 +505,7 @@ module.exports = {
     deleteMap: async (req, res) => {
         const { id, name } = req.query
         await waiting("crud")
-        //process.res = res;
+        
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.deleteMap(id || req.params.id, name, req.body.prefix, req.body.bucketName))
@@ -523,7 +522,7 @@ module.exports = {
     deleteDataModel: async (req, res) => {
         const { id, name } = req.query
         await waiting("crud")
-        //process.res = res;
+        
         process.dataModelMapper.crud = "busy"
         try {
             res.send(await service.deleteDataModel(id, name, req.body.prefix))
@@ -537,7 +536,7 @@ module.exports = {
 
     dereferenceSchema: async (req, res) => {
 
-        //process.res = res;
+        
         if (req.body.bucketName) req.body.bucketName = undefined
         if (req.body.prefix) req.body.prefix = undefined
 
@@ -554,7 +553,7 @@ module.exports = {
 
     cleanSchema: async (req, res) => {
 
-        //process.res = res;
+        
         if (req.body.bucketName) req.body.bucketName = undefined
         if (req.body.prefix) req.body.prefix = undefined
 
@@ -572,7 +571,7 @@ module.exports = {
 
     buildGeoJson: async (req, res) => {
 
-        //process.res = res;
+        
         if (req.body.bucketName) req.body.bucketName = undefined
         if (req.body.prefix) req.body.prefix = undefined
 
@@ -590,7 +589,7 @@ module.exports = {
 
 
     minioCreateBucket: async (req, res) => {
-        //process.res = res;
+        
         try {
             res.send(await service.minioCreateBucket(req.params.bucketName))
         }
@@ -610,7 +609,7 @@ module.exports = {
     },
 
     minioGetObject: async (req, res) => {
-        //process.res = res;
+        
         try {
             res.send(await service.minioGetObject(req.params.bucketName, req.params.objectName, req.query.format))
         }
@@ -628,7 +627,7 @@ module.exports = {
     },
 
     minioListObjects: async (req, res) => {
-        //process.res = res;
+        
         try {
             res.send(await service.minioListObjects(req.params.bucketName || req.query.bucketName))
         }
@@ -641,7 +640,7 @@ module.exports = {
     },
 
     minioGetBuckets: async (req, res) => {
-        //process.res = res;
+        
         try {
             res.send(await service.minioGetBuckets())
         }
@@ -654,7 +653,7 @@ module.exports = {
     },
 
     minioSubscribe: async (req, res) => {
-        //process.res = res;
+        
         try {
             res.send(await service.minioSubscribe(req.params.bucketName))
         }
@@ -668,7 +667,7 @@ module.exports = {
 
     minioInsertObject: async (req, res) => {
         logger.info("Insert object in minio")
-        //process.res = res;
+        
         try {
             let result = await service.minioInsertObject(req.body.pilot.toLowerCase(), req.query.email + "/PRIVATE GENERIC Data/" + req.query.fileName, req.file || req.body.file, req.query.scope)
             logger.debug(result)
