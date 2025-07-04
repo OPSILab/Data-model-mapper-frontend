@@ -18,7 +18,7 @@ import { TestDmmEditorComponent } from './testDmmEditor/testDmmEditor.component'
 @Component({
   selector: 'home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @Input() value;
@@ -115,7 +115,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     return {
       mode: 'external',
       attr: {
-        class: 'table table-bordered',
+        class: 'custom-table',
       },
       actions: {
         add: false,

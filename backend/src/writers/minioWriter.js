@@ -212,11 +212,23 @@ module.exports = {
   async stringUpload(bucketName, objectName, object) {
 
     //logger.debug(bucketName + " " + " " + objectName + " " + JSON.stringify(object))
+    if (object?.buffer && Buffer.isBuffer(object.buffer)) {
+      (object = object.buffer) && logger.debug("Object is a Buffer from multer")
+    } else if (typeof object === 'string')
+      (object = Buffer.from(object, 'utf8')) && logger.debug("Object is a string, converted to Buffer")
+    else if (typeof object === 'object' && !(object instanceof Buffer))
+      (object = Buffer.from(JSON.stringify(object), 'utf8')) && logger.debug("Object is an object, converted to Buffer")
+    else if (object instanceof Buffer)
+      logger.debug("Object is already a Buffer")
+    else
+      throw new Error("Object must be a string, an object or a Buffer")
+
+    logger.debug("Now writing object " + objectName + " in bucket " + bucketName, object)
 
     let resultMessage
     let errorMessage
 
-    minioClient.putObject(bucketName, objectName, object.buffer, function (err, res) {
+    minioClient.putObject(bucketName, objectName, object, function (err, res) {
       if (err) {
         logger.error("An error occurred while writing object")
         errorMessage = err
