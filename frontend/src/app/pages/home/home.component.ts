@@ -147,7 +147,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           editor: {
             type: 'textarea',
           },
-          width: '65%',
+          width: '60%',
           valuePrepareFunction: (cell, row) => row.description,
         },
         /*
@@ -172,7 +172,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         actions: {
           title: this.actionsLabel,
           sort: false,
-          width: '5%',
+          width: '25%',
           filter: false,
           type: 'custom',
           valuePrepareFunction: (cell, row) => row,
