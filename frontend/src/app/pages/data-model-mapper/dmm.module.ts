@@ -14,6 +14,7 @@ import {
   NbUserModule,
   NbAutocompleteModule,
   NbSpinnerModule,
+  NbStepperModule,
 } from '@nebular/theme';
 import { CommonModule } from '@angular/common';
 import { DMMRoutingModule } from './dmm-routing.module';
@@ -58,6 +59,7 @@ import { ExportFileTestComponent } from './export-file/export-file-test.componen
     NbUserModule,
     NbSpinnerModule,
     TranslateModule.forChild({}),
+    NbStepperModule,
     NbAutocompleteModule,
   ],
   declarations: [DialogImportComponent, DialogDataMapComponent, CreateMapComponent, ExportFileComponent, DMMComponent, DialogComponent, DmmTestComponent, ExportFileTestComponent],
@@ -71,4 +73,4 @@ import { ExportFileTestComponent } from './export-file/export-file-test.componen
   ],
   entryComponents: [DialogImportComponent, DialogDataMapComponent],
 })
-export class DMMModule {}
+export class DMMModule { }

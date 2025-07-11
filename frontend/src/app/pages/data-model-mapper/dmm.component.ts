@@ -138,6 +138,12 @@ export class DMMComponent implements OnInit, OnChanges {
     this.config = configService.config as AppConfig;
   }
 
+  linearMode = true;
+
+  toggleLinearMode() {
+    this.linearMode = !this.linearMode;
+  }
+
   updateMap() {
     mapGl = this.map;
   }
