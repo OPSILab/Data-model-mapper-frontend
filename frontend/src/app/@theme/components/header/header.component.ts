@@ -38,6 +38,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
       value: 'corporate',
       name: 'Corporate',
     },
+    {
+      value: 'custom',
+      name: 'Custom',
+    }
   ];
 
   currentTheme = 'dmm';
@@ -115,6 +119,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   changeTheme(themeName: string): void {
+    console.log('Changing theme to:', themeName);
     this.themeService.changeTheme(themeName);
   }
 

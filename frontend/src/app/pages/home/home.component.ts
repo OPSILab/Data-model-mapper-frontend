@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { NbDialogService } from '@nebular/theme';
+import { NbDialogService, NbThemeService } from '@nebular/theme';
 import { TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { NgxConfigureService } from 'ngx-configure';
@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   @Output() updateResult = new EventEmitter<unknown>();
   schemaDir: string;
   loading = false;
-  pageSize = 10
+  pageSize = 5
   public isNotNew = false;
   private systemConfig: System;
   private systemLocale: string;
@@ -53,8 +53,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private configService: NgxConfigureService,
     private dialogService: NbDialogService,
+    //private themeService: NbThemeService,
     public route: ActivatedRoute //@Inject(DOCUMENT) public document: Document,
   ) {
+    //this.themeService.changeTheme('default');
     this.test = this.route.snapshot.queryParams['testing'];
     this.config = this.configService.config as AppConfig;
     this.systemConfig = this.config.system;
@@ -96,7 +98,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
       this.errorService.openErrorDialog(error);
     }
-    //this.source.setPaging(1, 100, true);
+    //this.onPageSizeChange(5);
+    this.source.setPaging(1, 5, true);
   }
 
   ngOnDestroy(): void {
@@ -127,7 +130,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         class: 'table table-bordered',
       },
       pagination: {
-        perPage: 50, // variabile che puoi aggiornare dinamicamente
+        perPage: 5, // variabile che puoi aggiornare dinamicamente
       },
       actions: {
         add: false,

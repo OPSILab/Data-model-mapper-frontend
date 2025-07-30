@@ -1,0 +1,25 @@
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    height: 200%;
+    overflow: auto;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+
+  }
+
+  body::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari */
+  }
+
+  iframe {
+    scrollbar-width: none;
+  }
+
+  iframe::-webkit-scrollbar {
+    display: none;
+  }

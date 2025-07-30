@@ -21,6 +21,10 @@ function o(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './dmm.component.html',
@@ -173,6 +177,151 @@ export class DMMComponent implements OnInit, OnChanges {
   hideUpdateButton() {
     this.isNotNew = false;
     document.getElementById('updateButton') && (document.getElementById('updateButton').hidden = true);
+  }
+
+  async toSchema() {
+    while (!this.schemaEditorContainer) {
+      await sleep(100);
+      console.log(">")
+      this.schemaEditorContainer = this.document.getElementById('schemaEditor');
+    }
+    this.schemaEditorContainer = this.document.getElementById('schemaEditor');
+    this.schemaOptions = {
+      mode: 'view',
+      modes: ['view', 'code'], // allowed modes
+      onModeChange: function (newMode, oldMode) { },
+    };
+    this.schemaEditor = new JSONEditor(this.schemaEditorContainer, this.schemaOptions, this.selectedDataModel);
+    this.schemaEditor.update(this.exampleSchema);
+  }
+
+  async toMapEditor() {
+    this.setMapEditor(false);
+    await this.generateMapper(this.getSchema())
+  }
+
+  async toConfig() {
+    //this.configEditorContainer = this.document.getElementById('configEditor');
+    await this.resetConfigSettings();
+    /*const updateMapper = this.updateMapper;
+    const setMapGl = this.setMapGl;
+    const dialogService = this.dialogService;
+
+    //let map = this.map
+    mapGl = this.map;
+    //editor.mapperEditor = editor.mapperEditor
+    try {
+      this.options2 = {
+        mode: 'tree',
+        modes: ['tree', 'code', 'view', 'preview'], // allowed modes
+        onModeChange: function (newMode, oldMode) { },
+
+        onCreateMenu: function (items, node) {
+          const path = node.path;
+
+          // log the current items and node for inspection
+          //console.log('items:', items, 'node:', node)
+
+          const selectPath = path;
+          function pathToMap() {
+            //this.m = mOptions
+            dialogService
+              .open(DialogDataMapComponent, {
+                context: { mapOptions: mapOptionsGl, selectPath: selectPath, map: mapGl },
+              })
+              .onClose.subscribe((value) => {
+                const editor = require('./mapperEditor');
+                if (value) updateMapper(selectPath, value ? value[0] : '', setMapGl()); //, mapperEditor)// value[1] is the map
+              });
+          }
+
+          if (path) {
+            // items.push instead items = if you want to maintain other menu options
+            items = [
+              {
+                text: 'Map', // the text for the menu item
+                title: 'Put the map with source', // the HTML title attribute
+                className: 'example-class',
+                click: pathToMap, // the function to call when the menu item is clicked
+              },
+            ];
+          }
+
+          items.forEach(function (item, index, items) {
+            if ('submenu' in item) {
+              // if the item has a submenu property, it is a submenu heading
+              // and contains another array of menu items. Let's colour
+              // that yellow...
+              items[index].className += ' submenu-highlight';
+            } else {
+              // if it's not a submenu heading, let's make it colorful
+              items[index].className += ' rainbow';
+            }
+          });
+
+          // note that the above loop isn't recursive, so it only alters the classes
+          // on the top-level menu items. To also process menu items in submenus
+          // you should iterate through any "submenu" arrays of items if the item has one.
+
+          // next, just for fun, let's remove any menu separators (again just at the
+          // top level menu). A menu separator is an item with a type : 'separator'
+          // property
+          items = items.filter(function (item) {
+            return item.type !== 'separator';
+          });
+
+          // finally we need to return the items array. If we don't, the menu
+          // will be empty.
+          return items;
+        },
+      };
+    } catch (error) {
+      this.handleError(error, false, false);
+      console.error('Error during map setting set');
+    }
+    this.configEditor = new JSONEditor(this.configEditorContainer, this.options2, this.transformSettings)*/
+  }
+
+  count: 1
+
+  async toOutputEditor() {
+    const preview = {
+      preview: 'set the source, set the json map and click preview to see the output json preview',
+    };
+    console.debug('waiting for output editor container', this.document.getElementById('jsoneditor3'));
+    while (!this.outputEditorContainer) {
+      console.debug(this.count)
+      await this.sleep(100)
+      console.debug('waiting for output editor container', this.document.getElementById('jsoneditor3'));
+      this.outputEditorContainer = this.document.getElementById('jsoneditor3');
+
+    }
+    this.outputEditorOptions = {
+      mode: 'view',
+      modes: ['view', 'preview'], // allowed modes
+      onModeChange: function (newMode, oldMode) { },
+    };
+    if (!this.outputEditor) this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, preview);
+    else this.outputEditor.update(preview);
+  }
+
+  async toBodyEditor() {
+    while (!this.bodyEditorContainer) {
+      await this.sleep(100)
+      console.warn("wait body editor")
+      this.bodyEditorContainer = this.document.getElementById('bodyEditor');
+    }
+    while (!this.curlEditorContainer) {
+      await this.sleep(100)
+      this.curlEditorContainer = this.document.getElementById('curlEditor');
+    }
+    this.bodyEditorOptions = {
+      mode: 'preview',
+      modes: ['view', 'preview'], // allowed modes
+      onModeChange: function (newMode, oldMode) { },
+    };
+    console.warn(!!this.bodyEditor)
+    this.bodyEditor = new JSONEditor(this.bodyEditorContainer, this.bodyEditorOptions, this.body);
   }
 
   source = {
@@ -362,13 +511,15 @@ export class DMMComponent implements OnInit, OnChanges {
 
     this.body = {};
 
-    this.source.sourceEditor = new JSONEditor(this.source.sourceEditorContainer, this.source.sourceOptions, this.source.sourceJson);
+    this.source.sourceEditor = new JSONEditor(this.source.sourceEditorContainer || this.document.getElementById('jsoneditor'), this.source.sourceOptions || {
+      mode: 'view',
+      modes: ['view', 'code'], // allowed modes
+      onModeChange: function (newMode, oldMode) { },
+    }, this.source.sourceJson);
 
-    this.schemaEditor = new JSONEditor(this.schemaEditorContainer, this.schemaOptions, this.selectedDataModel);
-
-    this.schemaEditor.update(this.exampleSchema);
-
-    await this.resetConfigSettings();
+    //this.schemaEditor = new JSONEditor(this.schemaEditorContainer, this.schemaOptions, this.selectedDataModel);
+    //this.schemaEditor.update(this.exampleSchema);
+    //await this.resetConfigSettings();
 
     this.outputEditorOptions = {
       mode: 'view',
@@ -384,12 +535,12 @@ export class DMMComponent implements OnInit, OnChanges {
 
     if (this.selectedSchema) this.schemaJson = this.selectFilteredSchema();
 
-    this.setMapEditor(false);
+    //this.setMapEditor(false);
 
-    if (!this.outputEditor) this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, preview);
-    else this.outputEditor.update(preview);
+    //if (!this.outputEditor) this.outputEditor = new JSONEditor(this.outputEditorContainer, this.outputEditorOptions, preview);
+    //else this.outputEditor.update(preview);
 
-    this.bodyEditor = new JSONEditor(this.bodyEditorContainer, this.bodyEditorOptions, this.body);
+    //this.bodyEditor = new JSONEditor(this.bodyEditorContainer, this.bodyEditorOptions, this.body);
 
     //this.curlEditor = new JSONEditor(this.curlEditorContainer, this.bodyEditorOptions, "");
 
@@ -584,7 +735,9 @@ export class DMMComponent implements OnInit, OnChanges {
     }
   }
 
-  generateMapper(schemaParsed) {
+  async generateMapper(schemaParsed) {
+    while (!editor.mapperEditor)
+      await sleep(100);
     if (this.map) {
       this.map = JSON.parse(editor.mapperEditor.getText());
       this.oldMap = JSON.parse(JSON.stringify(this.map));
@@ -757,6 +910,11 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async resetConfigSettings() {
+    while (!this.configEditorContainer) {
+      await sleep(100);
+      console.log(">")
+      this.configEditorContainer = this.document.getElementById('configEditor');
+    }
     this.confirmMapping();
     try {
       this.transformSettings = await this.dmmService.getConfig();
@@ -774,7 +932,7 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   setLoadingMessage(editor, editorContainer, editorOptions) {
-    //while (this.loading && this.sleep(3000))
+    //while (this.loading && this.sleep(100))
     if (!editor) editor = new JSONEditor(editorContainer, editorOptions, {});
     else editor.update({});
     editor.update({ Loading: '...' });
@@ -818,13 +976,14 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   sleep(delay) {
+    console.debug('sleeping for ' + delay + 'ms');
     return new Promise((resolve) => setTimeout(resolve, delay));
   }
 
   async toggleLoadingAnimation() {
     this.loading = true;
     console.log('Now waiting');
-    await this.sleep(3000);
+    await this.sleep(100);
     this.loading = false;
     console.log('FINISH');
     //await this.toggle()
@@ -936,7 +1095,7 @@ export class DMMComponent implements OnInit, OnChanges {
     //this.showToast('primary', 'Transformed', '', false);
   }
 
-  private showToast(type: NbComponentStatus, title: string, body: string, preventDuplicates) {
+  showToast(type: NbComponentStatus, title: string, body: string, preventDuplicates) {
     const config = {
       status: type,
       destroyByClick: true,
@@ -1075,10 +1234,12 @@ export class DMMComponent implements OnInit, OnChanges {
     this.showToast('primary', 'Mapper updated', '', false);
   }
 
-  setMapEditor(justOptions) {
+  async setMapEditor(justOptions) {
     const updateMapper = this.updateMapper;
     const setMapGl = this.setMapGl;
     const dialogService = this.dialogService;
+    while (!this.mapperEditorContainer && await this.sleep(100))
+      this.mapperEditorContainer = this.document.getElementById('jsoneditor2');
 
     //let map = this.map
     mapGl = this.map;
@@ -1153,7 +1314,10 @@ export class DMMComponent implements OnInit, OnChanges {
       console.error('Error during map setting set');
     }
 
-    if (!editor.mapperEditor && !justOptions) editor.mapperEditor = new JSONEditor(this.mapperEditorContainer, this.options2, this.map);
+    while (!this.mapperEditorContainer && await this.sleep(100))
+      this.mapperEditorContainer = this.document.getElementById('jsoneditor2');
+
+    if (!editor.mapperEditor && !justOptions) editor.mapperEditor = new JSONEditor(this.mapperEditorContainer || this.document.getElementById('jsoneditor2'), this.options2, this.map);
     else if (!justOptions) editor.mapperEditor.update(this.map);
     if (editor.mapperEditor) this.map = JSON.parse(editor.mapperEditor.getText());
   }
@@ -1551,14 +1715,16 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   updateBody() {
-    this.bodyEditor.update(
-      this.isNotNew
-        ? {
-          sourceData: this.source.inputType == 'json' ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData,
-          mapID: this.mapperRecord.mapperRecordId,
-        }
-        : this.bodyBuilder(this.source.inputType == 'json' ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData)
-    );
+    this.toBodyEditor().then(() => {
+      this.bodyEditor.update(
+        this.isNotNew
+          ? {
+            sourceData: this.source.inputType == 'json' ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData,
+            mapID: this.mapperRecord.mapperRecordId,
+          }
+          : this.bodyBuilder(this.source.inputType == 'json' ? JSON.parse(this.source.sourceEditor.getText()) : this.source.csvSourceData)
+      );
+    })
     //this.showToast('primary', 'Body set', '', true);
   }
 

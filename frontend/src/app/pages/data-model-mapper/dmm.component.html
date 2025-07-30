@@ -172,7 +172,7 @@
             </nb-tabset>
           </div>
         </div>
-        <button nbButton nbStepperNext>next</button>
+        <button nbButton nbStepperNext (click)="toConfig()">next</button>
 
       </nb-step>
 
@@ -193,7 +193,7 @@
         <br *ngIf="!dialog" />
         <br *ngIf="!dialog" />
         <div [hidden]="dialog" style="height: 500px" id="configEditor"></div>
-        <button nbButton nbStepperNext>next</button>
+        <button nbButton nbStepperNext (click)="toSchema()">next</button>
       </nb-step>
 
       <nb-step [stepControl]="somethingForm" label="Schema">
@@ -223,17 +223,19 @@
                 <i class="mx-1 fas fa-lg"></i>
               </button>-->
 
+          <!--
           <button id="generateMapper" nbButton class="mr-2" shape="rectangle" size="small"
             (click)="generateMapper(getSchema())">
             {{ 'general.editor.generate_mapper' | translate }}
             <i class="mx-1 fas fa-lg"></i>
           </button>
+          -->
 
           <br />
         </div>
         <div style="height: 500px" id="schemaEditor" (keydown)="onKeydownMain($event)"></div>
         <div style="padding-top: 50px"></div>
-        <button nbButton nbStepperNext>next</button>
+        <button nbButton nbStepperNext (click)="toMapEditor()">next</button>
       </nb-step>
 
       <nb-step [stepControl]="somethingForm" label="Mapper">
@@ -242,7 +244,7 @@
         </div>
         <div style="padding-top: 1px"></div>
         <div style="height: 500px" id="jsoneditor2"></div>
-        <button nbButton nbStepperNext>next</button>
+        <button nbButton nbStepperNext (click)="toOutputEditor()">next</button>
 
       </nb-step>
 
@@ -311,11 +313,11 @@
             <div nbSpinner=[loaded] nbSpinnerStatus="basic"> loaded</div>
             <div nbSpinner=(loaded) nbSpinnerStatus="basic"> loaded</div>
           -->
-        <button nbButton nbStepperNext>next</button>
+        <button nbButton nbStepperNext (click)="toBodyEditor()">next</button>
 
       </nb-step>
 
-      <nb-step [hidden]="true">
+      <nb-step>
         <div class="step-container">
           <h3>
             Wizard completed!<br>
@@ -323,7 +325,9 @@
             or export the curl or the payload
           </h3>
 
-          <button nbButton (click)="stepper.reset()"></button>
+          <!--<button nbButton (click)="stepper.reset()">{{"Come back" | translate}}</button>
+          <br />
+          <br />-->
           <p>Example curl.</p>
           <br />
           <br />

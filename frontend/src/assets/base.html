@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeOpen - Il Futuro della Condivisione Dati</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .story-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .story-header {
+            text-align: center;
+            padding: 80px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin: 40px 0;
+            color: white;
+        }
+
+        .story-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #fff, #a8edea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .story-subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .story-meta {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .story-section {
+            margin: 80px 0;
+            padding: 60px 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        .section-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            color: #555;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .visualization-container {
+            position: relative;
+            height: 400px;
+            margin: 40px 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .data-network {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .company-node {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .company-node:nth-child(1) { top: 20%; left: 20%; }
+        .company-node:nth-child(2) { top: 20%; right: 20%; }
+        .company-node:nth-child(3) { bottom: 20%; left: 20%; }
+        .company-node:nth-child(4) { bottom: 20%; right: 20%; }
+
+        .beopen-hub {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.4);
+            animation: rotate 10s linear infinite;
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            opacity: 0.6;
+            animation: flow 3s ease-in-out infinite;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .stat-card {
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 45px rgba(102, 126, 234, 0.4);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .interactive-demo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 20px;
+            margin: 60px 0;
+            text-align: center;
+        }
+
+        .demo-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .demo-button:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.3);
+        }
+
+        .benefits-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .benefit-item {
+            padding: 30px;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .benefit-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .benefit-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .benefit-text {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 80px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            margin: 60px 0;
+            color: white;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .cta-text {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            background: white;
+            color: #667eea;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .map-container {
+            position: relative;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px 0;
+        }
+
+        .europe-map {
+            width: 100%;
+            height: 400px;
+            position: relative;
+        }
+
+        .map-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .country {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            stroke: #fff;
+            stroke-width: 2;
+        }
+
+        .country.participating {
+            fill: #667eea;
+        }
+
+        .country.participating:hover {
+            fill: #5a6fd8;
+            transform: scale(1.1);
+            filter: drop-shadow(0 5px 15px rgba(102, 126, 234, 0.4));
+        }
+
+        .country.non-participating {
+            fill: #e1e5e9;
+        }
+
+        .country.non-participating:hover {
+            fill: #d1d5d9;
+        }
+
+        .map-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .legend-color.participating {
+            background: #667eea;
+        }
+
+        .legend-color.non-participating {
+            background: #e1e5e9;
+        }
+
+        .country-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .country-tooltip.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tooltip-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .tooltip-companies {
+            color: #a8edea;
+            margin: 0;
+        }
+
+        .hvd-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .hvd-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hvd-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+
+        .hvd-card:hover::before {
+            opacity: 1;
+            transform: rotate(45deg) translate(50%, 50%);
+        }
+
+        .hvd-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .hvd-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .hvd-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .hvd-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .hvd-stats {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+        }
+
+        .hvd-stat {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .bucket-showcase {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            color: white;
+        }
+
+        .bucket-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .bucket-visual {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bucket-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .bucket-item {
+            width: 100px;
+            height: 100px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            animation: bucketPulse 2s infinite;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .bucket-item[data-type="hvd"] {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+        }
+
+        .bucket-item[data-type="private"] {
+            background: linear-gradient(45deg, #48cae4, #0077b6);
+        }
+
+        .bucket-item[data-type="shared"] {
+            background: linear-gradient(45deg, #06ffa5, #00d4aa);
+        }
+
+        .bucket-item[data-type="analytics"] {
+            background: linear-gradient(45deg, #a8edea, #fed6e3);
+            color: #2c3e50;
+        }
+
+        .bucket-flow {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .flow-arrow {
+            width: 40px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #00d4aa, transparent);
+            border-radius: 2px;
+            animation: flowAnimation 2s infinite;
+        }
+
+        .flow-arrow:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .flow-arrow:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        .bucket-features {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .bucket-feature {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .bucket-feature:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(10px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .feature-content h4 {
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .feature-content p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .bucket-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .bucket-stat {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .bucket-stat:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .stat-content .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-content .stat-label {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        @keyframes bucketPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes flowAnimation {
+            0% { opacity: 0; transform: translateX(-20px); }
+            50% { opacity: 1; transform: translateX(0); }
+            100% { opacity: 0; transform: translateX(20px); }
+        }
+
+        @media (max-width: 768px) {
+            .story-title {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .company-node {
+                width: 60px;
+                height: 60px;
+                font-size: 0.7rem;
+            }
+            
+            .beopen-hub {
+                width: 100px;
+                height: 100px;
+                font-size: 1rem;
+            }
+            
+            .bucket-main {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .bucket-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .bucket-item {
+                width: 80px;
+                height: 80px;
+                font-size: 0.8rem;
+            }
+            
+            .hvd-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .map-legend {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="story-container">
+        <!-- Header -->
+        <div class="story-header">
+            <h1 class="story-title">BeOpen</h1>
+            <p class="story-subtitle">Rivoluzionare la condivisione dati tra aziende</p>
+            <div class="story-meta">
+                Pubblicato il 3 Luglio 2025<br>
+                Una storia sul futuro della collaborazione aziendale attraverso i dati
+            </div>
+        </div>
+
+        <!-- Introduzione -->
+        <div class="story-section">
+            <h2 class="section-title">Il Problema della Frammentazione dei Dati</h2>
+            <p class="section-text">
+                Nel panorama aziendale moderno, le aziende producono quotidianamente una quantità enorme di dati. 
+                Tuttavia, questi dati rimangono spesso isolati in <span class="highlight">silos organizzativi</span>, 
+                impedendo la creazione di valore attraverso la collaborazione inter-aziendale.
+            </p>
+            <p class="section-text">
+                BeOpen nasce per superare questa frammentazione, creando un ecosistema dove i dati possono 
+                fluire liberamente tra le organizzazioni, nel rispetto della privacy e della sicurezza.
+            </p>
+        </div>
+
+        <!-- Mappa Europa -->
+        <div class="story-section">
+            <h2 class="section-title">L'Europa si Unisce per i Dati Aperti</h2>
+            <p class="section-text">
+                BeOpen sta crescendo rapidamente in tutta Europa. Questi sono i paesi che hanno già 
+                aderito all'iniziativa e stanno trasformando il loro ecosistema di condivisione dati:
+            </p>
+            
+            <div class="map-container">
+                <div class="europe-map">
+                    <svg viewBox="0 0 1000 600" class="map-svg">
+                        <!-- Sfondo mappa -->
+                        <rect width="1000" height="600" fill="#f8f9fa"/>
+                        
+                        <!-- Paesi aderenti (colorati) -->
+                        <g class="participating-countries">
+                            <!-- Italia -->
+                            <path d="M480 380 L520 380 L530 420 L510 450 L480 440 L460 420 Z" 
+                                  class="country participating" data-country="Italia" data-companies="1,247"/>
+                            
+                            <!-- Germania -->
+                            <path d="M480 280 L520 280 L520 320 L480 320 Z" 
+                                  class="country participating" data-country="Germania" data-companies="2,156"/>
+                            
+                            <!-- Francia -->
+                            <path d="M420 320 L460 320 L460 360 L420 360 Z" 
+                                  class="country participating" data-country="Francia" data-companies="1,834"/>
+                            
+                            <!-- Spagna -->
+                            <path d="M380 360 L420 360 L420 400 L380 400 Z" 
+                                  class="country participating" data-country="Spagna" data-companies="1,092"/>
+                            
+                            <!-- Olanda -->
+                            <path d="M460 260 L480 260 L480 280 L460 280 Z" 
+                                  class="country participating" data-country="Olanda" data-companies="876"/>
+                            
+                            <!-- Polonia -->
+                            <path d="M520 260 L560 260 L560 300 L520 300 Z" 
+                                  class="country participating" data-country="Polonia" data-companies="743"/>
+                        </g>
+                        
+                        <!-- Paesi non aderenti (grigi) -->
+                        <g class="non-participating-countries">
+                            <!-- Regno Unito -->
+                            <path d="M400 240 L440 240 L440 280 L400 280 Z" 
+                                  class="country non-participating" data-country="Regno Unito"/>
+                            
+                            <!-- Norvegia -->
+                            <path d="M480 200 L520 200 L520 240 L480 240 Z" 
+                                  class="country non-participating" data-country="Norvegia"/>
+                            
+                            <!-- Svezia -->
+                            <path d="M520 180 L560 180 L560 220 L520 220 Z" 
+                                  class="country non-participating" data-country="Svezia"/>
+                        </g>
+                    </svg>
+                </div>
+                
+                <div class="map-legend">
+                    <div class="legend-item">
+                        <div class="legend-color participating"></div>
+                        <span>Paesi aderenti a BeOpen</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color non-participating"></div>
+                        <span>Paesi potenziali</span>
+                    </div>
+                </div>
+                
+                <div class="country-tooltip" id="countryTooltip">
+                    <div class="tooltip-content">
+                        <h4 class="tooltip-title"></h4>
+                        <p class="tooltip-companies"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="section-text">
+                Passa il mouse sui paesi per vedere il numero di aziende che hanno già 
+                adottato BeOpen. L'<span class="highlight">effetto rete</span> sta crescendo esponenzialmente!
+            </p>
+        </div>
+
+        <!-- Visualizzazione Network -->
+        <div class="story-section">
+            <h2 class="section-title">Come Funziona BeOpen</h2>
+            <p class="section-text">
+                Immagina le tue aziende partner come nodi di una rete. Tradizionalmente, 
+                questi nodi sono disconnessi tra loro...
+            </p>
+            
+            <div class="visualization-container">
+                <div class="data-network">
+                    <div class="company-node">Azienda A</div>
+                    <div class="company-node">Azienda B</div>
+                    <div class="company-node">Azienda C</div>
+                    <div class="company-node">Azienda D</div>
+                    <div class="beopen-hub">BeOpen</div>
+                    
+                    <!-- Linee di connessione -->
+                    <div class="connection-line" style="top: 30%; left: 35%; width: 30%; transform: rotate(-30deg);"></div>
+                    <div class="connection-line" style="top: 30%; right: 35%; width: 30%; transform: rotate(30deg);"></div>
+                    <div class="connection-line" style="bottom: 30%; left: 35%; width: 30%; transform: rotate(30deg);"></div>
+                    <div class="connection-line" style="bottom: 30%; right: 35%; width: 30%; transform: rotate(-30deg);"></div>
+                </div>
+            </div>
+            
+            <p class="section-text">
+                ...ma con BeOpen, diventano parte di un <span class="highlight">ecosistema interconnesso</span> 
+                dove i dati possono essere condivisi in modo sicuro e controllato.
+            </p>
+        </div>
+
+        <!-- HVDataset Section -->
+        <div class="story-section">
+            <h2 class="section-title">High-Value Datasets: Il Cuore dell'Innovazione</h2>
+            <p class="section-text">
+                I <span class="highlight">High-Value Datasets (HVD)</span> sono dataset riconosciuti dalla 
+                Commissione Europea come aventi un alto potenziale per beneficiare la società, l'ambiente 
+                e l'economia. BeOpen facilita la condivisione di questi dataset cruciali.
+            </p>
+            
+            <div class="hvd-grid">
+                <div class="hvd-card">
+                    <div class="hvd-icon">🌍</div>
+                    <h3 class="hvd-title">Dati Geospaziali</h3>
+                    <p class="hvd-description">
+                        Mappe, coordinate e dati territoriali per supportare 
+                        pianificazione urbana e gestione ambientale.
+                    </p>
+                    <div class="hvd-stats">
+                        <span class="hvd-stat">+1,200 dataset</span>
+                        <span class="hvd-stat">340 organizzazioni</span>
+                    </div>
+                </div>
+                
+                <div class="hvd-card">
+                    <div class="hvd-icon">📊</div>
+                    <h3 class="hvd-title">Dati Statistici</h3>
+                    <p class="hvd-description">
+                        Statistiche demografiche, economiche e sociali 
+                        per ricerca e analisi di mercato.
+                    </p>
+                    <div class="hvd-stats">
+                        <span class="hvd-stat">+850 dataset</span>
+                        <span class="hvd-stat">195 organizzazioni</span>
+                    </div>
+                </div>
+                
+                <div class="hvd-card">
+                    <div class="hvd-icon">🏢</div>
+                    <h3 class="hvd-title">Dati Aziendali</h3>
+                    <p class="hvd-description">
+                        Registri imprese, dati finanziari e informazioni 
+                        societarie per trasparenza e compliance.
+                    </p>
+                    <div class="hvd-stats">
+                        <span class="hvd-stat">+2,100 dataset</span>
+                        <span class="hvd-stat">420 organizzazioni</span>
+                    </div>
+                </div>
+                
+                <div class="hvd-card">
+                    <div class="hvd-icon">🌤️</div>
+                    <h3 class="hvd-title">Dati Meteorologici</h3>
+                    <p class="hvd-description">
+                        Previsioni, dati climatici e informazioni 
+                        ambientali per agricoltura e industria.
+                    </p>
+                    <div class="hvd-stats">
+                        <span class="hvd-stat">+675 dataset</span>
+                        <span class="hvd-stat">125 organizzazioni</span>
+                    </div>
+                </div>
+                
+                <div class="hvd-card">
+                    <div class="hvd-icon">🚦</div>
+                    <h3 class="hvd-title">Dati Mobilità</h3>
+                    <p class="hvd-description">
+                        Trasporti pubblici, traffico e infrastrutture 
+                        per smart city e logistica.
+                    </p>
+                    <div class="hvd-stats">
+                        <span class="hvd-stat">+920 dataset</span>
+                        <span class="hvd-stat">280 organizzazioni</span>
+                    </div>
+                </div>
+                
+                <div class="hvd-card">
+                    <div class="hvd-icon">🌱</div>
+                    <h3 class="hvd-title">Dati Ambientali</h3>
+                    <p class="hvd-description">
+                        Qualità dell'aria, rifiuti e sostenibilità 
+                        per monitoraggio ambientale.
+                    </p>
+                    <div class="hvd-stats">
+                        <span class="hvd-stat">+540 dataset</span>
+                        <span class="hvd-stat">165 organizzazioni</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bucket Platform Section -->
+        <div class="story-section">
+            <h2 class="section-title">Piattaforma Bucket: La Tecnologia Dietro BeOpen</h2>
+            <p class="section-text">
+                La <span class="highlight">piattaforma Bucket</span> è il cuore tecnologico di BeOpen, 
+                progettata per gestire la condivisione sicura e scalabile dei dati tra organizzazioni.
+            </p>
+            
+            <div class="bucket-showcase">
+                <div class="bucket-main">
+                    <div class="bucket-visual">
+                        <div class="bucket-container">
+                            <div class="bucket-item" data-type="hvd">HVD</div>
+                            <div class="bucket-item" data-type="private">Private</div>
+                            <div class="bucket-item" data-type="shared">Shared</div>
+                            <div class="bucket-item" data-type="analytics">Analytics</div>
+                        </div>
+                        <div class="bucket-flow">
+                            <div class="flow-arrow"></div>
+                            <div class="flow-arrow"></div>
+                            <div class="flow-arrow"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bucket-features">
+                        <div class="bucket-feature">
+                            <div class="feature-icon">🔐</div>
+                            <div class="feature-content">
+                                <h4>Sicurezza Multi-Layer</h4>
+                                <p>Crittografia, autenticazione e audit trail completi</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bucket-feature">
+                            <div class="feature-icon">⚡</div>
+                            <div class="feature-content">
+                                <h4>Performance Elevate</h4>
+                                <p>Architettura cloud-native con scalabilità automatica</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bucket-feature">
+                            <div class="feature-icon">🔄</div>
+                            <div class="feature-content">
+                                <h4>Sincronizzazione Real-time</h4>
+                                <p>Aggiornamenti istantanei su tutti i nodi della rete</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bucket-feature">
+                            <div class="feature-icon">🎯</div>
+                            <div class="feature-content">
+                                <h4>Governance Intelligente</h4>
+                                <p>Controlli automatici di qualità e compliance</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bucket-stats">
+                <div class="bucket-stat">
+                    <div class="stat-icon">💾</div>
+                    <div class="stat-content">
+                        <div class="stat-number">15.2 PB</div>
+                        <div class="stat-label">Dati Gestiti</div>
+                    </div>
+                </div>
+                <div class="bucket-stat">
+                    <div class="stat-icon">🔄</div>
+                    <div class="stat-content">
+                        <div class="stat-number">1M+</div>
+                        <div class="stat-label">Transazioni/Giorno</div>
+                    </div>
+                </div>
+                <div class="bucket-stat">
+                    <div class="stat-icon">🚀</div>
+                    <div class="stat-content">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">Uptime</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiche -->
+        <div class="story-section">
+            <h2 class="section-title">I Numeri della Trasformazione</h2>
+            <p class="section-text">
+                Le aziende che adottano piattaforme di condivisione dati come BeOpen 
+                registrano miglioramenti significativi nelle loro performance:
+            </p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">75%</div>
+                    <div class="stat-label">Riduzione Time-to-Market</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3.2x</div>
+                    <div class="stat-label">Aumento ROI sui Dati</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">60%</div>
+                    <div class="stat-label">Miglioramento Decision Making</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">90%</div>
+                    <div class="stat-label">Riduzione Costi IT</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Benefici -->
+        <div class="story-section">
+            <h2 class="section-title">I Vantaggi di BeOpen</h2>
+            <div class="benefits-list">
+                <div class="benefit-item">
+                    <div class="benefit-icon">🔒</div>
+                    <h3 class="benefit-title">Sicurezza Garantita</h3>
+                    <p class="benefit-text">
+                        Crittografia end-to-end e controlli di accesso granulari 
+                        per proteggere i tuoi dati più sensibili.
+                    </p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">⚡</div>
+                    <h3 class="benefit-title">Velocità di Integrazione</h3>
+                    <p class="benefit-text">
+                        API standardizzate e connettori pre-built per 
+                        integrare rapidamente i tuoi sistemi esistenti.
+                    </p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">📊</div>
+                    <h3 class="benefit-title">Analytics Avanzate</h3>
+                    <p class="benefit-text">
+                        Dashboard in tempo reale e strumenti di analisi 
+                        per massimizzare il valore dei dati condivisi.
+                    </p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🤝</div>
+                    <h3 class="benefit-title">Collaborazione Semplificata</h3>
+                    <p class="benefit-text">
+                        Interfacce intuitive che rendono la condivisione 
+                        dati accessibile a tutti i team aziendali.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Interattiva -->
+        <div class="interactive-demo">
+            <h2 class="section-title" style="color: white;">Prova BeOpen in Azione</h2>
+            <p class="section-text" style="color: white; opacity: 0.9;">
+                Esplora come BeOpen può trasformare la tua strategia di condivisione dati
+            </p>
+            <button class="demo-button" onclick="simulateDataFlow()">Simula Flusso Dati</button>
+            <button class="demo-button" onclick="showDashboard()">Visualizza Dashboard</button>
+            <button class="demo-button" onclick="exploreAPI()">Esplora API</button>
+        </div>
+
+        <!-- Casi d'Uso -->
+        <div class="story-section">
+            <h2 class="section-title">Casi d'Uso Reali</h2>
+            <p class="section-text">
+                <strong>Supply Chain Optimization:</strong> Un'azienda manifatturiera condivide i dati 
+                di produzione con i fornitori, riducendo i tempi di consegna del 40%.
+            </p>
+            <p class="section-text">
+                <strong>Customer 360:</strong> Un retailer integra i dati di vendita con quelli dei 
+                partner logistici, creando un'esperienza cliente seamless.
+            </p>
+            <p class="section-text">
+                <strong>Innovation Network:</strong> Una startup condivide i dati di ricerca con 
+                università e centri di ricerca, accelerando lo sviluppo di nuovi prodotti.
+            </p>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <h2 class="cta-title">Inizia la Tua Trasformazione Digitale</h2>
+            <p class="cta-text">
+                Unisciti alle aziende che hanno già scelto BeOpen per 
+                rivoluzionare la loro strategia di condivisione dati.
+            </p>
+            <a href="#" class="cta-button" onclick="startDemo()">Richiedi una Demo</a>
+        </div>
+    </div>
+
+    <script>
+        // Interattività mappa Europa
+        document.addEventListener('DOMContentLoaded', () => {
+            const countries = document.querySelectorAll('.country');
+            const tooltip = document.getElementById('countryTooltip');
+            
+            countries.forEach(country => {
+                country.addEventListener('mouseenter', (e) => {
+                    const countryName = e.target.dataset.country;
+                    const companies = e.target.dataset.companies;
+                    
+                    if (companies) {
+                        tooltip.querySelector('.tooltip-title').textContent = countryName;
+                        tooltip.querySelector('.tooltip-companies').textContent = `${companies} aziende registrate`;
+                        tooltip.classList.add('active');
+                    }
+                });
+                
+                country.addEventListener('mousemove', (e) => {
+                    tooltip.style.left = e.pageX + 10 + 'px';
+                    tooltip.style.top = e.pageY - 40 + 'px';
+                });
+                
+                country.addEventListener('mouseleave', () => {
+                    tooltip.classList.remove('active');
+                });
+            });
+        });
+
+        // Simulazioni interattive
+        function simulateDataFlow() {
+            alert('🚀 Simulazione avviata! I dati stanno fluendo attraverso la rete BeOpen...');
+            // In Angular, questo triggererebbe un componente di simulazione
+        }
+
+        function showDashboard() {
+            alert('📊 Dashboard apertura... Visualizzazione analytics in tempo reale!');
+            // In Angular, questo aprirebbe un componente dashboard
+        }
+
+        function exploreAPI() {
+            alert('🔧 API Explorer aperto! Esplora le nostre RESTful API...');
+            // In Angular, questo aprirebbe la documentazione API
+        }
+
+        function startDemo() {
+            alert('✨ Demo richiesta! Ti contatteremo presto per una presentazione personalizzata.');
+            // In Angular, questo aprirebbe un form di contatto
+        }
+
+        // Animazioni scroll-based
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.story-section');
+            const scrollTop = window.pageYOffset;
+            
+            sections.forEach((section, index) => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                const windowHeight = window.innerHeight;
+                
+                if (scrollTop + windowHeight > sectionTop + 100) {
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        // Inizializzazione
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.story-section');
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(50px)';
+                section.style.transition = 'all 0.8s ease';
+            });
+        });
+    </script>
+</body>
+</html>

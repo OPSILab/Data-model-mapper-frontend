@@ -278,7 +278,7 @@ nb-context-menu {
 
 nb-select {
   .select-button {
-    
+
     min-width: nb-theme(select-min-width);
     cursor: nb-theme(select-cursor);
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
@@ -449,7 +449,7 @@ ng2-smart-table table tr.ng2-smart-titles th a.sort::before,
 ng2-smart-table table tr.ng2-smart-titles th a.sort::after {
   content: '';
   position: absolute;
-  right: 10px;// 4%; // Sposta il triangolino più a destra (aumenta se vuoi ancora più margine)
+  right: 10px; // 4%; // Sposta il triangolino più a destra (aumenta se vuoi ancora più margine)
   top: 50%;
   transform: translateY(-50%);
   border-left: 5px solid transparent;
@@ -668,4 +668,21 @@ table.custom-table thead {
   to {
     transform: translateY(-50%) rotate(359deg)
   }
+}
+
+::ng-deep nb-layout-column {
+  background: #ff0000 !important;
+  /* oppure il colore che desideri */
+  background-color: #ff0000 !important;
+  /* oppure il colore che desideri */
+  color: #003344 !important;
+}
+
+::ng-deep nb-layout-column * {
+  background-color: #00ff95 !important;
+}
+
+body ngx-app ngx-pages ngx-one-column-layout nb-layout nb-layout-column {
+  background-color: #E0DDCF !important;
+  color: #003344 !important;
 }

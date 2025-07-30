@@ -594,11 +594,6 @@
       color: #2c3e50;
     }
 
-    .bucket-item[data-type="generic"] {
-      background: linear-gradient(45deg, #667eea, #764ba2);
-      color: #2c3e50;
-    }
-
     .bucket-flow {
       display: flex;
       justify-content: center;
@@ -981,7 +976,7 @@
         Il Data model mapper consente agli utenti di definire le regole di mappatura tra i loro dati e il modello
         (eventualmente) NGSI.
         Attraverso un'interfaccia intuitiva, gli utenti possono selezionare le entità e gli attributi da mappare,
-        definire le trasformazioni necessarie e generare l'output.
+        definire le trasformazioni necessarie e generare automaticamente il modello NGSI.
         I formati di input supportati includono JSON, GEOJSON, CSV, rendendo il processo di integrazione dei dati
         semplice e veloce.
         I formati di output possono essere JSON e GEOJSON.
@@ -1073,6 +1068,18 @@
       <div class="process-steps" style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start;">
         <!-- Step List -->
         <div style="flex: 1 1 320px;">
+          <ol style="margin-left: 1.5em; font-size: 1.15rem; color: #444;">
+            <li><strong>Impostazione configurazione:</strong> Definisci le opzioni di mappatura e trasformazione.</li>
+            <li><strong>Selezione formato e sorgente di input:</strong> Scegli tra <span class="highlight">file
+                locale</span>, <span class="highlight">URL</span>, <span class="highlight">DB interno</span> o <span
+                class="highlight">Minio</span>.</li>
+            <li><strong>Caricamento file sorgente:</strong> Importa i dati da trasformare.</li>
+            <li><strong>Scelta o caricamento schema di output:</strong> Seleziona o carica lo schema che rappresenta la
+              struttura finale.</li>
+            <li><strong>Definizione file di mappatura:</strong> Collega input e output tramite regole personalizzate.
+            </li>
+            <li><strong>Avvio trasformazione:</strong> Esegui la conversione dei dati.</li>
+          </ol>
           <div style="margin-top: 20px; font-size: 1.08rem;"></div>
           <span class="highlight">Risultato:</span> scaricabile in <strong>JSON</strong> o <strong>GEOJSON</strong>,
           oppure inviabile direttamente su <strong>Orion</strong>.<br>
@@ -1084,58 +1091,60 @@
           <strong>curl</strong> e il <strong>body</strong> per l’API, facilitando integrazione e automazione.
         </div>
       </div>
-      <div class="bucket-showcase">
-        <div class="bucket-main">
-          <div class="bucket-visual">
-            <div class="bucket-container">
-              <div class="bucket-item" data-type="hvd">Input</div>
-              <div class="bucket-item" data-type="private">Config</div>
-              <div class="bucket-item" data-type="shared">Schema</div>
-              <div class="bucket-item" data-type="analytics">Map</div>
-            </div>
-            <div class="bucket-flow">
-              <div class="flow-arrow"></div>
-              <div class="flow-arrow"></div>
-              <div class="flow-arrow"></div>
-            </div>
-          </div>
-
-          <div class="bucket-features">
-            <div class="bucket-feature">
-              <div class="feature-icon">📂</div>
-              <div class="feature-content">
-                <h4>Input da piu' sorgenti</h4>
-                <p>Può essere un file caricato dall'utente, un URL, un file precedenemente salvato sul DB o un file su Minio</p>
-              </div>
-            </div>
-
-            <div class="bucket-feature">
-              <div class="feature-icon">⚙️</div>
-              <div class="feature-content">
-                <h4>Configurazione</h4>
-                <p>La configurazione ha una serie di parametri che influiscono sul processo di mappatura e flusso dei dati</p>
-              </div>
-            </div>
-
-            <div class="bucket-feature">
-              <div class="feature-icon">🧾</div>
-              <div class="feature-content">
-                <h4>Schema</h4>
-                <p>Lo schema definisce la struttura del file di output</p>
-              </div>
-            </div>
-
-            <div class="bucket-feature">
-              <div class="feature-icon">🔀</div>
-              <div class="feature-content">
-                <h4>Map</h4>
-                <p>Il file di mapping definisce la relazione tra le proprietà del file di input e del file di output</p>
-              </div>
-            </div>
-          </div>
+      <!-- Graphic Schema -->
+      <div style="flex: 1 1 320px; min-width: 320px;">
+        <svg width="320" height="340" viewBox="0 0 320 340" style="display: block; margin: 0 auto;">
+          <!-- Steps -->
+          <g>
+            <circle cx="160" cy="40" r="28" fill="#667eea" />
+            <text x="160" y="45" text-anchor="middle" fill="#fff" font-size="1.1em" font-family="Segoe UI">Config</text>
+          </g>
+          <g>
+            <circle cx="60" cy="110" r="28" fill="#a8edea" />
+            <text x="60" y="115" text-anchor="middle" fill="#2c3e50" font-size="1.1em"
+              font-family="Segoe UI">Input</text>
+          </g>
+          <g>
+            <circle cx="260" cy="110" r="28" fill="#fed6e3" />
+            <text x="260" y="115" text-anchor="middle" fill="#2c3e50" font-size="1.1em"
+              font-family="Segoe UI">File</text>
+          </g>
+          <g>
+            <circle cx="60" cy="200" r="28" fill="#feca57" />
+            <text x="60" y="205" text-anchor="middle" fill="#2c3e50" font-size="1.1em"
+              font-family="Segoe UI">Schema</text>
+          </g>
+          <g>
+            <circle cx="260" cy="200" r="28" fill="#ff6b6b" />
+            <text x="260" y="205" text-anchor="middle" fill="#fff" font-size="1.1em"
+              font-family="Segoe UI">Mapping</text>
+          </g>
+          <g>
+            <circle cx="160" cy="270" r="28" fill="#764ba2" />
+            <text x="160" y="275" text-anchor="middle" fill="#fff" font-size="1.1em"
+              font-family="Segoe UI">Output</text>
+          </g>
+          <!-- Arrows -->
+          <g stroke="#667eea" stroke-width="2" marker-end="url(#arrow)">
+            <line x1="160" y1="68" x2="60" y2="110" />
+            <line x1="160" y1="68" x2="260" y2="110" />
+            <line x1="60" y1="138" x2="60" y2="172" />
+            <line x1="260" y1="138" x2="260" y2="172" />
+            <line x1="60" y1="228" x2="160" y2="270" />
+            <line x1="260" y1="228" x2="160" y2="270" />
+          </g>
+          <!-- Arrowhead definition -->
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"
+              markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#667eea" />
+            </marker>
+          </defs>
+        </svg>
+        <div style="text-align: center; font-size: 0.98rem; color: #555; margin-top: 10px;">
+          <em>Schema grafico del processo di mappatura dati</em>
         </div>
       </div>
-
     </div>
 
     <div class="hvd-grid">
