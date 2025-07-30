@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { NgxConfigureService } from 'ngx-configure';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { System, AppConfig } from '../../model/appConfig';
 import { ErrorDialogService } from '../error-dialog/error-dialog.service';
 import { DMMService } from '../data-model-mapper/dmm.service';
@@ -45,6 +45,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   private mapRecords: any[];
   private unsubscribe: Subject<void> = new Subject();
   test: any;
+  currentTheme: any;
+  card = true
 
   constructor(
     private router: Router,
@@ -53,7 +55,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private configService: NgxConfigureService,
     private dialogService: NbDialogService,
-    //private themeService: NbThemeService,
+    private themeService: NbThemeService,
     public route: ActivatedRoute //@Inject(DOCUMENT) public document: Document,
   ) {
     //this.themeService.changeTheme('default');
@@ -79,6 +81,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
+  themeChanged(themeName: string) {
+    console.log('Changing theme to:', themeName);
+  }
+
   onPageSizeChange(newSize: number) {
     let page = Math.round(this.source.getPaging().page * this.source.getPaging().perPage / newSize)
     this.source.setPaging(page, newSize, true);
@@ -100,6 +106,20 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
     //this.onPageSizeChange(5);
     this.source.setPaging(1, 5, true);
+    console.log('source paging set to 1, 5');
+    this.themeService
+      .onThemeChange()
+      .subscribe((themeName) => {
+        console.log('Theme changed to:', themeName);
+        this.currentTheme = themeName
+        if (themeName.name === 'custom') {
+          this.card = true;
+         }
+        else {
+          this.card = false;
+         }
+        //this.cardChange(this.card);
+      });
   }
 
   ngOnDestroy(): void {

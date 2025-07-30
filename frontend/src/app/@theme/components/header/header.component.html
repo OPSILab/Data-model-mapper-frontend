@@ -11,7 +11,7 @@
 
 <div class="header-container">
   <!-- <nb-icon nbPrefix icon="globe-outline"></nb-icon> -->
-  <nb-select size="tiny" placeholder="Theme" (selectedChange)="changeTheme($event)" [selected]="currentTheme"
+  <nb-select size="tiny" style="min-width: 250px;" placeholder="Theme" (selectedChange)="changeTheme($event)" [selected]="currentTheme"
     status="primary">
     <nb-option *ngFor="let theme of themes" [value]="theme.value" class="d-flex flex-row align-items-center lang-select">
       <nb-user size="small" [name]="theme.name | uppercase" showTitle="false"> </nb-user>

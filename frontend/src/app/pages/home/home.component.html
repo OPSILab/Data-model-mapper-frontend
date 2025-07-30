@@ -1,4 +1,10 @@
-<nb-card style="height: max-content;">
+<nb-card style="height: max-content;" [hidden]="!card">
+  <ng-container *ngTemplateOutlet="cardContent"></ng-container>
+</nb-card>
+<div [hidden]="card">
+  <ng-container *ngTemplateOutlet="cardContent"></ng-container>
+</div>
+<ng-template #cardContent>
   <nb-card-header class="h3">
     {{ 'general.menu.map_records' | translate }}
     <button *ngIf="test" style="float: right" nbButton appearance="outline" shape="semi-round" size="tiny" status="info"
@@ -32,4 +38,4 @@
     </nb-select>
 
   </nb-card-body>
-</nb-card>
+</ng-template>
