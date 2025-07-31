@@ -5,6 +5,15 @@ $nb-themes: nb-register-theme(( // Palette colori principali
       color-warning: #ffc107,
       color-danger: #dc3545,
 
+      //color-primary-100: #000000,
+      //color-primary-500: #42a5f5, // colore delle pagine evidenziate e anche della pagina attuale evidenziata nella balle laterale sx, quindi deve essere diverso da quello della barra laterale sx
+      //color-primary-700: #000000,
+
+      color-success-500: #A5CA70,
+      color-info-500: #42a5f5,
+      //color-warning-500: #FFAA00,
+      //color-danger-500: #FF3D71,
+
       // Colori di sfondo
       background-basic-color-1: #ffffff, // sfondo principale celeste chiaro
       background-basic-color-2: #ffffff,

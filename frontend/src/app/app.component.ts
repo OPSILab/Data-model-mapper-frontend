@@ -19,7 +19,6 @@ import { OidcJWTToken } from './auth/model/oidc';
 
 @Component({
   selector: 'ngx-app',
-  styleUrls: ['./@theme/styles/styles2.scss'],
   template: '<router-outlet></router-outlet>',
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -91,14 +90,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const column = document.querySelector('nb-layout-column') as HTMLElement;
-    if (column) {
-      column.style.backgroundColor = '#ff00eaff';
-      column.style.color = '#00ffd5ff';
-      console.log('Column styles applied:', column.style.backgroundColor, column.style.color);
-    }
-    document.documentElement.style.setProperty('--main-bg-color', '#00ff55ff');
-    document.documentElement.style.setProperty('--main-text-color', '#00ff55ff');
     this.themeService
       .onThemeChange()
       .subscribe((themeName) => {
@@ -107,7 +98,12 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
         if (themeName.name === 'custom') {
           document.documentElement.style.setProperty('--main-bg-color', '#E0DDCF');
           document.documentElement.style.setProperty('--main-text-color', '#003344');
-        } else {
+        }
+        else if(themeName.name == "dark") {
+          document.documentElement.style.setProperty('--main-bg-color', '#000000');
+          document.documentElement.style.setProperty('--main-text-color', '#FFFFFF');
+        }
+        else {
           document.documentElement.style.setProperty('--main-bg-color', '#ffffffff');
           document.documentElement.style.setProperty('--main-text-color', '#003344');
         }
