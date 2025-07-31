@@ -95,7 +95,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe((themeName) => {
         console.log('Theme changed to:', themeName);
         this.currentTheme = themeName
-        if (themeName.name === 'custom') {
+        if (themeName.name === 'custom' || themeName.name === 'custom3') {
           document.documentElement.style.setProperty('--main-bg-color', '#E0DDCF');
           document.documentElement.style.setProperty('--main-text-color', '#003344');
         }
