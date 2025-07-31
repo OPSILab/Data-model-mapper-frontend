@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { NbDialogService, NbThemeService } from '@nebular/theme';
 import { TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ng2-smart-table';
@@ -20,7 +20,7 @@ import { TestDmmEditorComponent } from './testDmmEditor/testDmmEditor.component'
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() value;
   @Output() updateResult = new EventEmitter<unknown>();
   schemaDir: string;
@@ -75,6 +75,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.loading = true;
   }
 
+  ngAfterViewInit(): void {
+    const column = document.querySelector('nb-layout-column') as HTMLElement;
+    if (column) {
+      column.style.backgroundColor = '#ffd000ff';
+      column.style.color = '#66ff00ff';
+      console.log('Column styles applied:', column.style.backgroundColor, column.style.color);
+    }
+  }
+
+
   automated() {
     this.dialogService.open(TestDmmEditorComponent, {
       //context: {dialog : true}
@@ -114,10 +124,10 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.currentTheme = themeName
         if (themeName.name === 'custom') {
           this.card = true;
-         }
+        }
         else {
           this.card = false;
-         }
+        }
         //this.cardChange(this.card);
       });
   }

@@ -1,0 +1,9 @@
+:root {
+  --main-bg-color: #ffffff;
+  --main-text-color: #000000;
+}
+
+body ngx-app ngx-pages ngx-one-column-layout nb-layout nb-layout-column {
+  background-color: var(--main-bg-color)!important;
+  color: var(--main-text-color)!important;
+}

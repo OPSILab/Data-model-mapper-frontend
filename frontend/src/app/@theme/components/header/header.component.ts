@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { NbMediaBreakpointsService, NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 
 import { map, takeUntil } from 'rxjs/operators';
@@ -15,7 +15,7 @@ import { AppConfig } from '../../../model/appConfig';
   templateUrl: './header.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   private destroy$: Subject<void> = new Subject<void>();
   userPictureOnly = false;
   user;
@@ -41,6 +41,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     {
       value: 'custom',
       name: 'Custom',
+    },
+    {
+      value: 'custom2',
+      name: 'custom2',
     }
   ];
 
@@ -67,6 +71,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private configService: NgxConfigureService
   ) {
     this.config = this.configService.config as AppConfig;
+  }
+
+  ngAfterViewInit(): void {
+    const column = document.querySelector('nb-layout-column') as HTMLElement;
+    if (column) {
+      column.style.backgroundColor = '#ffd000ff';
+      column.style.color = '#66ff00ff';
+      console.log('Column styles applied:', column.style.backgroundColor, column.style.color);
+    }
   }
 
   ngOnInit(): void {

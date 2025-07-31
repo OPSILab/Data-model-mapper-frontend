@@ -682,7 +682,20 @@ table.custom-table thead {
   background-color: #00ff95 !important;
 }
 
-body ngx-app ngx-pages ngx-one-column-layout nb-layout nb-layout-column {
-  background-color: #E0DDCF !important;
-  color: #003344 !important;
+/*body ngx-app ngx-pages ngx-one-column-layout nb-layout nb-layout-column {
+  background-color: #1900ff !important;
+  color: #ffffff !important;
+}*/
+
+:root {
+  --main-bg-color: #ffffff;
+  --main-text-color: #000000;
 }
+
+body ngx-app ngx-pages ngx-one-column-layout nb-layout nb-layout-column {
+  background-color: var(--main-bg-color)!important;
+  color: var(--main-text-color)!important;
+}
+
+
+

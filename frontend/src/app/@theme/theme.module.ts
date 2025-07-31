@@ -27,6 +27,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { CUSTOM } from './styles/theme.custom';
+import { CUSTOM2 } from './styles/theme.custom2';
 
 function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, '../../assets/i18n/', '.json');
@@ -79,9 +80,9 @@ export class ThemeModule {
       providers: [
         ...NbThemeModule.forRoot(
           {
-            name: 'custom',
+            name: 'custom2',
           },
-          [DEFAULT_THEME, DMM_THEME, CORPORATE_THEME, DARK_THEME, CUSTOM]
+          [DEFAULT_THEME, DMM_THEME, CORPORATE_THEME, DARK_THEME, CUSTOM, CUSTOM2]
         ).providers,
       ],
     };

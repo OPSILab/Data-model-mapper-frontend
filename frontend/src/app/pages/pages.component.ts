@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 //import { NbAccessChecker } from '@nebular/security';
 import { NbMenuItem } from '@nebular/theme';
 
@@ -17,7 +17,7 @@ import { takeUntil } from 'rxjs/operators';
     </ngx-one-column-layout>
   `,
 })
-export class PagesComponent implements OnInit, OnDestroy {
+export class PagesComponent implements OnInit, OnDestroy, AfterViewInit {
   public menu: NbMenuItem[];
   private hideServicesMenu: boolean;
   private hideConsentsMenu: boolean;
@@ -25,6 +25,15 @@ export class PagesComponent implements OnInit, OnDestroy {
   private unsubscribe: Subject<void> = new Subject();
 
   constructor(private translateService: TranslateService, private cdr: ChangeDetectorRef) {} //, private accessChecker: NbAccessChecker) { }
+
+  ngAfterViewInit(): void {
+    const column = document.querySelector('nb-layout-column') as HTMLElement;
+    if (column) {
+      column.style.backgroundColor = '#ffd000ff';
+      column.style.color = '#66ff00ff';
+      console.log('Column styles applied:', column.style.backgroundColor, column.style.color);
+    }
+  }
 
   ngOnInit(): void {
     /*
