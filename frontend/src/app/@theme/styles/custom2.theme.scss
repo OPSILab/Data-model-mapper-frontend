@@ -6,7 +6,7 @@ $nb-themes: nb-register-theme(( // Palette colori principali
       color-danger: #dc3545,
 
       //color-primary-100: #000000,
-      //color-primary-500: #42a5f5, // colore delle pagine evidenziate e anche della pagina attuale evidenziata nella balle laterale sx, quindi deve essere diverso da quello della barra laterale sx
+      color-primary-500: #A5CA70, // colore delle pagine evidenziate e anche della pagina attuale evidenziata nella balle laterale sx, quindi deve essere diverso da quello della barra laterale sx
       //color-primary-700: #000000,
 
       color-success-500: #A5CA70,
@@ -50,4 +50,16 @@ $nb-themes: nb-register-theme(( // Palette colori principali
       slide-out-background: linear-gradient(270deg, #222b45 0%, #151a30 100%),
       slide-out-shadow-color: 0 4px 14px 0 #8f9bb3,
       slide-out-shadow-color-rtl: 0 4px 14px 0 #8f9bb3,*/
+      /*sidebar-text-color: #ffffff, // colore del testo nella sidebar
+      menuTextActiveColor: #00ff0d,
+      sidebarDividerColor: #0000ff,
+      textControlColor: #00ff80,
+      menu-text-color: #ff00aa,
+      menu-text-hover-color: #ffffff,
+      menu-text-active-color: #00d68f,
+      menu-icon-color: #ff0000,
+      menu-icon-active-color: #00d68f,
+      menu-selected-icon-color: #00d68f,*/
+      menu-text-color: #ffffff
+
     ), custom2, default);
