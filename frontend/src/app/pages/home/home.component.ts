@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   @Output() updateResult = new EventEmitter<unknown>();
   schemaDir: string;
   loading = false;
-  pageSize = 5
+  pageSize = 7
   public isNotNew = false;
   private systemConfig: System;
   private systemLocale: string;
@@ -105,7 +105,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.errorService.openErrorDialog(error);
     }
     //this.onPageSizeChange(5);
-    this.source.setPaging(1, 5, true);
+    this.source.setPaging(1, 7, true);
     console.log('source paging set to 1, 5');
     this.themeService
       .onThemeChange()
@@ -150,7 +150,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         class: 'table table-bordered',
       },
       pagination: {
-        perPage: 5, // variabile che puoi aggiornare dinamicamente
+        perPage: 7, // variabile che puoi aggiornare dinamicamente
       },
       actions: {
         add: false,

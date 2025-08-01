@@ -690,8 +690,6 @@ table.custom-table thead {
 :root {
   --main-bg-color: #ffffff;
   --main-text-color: #000000;
-  --text-primary-hover-color: #0000ff;
-  --link-text-hover-color: #A5CA70;
 }
 
 body ngx-app ngx-pages ngx-one-column-layout nb-layout nb-layout-column {
@@ -699,10 +697,22 @@ body ngx-app ngx-pages ngx-one-column-layout nb-layout nb-layout-column {
   color: var(--main-text-color)!important;
 }
 
-path {
-  color: #ffffff !important;
-}
+/*path {
+  color: #000000;
+  fill: #000000;
+  stroke: #000000;
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 0;
+  stroke-dashoffset: 0;
+  stroke-miterlimit: 4;
+  stroke-opacity: 1;
+  fill-opacity: 1;
+  opacity: 1;
 
-.nb-theme-custom-2{
-  --link-text-hover-color: #A5CA70
-}
+}*/
+/* path {
+  filter: drop-shadow(0 0 4px #ff0000);
+ }*/
+

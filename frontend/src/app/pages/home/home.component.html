@@ -34,7 +34,7 @@
     </div>
     <ng2-smart-table [settings]="settings" [source]="source"> </ng2-smart-table>
     <nb-select [(selected)]="pageSize" (selectedChange)="onPageSizeChange($event)">
-      <nb-option *ngFor="let size of [5, 10, 20, 50]" [value]="size">{{ size }}</nb-option>
+      <nb-option *ngFor="let size of [5, 7, 10, 20, 50]" [value]="size">{{ size }}</nb-option>
     </nb-select>
 
   </nb-card-body>
