@@ -11,6 +11,7 @@
     "menu": {
       "home": "Home",
       "editor": "Mapper editor",
+      "landing": "Landing",
       "map_records": "File di mapping registrati"
     },
     "account": {

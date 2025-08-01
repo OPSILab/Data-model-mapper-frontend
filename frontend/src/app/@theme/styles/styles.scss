@@ -690,6 +690,8 @@ table.custom-table thead {
 :root {
   --main-bg-color: #ffffff;
   --main-text-color: #000000;
+  --text-primary-hover-color: #0000ff;
+  --link-text-hover-color: #A5CA70;
 }
 
 body ngx-app ngx-pages ngx-one-column-layout nb-layout nb-layout-column {
@@ -697,5 +699,10 @@ body ngx-app ngx-pages ngx-one-column-layout nb-layout nb-layout-column {
   color: var(--main-text-color)!important;
 }
 
+path {
+  color: #ffffff !important;
+}
 
-
+.nb-theme-custom-2{
+  --link-text-hover-color: #A5CA70
+}

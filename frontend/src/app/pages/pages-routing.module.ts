@@ -26,10 +26,20 @@ const routes: Routes = [
       },
       {
         path: 'home',
+        loadChildren: () => import('./landing/landing.module').then((m) => m.LandingModule),
+        canActivate: [AuthGuard],
+      },
+      /*{
+        path: 'home',
+        loadChildren: () => import('./home/home.module').then((m) => m.HomeModule),
+        canActivate: [AuthGuard],
+      },*/
+      {
+        path: 'mapper-records',
         loadChildren: () => import('./home/home.module').then((m) => m.HomeModule),
         canActivate: [AuthGuard],
       },
-            {
+      {
         path: 'landing',
         loadChildren: () => import('./landing/landing.module').then((m) => m.LandingModule),
         canActivate: [AuthGuard],
@@ -42,4 +52,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class PagesRoutingModule {}
+export class PagesRoutingModule { }
