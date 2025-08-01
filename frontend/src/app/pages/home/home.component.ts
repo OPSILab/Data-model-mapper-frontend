@@ -163,6 +163,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           title: this.recordLabel,
           type: 'text',
           width: '25%',
+          sortDirection: 'asc',
           valuePrepareFunction: (cell, row) => row.name,
         },
         description: {
