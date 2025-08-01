@@ -32,7 +32,7 @@ $nb-themes: nb-register-theme(( // Palette colori principali
 
       // NB: eredita valori dal tema 'default' se non specificati
       card-background-color: #F1F0EA, // #ffffff,// #586A6A,
-      context-menu-background-color: #ffffff,
+      context-menu-background-color: #42A5F5,
       button-secondary-background-color: #e0f7fa,
       tabset-tab-background-color: #e0f7fa,
       background-alternative-color-1: #e0f7fa,
@@ -60,6 +60,15 @@ $nb-themes: nb-register-theme(( // Palette colori principali
       menu-icon-color: #ff0000,
       menu-icon-active-color: #00d68f,
       menu-selected-icon-color: #00d68f,*/
-      menu-text-color: #ffffff
+      menu-text-color: #ffffff,
+      //color-primary-100: #ff0000,
+      //color-primary-200: #ff7b00,
+      //color-primary-300: #d9ff00,
+      //color-primary-400: #00ff55,
+      //color-primary-500: #003050,
+      color-primary-600: #A5CA70,
+      //color-primary-700: #e100ff,
+      //color-primary-800: #ff0080,
+      //color-primary-900: #386483,
 
     ), custom2, default);
