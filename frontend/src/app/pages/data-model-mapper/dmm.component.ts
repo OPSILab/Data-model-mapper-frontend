@@ -1,5 +1,5 @@
 import { AppConfig } from './../../model/appConfig';
-import { Component, OnInit, Inject, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Inject, OnChanges, SimpleChanges, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { DMMService } from './dmm.service';
 import { NbComponentStatus, NbDialogService, NbGlobalPhysicalPosition, NbToastrConfig, NbToastrService, NbWindowService } from '@nebular/theme';
 import * as _ from 'lodash';
@@ -23,11 +23,11 @@ function o(obj) {
 
 @Component({
   selector: 'app-root',
-  templateUrl: './dmm.component.html',
-  styleUrls: ['./dmm.component.scss'], //,
+  templateUrl: './stepper_test.html',// './dmm.component.html',
+  styleUrls: ['./stepper_test.scss',],// ['./dmm.component.scss'], //,
   //changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DMMComponent implements OnInit, OnChanges {
+export class DMMComponent implements OnInit, OnChanges, AfterViewInit {
   //TODO check if properties cleaning is required
 
   backendDown;
@@ -136,6 +136,74 @@ export class DMMComponent implements OnInit, OnChanges {
     public configService: NgxConfigureService //public ref : any //public ref: NbDialogRef<any>,
   ) {
     this.config = configService.config as AppConfig;
+  }
+
+  toBodyEditor() {
+    throw new Error('Method not implemented.');
+  }
+  toOutputEditor() {
+    throw new Error('Method not implemented.');
+  }
+  toMapEditor() {
+    throw new Error('Method not implemented.');
+  }
+  toSchema() {
+    throw new Error('Method not implemented.');
+  }
+  toConfig() {
+    throw new Error('Method not implemented.');
+  }
+
+  @ViewChild('step1') step1Ref!: ElementRef;
+
+  logStep1Content() {
+    console.log('Step 1 content:', this.step1Ref.nativeElement.textContent);
+  }
+
+  next0() {
+    this.logStep1Content()
+    if (this.currentStep < this.steps.length - 1) this.currentStep++;
+  }
+
+  prev0() {
+    if (this.currentStep > 0) this.currentStep--;
+  }
+
+  currentStep = 0;
+
+  steps = [
+    { label: 'Informazioni', content: 'Inserisci i tuoi dati personali.' },
+    { label: 'Conferma', content: 'Controlla e conferma le informazioni.' },
+    { label: 'Completato', content: 'Registrazione completata con successo!' },
+  ];
+
+  ngAfterViewInit() {
+    this.logAllSteps();
+  }
+
+  next() {
+    if (this.currentStep < this.steps.length - 1) this.currentStep++;
+  }
+
+  prev() {
+    if (this.currentStep > 0) this.currentStep--;
+  }
+
+  logOtherSteps() {
+    const step1 = document.getElementById('step-0');
+    const step2 = document.getElementById('step-1');
+    const step3 = document.getElementById('step-2');
+
+    console.log('Step 1:', step1?.textContent?.trim());
+    console.log('Step 2:', step2?.textContent?.trim());
+    console.log('Step 3:', step3?.textContent?.trim());
+  }
+
+  private logAllSteps() {
+    for (let i = 0; i < this.steps.length; i++) {
+      const el = document.getElementById(`step-${i}`);
+      console.log(`Step ${i}:`, el?.textContent?.trim());
+    }
   }
 
   updateMap() {

@@ -1,0 +1,31 @@
+<div class="stepper-container">
+  <div class="stepper">
+    <div
+      *ngFor="let step of steps; let i = index"
+      class="step"
+      [class.active]="i === currentStep"
+      [class.completed]="i < currentStep"
+    >
+      <div class="circle">{{ i + 1 }}</div>
+      <div class="label">{{ step.label }}</div>
+    </div>
+  </div>
+
+  <div class="step-content">
+    <div
+      class="step-panel"
+      *ngFor="let step of steps; let i = index"
+      [style.display]="i === currentStep ? 'block' : 'none'"
+      [attr.data-step]="i"
+      [id]="'step-' + i"
+    >
+      {{ step.content }}
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button (click)="prev()" [disabled]="currentStep === 0">Indietro</button>
+    <button (click)="next()" [disabled]="currentStep === steps.length - 1">Avanti</button>
+    <button (click)="logOtherSteps()">Leggi contenuto degli altri step</button>
+  </div>
+</div>
