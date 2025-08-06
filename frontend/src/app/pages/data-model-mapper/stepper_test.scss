@@ -49,11 +49,11 @@
 }
 
 .step.active .circle {
-  background: #3f51b5;
+  background: var(--color-info-500);
 }
 
 .step.completed .circle {
-  background: #4caf50;
+  background: var(--color-success-500);
 }
 
 .label {
@@ -85,7 +85,7 @@
     font-size: 1rem;
     border: none;
     border-radius: 8px;
-    background: #3f51b5;
+    background: var(--color-info-500);
     color: white;
     cursor: pointer;
     transition: background 0.2s;
@@ -96,7 +96,7 @@
     }
 
     &:hover:not(:disabled) {
-      background: #303f9f;
+      background:  var(--color-info-500);
     }
   }
 }

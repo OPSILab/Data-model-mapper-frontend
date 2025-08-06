@@ -1,7 +1,7 @@
 import { AppConfig } from './../../model/appConfig';
 import { Component, OnInit, Inject, OnChanges, SimpleChanges, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { DMMService } from './dmm.service';
-import { NbComponentStatus, NbDialogService, NbGlobalPhysicalPosition, NbToastrConfig, NbToastrService, NbWindowService } from '@nebular/theme';
+import { NbComponentStatus, NbDialogService, NbGlobalPhysicalPosition, NbThemeService, NbToastrConfig, NbToastrService, NbWindowService } from '@nebular/theme';
 import * as _ from 'lodash';
 import * as JSONEditor from '../../../../node_modules/jsoneditor/dist/jsoneditor.js';
 import { DOCUMENT } from '@angular/common';
@@ -124,6 +124,7 @@ export class DMMComponent implements OnInit, OnChanges, AfterViewInit {
   loading = false;
   loaded = true;
   dialogClosed: boolean;
+  themeColors: any;
 
   constructor(
     @Inject(DOCUMENT) public document: Document,
@@ -133,6 +134,7 @@ export class DMMComponent implements OnInit, OnChanges, AfterViewInit {
     public dmmService: DMMService,
     public toastrService: NbToastrService,
     public route: ActivatedRoute,
+    public themeService: NbThemeService,
     public configService: NgxConfigureService //public ref : any //public ref: NbDialogRef<any>,
   ) {
     this.config = configService.config as AppConfig;
@@ -364,6 +366,11 @@ export class DMMComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.themeService.getJsTheme().subscribe(theme => {
+      this.themeColors = theme.variables;
+      console.log('Colori del tema:', this.themeColors);
+      // Esempio: this.themeColors.primary
+    });
     editor.mapperEditor = undefined;
 
     this.source.sourceEditorContainer = this.document.getElementById('jsoneditor');
