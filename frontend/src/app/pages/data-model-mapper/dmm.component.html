@@ -50,133 +50,143 @@
   <nb-card-footer>
     <div class="stepper-container">
 
-      <div class="step" label="Source">
-        <p>To get started, select the type of input (CSV or JSON) and upload or paste your data.</p>
-        <p *ngIf="source.sourceRef !== '' && source.sourceRefFormat === 'url'">
-          URL:
-          <a class="mb-3" href="{{ source.sourceRef }}" target="_blank">
-            <i>{{ source.sourceRef }}</i></a>
-        </p>
-        <p *ngIf="source.sourceRef !== '' && source.sourceRefFormat === 'file'">
-          File: <i>{{ source.sourceRef }}</i>
-        </p>
-        <div class="mb-2" *ngIf="!dialog">
-          <nb-select [(ngModel)]="source.inputType" placeholder="Select Input Type" size="small"
-            (selectedChange)="onUpdateInputType($event)" (click)="fixBrokenPageBug()">
-            <nb-option value="csv">CSV</nb-option>
-            <nb-option value="json">JSON</nb-option>
-          </nb-select>
+      <div class="stepper">
+        <div *ngFor="let step of steps; let i = index" class="step" [class.active]="i === currentStep"
+          [class.completed]="i < currentStep">
+          <div class="circle">{{ i + 1 }}</div>
+          <div class="label">{{ step.label }}</div>
         </div>
-        <div style="padding-top: 30px"></div>
-        <p *ngIf="!dialog">Select a source file or upload your source file.</p>
-        <!--
+      </div>
+
+      <div class="step-content">
+        <div class="step-panel" [style.display]="0 === currentStep ? 'block' : 'none'" [attr.data-step]="0"
+          [id]="'step-' + 0">
+          <p>To get started, select the type of input (CSV or JSON) and upload or paste your data.</p>
+          <p *ngIf="source.sourceRef !== '' && source.sourceRefFormat === 'url'">
+            URL:
+            <a class="mb-3" href="{{ source.sourceRef }}" target="_blank">
+              <i>{{ source.sourceRef }}</i></a>
+          </p>
+          <p *ngIf="source.sourceRef !== '' && source.sourceRefFormat === 'file'">
+            File: <i>{{ source.sourceRef }}</i>
+          </p>
+          <div class="mb-2" *ngIf="!dialog">
+            <nb-select [(ngModel)]="source.inputType" placeholder="Select Input Type" size="small"
+              (selectedChange)="onUpdateInputType($event)" (click)="fixBrokenPageBug()">
+              <nb-option value="csv">CSV</nb-option>
+              <nb-option value="json">JSON</nb-option>
+            </nb-select>
+          </div>
+          <div style="padding-top: 30px"></div>
+          <p *ngIf="!dialog">Select a source file or upload your source file.</p>
+          <!--
             <br><br><br>
             <div style="padding-top:10px"></div>
 -->
-        <div class="mb-1" style="display: none" id="json-input">
-          <div class="mb-2">
-            <br /><br />
-            <nb-select id="selectSource" *ngIf="source.sourceFrom == 'minio'" placeholder="Select source file"
-              size="small" [(ngModel)]="source.selectedSource" (ngModelChange)="source.sourceChanged($event)"
-              (click)="fixBrokenPageBug()">
-              <!--<nb-option value="">---select source---</nb-option>-->
-              <nb-option *ngFor="let source of source.minioSources" value="{{ source.etag }}">{{ source.name
-                }}</nb-option>
-            </nb-select>
-            <nb-select id="selectSource" *ngIf="source.sourceFrom == 'db'" placeholder="Select source file" size="small"
-              [(ngModel)]="source.selectedSource" (ngModelChange)="source.sourceChanged($event)"
-              (click)="fixBrokenPageBug()">
-              <!--<nb-option value="">---select source---</nb-option>-->
-              <nb-option *ngFor="let source of source.dbSources" value="{{ source._id }}">{{ source.name
-                }}</nb-option>
-            </nb-select>
-            &nbsp;
-            <nb-select placeholder="From" size="small" [(ngModel)]="source.sourceFrom"
-              (ngModelChange)="source.sourceFromChanged($event)" (click)="fixBrokenPageBug()">
-              <!--<nb-option value="">---select source---</nb-option>-->
-              <nb-option value="minio">minio</nb-option>
-              <nb-option value="db">db</nb-option>
-            </nb-select>
-            &nbsp;
-            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('source', 'json')">
-              {{ 'general.editor.upload' | translate }}
-              <i class="mx-1 fas fa-file-import fa-lg"></i>
-            </button>
-            <button id="onUpdatePathForDataMap" nbButton class="mr-2" shape="rectangle" size="small"
-              (click)="source.onUpdatePathForDataMap(source.selectedPath, verifyRoot($event))">
-              {{ 'general.editor.confirm_source' | translate }}
-              <i class="mx-1 fas fa-file-import fa-lg"></i>
-            </button>
-            <!--
+          <div class="mb-1" style="display: none" id="json-input">
+            <div class="mb-2">
+              <br /><br />
+              <nb-select id="selectSource" *ngIf="source.sourceFrom == 'minio'" placeholder="Select source file"
+                size="small" [(ngModel)]="source.selectedSource" (ngModelChange)="source.sourceChanged($event)"
+                (click)="fixBrokenPageBug()">
+                <!--<nb-option value="">---select source---</nb-option>-->
+                <nb-option *ngFor="let source of source.minioSources" value="{{ source.etag }}">{{ source.name
+                  }}</nb-option>
+              </nb-select>
+              <nb-select id="selectSource" *ngIf="source.sourceFrom == 'db'" placeholder="Select source file"
+                size="small" [(ngModel)]="source.selectedSource" (ngModelChange)="source.sourceChanged($event)"
+                (click)="fixBrokenPageBug()">
+                <!--<nb-option value="">---select source---</nb-option>-->
+                <nb-option *ngFor="let source of source.dbSources" value="{{ source._id }}">{{ source.name
+                  }}</nb-option>
+              </nb-select>
+              &nbsp;
+              <nb-select placeholder="From" size="small" [(ngModel)]="source.sourceFrom"
+                (ngModelChange)="source.sourceFromChanged($event)" (click)="fixBrokenPageBug()">
+                <!--<nb-option value="">---select source---</nb-option>-->
+                <nb-option value="minio">minio</nb-option>
+                <nb-option value="db">db</nb-option>
+              </nb-select>
+              &nbsp;
+              <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('source', 'json')">
+                {{ 'general.editor.upload' | translate }}
+                <i class="mx-1 fas fa-file-import fa-lg"></i>
+              </button>
+              <button id="onUpdatePathForDataMap" nbButton class="mr-2" shape="rectangle" size="small"
+                (click)="source.onUpdatePathForDataMap(source.selectedPath, verifyRoot($event))">
+                {{ 'general.editor.confirm_source' | translate }}
+                <i class="mx-1 fas fa-file-import fa-lg"></i>
+              </button>
+              <!--
               <button nbButton class="mr-2" shape="rectangle" size="small" (click)="setMapEditor(true)">
                 {{ 'general.editor.update_field_list' | translate }}
                 <i class="mx-1 fas fa-lg"></i>
               </button>
               -->
-            <nb-select [(ngModel)]="source.selectedPath" placeholder="Select path" size="small"
-              (selectedChange)="source.onUpdatePathForDataMap($event, verifyRoot($event))">
-              <nb-option value=".root$$$">root.</nb-option>
-              <nb-option *ngFor="let path of source.paths" value="{{ path }}">.{{ path }}</nb-option>
-            </nb-select>
+              <nb-select [(ngModel)]="source.selectedPath" placeholder="Select path" size="small"
+                (selectedChange)="source.onUpdatePathForDataMap($event, verifyRoot($event))">
+                <nb-option value=".root$$$">root.</nb-option>
+                <nb-option *ngFor="let path of source.paths" value="{{ path }}">.{{ path }}</nb-option>
+              </nb-select>
+            </div>
+            <div style="height: 500px; margin-top: 10px" id="jsoneditor"></div>
           </div>
-          <div style="height: 500px; margin-top: 10px" id="jsoneditor"></div>
+          <div class="mb-2" id="csv-input" style="display: none">
+            <div class="mb-2">
+              <br /><br />
+              <nb-select id="selectSource" *ngIf="source.sourceFrom == 'minio'" placeholder="Select source file"
+                size="small" [(ngModel)]="source.selectedSource" (ngModelChange)="source.sourceChanged($event)"
+                (click)="fixBrokenPageBug()">
+                <!--<nb-option value="">---select source---</nb-option>-->
+                <nb-option *ngFor="let source of source.minioSources" value="{{ source.etag }}">{{ source.name
+                  }}</nb-option>
+              </nb-select>
+              <nb-select id="selectSource" *ngIf="source.sourceFrom == 'db'" placeholder="Select source file"
+                size="small" [(ngModel)]="source.selectedSource" (ngModelChange)="source.sourceChanged($event)"
+                (click)="fixBrokenPageBug()">
+                <!--<nb-option value="">---select source---</nb-option>-->
+                <nb-option *ngFor="let source of source.dbSources" value="{{ source._id }}">{{ source.name
+                  }}</nb-option> </nb-select>&nbsp;
+              <nb-select placeholder="From" size="small" [(ngModel)]="source.sourceFrom"
+                (ngModelChange)="source.sourceFromChanged($event)" (click)="fixBrokenPageBug()">
+                <!--<nb-option value="">---select source---</nb-option>-->
+                <nb-option value="minio">minio</nb-option>
+                <nb-option value="db">db</nb-option>
+              </nb-select>
+              &nbsp;
+              <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('source', 'csv')">
+                {{ 'general.editor.upload' | translate }}
+                <i class="mx-1 fas fa-file-import fa-lg"></i>
+              </button>
+              &nbsp;
+              <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateCSVTable()">
+                {{ 'general.editor.confirm_source' | translate }}
+                <i class="mx-1 fas fa-lg"></i>
+              </button>
+              <nb-select placeholder="Separator" size="small" [(selected)]="separatorItem"
+                (selectedChange)="updateConfig($event)">
+                <nb-option value=",">Comma separator</nb-option>
+                <nb-option value=";">Semi-colon separator</nb-option>
+                <nb-option value="\t">Tab separator</nb-option>
+              </nb-select>
+            </div>
+            <div class="mb-3" id="csveditor">
+              <nb-tabset>
+                <nb-tab tabTitle="CSV text">
+                  <textarea
+                    (blur)="updateCSVTable(); displayCSV(this.source.csvSourceData, this.csvtable, this.separatorItem)"
+                    id="textarea" nbInput rows="10" fullWidth="true" placeholder="Enter CVS text..."
+                    [(ngModel)]="source.csvSourceData"></textarea><!--(ngModelChange)=sourceEditorMode('code')-->
+                </nb-tab>
+                <nb-tab id="csv-table" tabTitle="CSV Table"> </nb-tab>
+              </nb-tabset>
+            </div>
+          </div>
         </div>
-        <div class="mb-2" id="csv-input" style="display: none">
-          <div class="mb-2">
-            <br /><br />
-            <nb-select id="selectSource" *ngIf="source.sourceFrom == 'minio'" placeholder="Select source file"
-              size="small" [(ngModel)]="source.selectedSource" (ngModelChange)="source.sourceChanged($event)"
-              (click)="fixBrokenPageBug()">
-              <!--<nb-option value="">---select source---</nb-option>-->
-              <nb-option *ngFor="let source of source.minioSources" value="{{ source.etag }}">{{ source.name
-                }}</nb-option>
-            </nb-select>
-            <nb-select id="selectSource" *ngIf="source.sourceFrom == 'db'" placeholder="Select source file" size="small"
-              [(ngModel)]="source.selectedSource" (ngModelChange)="source.sourceChanged($event)"
-              (click)="fixBrokenPageBug()">
-              <!--<nb-option value="">---select source---</nb-option>-->
-              <nb-option *ngFor="let source of source.dbSources" value="{{ source._id }}">{{ source.name
-                }}</nb-option> </nb-select>&nbsp;
-            <nb-select placeholder="From" size="small" [(ngModel)]="source.sourceFrom"
-              (ngModelChange)="source.sourceFromChanged($event)" (click)="fixBrokenPageBug()">
-              <!--<nb-option value="">---select source---</nb-option>-->
-              <nb-option value="minio">minio</nb-option>
-              <nb-option value="db">db</nb-option>
-            </nb-select>
-            &nbsp;
-            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="import('source', 'csv')">
-              {{ 'general.editor.upload' | translate }}
-              <i class="mx-1 fas fa-file-import fa-lg"></i>
-            </button>
-            &nbsp;
-            <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateCSVTable()">
-              {{ 'general.editor.confirm_source' | translate }}
-              <i class="mx-1 fas fa-lg"></i>
-            </button>
-            <nb-select placeholder="Separator" size="small" [(selected)]="separatorItem"
-              (selectedChange)="updateConfig($event)">
-              <nb-option value=",">Comma separator</nb-option>
-              <nb-option value=";">Semi-colon separator</nb-option>
-              <nb-option value="\t">Tab separator</nb-option>
-            </nb-select>
-          </div>
-          <div class="mb-3" id="csveditor">
-            <nb-tabset>
-              <nb-tab tabTitle="CSV text">
-                <textarea
-                  (blur)="updateCSVTable(); displayCSV(this.source.csvSourceData, this.csvtable, this.separatorItem)"
-                  id="textarea" nbInput rows="10" fullWidth="true" placeholder="Enter CVS text..."
-                  [(ngModel)]="source.csvSourceData"></textarea><!--(ngModelChange)=sourceEditorMode('code')-->
-              </nb-tab>
-              <nb-tab id="csv-table" tabTitle="CSV Table"> </nb-tab>
-            </nb-tabset>
-          </div>
-        </div>
-        <button nbButton  (click)="toConfig()">next</button>
-
       </div>
 
-      <div class="step" label="Config">
+      <div class="step-panel" [style.display]="1 === currentStep ? 'block' : 'none'" [attr.data-step]="1"
+        [id]="'step-' + 1">
         <p *ngIf="!dialog">Set transform config.</p>
         <br *ngIf="!dialog" />
         <br *ngIf="!dialog" />
@@ -193,10 +203,10 @@
         <br *ngIf="!dialog" />
         <br *ngIf="!dialog" />
         <div [hidden]="dialog" style="height: 500px" id="configEditor"></div>
-        <button nbButton  (click)="toSchema()">next</button>
       </div>
 
-      <div class="step" label="Schema">
+      <div class="step-panel" [style.display]="2 === currentStep ? 'block' : 'none'" [attr.data-step]="2"
+        [id]="'step-' + 2">
         <div class="mb-2">
           <p>Select a schema or upload your schema.</p>
           <p *ngIf="schemaRef !== '' && schemaRefFormat === 'url'">
@@ -222,33 +232,28 @@
                 {{ 'general.editor.generate_mapper' | translate }}
                 <i class="mx-1 fas fa-lg"></i>
               </button>-->
-
-          <!--
           <button id="generateMapper" nbButton class="mr-2" shape="rectangle" size="small"
             (click)="generateMapper(getSchema())">
             {{ 'general.editor.generate_mapper' | translate }}
             <i class="mx-1 fas fa-lg"></i>
           </button>
-          -->
-
           <br />
         </div>
         <div style="height: 500px" id="schemaEditor" (keydown)="onKeydownMain($event)"></div>
         <div style="padding-top: 50px"></div>
-        <button nbButton  (click)="toMapEditor()">next</button>
       </div>
 
-      <div class="step" label="Mapper">
+      <div class="step-panel" [style.display]="3 === currentStep ? 'block' : 'none'" [attr.data-step]="3"
+        [id]="'step-' + 3">
         <div class="mb-2">
           <p>Set your mapper settings.</p>
         </div>
         <div style="padding-top: 1px"></div>
         <div style="height: 500px" id="jsoneditor2"></div>
-        <button nbButton  (click)="toOutputEditor()">next</button>
-
       </div>
 
-      <div class="step" label="Output">
+      <div class="step-panel" [style.display]="4 === currentStep ? 'block' : 'none'" [attr.data-step]="4"
+        [id]="'step-' + 4">
         <p *ngIf="!dialog">Test or transform.</p>
         <p *ngIf="dialog">Tranform.</p>
         <br />
@@ -313,45 +318,83 @@
             <div nbSpinner=[loaded] nbSpinnerStatus="basic"> loaded</div>
             <div nbSpinner=(loaded) nbSpinnerStatus="basic"> loaded</div>
           -->
-        <button nbButton  (click)="toBodyEditor()">next</button>
       </div>
 
-      <div class="step">
-        <div class="step-container">
-          <h3>
-            Wizard completed!<br>
-            You can save the mapping, try again, come back to the mapping list
-            or export the curl or the payload
-          </h3>
+      <div class="step-panel" [style.display]="5 === currentStep ? 'block' : 'none'" [attr.data-step]="5"
+        [id]="'step-' + 5">
+        <h3>
+          Wizard completed!<br>
+          You can save the mapping, try again, come back to the mapping list
+          or export the curl or the payload
+        </h3>
 
-          <!--<button nbButton (click)="stepper.reset()">{{"Come back" | translate}}</button>
+        <!--<button nbButton (click)="stepper.reset()">{{"Come back" | translate}}</button>
           <br />
           <br />-->
-          <p>Example curl.</p>
-          <br />
-          <br />
-          <br />
-          <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateCurl()">
-            {{ 'general.dmm.update' | translate }}
-            <i class="mx-1 fas fa-file-import fa-lg"></i>
+        <p>Example curl.</p>
+        <br />
+        <br />
+        <br />
+        <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateCurl()">
+          {{ 'general.dmm.update' | translate }}
+          <i class="mx-1 fas fa-file-import fa-lg"></i>
+        </button>
+        <br />
+        <br />
+        <pre><code>{{curl}}</code></pre>
+        <!--<div style="height:500px" id="curlEditor"></div>-->
+        <p>The Example payload is showed below.</p>
+        <br />
+        <br />
+        <br />
+        <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateBody()">
+          {{ 'general.dmm.update' | translate }}
+          <i class="mx-1 fas fa-file-import fa-lg"></i>
+        </button>
+        <br />
+        <br />
+        <div style="height: 500px" id="bodyEditor"></div>
+      </div>
+      <div class="pad"></div>
+
+      <!--
+      <div class="buttons">
+        <button nbButton class="mr-2" shape="rectangle" size="small" (click)="prev()" [disabled]="currentStep === 0">
+          {{ 'general.editor.back' | translate }}
+          <i class="mx-1 fas fa-download fa-lg"></i>
+        </button>
+        <button nbButton class="mr-2" shape="rectangle" size="small" (click)="next()"
+          [disabled]="currentStep === steps.length - 1">
+          {{ 'general.editor.next' | translate }}
+          <i class="mx-1 fas fa-download fa-lg"></i>
+        </button>
+      </div>
+      -->
+
+      <!--
+      <div class="row">
+        <div class="col-auto">
+          <button nbButton class="mr-2" shape="rectangle" size="small" (click)="prev()" [disabled]="currentStep === 0">
+            {{ 'general.editor.back' | translate }}
+            <i class="mx-1 fas fa-download fa-lg"></i>
           </button>
-          <br />
-          <br />
-          <pre><code>{{curl}}</code></pre>
-          <!--<div style="height:500px" id="curlEditor"></div>-->
-          <p>The Example payload is showed below.</p>
-          <br />
-          <br />
-          <br />
-          <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateBody()">
-            {{ 'general.dmm.update' | translate }}
-            <i class="mx-1 fas fa-file-import fa-lg"></i>
+        </div>
+        <div class="col-auto">
+          <button nbButton class="mr-2" shape="rectangle" size="small" (click)="next()"
+            [disabled]="currentStep === steps.length - 1">
+            {{ 'general.editor.next' | translate }}
+            <i class="mx-1 fas fa-download fa-lg"></i>
           </button>
-          <br />
-          <br />
-          <div style="height: 500px" id="bodyEditor"></div>
         </div>
       </div>
+      -->
+
+      <div class="buttons">
+        <button (click)="prev()" [disabled]="currentStep === 0">{{ 'general.editor.back' | translate }}</button>
+        <button (click)="next()" [disabled]="currentStep === steps.length - 1">{{ 'general.editor.next' | translate }}</button>
+      </div>
+
     </div>
+
   </nb-card-footer>
 </nb-card>

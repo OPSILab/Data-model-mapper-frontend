@@ -23,8 +23,8 @@ function o(obj) {
 
 @Component({
   selector: 'app-root',
-  templateUrl: './stepper_test.html',// './dmm.component.html',
-  styleUrls: ['./stepper_test.scss',],// ['./dmm.component.scss'], //,
+  templateUrl: './dmm.component.html',//'./stepper_test.html',// './dmm.component.html',
+  styleUrls: ['./stepper_test.scss', './dmm.component.scss'], //,
   //changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DMMComponent implements OnInit, OnChanges, AfterViewInit {
@@ -138,7 +138,7 @@ export class DMMComponent implements OnInit, OnChanges, AfterViewInit {
     this.config = configService.config as AppConfig;
   }
 
-  toBodyEditor() {
+  /*toBodyEditor() {
     throw new Error('Method not implemented.');
   }
   toOutputEditor() {
@@ -152,7 +152,7 @@ export class DMMComponent implements OnInit, OnChanges, AfterViewInit {
   }
   toConfig() {
     throw new Error('Method not implemented.');
-  }
+  }*/
 
   @ViewChild('step1') step1Ref!: ElementRef;
 
@@ -171,11 +171,7 @@ export class DMMComponent implements OnInit, OnChanges, AfterViewInit {
 
   currentStep = 0;
 
-  steps = [
-    { label: 'Informazioni', content: 'Inserisci i tuoi dati personali.' },
-    { label: 'Conferma', content: 'Controlla e conferma le informazioni.' },
-    { label: 'Completato', content: 'Registrazione completata con successo!' },
-  ];
+  steps = [1,2,3,4,5,6];
 
   ngAfterViewInit() {
     this.logAllSteps();

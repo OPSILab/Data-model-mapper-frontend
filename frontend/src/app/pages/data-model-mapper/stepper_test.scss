@@ -1,11 +1,11 @@
 .stepper-container {
-  max-width: 600px;
-  margin: auto;
-  padding: 2rem;
+  //max-width: 600px;
+  //margin: auto;
+  //padding: 2rem;
   font-family: 'Segoe UI', sans-serif;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  //background: #fff;
+  //border-radius: 16px;
+  //box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .stepper {
@@ -18,21 +18,21 @@
   text-align: center;
   flex: 1;
   position: relative;
-}
 
-.step::after {
-  content: '';
-  position: absolute;
-  top: 15px;
-  right: -50%;
-  width: 100%;
-  height: 2px;
-  background: #ddd;
-  z-index: 0;
-}
+  &::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    right: -50%;
+    width: 100%;
+    height: 2px;
+    background: #ddd;
+    z-index: 0;
+  }
 
-.step:last-child::after {
-  display: none;
+  &:last-child::after {
+    display: none;
+  }
 }
 
 .circle {
@@ -62,15 +62,22 @@
 }
 
 .step-content {
-  min-height: 100px;
+  //min-height: 100px;
   padding: 1rem;
-  background: #f9f9f9;
-  border-radius: 8px;
+  //background: #f9f9f9;
+  //border-radius: 8px;
   margin-bottom: 1rem;
+}
+
+.step-panel {
+  display: none; // default hidden
+  //margin-bottom: 200px;
 }
 
 .buttons {
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   justify-content: space-between;
 
   button {
