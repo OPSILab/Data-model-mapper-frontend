@@ -375,8 +375,7 @@ const sendOutput = async (config, res) => {
             res.dmm.outputFile = res.dmm.outputFile.slice(config.rowStart - 1)
     }
     catch (error) {
-        logger.error(error)
-        logger.error("error at " + error?.stack)
+        logger.error(error)   
         try {
             if (!res.dmm.outputFile[res.dmm.outputFile.length - 1]["MAPPING_REPORT"].details)
                 res.dmm.outputFile[res.dmm.outputFile.length - 1]["MAPPING_REPORT"].details = [{ error }]
@@ -384,8 +383,7 @@ const sendOutput = async (config, res) => {
                 res.dmm.outputFile[res.dmm.outputFile.length - 1]["MAPPING_REPORT"].details.push([{ error }])
         }
         catch (error) {
-            logger.error(error)
-            logger.error("error at " + error?.stack)
+            logger.error(error)           
         }
     }
     //if (parseInt((res.dmm.outputFile[res.dmm.outputFile.length - 1].MAPPING_REPORT.Mapped_and_NOT_Validated_Objects)[0].charAt(0))) process.res.status(400).send({ errors: res.dmm.outputFile.errors || "Validation errors", report: res.dmm.outputFile[res.dmm.outputFile.length - 1] })
@@ -417,8 +415,7 @@ const sendOutput = async (config, res) => {
             })
         }
         catch (error) {
-            logger.error(error)
-            logger.error("error at " + error?.stack)
+            logger.error(error)          
         }
     else
         try {
@@ -447,8 +444,7 @@ const sendOutput = async (config, res) => {
             })
         }
         catch (error) {
-            logger.error(error)
-            logger.error("error at " + error?.stack)
+            logger.error(error)           
         }
     let outputDataTempWriting = {}
     let outputId = res.dmm.outputID //common.createRandId() + source.type
@@ -521,8 +517,7 @@ const printFinalReportAndSendResponse = async (loggerr, minioObj, config, res) =
                             await minioWriter.stringUpload(bucketName, objectName, obj)
                     }
                     catch (error) {
-                        logger.error(error)
-                        logger.error("error at " + error?.stack)
+                        logger.error(error)                     
                     }
                     logger.debug("minio writing done")
                 }
@@ -531,8 +526,7 @@ const printFinalReportAndSendResponse = async (loggerr, minioObj, config, res) =
             await sendOutput(config, res);
         }
         catch (error) {
-            logger.error(error)
-            logger.error("error at " + error?.stack)
+            logger.error(error)           
             //crash
             res.dmm.outputFile = [];
         }

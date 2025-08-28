@@ -149,8 +149,7 @@ module.exports = {
             if (process.dataModelMapper.setupError) res.status(404).send(process.dataModelMapper.setupError + ".\nMaybe the files name you specified are not correct.")
         }
         catch (error) {
-            logger.error(error)
-            logger.error("error at " + error?.stack)
+            logger.error(error) 
             if (error.response) {
                 logger.error(error.response.data)
                 logger.error(error.request)
@@ -176,13 +175,13 @@ module.exports = {
     },
 
     getSources: async (req, res) => {
-  
+
+        logger.info("Get sources")
         try {
             res.send(await service.getAllSources(req.query.bucketName || req.body.bucketName, req.body.prefix, req.query.format))
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -194,8 +193,7 @@ module.exports = {
             res.send(await service.getSourcesFromDB(req.body.prefix))
         }
         catch (error) {
-            logger.error(error)
-            logger.error("error at " + error?.stack)
+            logger.error(error)   
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -207,7 +205,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -220,7 +218,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -233,7 +231,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -246,7 +244,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -260,7 +258,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -274,7 +272,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -287,7 +285,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -301,7 +299,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(error.code || 400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -319,7 +317,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud =
@@ -339,7 +337,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud =
@@ -374,7 +372,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud =
@@ -392,7 +390,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud =
@@ -410,7 +408,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud =
@@ -428,7 +426,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud =
@@ -446,7 +444,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud =
@@ -466,7 +464,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud =
@@ -484,7 +482,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud =
@@ -512,7 +510,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         process.dataModelMapper.crud =
@@ -545,7 +543,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -563,7 +561,7 @@ module.exports = {
 
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -581,7 +579,7 @@ module.exports = {
 
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(400).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -596,7 +594,7 @@ module.exports = {
         catch (error) {
             let errorStatusCode
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             if (error.code == "BucketAlreadyOwnedByYou" || error.name == "InvalidBucketNameError")
                 errorStatusCode = 400
             else
@@ -616,7 +614,7 @@ module.exports = {
         catch (error) {
             let errorStatusCode
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             if (error.code == "NoSuchKey")
                 errorStatusCode = 400
             else
@@ -633,7 +631,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -646,7 +644,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -659,7 +657,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -679,7 +677,7 @@ module.exports = {
         catch (error) {
             let errorStatusCode
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             if (error.message == 'third argument should be of type "stream.Readable" or "Buffer" or "string"')
                 errorStatusCode = 400
             else
@@ -695,7 +693,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined
@@ -707,7 +705,7 @@ module.exports = {
         }
         catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             res.status(500).send(error.toString() == "[object Object]" ? error : error.toString())
         }
         //process.dataModelMapper.resetConfig = undefined

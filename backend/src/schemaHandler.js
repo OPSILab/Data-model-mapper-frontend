@@ -220,7 +220,6 @@ function validateSourceValue(data, schema, isSingleField, rowNumber, config, res
             var validate = ajv.compile(schema);
         } catch (error) {
             if (schema.anyOf && schema.anyOf[0] == undefined && !isSingleField) schema.anyOf = undefined;
-            logger.error("error at " + error?.stack);
             logger.error(error);
             logger.info(schema)
             var validate = ajv.compile(schema);
@@ -233,7 +232,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber, config, res
             }
             catch (error) {
                 logger.error(error)
-                logger.error("error at " + error?.stack)
+                
             }
             validate = ajv.compile(schema);
             valid = validate(data)

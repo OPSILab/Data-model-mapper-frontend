@@ -319,7 +319,6 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             try {
                 singleResult = converter(source);
             } catch (error) {
-                //logger.error("error at " + error?.stack)
                 logger.error(`There was an error: ${error} while processing ${parsedSourceKey} field`);
                 continue;
             }
@@ -378,7 +377,7 @@ const mapObjectToDataModel = (rowNumber, source, map, modelSchema, site, service
             result.id = result.id.replaceAll(" ", "")
         } catch (error) {
             logger.error(error)
-            logger.error("error at " + error?.stack)
+            
             logger.error("UnknownEntity")
         }
     }

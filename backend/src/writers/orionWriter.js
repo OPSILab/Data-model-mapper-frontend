@@ -368,7 +368,6 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
                                     //logger.debug(config.orionWriter)
                                     logger.error('There was an error while writing Mapped Object: ')
                                     logger.error(error)
-                                    //logger.error("error at " + error?.stack)
                                 });
                             }
                         }
@@ -394,13 +393,11 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
                                 //logger.debug(config.orionWriter)
                                 logger.error('There was an error while writing Mapped Object: ')
                                 logger.error(error)
-                                //logger.error("error at " + error?.stack)
                             });
                         }
 
                     } catch (error) {
                         logger.error(error)
-                        //logger.error("error at " + error?.stack)
                         report.info('----------------------------------------------------------\n' +
                             'Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
                         logger.debug('Entity Number: ' + objNumber + ' with Id: ' + existingId + ' NOT UPDATED in the Context Broker');
@@ -423,7 +420,6 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
                         //logger.debug(config.orionWriter)
                         logger.error('There was an error while writing Mapped Object: ')
                         logger.error(error)
-                        //logger.error("error at " + error?.stack)
                         logger.debug("----Details ----")
                         logger.debug(objNumber)
                         return Promise.reject(error).catch((error) => {
@@ -436,7 +432,6 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
                             //logger.debug(config.orionWriter)
                             logger.error('There was an error while writing Mapped Object: ')
                             logger.error(error)
-                            //logger.error("error at " + error?.stack)
                         });
 
                     }
@@ -475,13 +470,11 @@ const writeObject = async (objNumber, obj, modelSchema, config) => {
                     //logger.debug(config.orionWriter)
                     logger.error('There was an error while writing Mapped Object: ')
                     logger.error(error)
-                    //logger.error("error at " + error?.stack)
                 });
             }
 
         } catch (error) {
             logger.error(error)
-            //logger.error("error at " + error?.stack)
 
             report.info('----------------------------------------------------------\n' +
                 'Entity Number: ' + objNumber + ' with Id: ' + obj.id + ' NOT CREATED in the Context Broker');
