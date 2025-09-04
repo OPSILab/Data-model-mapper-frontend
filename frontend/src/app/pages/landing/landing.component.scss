@@ -72,6 +72,7 @@ body {
   font-size: 1.4rem;
   margin-bottom: 30px;
   opacity: 0.9;
+  color: white;
 }
 
 .story-meta {
@@ -331,12 +332,14 @@ body {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 20px;
+  color: white;
 }
 
 .cta-text {
   font-size: 1.2rem;
   margin-bottom: 30px;
   opacity: .9;
+  color: white;
 }
 
 .cta-button {
@@ -486,6 +489,7 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 25px;
   margin: 40px 0;
+  color: white;
 }
 
 .hvd-card {
@@ -531,6 +535,7 @@ body {
   font-size: 1.3rem;
   font-weight: 600;
   margin-bottom: 15px;
+  color: white;
 }
 
 .hvd-description {
@@ -538,12 +543,14 @@ body {
   line-height: 1.6;
   margin-bottom: 20px;
   opacity: .9;
+  color: white;
 }
 
 .hvd-stats {
   display: flex;
   justify-content: space-around;
   gap: 15px;
+  color: white;
 }
 
 .hvd-stat {
@@ -552,6 +559,7 @@ body {
   border-radius: 20px;
   font-size: .9rem;
   font-weight: 500;
+  color: white;
 }
 
 .bucket-showcase {
@@ -673,11 +681,13 @@ body {
 .feature-content h4 {
   margin-bottom: 5px;
   font-size: 1.1rem;
+  color: white;
 }
 
 .feature-content p {
   opacity: .9;
   font-size: .95rem;
+  color: white;
 }
 
 .bucket-stats {
@@ -788,6 +798,7 @@ body {
   .hvd-grid {
     grid-template-columns: 1fr;
     gap: 20px;
+    color: white;
   }
 
   .map-legend {
