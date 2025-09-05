@@ -173,7 +173,28 @@ export class DMMComponent implements OnInit, OnChanges, AfterViewInit {
 
   currentStep = 0;
 
-  steps = [{label:"Source"},{label: "Configuration"},{label:"Schema"},{label:"Map file"},{label:"Output"},{label:"Body and curl"}];
+  steps = [
+    { label: "Source" },
+    { label: "Configuration" },
+    { label: "Schema" },
+    { label: "Map file" },
+    { label: "Output" },
+    { label: "Body and curl" }
+  ];
+
+  transformSteps = [
+    { label: "Source" },
+    { label: "Output" },
+    { label: "Body and curl" }
+  ];
+
+  changeStep(i) {
+    if (this.dialog && this.transformSteps[i].label == "Body and curl" || !this.dialog && this.steps[i].label == "Body and curl") {
+      this.updateBody()
+      this.updateCurl()
+    }
+    this.currentStep = i
+  }
 
   ngAfterViewInit() {
     this.logAllSteps();

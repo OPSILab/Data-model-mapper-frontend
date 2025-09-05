@@ -13,7 +13,7 @@ import { ErrorDialogMapperRecordService } from '../../error-dialog/error-dialog-
   selector: 'transform',
   //templateUrl: './transform.component.html',
   templateUrl: '../../data-model-mapper/dmm.component.html',
-  styleUrls: ['./transform.component.scss'],
+  styleUrls: ['./transform.component.scss', "../../data-model-mapper/stepper_test.scss"],
 })
 export class TransformComponent extends DMMComponent implements OnInit, OnChanges {
   constructor(

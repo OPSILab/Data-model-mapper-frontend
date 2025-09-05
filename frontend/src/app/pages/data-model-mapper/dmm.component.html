@@ -50,17 +50,25 @@
   <nb-card-footer>
     <div class="stepper-container">
 
-      <div class="stepper">
+      <div class="stepper" *ngIf="!dialog">
         <div *ngFor="let step of steps; let i = index" class="step" [class.active]="i === currentStep"
           [class.completed]="i < currentStep">
-          <div class="circle" (click)="currentStep = i">{{ i + 1 }}</div>
+          <div class="circle" (click)="changeStep(i)">{{ i + 1 }}</div>
+          <div class="label">{{ step.label }}</div>
+        </div>
+      </div>
+
+      <div class="stepper" *ngIf="dialog">
+        <div *ngFor="let step of transformSteps; let i = index" class="step" [class.active]="i === currentStep"
+          [class.completed]="i < currentStep">
+          <div class="circle" (click)="changeStep(i)">{{ i + 1 }}</div>
           <div class="label">{{ step.label }}</div>
         </div>
       </div>
 
       <div class="step-content">
-        <div class="step-panel" [style.display]="0 === currentStep ? 'block' : 'none'" [attr.data-step]="0"
-          [id]="'step-' + 0">
+        <div class="step-panel" [style.display]="steps[currentStep].label === 'Source' ? 'block' : 'none'"
+          [attr.data-step]="0" [id]="'step-' + 0">
           <p>To get started, select the type of input (CSV or JSON) and upload or paste your data.</p>
           <p *ngIf="source.sourceRef !== '' && source.sourceRefFormat === 'url'">
             URL:
@@ -77,7 +85,7 @@
               <nb-option value="json">JSON</nb-option>
             </nb-select>
           </div>
-          <div style="padding-top: 30px"></div>
+          <div style="padding-top: 30px" *ngIf="!dialog"></div>
           <p *ngIf="!dialog">Select a source file or upload your source file.</p>
           <!--
             <br><br><br>
@@ -85,7 +93,7 @@
 -->
           <div class="mb-1" style="display: none" id="json-input">
             <div class="mb-2">
-              <br /><br />
+              <br *ngIf="!dialog" /><br *ngIf="!dialog" />
               <nb-select id="selectSource" *ngIf="source.sourceFrom == 'minio'" placeholder="Select source file"
                 size="small" [(ngModel)]="source.selectedSource" (ngModelChange)="source.sourceChanged($event)"
                 (click)="fixBrokenPageBug()">
@@ -185,8 +193,8 @@
         </div>
       </div>
 
-      <div class="step-panel" [style.display]="1 === currentStep ? 'block' : 'none'" [attr.data-step]="1"
-        [id]="'step-' + 1">
+      <div class="step-panel" [style.display]="dialog ? 'none' : steps[currentStep].label === 'Configuration' ? 'block' : 'none'"
+        [attr.data-step]="1" [id]="'step-' + 1">
         <p *ngIf="!dialog">Set transform config.</p>
         <br *ngIf="!dialog" />
         <br *ngIf="!dialog" />
@@ -205,8 +213,8 @@
         <div [hidden]="dialog" style="height: 500px" id="configEditor"></div>
       </div>
 
-      <div class="step-panel" [style.display]="2 === currentStep ? 'block' : 'none'" [attr.data-step]="2"
-        [id]="'step-' + 2">
+      <div class="step-panel" [style.display]="dialog ? 'none' : steps[currentStep].label === 'Schema' ? 'block' : 'none'"
+        [attr.data-step]="2" [id]="'step-' + 2">
         <div class="mb-2">
           <p>Select a schema or upload your schema.</p>
           <p *ngIf="schemaRef !== '' && schemaRefFormat === 'url'">
@@ -243,8 +251,8 @@
         <div style="padding-top: 50px"></div>
       </div>
 
-      <div class="step-panel" [style.display]="3 === currentStep ? 'block' : 'none'" [attr.data-step]="3"
-        [id]="'step-' + 3">
+      <div class="step-panel" [style.display]="dialog ? 'none' : steps[currentStep].label === 'Map file' ? 'block' : 'none'"
+        [attr.data-step]="3" [id]="'step-' + 3">
         <div class="mb-2">
           <p>Set your mapper settings.</p>
         </div>
@@ -252,13 +260,12 @@
         <div style="height: 500px" id="jsoneditor2"></div>
       </div>
 
-      <div class="step-panel" [style.display]="4 === currentStep ? 'block' : 'none'" [attr.data-step]="4"
-        [id]="'step-' + 4">
-        <p *ngIf="!dialog">Test or transform.</p>
-        <p *ngIf="dialog">Tranform.</p>
-        <br />
-        <br />
-        <br />
+      <div class="step-panel" [style.display]="dialog && transformSteps[currentStep].label === 'Output' ? 'block' : steps[currentStep].label === 'Output' ? 'block' : 'none'"
+        [attr.data-step]="4" [id]="'step-' + 4">
+        <p>{{dialog? "Transform" : "Test or transform."}}</p>
+        <br *ngIf="!dialog" />
+        <br *ngIf="!dialog" />
+        <br *ngIf="!dialog" />
         <button id="preview" *ngIf="!dialog" nbButton class="mr-2" shape="rectangle" size="small"
           (click)="testMapperRecord()">
           {{ 'general.dmm.preview' | translate }}
@@ -284,9 +291,9 @@
                 Some card content.
               </nb-card-body>
             </nb-card>-->
-        <br />
-        <br />
-        <div style="height: 500px" id="jsoneditor3"></div>
+        <br *ngIf="!dialog" />
+        <br *ngIf="!dialog" />
+        <div style="height: 480px; margin-top: 20px;margin-bottom: 20px;" id="jsoneditor3"></div>
         <!--<div [nbSpinner]="loading" nbSpinnerStatus="basic" style="height:500px" id="jsoneditor3"></div>-->
         <!--<nb-card accent="danger" size="tiny" [nbSpinner]="loading" nbSpinnerStatus="danger" nbSpinnerSize="large"
               nbSpinnerMessage="">
@@ -320,21 +327,18 @@
           -->
       </div>
 
-      <div class="step-panel" [style.display]="5 === currentStep ? 'block' : 'none'" [attr.data-step]="5"
-        [id]="'step-' + 5">
-        <h3>
+      <div class="step-panel" [style.display]="dialog && transformSteps[currentStep].label === 'Body and curl' ? 'block' : steps[currentStep].label === 'Body and curl' ? 'block' : 'none'"
+        [attr.data-step]="5" [id]="'step-' + 5">
+        <p>
           Wizard completed!<br>
           You can save the mapping, try again, come back to the mapping list
           or export the curl or the payload
-        </h3>
+        </p>
 
         <!--<button nbButton (click)="stepper.reset()">{{"Come back" | translate}}</button>
           <br />
           <br />-->
         <p>Example curl.</p>
-        <br />
-        <br />
-        <br />
         <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateCurl()">
           {{ 'general.dmm.update' | translate }}
           <i class="mx-1 fas fa-file-import fa-lg"></i>
@@ -344,16 +348,13 @@
         <pre><code>{{curl}}</code></pre>
         <!--<div style="height:500px" id="curlEditor"></div>-->
         <p>The Example payload is showed below.</p>
-        <br />
-        <br />
-        <br />
         <button nbButton class="mr-2" shape="rectangle" size="small" (click)="updateBody()">
           {{ 'general.dmm.update' | translate }}
           <i class="mx-1 fas fa-file-import fa-lg"></i>
         </button>
         <br />
         <br />
-        <div style="height: 500px" id="bodyEditor"></div>
+        <div style="height: 500px; margin-bottom: 40px;" id="bodyEditor"></div>
       </div>
       <div class="pad"></div>
 
@@ -391,7 +392,8 @@
 
       <div class="buttons">
         <button (click)="prev()" [disabled]="currentStep === 0">{{ 'general.editor.back' | translate }}</button>
-        <button (click)="next()" [disabled]="currentStep === steps.length - 1">{{ 'general.editor.next' | translate }}</button>
+        <button (click)="next()" [disabled]="currentStep === steps.length - 1">{{ 'general.editor.next' | translate
+          }}</button>
       </div>
 
     </div>
