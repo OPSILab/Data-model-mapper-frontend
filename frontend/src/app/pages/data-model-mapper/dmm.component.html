@@ -53,7 +53,7 @@
       <div class="stepper">
         <div *ngFor="let step of steps; let i = index" class="step" [class.active]="i === currentStep"
           [class.completed]="i < currentStep">
-          <div class="circle">{{ i + 1 }}</div>
+          <div class="circle" (click)="currentStep = i">{{ i + 1 }}</div>
           <div class="label">{{ step.label }}</div>
         </div>
       </div>

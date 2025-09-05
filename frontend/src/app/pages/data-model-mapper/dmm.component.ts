@@ -173,7 +173,7 @@ export class DMMComponent implements OnInit, OnChanges, AfterViewInit {
 
   currentStep = 0;
 
-  steps = [1,2,3,4,5,6];
+  steps = [{label:"Source"},{label: "Configuration"},{label:"Schema"},{label:"Map file"},{label:"Output"},{label:"Body and curl"}];
 
   ngAfterViewInit() {
     this.logAllSteps();

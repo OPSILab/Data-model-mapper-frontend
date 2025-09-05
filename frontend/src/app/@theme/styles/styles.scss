@@ -715,4 +715,66 @@ body ngx-app ngx-pages ngx-one-column-layout nb-layout nb-layout-column {
 /* path {
   filter: drop-shadow(0 0 4px #ff0000);
  }*/
+svg, path, rect, circle {
+  stroke: #ffffff;
+  stroke-dashoffset: 1;
+  stroke-miterlimit: 1;
+  stroke-opacity: 1;
+  animation:
+    strokePulse 5s infinite alternate ease-in-out;//,
+    //rainbowOpacity 20s infinite linear,
+    //strokePulse2 2s infinite alternate ease-in-out;
+    //rainbowStroke 20s infinite linear;
+  transform: scale(1.1);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+}
+
+@keyframes strokePulse {
+  from {
+    stroke-width: 0;
+  }
+  to {
+    stroke-width: 0.75;
+  }
+}
+
+@keyframes strokePulse2 {
+  from {
+    stroke: #ffffff;
+  }
+  to {
+    stroke: #00ff40;
+  }
+}
+
+@keyframes rainbowStroke {
+  0%   { stroke: red; }
+  10%  { stroke: orange; }
+  20%  { stroke: yellow; }
+  30%  { stroke: green; }
+  40%  { stroke: blue; }
+  50% { stroke: violet; }
+  60%  { stroke: blue; }
+  70%  { stroke: green; }
+  80%  { stroke: yellow; }
+  90%  { stroke: orange; }
+  100% { stroke: red; }
+}
+
+@keyframes rainbowOpacity {
+  0%   { stroke-opacity: 0; }
+  10%  { stroke-opacity: 1; }
+  20%  { stroke-opacity: 0; }
+  30%  { stroke-opacity: 1; }
+  40%  { stroke-opacity: 0; }
+  50%  { stroke-opacity: 1; }
+  60%  { stroke-opacity: 0; }
+  70%  { stroke-opacity: 1; }
+  80%  { stroke-opacity: 0; }
+  90%  { stroke-opacity: 1; }
+  100% { stroke-opacity: 0; }
+}
+
 
