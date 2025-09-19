@@ -13,7 +13,7 @@
     "experimentalDecorators": true,
     "downlevelIteration": true,
     "target": "es2015",
-    "typeRoots": ["node_modules/@types"],
+    "typeRoots": [],
     "lib": ["es2017", "dom", "es2015.collection", "es2015.iterable", "es2017.object", "es2020"],
     "plugins": [{ "name": "typescript-tslint-plugin" }]
   }
