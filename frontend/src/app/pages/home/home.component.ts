@@ -112,7 +112,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       .subscribe((themeName) => {
         console.log('Theme changed to:', themeName);
         this.currentTheme = themeName
-        if (themeName.name === 'custom' || themeName.name === 'custom3') {
+        if (themeName.name === 'mold' || themeName.name === 'mold2') {
           this.card = true;
          }
         else {

@@ -2,8 +2,8 @@ import { NbJSThemeOptions } from '@nebular/theme';
 
 // const baseThemeVariables = baseTheme.variables;
 
-export const CUSTOM2 = {
-  name: 'custom2',
+export const MOLD = {
+  name: 'mold',
   base: 'default',
   variables: {},
 } as NbJSThemeOptions;

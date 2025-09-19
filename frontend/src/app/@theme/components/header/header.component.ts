@@ -39,16 +39,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
       name: 'Corporate',
     },
     {
-      value: 'custom',
-      name: 'Custom',
+      value: 'mold',
+      name: 'Mold',
     },
     {
-      value: 'custom2',
-      name: 'custom2',
+      value: 'cold',
+      name: 'Cold',
     },
     {
-      value: 'custom3',
-      name: 'custom3',
+      value: 'mold2',
+      name: 'Mold 2',
     }
   ];
 

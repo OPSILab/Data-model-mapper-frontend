@@ -3,8 +3,8 @@
 // @nebular out of the box themes
 @import '~@nebular/theme/styles/themes';
 @import './pace.theme';
-@import './custom.theme';
-@import './custom2.theme';
+@import './mold.theme';
+@import './cold.theme';
 
 
 $nb-enable-css-custom-properties: true; // <-- enable css custom properties
@@ -279,4 +279,4 @@ $nb-themes: nb-register-theme(( // Palette colori principali
       menu-selected-icon-color: #00d68f,*/
       menu-text-color: #ffffff
 
-    ), custom3, default);
+    ), mold2, default);

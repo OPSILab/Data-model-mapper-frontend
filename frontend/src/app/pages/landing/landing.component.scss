@@ -470,7 +470,7 @@
   margin: 0;
 }
 
-.hvd-grid {
+.squircle-grid {
   max-width: 1500px;
   display: grid;
   grid-template-columns: repeat(3, minmax(300px, 1fr));
@@ -479,7 +479,7 @@
   color: white;
 }
 
-.hvd-card {
+.squircle-card {
   background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
   border-radius: 70px;
   padding: 70px;
@@ -490,7 +490,7 @@
   overflow: hidden;
 }
 
-.hvd-card::before {
+.squircle-card::before {
   content: '';
   position: absolute;
   top: -50%;
@@ -503,29 +503,29 @@
   opacity: 0;
 }
 
-.hvd-card:hover::before {
+.squircle-card:hover::before {
   opacity: 1;
   transform: rotate(45deg) translate(50%, 50%);
 }
 
-.hvd-card:hover {
+.squircle-card:hover {
   transform: translateY(-10px);
   box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
 }
 
-.hvd-icon {
+.squircle-icon {
   font-size: 3rem;
   margin-bottom: 20px;
 }
 
-.hvd-title {
+.squircle-title {
   font-size: 1.3rem;
   font-weight: 600;
   margin-bottom: 15px;
   color: white;
 }
 
-.hvd-description {
+.squircle-description {
   font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 20px;
@@ -533,14 +533,14 @@
   color: white;
 }
 
-.hvd-stats {
+.squircle-stats {
   display: flex;
   justify-content: space-around;
   gap: 15px;
   color: white;
 }
 
-.hvd-stat {
+.squircle-stat {
   background: rgba(255, 255, 255, .2);
   padding: 8px 15px;
   border-radius: 20px;
@@ -591,7 +591,7 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
 }
 
-.bucket-item[data-type='hvd'] {
+.bucket-item[data-type='squircle'] {
   background: linear-gradient(45deg, #ff6b6b, #feca57);
 }
 
@@ -782,7 +782,7 @@
     font-size: .8rem;
   }
 
-  .hvd-grid {
+  .squircle-grid {
     grid-template-columns: 1fr;
     gap: 20px;
     color: white;
