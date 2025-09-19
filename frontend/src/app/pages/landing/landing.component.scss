@@ -6,7 +6,7 @@
 
 .story-container {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #A5CA70 0%, #42a5f5 100%);
+  //background: linear-gradient(135deg, #A5CA70 0%, #2d4256 100%);
   color: #333;
   overflow-x: hidden;
   // v3
@@ -34,7 +34,7 @@
 }
 
 .story-header {
-  width: 1200px;
+  width: 1500px;
   text-align: center;
   padding: 80px 0;
   background: linear-gradient(90deg, #2c3e50, #3498db);
@@ -42,7 +42,7 @@
   backdrop-filter: blur(10px);
   border-radius: 20px;
   margin: 40px 0;
-  color: white;
+  color: #e6e6e6
 }
 
 .story-title {
@@ -67,13 +67,13 @@
   opacity: 0.8;
   margin-bottom: 20px;
 }
-
+//2d4256
 
 .story-section {
-  max-width: 1200px;
+  width: 1500px;
   margin: 80px 0;
   padding: 60px 40px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(240, 240, 240, 0.95);
   border-radius: 20px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -237,7 +237,7 @@
 }
 
 .interactive-demo {
-  width: 1200px;
+  width: 1500px;
   background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
   color: white;
   padding: 60px 40px;
@@ -263,7 +263,7 @@
 
 .demo-button:hover {
   background: white;
-  color: #42a5f5;
+  color: #2d4256;
   transform: translateY(-3px);
   box-shadow: 0 10px 25px rgba(255, 255, 255, .3);
 }
@@ -306,7 +306,7 @@
 }
 
 .cta-section {
-  width: 1200px;
+  width: 1500px;
   text-align: center;
   padding: 80px 40px;
   background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
@@ -331,7 +331,7 @@
 
 .cta-button {
   background: white;
-  color: #42a5f5;
+  color: #2d4256;
   padding: 18px 40px;
   border-radius: 50px;
   font-size: 1.2rem;
@@ -396,7 +396,7 @@
 }
 
 .country.participating {
-  fill: #42a5f5;
+  fill: #2d4256;
 }
 
 .country.participating:hover {
@@ -434,7 +434,7 @@
 }
 
 .legend-color.participating {
-  background: #42a5f5;
+  background: #2d4256;
 }
 
 .legend-color.non-participating {

@@ -1,6 +1,6 @@
 $nb-themes: nb-register-theme(( // Palette colori principali
       color-primary: #0099cc, // celeste
-      color-success: #4caf50,
+      color-success: #357c38,
       color-info: #17a2b8,
       color-warning: #ffc107,
       color-danger: #dc3545,
@@ -10,7 +10,7 @@ $nb-themes: nb-register-theme(( // Palette colori principali
       //color-primary-700: #000000,
 
       color-success-500: #A5CA70,
-      color-info-500: #42a5f5,
+      color-info-500: #2d4256,
       //color-warning-500: #FFAA00,
       //color-danger-500: #FF3D71,
 
@@ -18,9 +18,9 @@ $nb-themes: nb-register-theme(( // Palette colori principali
       background-basic-color-1: #ffffff, // sfondo principale celeste chiaro
       background-basic-color-2: #ffffff,
       background-basic-color-3: #0000001f,
-      background-basic-color-4: #92140C,
+      background-basic-color-4: #2d4256,
 
-      sidebar-background-color: #42A5F5, // colore di sfondo della sidebar
+      sidebar-background-color: #2d4256, // colore di sfondo della sidebar
       header-background-color: #ffffff, // colore di sfondo dell'header
 
       // Colore del testo
@@ -31,8 +31,8 @@ $nb-themes: nb-register-theme(( // Palette colori principali
       border-radius: 0.5rem,
 
       // NB: eredita valori dal tema 'default' se non specificati
-      card-background-color: #F1F0EA, // #ffffff,// #586A6A,
-      context-menu-background-color: #42A5F5,
+      card-background-color: #f1f1f1, // #ffffff,// #586A6A,
+      context-menu-background-color: #2d4256,
       button-secondary-background-color: #e0f7fa,
       tabset-tab-background-color: #e0f7fa,
       background-alternative-color-1: #e0f7fa,
@@ -43,7 +43,7 @@ $nb-themes: nb-register-theme(( // Palette colori principali
       table-row-selected-background-color: #b3e5fc,
       table-row-selected-text-color: #ffffff,
       table-row-selected-hover-background-color: #81d4fa,
-      table-header-background-color: #42A5F5, // colore della riga header (quella grigia)
+      table-header-background-color: #2d4256, // colore della riga header (quella grigia)
       table-header-text-color: #ffffff,
       color-primary-400: #A5CA70,
       /*

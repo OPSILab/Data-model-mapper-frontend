@@ -715,6 +715,8 @@ body ngx-app ngx-pages ngx-one-column-layout nb-layout nb-layout-column {
 /* path {
   filter: drop-shadow(0 0 4px #ff0000);
  }*/
+
+/*
 svg, path, rect, circle {
   stroke: #ffffff;
   stroke-dashoffset: 1;
@@ -725,7 +727,7 @@ svg, path, rect, circle {
     //rainbowOpacity 20s infinite linear,
     //strokePulse2 2s infinite alternate ease-in-out;
     //rainbowStroke 20s infinite linear;
-  transform: scale(1.1);
+  //transform: scale(1.1);
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 1;
@@ -775,6 +777,6 @@ svg, path, rect, circle {
   80%  { stroke-opacity: 0; }
   90%  { stroke-opacity: 1; }
   100% { stroke-opacity: 0; }
-}
+}*/
 
 

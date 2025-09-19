@@ -51,3 +51,7 @@ code {
 .row {
   margin-top: 20px;
 }
+
+:host ::ng-deep div.jsoneditor.jsoneditor-mode-preview pre.jsoneditor-preview {
+  background-color: #ffffff !important;
+}

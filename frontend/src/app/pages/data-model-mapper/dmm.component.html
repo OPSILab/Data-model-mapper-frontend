@@ -195,7 +195,7 @@
 
       <div class="step-panel" [style.display]="dialog ? 'none' : steps[currentStep].label === 'Configuration' ? 'block' : 'none'"
         [attr.data-step]="1" [id]="'step-' + 1">
-        <p *ngIf="!dialog">Set transform config.</p>
+        <p *ngIf="!dialog">In this editor you can set the transform config. For details of the meaning of each setting see the documentation</p>
         <br *ngIf="!dialog" />
         <br *ngIf="!dialog" />
         <br *ngIf="!dialog" />
@@ -216,7 +216,7 @@
       <div class="step-panel" [style.display]="dialog ? 'none' : steps[currentStep].label === 'Schema' ? 'block' : 'none'"
         [attr.data-step]="2" [id]="'step-' + 2">
         <div class="mb-2">
-          <p>Select a schema or upload your schema.</p>
+          <p>Select a schema or upload your schema. You can either use a smart data model or a normal schema</p>
           <p *ngIf="schemaRef !== '' && schemaRefFormat === 'url'">
             URL:
             <a class="mb-3" href="{{ schemaRef }}" target="_blank">
@@ -254,7 +254,7 @@
       <div class="step-panel" [style.display]="dialog ? 'none' : steps[currentStep].label === 'Map file' ? 'block' : 'none'"
         [attr.data-step]="3" [id]="'step-' + 3">
         <div class="mb-2">
-          <p>Set your mapper settings.</p>
+          <p>Set your mapper settings. Pair each output key with an input key. Click the icon next to each key to open the guided modal</p>
         </div>
         <div style="padding-top: 1px"></div>
         <div style="height: 500px" id="jsoneditor2"></div>
@@ -262,7 +262,7 @@
 
       <div class="step-panel" [style.display]="dialog && transformSteps[currentStep].label === 'Output' ? 'block' : steps[currentStep].label === 'Output' ? 'block' : 'none'"
         [attr.data-step]="4" [id]="'step-' + 4">
-        <p>{{dialog? "Transform" : "Test or transform."}}</p>
+        <p>{{dialog? "Transform your file and download the JSON/GEOJSON output" : "Test or transform your file and download the JSON/GEOJSON output"}}</p>
         <br *ngIf="!dialog" />
         <br *ngIf="!dialog" />
         <br *ngIf="!dialog" />
