@@ -39,17 +39,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
       name: 'Corporate',
     },
     {
+      value: 'cold',
+      name: 'Cold',
+    }/*,
+    {
       value: 'mold',
       name: 'Mold',
     },
     {
-      value: 'cold',
-      name: 'Cold',
-    },
-    {
       value: 'mold2',
       name: 'Mold 2',
-    }
+    }*/
   ];
 
   currentTheme = 'dmm';
