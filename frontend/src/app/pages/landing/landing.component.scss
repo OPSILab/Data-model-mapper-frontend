@@ -471,9 +471,9 @@
 }
 
 .hvd-grid {
-  max-width: 1200px;
+  max-width: 1500px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, minmax(300px, 1fr));
   gap: 25px;
   margin: 40px 0;
   color: white;
@@ -481,8 +481,8 @@
 
 .hvd-card {
   background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-  border-radius: 15px;
-  padding: 30px;
+  border-radius: 70px;
+  padding: 70px;
   color: white;
   text-align: center;
   transition: all 0.3s ease;
