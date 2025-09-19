@@ -64,7 +64,7 @@ module.exports = () => {
 
     mongoose
       //.connect((currentDirectory == "/app" ? config.mongo.replace(/localhost/g, 'host.docker.internal') : config.mongo), { useNewUrlParser: true })
-      .connect((!getOs().startsWith("Windows") ? config.mongo.replace(/localhost/g, 'host.docker.internal') : config.mongo), { useNewUrlParser: true })
+      .connect((!getOs().startsWith("Windows") ? config.mongo.replace(/localhost/g, 'host.docker.internal') : config.mongo), {})
       .then(() => {
         dmmServer.listen(config.httpPort || 5500, () => {
           logger.info("Server has started!");

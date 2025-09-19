@@ -69,8 +69,7 @@ module.exports = {
                 }
                 catch (error) {
 
-                    logger.error(error)
-                    logger.error("error at " + error?.stack)
+                    logger.error(error)                   
                     if (error.message == "invalid token" || error.message == "jwt expired" || error.message == "jwt malformed")
                         return send(res, 403);
                     else
@@ -123,8 +122,7 @@ module.exports = {
                                     data = await minioWriter.getUserData(decodedToken.email)
                                 }
                                 catch (error) {
-                                    logger.error(error)
-                                    logger.error("error at " + error?.stack)
+                                    logger.error(error)                              
                                     send(res, 500, error || error.toString())
                                 }
                             }

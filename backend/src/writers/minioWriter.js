@@ -84,8 +84,7 @@ module.exports = {
         jsonParsed = JSON.parse(newObject)
       }
       catch (error) {
-        logger.error(error)
-        logger.error("error at " + error?.stack)
+        logger.error(error)       
       }
 
       let foundObject = (await Source.find({ name: record.s3.object.key }))[0]
@@ -115,8 +114,7 @@ module.exports = {
         ])
     })
     poller.on('error', (error) => {
-      logger.error(error)
-      logger.error("error at " + error?.stack)
+      logger.error(error)     
       logger.debug("Creating bucket")
       this.creteBucket(bucketName, minioConfig.location).then(message => {
         logger.debug(message)
@@ -287,8 +285,7 @@ module.exports = {
           resultMessage = format == 'json' ? JSON.parse(objectData) : objectData
         }
         catch (error) {
-          logger.error(error)
-          logger.error("error at " + error?.stack)
+          logger.error(error)         
           resultMessage = format == 'json' ? [{ data: objectData }] : objectData
         }
       });

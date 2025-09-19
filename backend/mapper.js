@@ -52,5 +52,5 @@ try {
 }
 catch (error) {
     logger.error(error)
-    logger.error("error at " + error?.stack)
+    
 }

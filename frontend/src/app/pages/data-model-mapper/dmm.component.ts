@@ -1,7 +1,7 @@
 import { AppConfig } from './../../model/appConfig';
-import { Component, OnInit, Inject, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Inject, OnChanges, SimpleChanges, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { DMMService } from './dmm.service';
-import { NbComponentStatus, NbDialogService, NbGlobalPhysicalPosition, NbToastrConfig, NbToastrService, NbWindowService } from '@nebular/theme';
+import { NbComponentStatus, NbDialogService, NbGlobalPhysicalPosition, NbThemeService, NbToastrConfig, NbToastrService, NbWindowService } from '@nebular/theme';
 import * as _ from 'lodash';
 import * as JSONEditor from '../../../../node_modules/jsoneditor/dist/jsoneditor.js';
 import { DOCUMENT } from '@angular/common';
@@ -23,11 +23,11 @@ function o(obj) {
 
 @Component({
   selector: 'app-root',
-  templateUrl: './dmm.component.html',
-  styleUrls: ['./dmm.component.scss'], //,
+  templateUrl: './dmm.component.html',//'./stepper_test.html',// './dmm.component.html',
+  styleUrls: ['./stepper_test.scss', './dmm.component.scss'], //,
   //changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DMMComponent implements OnInit, OnChanges {
+export class DMMComponent implements OnInit, OnChanges, AfterViewInit {
   //TODO check if properties cleaning is required
 
   backendDown;
@@ -124,6 +124,7 @@ export class DMMComponent implements OnInit, OnChanges {
   loading = false;
   loaded = true;
   dialogClosed: boolean;
+  themeColors: any;
 
   constructor(
     @Inject(DOCUMENT) public document: Document,
@@ -133,9 +134,95 @@ export class DMMComponent implements OnInit, OnChanges {
     public dmmService: DMMService,
     public toastrService: NbToastrService,
     public route: ActivatedRoute,
+    public themeService: NbThemeService,
     public configService: NgxConfigureService //public ref : any //public ref: NbDialogRef<any>,
   ) {
     this.config = configService.config as AppConfig;
+  }
+
+  /*toBodyEditor() {
+    throw new Error('Method not implemented.');
+  }
+  toOutputEditor() {
+    throw new Error('Method not implemented.');
+  }
+  toMapEditor() {
+    throw new Error('Method not implemented.');
+  }
+  toSchema() {
+    throw new Error('Method not implemented.');
+  }
+  toConfig() {
+    throw new Error('Method not implemented.');
+  }*/
+
+  @ViewChild('step1') step1Ref!: ElementRef;
+
+  logStep1Content() {
+    console.log('Step 1 content:', this.step1Ref.nativeElement.textContent);
+  }
+
+  next0() {
+    this.logStep1Content()
+    if (this.currentStep < this.steps.length - 1) this.currentStep++;
+  }
+
+  prev0() {
+    if (this.currentStep > 0) this.currentStep--;
+  }
+
+  currentStep = 0;
+
+  steps = [
+    { label: "Source" },
+    { label: "Configuration" },
+    { label: "Schema" },
+    { label: "Map file" },
+    { label: "Output" },
+    { label: "Body and curl" }
+  ];
+
+  transformSteps = [
+    { label: "Source" },
+    { label: "Output" },
+    { label: "Body and curl" }
+  ];
+
+  changeStep(i) {
+    if (this.dialog && this.transformSteps[i].label == "Body and curl" || !this.dialog && this.steps[i].label == "Body and curl") {
+      this.updateBody()
+      this.updateCurl()
+    }
+    this.currentStep = i
+  }
+
+  ngAfterViewInit() {
+    this.logAllSteps();
+  }
+
+  next() {
+    if (this.currentStep < this.steps.length - 1) this.currentStep++;
+  }
+
+  prev() {
+    if (this.currentStep > 0) this.currentStep--;
+  }
+
+  logOtherSteps() {
+    const step1 = document.getElementById('step-0');
+    const step2 = document.getElementById('step-1');
+    const step3 = document.getElementById('step-2');
+
+    console.log('Step 1:', step1?.textContent?.trim());
+    console.log('Step 2:', step2?.textContent?.trim());
+    console.log('Step 3:', step3?.textContent?.trim());
+  }
+
+  private logAllSteps() {
+    for (let i = 0; i < this.steps.length; i++) {
+      const el = document.getElementById(`step-${i}`);
+      console.log(`Step ${i}:`, el?.textContent?.trim());
+    }
   }
 
   updateMap() {
@@ -300,6 +387,11 @@ export class DMMComponent implements OnInit, OnChanges {
   }
 
   async ngOnInit(): Promise<void> {
+    this.themeService.getJsTheme().subscribe(theme => {
+      this.themeColors = theme.variables;
+      console.log('Colori del tema:', this.themeColors);
+      // Esempio: this.themeColors.primary
+    });
     editor.mapperEditor = undefined;
 
     this.source.sourceEditorContainer = this.document.getElementById('jsoneditor');

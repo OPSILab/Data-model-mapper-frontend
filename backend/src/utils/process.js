@@ -99,8 +99,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
                 logger.debug("map is the file map loaded")
             } catch (error) {
                 logger.error('There was an error while loading Map: ');
-                logger.error(error)
-                logger.error("error at " + error?.stack)
+                logger.error(error)               
                 return Promise.reject('There was an error while loading Map: ' + error);
             }
 
@@ -126,8 +125,7 @@ const processSource = async (sourceData, sourceDataType, mapData, dataModelSchem
 
                 } catch (error) {
                     logger.error('There was an error while processing Data Model schema: ');
-                    logger.error(error)
-                    logger.error("error at " + error?.stack)
+                    logger.error(error)                  
                     if (schema)
                         loadedSchema = JSON.parse(JSON.stringify(schema))
                     else
@@ -280,8 +278,7 @@ const finalizeProcess = async (minioObj, config, res) => {
         //return await Promise.resolve();
 
     } catch (error) {
-        logger.error(error)
-        logger.error("error at " + error?.stack)
+        logger.error(error)      
         return await Promise.reject(error);
     }
 };

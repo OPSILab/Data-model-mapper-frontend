@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnChanges, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { NbDialogService, NbWindowService, NbToastrService, NbDialogRef } from '@nebular/theme';
+import { NbDialogService, NbWindowService, NbToastrService, NbDialogRef, NbThemeService } from '@nebular/theme';
 import { NgxConfigureService } from 'ngx-configure';
 import { AppConfig } from '../../../model/appConfig';
 import { DMMComponent } from '../../data-model-mapper/dmm.component';
@@ -31,10 +31,11 @@ export class TestDmmEditorComponent extends DMMComponent implements OnInit, OnCh
     public dmmService: DMMService,
     public toastrService: NbToastrService,
     public route: ActivatedRoute,
+    public themeService: NbThemeService,
     public configService: NgxConfigureService,
     public ref: NbDialogRef<TestDmmEditorComponent>
   ) {
-    super(document, dialogService, windowService, errorService, dmmService, toastrService, route, configService);
+    super(document, dialogService, windowService, errorService, dmmService, toastrService, route, themeService, configService);
     this.config = configService.config as AppConfig;
     this.source.emptySource = true;
   }

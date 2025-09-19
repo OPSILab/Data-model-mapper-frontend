@@ -38,6 +38,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
       value: 'corporate',
       name: 'Corporate',
     },
+    {
+      value: 'cold',
+      name: 'Cold',
+    }/*,
+    {
+      value: 'mold',
+      name: 'Mold',
+    },
+    {
+      value: 'mold2',
+      name: 'Mold 2',
+    }*/
   ];
 
   currentTheme = 'dmm';
@@ -51,6 +63,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public languages = [];
   public userLanguage: string;
+  help: any;
 
   constructor(
     private sidebarService: NbSidebarService,
@@ -63,6 +76,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private configService: NgxConfigureService
   ) {
     this.config = this.configService.config as AppConfig;
+    this.help = this.config.data_model_mapper.helpUrl || 'https://beopen-project.github.io/data-model-mapper/';
   }
 
   ngOnInit(): void {
@@ -115,6 +129,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   changeTheme(themeName: string): void {
+    console.log('Changing theme to:', themeName);
     this.themeService.changeTheme(themeName);
   }
 

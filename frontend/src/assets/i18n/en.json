@@ -11,6 +11,7 @@
     "menu": {
       "home": "Home",
       "editor": "Mapper editor",
+      "landing": "Landing",
       "map_records" : "Mapper records"
     },
     "account": {
@@ -95,7 +96,9 @@
       "hide_error_details": "Hide error details",
       "delete":"Delete",
       "update_field_list" : "Update field list",
-      "generate_mapper" : "Generate mapper"
+      "generate_mapper" : "Generate mapper",
+      "back":"Back",
+      "next":"Next"
     },
     "mapperRecords": {
       "name": "Name",

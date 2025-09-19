@@ -12,6 +12,7 @@ import {
   NbRadioModule,
   NbSelectModule,
   NbSpinnerModule,
+  NbStepperModule,
   NbTabsetModule,
   NbTagModule,
   NbToastrModule,
@@ -53,9 +54,10 @@ import { DMMComponent } from './data-model-mapper/dmm.component';
     FormsModule,
     ReactiveFormsModule,
     NbAutocompleteModule,
+    NbStepperModule,
     NbSpinnerModule,
   ],
   declarations: [PagesComponent, HomeComponent],
   providers: [],
 })
-export class PagesModule {}
+export class PagesModule { }

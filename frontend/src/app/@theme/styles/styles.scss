@@ -278,7 +278,7 @@ nb-context-menu {
 
 nb-select {
   .select-button {
-    
+
     min-width: nb-theme(select-min-width);
     cursor: nb-theme(select-cursor);
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
@@ -449,7 +449,7 @@ ng2-smart-table table tr.ng2-smart-titles th a.sort::before,
 ng2-smart-table table tr.ng2-smart-titles th a.sort::after {
   content: '';
   position: absolute;
-  right: 10px;// 4%; // Sposta il triangolino più a destra (aumenta se vuoi ancora più margine)
+  right: 10px; // 4%; // Sposta il triangolino più a destra (aumenta se vuoi ancora più margine)
   top: 50%;
   transform: translateY(-50%);
   border-left: 5px solid transparent;
@@ -669,3 +669,114 @@ table.custom-table thead {
     transform: translateY(-50%) rotate(359deg)
   }
 }
+
+::ng-deep nb-layout-column {
+  background: #ff0000 !important;
+  /* oppure il colore che desideri */
+  background-color: #ff0000 !important;
+  /* oppure il colore che desideri */
+  color: #003344 !important;
+}
+
+::ng-deep nb-layout-column * {
+  background-color: #00ff95 !important;
+}
+
+/*body ngx-app ngx-pages ngx-one-column-layout nb-layout nb-layout-column {
+  background-color: #1900ff !important;
+  color: #ffffff !important;
+}*/
+
+:root {
+  --main-bg-color: #ffffff;
+  --main-text-color: #000000;
+}
+
+body ngx-app ngx-pages ngx-one-column-layout nb-layout nb-layout-column {
+  background-color: var(--main-bg-color)!important;
+  color: var(--main-text-color)!important;
+}
+
+/*path {
+  color: #000000;
+  fill: #000000;
+  stroke: #000000;
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 0;
+  stroke-dashoffset: 0;
+  stroke-miterlimit: 4;
+  stroke-opacity: 1;
+  fill-opacity: 1;
+  opacity: 1;
+
+}*/
+/* path {
+  filter: drop-shadow(0 0 4px #ff0000);
+ }*/
+
+/*
+svg, path, rect, circle {
+  stroke: #ffffff;
+  stroke-dashoffset: 1;
+  stroke-miterlimit: 1;
+  stroke-opacity: 1;
+  animation:
+    strokePulse 5s infinite alternate ease-in-out;//,
+    //rainbowOpacity 20s infinite linear,
+    //strokePulse2 2s infinite alternate ease-in-out;
+    //rainbowStroke 20s infinite linear;
+  //transform: scale(1.1);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+}
+
+@keyframes strokePulse {
+  from {
+    stroke-width: 0;
+  }
+  to {
+    stroke-width: 0.6;
+  }
+}
+
+@keyframes strokePulse2 {
+  from {
+    stroke: #ffffff;
+  }
+  to {
+    stroke: #00ff40;
+  }
+}
+
+@keyframes rainbowStroke {
+  0%   { stroke: red; }
+  10%  { stroke: orange; }
+  20%  { stroke: yellow; }
+  30%  { stroke: green; }
+  40%  { stroke: blue; }
+  50% { stroke: violet; }
+  60%  { stroke: blue; }
+  70%  { stroke: green; }
+  80%  { stroke: yellow; }
+  90%  { stroke: orange; }
+  100% { stroke: red; }
+}
+
+@keyframes rainbowOpacity {
+  0%   { stroke-opacity: 0; }
+  10%  { stroke-opacity: 1; }
+  20%  { stroke-opacity: 0; }
+  30%  { stroke-opacity: 1; }
+  40%  { stroke-opacity: 0; }
+  50%  { stroke-opacity: 1; }
+  60%  { stroke-opacity: 0; }
+  70%  { stroke-opacity: 1; }
+  80%  { stroke-opacity: 0; }
+  90%  { stroke-opacity: 1; }
+  100% { stroke-opacity: 0; }
+}*/
+
+

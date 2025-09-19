@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { NbDialogService } from '@nebular/theme';
+import { NbDialogService, NbThemeService } from '@nebular/theme';
 import { TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { NgxConfigureService } from 'ngx-configure';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { System, AppConfig } from '../../model/appConfig';
 import { ErrorDialogService } from '../error-dialog/error-dialog.service';
 import { DMMService } from '../data-model-mapper/dmm.service';
@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   @Output() updateResult = new EventEmitter<unknown>();
   schemaDir: string;
   loading = false;
-  pageSize = 10
+  pageSize = 7
   public isNotNew = false;
   private systemConfig: System;
   private systemLocale: string;
@@ -45,6 +45,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   private mapRecords: any[];
   private unsubscribe: Subject<void> = new Subject();
   test: any;
+  currentTheme: any;
+  card = true
 
   constructor(
     private router: Router,
@@ -53,8 +55,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private configService: NgxConfigureService,
     private dialogService: NbDialogService,
+    private themeService: NbThemeService,
     public route: ActivatedRoute //@Inject(DOCUMENT) public document: Document,
   ) {
+    //this.themeService.changeTheme('default');
     this.test = this.route.snapshot.queryParams['testing'];
     this.config = this.configService.config as AppConfig;
     this.systemConfig = this.config.system;
@@ -77,6 +81,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
+  themeChanged(themeName: string) {
+    console.log('Changing theme to:', themeName);
+  }
+
   onPageSizeChange(newSize: number) {
     let page = Math.round(this.source.getPaging().page * this.source.getPaging().perPage / newSize)
     this.source.setPaging(page, newSize, true);
@@ -96,7 +104,22 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
       this.errorService.openErrorDialog(error);
     }
-    //this.source.setPaging(1, 100, true);
+    //this.onPageSizeChange(5);
+    this.source.setPaging(1, 7, true);
+    console.log('source paging set to 1, 5');
+    this.themeService
+      .onThemeChange()
+      .subscribe((themeName) => {
+        console.log('Theme changed to:', themeName);
+        this.currentTheme = themeName
+        if (themeName.name === 'mold' || themeName.name === 'mold2') {
+          this.card = true;
+         }
+        else {
+          this.card = false;
+         }
+        //this.cardChange(this.card);
+      });
   }
 
   ngOnDestroy(): void {
@@ -127,7 +150,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         class: 'table table-bordered',
       },
       pagination: {
-        perPage: 50, // variabile che puoi aggiornare dinamicamente
+        perPage: 7, // variabile che puoi aggiornare dinamicamente
       },
       actions: {
         add: false,
@@ -140,6 +163,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           title: this.recordLabel,
           type: 'text',
           width: '25%',
+          sortDirection: 'asc',
           valuePrepareFunction: (cell, row) => row.name,
         },
         description: {

@@ -19,13 +19,25 @@
   top: 1rem;
   cursor: pointer;
 }*/
+pre {
+  background-color: #c0c0c0;
+  padding: 10px;
+  overflow-x: auto;
+  max-width: 80vw; /* Imposta la larghezza massima in percentuale rispetto alla larghezza dello schermo */
+}
+
+code {
+  font-family: 'Courier New', Courier, monospace;
+  color: #333;
+  white-space: pre-wrap; /* Per gestire i ritorni a capo */
+}
 
 nb-card {
-  max-width: 800px;
+  width: 1100px;
   //text-align: center;
   //min-width: 40rem;
-  //max-height: 100vh;
-  //overflow-y: scroll;
+  max-height: 96vh;
+  overflow-y: scroll;
   //overflow: visible
 }
 

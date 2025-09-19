@@ -42,3 +42,16 @@ code {
 .control-status-example {
   color: nb-theme(color-basic-100);
 }
+
+.pad {
+  margin-top: 60px;
+  margin-bottom: 20px;
+}
+
+.row {
+  margin-top: 20px;
+}
+
+:host ::ng-deep div.jsoneditor.jsoneditor-mode-preview pre.jsoneditor-preview {
+  background-color: #ffffff !important;
+}
