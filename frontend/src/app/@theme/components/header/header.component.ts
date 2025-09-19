@@ -63,6 +63,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public languages = [];
   public userLanguage: string;
+  help: any;
 
   constructor(
     private sidebarService: NbSidebarService,
@@ -75,6 +76,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private configService: NgxConfigureService
   ) {
     this.config = this.configService.config as AppConfig;
+    this.help = this.config.data_model_mapper.helpUrl || 'https://beopen-project.github.io/data-model-mapper/';
   }
 
   ngOnInit(): void {

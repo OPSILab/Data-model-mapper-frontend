@@ -9,19 +9,23 @@
       "authProfile": "oidc",
       "authRealm": "master"
     },
-    "mailTo":"antonio.filograna@eng.it",
-    "detailedErrors" : true
+    "mailTo": "antonio.filograna@eng.it",
+    "detailedErrors": true
   },
-  "data_model_mapper" : {
-    "default_mapper_url":"http://localhost:5500/api/map/transform",
-    "default_mapper_base_url":"http://localhost:5500/api",
-    "minioCache" : false,
-    "minioBuckets" : [],
-    "alwaysPromptSaveSource" : false,
-    "alwaysPromptSaveSchema" : false
+  "data_model_mapper": {
+    "default_mapper_url": "http://localhost:5500/api/map/transform",
+    "default_mapper_base_url": "http://localhost:5500/api",
+    "minioCache": false,
+    "minioBuckets": [],
+    "alwaysPromptSaveSource": false,
+    "alwaysPromptSaveSchema": false,
+    "helpUrl": "https://beopen-project.github.io/data-model-mapper/"
   },
   "i18n": {
     "locale": "en",
-    "languages": ["it","en"]
+    "languages": [
+      "it",
+      "en"
+    ]
   }
 }

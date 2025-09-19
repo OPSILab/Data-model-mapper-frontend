@@ -12,6 +12,7 @@ import {
   NbSelectModule,
   NbIconModule,
   NbThemeModule,
+  NbTooltipModule,
 } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 
@@ -60,6 +61,7 @@ const PIPES = [CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithComm
 @NgModule({
   imports: [
     CommonModule,
+     NbTooltipModule,
     ...NB_MODULES,
 
     TranslateModule.forChild({

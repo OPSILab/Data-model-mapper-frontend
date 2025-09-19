@@ -11,9 +11,10 @@
 
 <div class="header-container">
   <!-- <nb-icon nbPrefix icon="globe-outline"></nb-icon> -->
-  <nb-select size="tiny" style="min-width: 250px;" placeholder="Theme" (selectedChange)="changeTheme($event)" [selected]="currentTheme"
-    status="primary">
-    <nb-option *ngFor="let theme of themes" [value]="theme.value" class="d-flex flex-row align-items-center lang-select">
+  <nb-select size="tiny" style="min-width: 250px;" placeholder="Theme" (selectedChange)="changeTheme($event)"
+    [selected]="currentTheme" status="primary">
+    <nb-option *ngFor="let theme of themes" [value]="theme.value"
+      class="d-flex flex-row align-items-center lang-select">
       <nb-user size="small" [name]="theme.name | uppercase" showTitle="false"> </nb-user>
     </nb-option>
   </nb-select>
@@ -39,4 +40,7 @@
       </ng-template>
     </nb-action>
   </nb-actions>
+  <a [href]="help" class="sidebar-toggle">
+    <nb-icon icon="question-mark-circle-outline" nbTooltip="Help" nbTooltipPlacement="bottom"></nb-icon>
+  </a>
 </div>
