@@ -79,8 +79,7 @@
       </div>
 
       <!-- SVG per connessioni (gestito da TS) -->
-      <svg #connectionsSvg id="connections" width="100%" height="100%"
-        style="position:absolute; top:0; left:0; pointer-events:none; z-index:0; stroke: #3b82f6;
+      <svg #connectionsSvg id="connections" width="100%" height="100%" style="position:absolute; top:0; left:0; pointer-events:none; z-index:0; stroke: #3b82f6;
   stroke-width: 2;
   fill: none;
   marker-end: url(#arrow);"></svg>
@@ -183,9 +182,11 @@
     <div class="squircle-card">
       <div class="squircle-icon">API</div>
       <h3 class="squircle-title">Modalità API RESTful</h3>
-      <p class="squircle-description">Possibilità di invocare il processo di mappatura tramite API RESTful per integrazione
+      <p class="squircle-description">Possibilità di invocare il processo di mappatura tramite API RESTful per
+        integrazione
         automatica.</p>
-      <div class="squircle-stats"><span class="squircle-stat">Da Postman</span><span class="squircle-stat">Da Swagger</span></div>
+      <div class="squircle-stats"><span class="squircle-stat">Da Postman</span><span class="squircle-stat">Da
+          Swagger</span></div>
     </div>
 
     <div class="squircle-card">
@@ -193,7 +194,8 @@
       <h3 class="squircle-title">Modalità command line</h3>
       <p class="squircle-description">Uso rapido del Data model mapper tramite NodeJS per eseguire script di mappatura
         direttamente da terminale.</p>
-      <div class="squircle-stats"><span class="squircle-stat">Per utenti piu' tecnici</span><span class="squircle-stat">Per mappature
+      <div class="squircle-stats"><span class="squircle-stat">Per utenti piu' tecnici</span><span
+          class="squircle-stat">Per mappature
           piu' sbrigative</span>
       </div>
     </div>
@@ -201,7 +203,8 @@
     <div class="squircle-card">
       <div class="squircle-icon">UI</div>
       <h3 class="squircle-title">Web app user friendly</h3>
-      <p class="squircle-description"> Interfaccia intuitiva per caricare file, definire mappature e scaricare risultati in
+      <p class="squircle-description"> Interfaccia intuitiva per caricare file, definire mappature e scaricare risultati
+        in
         pochi clic.</p>
       <div class="squircle-stats"><span class="squircle-stat">Wizard per guidare l'utente passo passo</span><span
           class="squircle-stat">Dashboard per visualizzare mapping precedenti</span></div>
@@ -248,6 +251,14 @@
   <div class="cta-section">
     <h2 class="cta-title">Inizia la Tua Trasformazione Digitale</h2>
     <p class="cta-text"> Scopri come il Data model mapper può rivoluzionare il modo in cui gestisci i tuoi dati.</p>
-    <a href="#" class="cta-button" (click)="startDemo()">Richiedi una Demo</a>
+    <a href="#" onclick="window.location.href=
+  'mailto:gabriele.percoco@demetrix.it?subject=' +
+  encodeURIComponent('Demo request Data model mapper') +
+  '&body=' +
+  encodeURIComponent('Hi, I am interested in Data model mapper and I want to request a demo.');
+  return false;" class="cta-button">
+      Richiedi una Demo
+    </a>
+
   </div>
 </div>
