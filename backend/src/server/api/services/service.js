@@ -38,8 +38,6 @@ const waiting = async (flag) => {
 
 module.exports = {
 
-    outputFile: [],
-
     minioObj: undefined,
 
     bucketName: undefined,
@@ -150,7 +148,7 @@ module.exports = {
             configCopy.SUPPRESS_NO_CONFIG_WARNING =
             configCopy.logSaveInterval =
             configCopy.env = undefined
-        logger.debug(configCopy)
+        //logger.debug(configCopy)
         return configCopy
     },
 
@@ -323,7 +321,6 @@ module.exports = {
             //}
             //catch (error) {
             //    logger.error(error)
-            //    logger.error("error at " + error?.stack)
             //    throw error
             //    process.res.sendStatus(404)
             //}
@@ -470,8 +467,7 @@ module.exports = {
             );
         }
         catch (error) {
-            logger.error(error)
-            logger.error("error at " + error?.stack)
+            logger.error(error)           
             return error.toString()
         }
     },
@@ -485,19 +481,23 @@ module.exports = {
         //sources.push(...minioObjectList)
         logger.debug(minioObjectList)
         for (let obj of minioObjectList) {
-            if (obj.name.toLowerCase().includes(prefix) && !obj.name.toLowerCase().split(prefix)[0])
+            logger.debug("obj.name.toLowerCase().includes ", prefix, " ", obj.name.toLowerCase().includes(prefix))
+            logger.debug("!obj.name.toLowerCase().split(", prefix, ")[0]", !obj.name.toLowerCase().split(prefix)[0])
+            if (obj.name.toLowerCase().includes(prefix.toLowerCase()) && !obj.name.toLowerCase().split(prefix.toLowerCase())[0])
                 try {
                     sources.push({ etag: obj.etag, from: "minio", bucket, name: obj.name, source: (await this.minioGetObject(bucket, obj.name, format)) })//, postMessage)) })
                 }
                 catch (error) {
-                    logger.error(error)
-                    logger.error("error at " + error?.stack)
+                    logger.error(error)                   
                 }
+            else 
+                logger.debug("Skipping " + obj.name)
         }
     },
 
     async getAllSources(bucketName, prefix, format) {//, postMessage) {
 
+        logger.debug("Get all sources from DB and Minio")
         let sources = await Source.find({ user: (prefix?.split("/")[0] || "shared") })
 
         if (common.isMinioWriterActive())
@@ -716,8 +716,7 @@ module.exports = {
                     await this.assignSource(sourceDataID, insertedMap._id)
                 }
                 catch (error) {
-                    logger.error(error)
-                    logger.error("error at " + error?.stack)
+                    logger.error(error)                    
                     Map.deleteOne({ _id: insertedMap._id })
                     throw { error: "Error during source assignment" }
                 }
@@ -726,8 +725,7 @@ module.exports = {
                     await this.assignSchema(dataModelID, insertedMap._id)
                 }
                 catch (error) {
-                    logger.error(error)
-                    logger.error("error at " + error?.stack)
+                    logger.error(error)                    
                     Map.deleteOne({ _id: insertedMap._id })
                     throw { error: "Error during schema assignment" }
                 }
@@ -1067,8 +1065,7 @@ module.exports = {
                 stringifiedLogs += log.messages
             }
             catch (error) {
-                logger.error(error)
-                logger.error("error at " + error?.stack)
+                logger.error(error)               
             }
             //console.debug(log.timestamp)
             //console.debug(Date.now()-log.timestamp)

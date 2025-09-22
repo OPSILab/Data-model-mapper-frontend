@@ -11,6 +11,10 @@ const routes: Routes = [
     loadChildren: () => import('./pages/pages.module').then((m) => m.PagesModule),
   },
   {
+    path: 'land',
+    loadChildren: () => import('./land/land.module').then((m) => m.LandModule),
+  },
+  {
     path: '',
     redirectTo: 'pages',
     pathMatch: 'full',

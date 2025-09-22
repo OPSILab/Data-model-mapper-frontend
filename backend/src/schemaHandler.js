@@ -27,7 +27,6 @@ const { Logger } = log
 const logger = new Logger(__filename)
 const report = require('./utils/logger').report;
 const config = require('../config')
-const apiOutput = require('./server/api/services/service')
 
 // this function completes the compatibility with array inside nested objects and objects inside an array
 function removeUndefined(obj) {
@@ -221,7 +220,6 @@ function validateSourceValue(data, schema, isSingleField, rowNumber, config, res
             var validate = ajv.compile(schema);
         } catch (error) {
             if (schema.anyOf && schema.anyOf[0] == undefined && !isSingleField) schema.anyOf = undefined;
-            logger.error("error at " + error?.stack);
             logger.error(error);
             logger.info(schema)
             var validate = ajv.compile(schema);
@@ -234,7 +232,7 @@ function validateSourceValue(data, schema, isSingleField, rowNumber, config, res
             }
             catch (error) {
                 logger.error(error)
-                logger.error("error at " + error?.stack)
+                
             }
             validate = ajv.compile(schema);
             valid = validate(data)
@@ -274,8 +272,8 @@ function validateSourceValue(data, schema, isSingleField, rowNumber, config, res
         return true;
     }
     else {
-        if (!apiOutput.outputFile.errors) apiOutput.outputFile.errors = []
-        apiOutput.outputFile.errors.push({ "Field is not valid": data, details: `Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}` })
+        if (!process.dmm.apiOutput) process.dmm.apiOutput = {outputFile:{errors:[]}}
+        process.dmm.apiOutput.outputFile.errors.push({ "Field is not valid": data, details: `Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}` })
 
         logger.info(`Source Row/Object number ${rowNumber} invalid: ${ajv.errorsText(validate.errors)}`);
         if (!isSingleField) {

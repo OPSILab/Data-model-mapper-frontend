@@ -4,7 +4,7 @@ RUN mkdir -p /app
 WORKDIR /app
 COPY ./frontend/package.json /app
 
-RUN npm install
+RUN npm install --legacy-peer-deps
 RUN date > /app/date.txt
 COPY ./frontend/. /app
 RUN npm run build -- --prod --aot --base-href "/data-model-mapper-gui/"

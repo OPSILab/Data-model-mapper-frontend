@@ -63,7 +63,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
     private toastrService: NbToastrService,
     private dialogService: NbDialogService,
     private translateService: TranslateService
-  ) {}
+  ) { }
 
   get registered(): boolean {
     return this.value.status == StatusComponent.Enum.COMPLETED ? true : false;
@@ -112,6 +112,16 @@ export class ActionsComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  edit() {
+    this.router.navigate(['/pages/dmm-editor', { inputID: this.value._id }]);
+  }
+
+  transform() {
+    this.dialogService.open(TransformComponent, {
+      context: { inputID: this.value._id, dialog: true },
+    });
   }
 
   showRecordInfoModal(): void {

@@ -24,7 +24,7 @@ export class PagesComponent implements OnInit, OnDestroy {
   private hideManageMenu: boolean;
   private unsubscribe: Subject<void> = new Subject();
 
-  constructor(private translateService: TranslateService, private cdr: ChangeDetectorRef) {} //, private accessChecker: NbAccessChecker) { }
+  constructor(private translateService: TranslateService, private cdr: ChangeDetectorRef) { } //, private accessChecker: NbAccessChecker) { }
 
   ngOnInit(): void {
     /*
@@ -54,6 +54,11 @@ export class PagesComponent implements OnInit, OnDestroy {
         title: 'general.menu.home',
         icon: 'home-outline',
         link: '/pages/home',
+      },
+      {
+        title: 'general.menu.map_records',
+        icon: 'list-outline',
+        link: '/pages/mapper-records',
       },
       {
         title: 'general.menu.editor',

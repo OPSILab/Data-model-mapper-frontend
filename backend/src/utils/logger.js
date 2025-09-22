@@ -238,7 +238,14 @@ function saveLog(log) {
       catch (error) {
         logStream.write(JSON.stringify(inspect(log)) + "\n");
       }
-    else logStream.write(log + "\n");
+    /*else if (log == false)
+      logStream.write("false\n");
+    else if (log == null)
+      logStream.write("null\n");
+    else if (log == undefined)
+      logStream.write("undefined\n");*/
+    else
+      logStream.write(log + "\n");
   } catch (error) {
     console.log("Logs saving fail");
     console.error(error);
@@ -256,27 +263,27 @@ function customLogger(level, fileName) {
 
 function logBackup(...messages) {
   console.log(...messages);
-  for (let m of messages) if (m != " ") saveLog(m);
+  for (let m of messages) if (m !== " ") saveLog(m);
 }
 
 function debugBackup(...messages) {
   console.debug(...messages);
-  for (let m of messages) if (m != " ") saveLog(m);
+  for (let m of messages) if (m !== " ") saveLog(m);
 }
 
 function errorBackup(...messages) {
   console.error(...messages);
-  for (let m of messages) if (m != " ") saveLog(m);
+  for (let m of messages) if (m !== " ") saveLog(m);
 }
 
 function warnBackup(...messages) {
   console.warn(...messages);
-  for (let m of messages) if (m != " ") saveLog(m);
+  for (let m of messages) if (m !== " ") saveLog(m);
 }
 
 function infoBackup(...messages) {
   console.info(...messages);
-  for (let m of messages) if (m != " ") saveLog(m);
+  for (let m of messages) if (m !== " ") saveLog(m);
 }
 
 function minifyMessages(...messages) {

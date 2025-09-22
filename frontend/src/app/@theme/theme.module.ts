@@ -12,6 +12,7 @@ import {
   NbSelectModule,
   NbIconModule,
   NbThemeModule,
+  NbTooltipModule,
 } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 
@@ -26,6 +27,8 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 //import { createTranslateLoader } from '../app.module';
 import { HttpClient } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { MOLD } from './styles/theme.mold';
+import { COLD } from './styles/theme.cold';
 
 function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, '../../assets/i18n/', '.json');
@@ -58,6 +61,7 @@ const PIPES = [CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithComm
 @NgModule({
   imports: [
     CommonModule,
+     NbTooltipModule,
     ...NB_MODULES,
 
     TranslateModule.forChild({
@@ -78,9 +82,9 @@ export class ThemeModule {
       providers: [
         ...NbThemeModule.forRoot(
           {
-            name: 'dmm',
+            name: 'cold',
           },
-          [DEFAULT_THEME, DMM_THEME, CORPORATE_THEME, DARK_THEME]
+          [DEFAULT_THEME, DMM_THEME, CORPORATE_THEME, DARK_THEME, MOLD, COLD]
         ).providers,
       ],
     };

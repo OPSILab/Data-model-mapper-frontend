@@ -27,6 +27,7 @@ import {
   NbWindowModule,
   NbCardModule,
   NbBadgeModule,
+  NbStepperModule,
 } from '@nebular/theme';
 import { ErrorDialogModule } from './pages/error-dialog/error-dialog.module';
 import { HttpConfigInterceptor } from './http.interceptor';
@@ -47,6 +48,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   declarations: [AppComponent],
   imports: [
     BrowserModule,
+    NbStepperModule,
     BrowserAnimationsModule,
     HttpClientModule,
     AppRoutingModule,
@@ -104,4 +106,4 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

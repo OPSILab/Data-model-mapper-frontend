@@ -1,4 +1,5 @@
 export interface AppConfig {
+  helpUrl: any;
   serviceRegistry: {
     url: string;
   };
@@ -34,6 +35,7 @@ export interface I18n {
 }
 
 export interface DataModelMapper {
+  helpUrl: string;
   alwaysPromptSaveSchema: any;
   alwaysPromptSaveSource: any;
   minioBuckets: any;

@@ -1,5 +1,20 @@
-<button nbButton outline aria-label="Name" status="basic" [nbContextMenu]="actions" nbContextMenuTag="service-context-menu{{ value._id }}">
+<!--<button nbButton outline aria-label="Name" status="basic" [nbContextMenu]="actions" nbContextMenuTag="service-context-menu{{ value._id }}">
   <nb-icon icon="settings-2"></nb-icon>
+</button>-->
+<button *ngIf="this.value.status != 'Completed'" ghost nbButton aria-label="Name" status="warning" (click)="edit()">
+  <nb-icon icon="edit"></nb-icon>
+</button>
+<button *ngIf="this.value.status == 'Completed'" ghost nbButton aria-label="Name" status="info" (click)="transform()">
+  <nb-icon icon="play-circle-outline"></nb-icon>
+</button>
+<button *ngIf="this.value.status != 'Completed'" ghost nbButton aria-label="Name" status="basic" (click)="openRegisterDialog()" >
+  <nb-icon icon="lock-outline"></nb-icon>
+</button>
+<button *ngIf="this.value.status == 'Completed'" ghost nbButton aria-label="Name" status="success" (click)="openDeRegisterDialog()" >
+  <nb-icon icon="unlock-outline"></nb-icon>
+</button>
+<button *ngIf="this.value.status != 'Completed'" ghost nbButton aria-label="Name" status="danger" (click)=" openDeleteFromRegistryDialog()">
+  <nb-icon icon="trash"></nb-icon>
 </button>
 <!-- Register Record modal ng-template -->
 <ng-template #confirmRegisterDialog let-data let-ref="dialogRef">

@@ -3,8 +3,8 @@
  * Copyright Akveo. All Rights Reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { NbMenuService } from '@nebular/theme';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { NbMenuService, NbThemeService } from '@nebular/theme';
 import { NbIconLibraries } from '@nebular/theme';
 import { TranslateService } from '@ngx-translate/core';
 import { NgxConfigureService } from 'ngx-configure';
@@ -21,9 +21,10 @@ import { OidcJWTToken } from './auth/model/oidc';
   selector: 'ngx-app',
   template: '<router-outlet></router-outlet>',
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   private unsubscribe: Subject<void> = new Subject();
   private appConfig: AppConfig;
+  currentTheme: any;
 
   constructor(
     private iconLibraries: NbIconLibraries,
@@ -33,6 +34,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private configService: NgxConfigureService,
     authService: NbAuthService, // force construction of the auth service
+    private themeService: NbThemeService,
     oauthStrategy: NbOAuth2AuthStrategy
   ) {
     this.appConfig = this.configService.config as AppConfig;
@@ -85,6 +87,28 @@ export class AppComponent implements OnInit, OnDestroy {
         grantType: NbOAuth2GrantType.REFRESH_TOKEN,
       },
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.themeService
+      .onThemeChange()
+      .subscribe((themeName) => {
+        console.log('Theme changed to:', themeName);
+        this.currentTheme = themeName
+        if (themeName.name === 'mold' || themeName.name === 'mold2') {
+          document.documentElement.style.setProperty('--main-bg-color', '#E0DDCF');
+          document.documentElement.style.setProperty('--main-text-color', '#003344');
+        }
+        else if(themeName.name == "dark") {
+          document.documentElement.style.setProperty('--main-bg-color', '#000000');
+          document.documentElement.style.setProperty('--main-text-color', '#FFFFFF');
+        }
+        else {
+          document.documentElement.style.setProperty('--main-bg-color', '#ffffffff');
+          document.documentElement.style.setProperty('--main-text-color', '#003344');
+        }
+      });
+
   }
 
   onContecxtItemSelection(title: string): void {

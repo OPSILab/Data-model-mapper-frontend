@@ -35,7 +35,7 @@
     "parse-filepath": "^1.0.2",
     "proj4": "^2.14.0",
     "promise-queue": "^2.2.5",
-    "promise-request-retry": "^1.0.1",
+    "promise-request-retry": "^1.0.2",
     "readline-sync": "^1.4.10",
     "request": "^2.87.0",
     "simple-node-logger": "^0.93.37",
