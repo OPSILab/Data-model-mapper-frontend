@@ -62,3 +62,4 @@ frontend/src/app/pages/data-model-mapper/testModule.ts
 backend/src/writers/orionWriter.old.js
 backend/output/
 frontend/src/app/pages/data-model-mapper/stepper_test.html
+*.sandbox
