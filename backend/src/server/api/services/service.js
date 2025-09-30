@@ -257,7 +257,7 @@ module.exports = {
             }
         }
 
-        if (!Array.isArray(source.data) && (source.type == "json" || source.type == ".json" || source.type == "JSON" || source.type == ".JSON"))
+        if (!Array.isArray(source.data) && (source.type == "json" || source.type == ".json" || source.type == "JSON" || source.type == ".JSON") && (!source.path || source.path == ".root$$$"))
             source.data = [source.data]
 
         /*
@@ -313,7 +313,7 @@ module.exports = {
 
         //logger.trace(source)
 
-        if (!source.name && !source.url && !source.id && source.minioObjName && (!source.data || source.data && !source.data[0])) {
+        if (!source.name && !source.url && !source.id && source.minioObjName && (!source.data || source.data && !source.data[0]) && common.isMinioWriterActive()) {
             // if (!source.name && source.minioObjName && (!source.data || source.data && !source.data[0])) {
 
             //try { 

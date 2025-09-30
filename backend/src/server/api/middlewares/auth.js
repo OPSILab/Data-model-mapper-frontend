@@ -46,8 +46,21 @@ module.exports = {
                 else
                     req.body = { file: req.file.buffer.toString('utf8') }
 
-        if (authConfig.disableAuth)
+        if (authConfig.disableAuth) {
+            let pilot = "shared", username = "shared", email = "shared"
+            if (!req.body.config)
+                req.body.config = {
+                    orionWriter: {}
+                }
+            req.body.config.orionWriter.fiwareService = req.body.bucketName = "shared"//+ "/" + email + "/" + config.minioWriter.defaultInputFolderName//{pilot, email}
+            req.body.prefix = (email || username) + "/" + "default"
+            req.body.config.group = email || username
+            req.body.config.orionWriter.fiwareServicePath = "/" + pilot.toLowerCase()
+            req.body.pilot = pilot
+            req.body.email = email
             next()
+        }
+
         else {
             let authHeader = req.headers.authorization || req.query.authorization;
 
