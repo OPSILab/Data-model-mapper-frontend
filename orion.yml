@@ -1,5 +1,5 @@
 version: "3.8"
-
+# tips : inserted entities, without defined pilots, are inserted with a fiWareService default and a fiWareServicePath /default
 services:
   mongo:
     image: mongo:4.4

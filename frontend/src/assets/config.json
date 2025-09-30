@@ -3,8 +3,8 @@
     "checkConsentAtOperator": false,
     "dmmGuiUrl": "http://localhost:12345/data-model-mapper-gui",
     "auth": {
-      "idmHost": "https://platform.beopendep.it/auth",
-      "clientId": "beopen-dashboard",
+      "idmHost": "http://localhost:8080",
+      "clientId": "dmm",
       "disableAuth": "false",
       "authProfile": "oidc",
       "authRealm": "master"
