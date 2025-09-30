@@ -69,7 +69,7 @@ module.exports = {
                 }
                 catch (error) {
 
-                    logger.error(error)                   
+                    logger.error(error)
                     if (error.message == "invalid token" || error.message == "jwt expired" || error.message == "jwt malformed")
                         return send(res, 403);
                     else
@@ -110,22 +110,34 @@ module.exports = {
 
 
                         if (common.isMinioWriterActive()) {
-                            try {
-                                var data = (await axios.get(config.authConfig.userInfoEndpoint, { headers: { "Authorization": authHeader } })).data
-                            }
-                            catch (error) {
-                                logger.error(error?.toString())
-                                logger.error(error?.response?.data || error?.response)
-                                //req.body.prefix = decodedToken.email
-                                //config.group = decodedToken.email
+
+                            let data
+
+                            if (config.authConfig.userInfoEndpoint)
                                 try {
-                                    data = await minioWriter.getUserData(decodedToken.email)
+                                    data = (await axios.get(config.authConfig.userInfoEndpoint, { headers: { "Authorization": authHeader } })).data
                                 }
                                 catch (error) {
-                                    logger.error(error)                              
-                                    send(res, 500, error || error.toString())
+                                    logger.error(error?.toString())
+                                    logger.error(error?.response?.data || error?.response)
+                                    //req.body.prefix = decodedToken.email
+                                    //config.group = decodedToken.email
+                                    try {
+                                        data = await minioWriter.getUserData(decodedToken.email)
+                                        logger.debug(data)
+                                    }
+                                    catch (error) {
+                                        logger.error(error)
+                                        return send(res, 500, error || error.toString())
+                                    }
                                 }
-                            }
+                            else
+                                data = {
+                                    email: decodedToken.email,
+                                    username: decodedToken.preferred_username,
+                                    pilot: decodedToken.pilot?.toLowerCase() || "default"
+                                }
+                            logger.debug(data)
                             let { pilot, username, email } = data
                             if (!req.body.config)
                                 req.body.config = {
@@ -139,14 +151,18 @@ module.exports = {
                             req.body.email = email
                         }
                         else {//TODO test this
-                            req.body.config.orionWriter.fiwareService = req.body.bucketName = decodedToken.pilot.toLowerCase() //+ "/" + email + "/" + config.minioWriter.defaultInputFolderName//{pilot, email}
+                            if (!req.body.config)
+                                req.body.config = {
+                                    orionWriter: {}
+                                }
+                            req.body.config.orionWriter.fiwareService = req.body.bucketName = decodedToken.pilot?.toLowerCase() || "default" //+ "/" + email + "/" + config.minioWriter.defaultInputFolderName//{pilot, email}
                             req.body.prefix = (decodedToken.email || decodedToken.username) + "/" + config.minioWriter.defaultInputFolderName
                             req.body.config.group = decodedToken.email || decodedToken.username
-                            req.body.config.orionWriter.fiwareServicePath = "/" + decodedToken.pilot.toLowerCase()
-                            req.body.pilot = decodedToken.pilot
+                            req.body.config.orionWriter.fiwareServicePath = "/" + req.body.bucketName
+                            req.body.pilot = req.body.bucketName
                             req.body.email = decodedToken.email
                         }
-                        logger.debug(req.body.prefix)
+                        //logger.debug({ body: req.body })
 
 
 

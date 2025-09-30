@@ -2,7 +2,12 @@ version: "3.9"
 # tips : OTP disablle : authentication -> browser -> browser - Conditional OTP -> Disabled
 # tips : avoid CORS error : configure web origins in client
 # tips : if keycloak does not allow login login valid redirect URIs need to be set in client settings
-# tips : avoid expired sessions : realm settings -> tokens -> access token lifespan -> 1 Days, o clients -> advanced -> advanced settings -> first 4 lines to 1 Days
+# tips : avoid expired sessions : realm settings -> tokens -> access token lifespan -> 1 Days, or clients -> advanced -> advanced settings -> first 4 lines to 1 Days,
+#        or realm settings -> sessions -> SSO somethings -> 1 Days
+# tips : public key : realm settings -> keys -> active keys -> RS256
+# tips : to allow minio login : client scopes -> create client scope -> consoleAdmin, 
+#        then click consoleAdmin -> mappers -> add mapper -> by configuration -> Hardcoded claim -> tokenClaimName : policy, token claim value : consoleAdmin,
+#        then on main menu click clients -> your-client -> client scopes -> Add client scope -> consoleAdmin
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.0.2 
