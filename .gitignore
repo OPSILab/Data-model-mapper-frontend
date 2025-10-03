@@ -1,65 +1,55 @@
-# Build results
-backend/[Dd]ebug/
-backend/[Dd]ebugPublic/
-backend/[Rr]elease/
-backend/[Rr]eleases/
-backend/x64/
-backend/x86/
-backend/bld/
-backend/[Bb]in/
-backend/[Oo]bj/
+package-lock.json
+#src/assets/config.prod.json
 
-# Visual Studio 2015 cache/options directory
-backend/.vs/
+# compiled output
+/dist
+/tmp
+/out-tsc
 
-# Specific
-backend/node_modules/
-frontend/node_modules/
-backend/reports/
-backend/logs/
-backend/config.js
-backend/result.json
-backend/dataModels/DataModelTemp.json
-backend/testing/
-backend/input/
-#backend/output/
+# dependencies
+/node_modules
 
-# History
-backend/.history/
-backend/Funzionalità.docx
-backend/Funzionalità.pdf
-backend/dataModels/test_nested_datamodel.json
-backend/debug.txt
-backend/dataModels/schema.json
-backend/dataModels/schema1.json
-backend/dataModels/schema2.json
-backend/.vscode/
-backend/dataModels/nonNgsi.json
-backend/docs/tests/NonNGSI/NonNGSI - Copia.bat
-backend/mapper.bat
-backend/sourceFileTemp.csv
-backend/sourceFileTemp.json
-backend/sourceFileTemp..json
-backend/docs/tests/.history/
-backup/
-logs/
-reports/
-frontend/src/assets/bikeCiclabili.json
-backend/examples/
-backend/src/validation.log
-backend/log*.json
-backend/src/utils/threads.js
-minio-storage/
-minio.yml
-config.beopen.js
-config.prod.json
-deploy_server-linux
-mongo.yml
-docker-compose-always-pull.yml
-backend/src/utils/common_dev.js
-frontend/src/app/pages/data-model-mapper/next/
-frontend/src/app/pages/data-model-mapper/testModule.ts
-backend/src/writers/orionWriter.old.js
-backend/output/
-frontend/src/app/pages/data-model-mapper/stepper_test.html
-*.sandbox
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vs/
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+testem.log
+/typings
+
+# e2e
+/e2e/*.js
+/e2e/*.map
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# IntelliJ settings files
+.idea
+
+# VSCode extension local-history
+.history
+
+src/assets/bikeCiclabili.json
+src/app/pages/data-model-mapper/next/
+src/app/pages/data-model-mapper/testModule.ts
+src/app/pages/data-model-mapper/stepper_test.html
