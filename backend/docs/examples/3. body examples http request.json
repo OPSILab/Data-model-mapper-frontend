@@ -1,5 +1,0 @@
-{
-    "sourceDataIn": "examples\\3. BikeHireDockingStationSource.csv", 
-    "mapPathIn": "examples\\3. BikeHireDockingStationMap.json", 
-    "dataModelIn": "BikeHireDockingStation"
-}

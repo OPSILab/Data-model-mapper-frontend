@@ -1,5 +1,0 @@
-{
-    "sourceDataIn": "docs//test//NestedIntegerJSONFail//source.json", 
-    "mapPathIn": "docs//test//NestedIntegerJSONFail//map.json", 
-    "dataModelIn": "Test"
-}

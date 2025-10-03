@@ -1,3 +1,0 @@
-{   
-    "ignore": ["output/result.json", "input/*.*", "dataModels/*.*"] 
-}
